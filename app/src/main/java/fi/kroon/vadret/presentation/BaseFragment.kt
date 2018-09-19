@@ -10,7 +10,7 @@ import fi.kroon.vadret.VadretApplication
 import fi.kroon.vadret.di.component.VadretApplicationComponent
 import javax.inject.Inject
 
-abstract class BaseFragment: Fragment() {
+abstract class BaseFragment : Fragment() {
 
     abstract fun layoutId(): Int
 

@@ -8,7 +8,7 @@ import fi.kroon.vadret.di.component.DaggerVadretApplicationComponent
 import fi.kroon.vadret.di.component.VadretApplicationComponent
 import fi.kroon.vadret.di.modules.ApplicationModule
 
-class VadretApplication: Application() {
+class VadretApplication : Application() {
 
     val cmp: VadretApplicationComponent by lazy {
         DaggerVadretApplicationComponent
@@ -32,12 +32,12 @@ class VadretApplication: Application() {
 
     private fun initLeakCanary() {
         if (LeakCanary.isInAnalyzerProcess(this)) {
-            return;
+            return
         }
         LeakCanary.install(this)
     }
 
     private fun initThreeTenAbp() {
-        AndroidThreeTen.init(this);
+        AndroidThreeTen.init(this)
     }
 }

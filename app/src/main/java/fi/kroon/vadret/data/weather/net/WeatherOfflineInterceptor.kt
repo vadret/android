@@ -11,7 +11,7 @@ import javax.inject.Inject
 const val TAG = "Cache intercept"
 
 @VadretApplicationScope
-class WeatherOfflineInterceptor @Inject constructor(private val networkHandler: NetworkHandler): Interceptor {
+class WeatherOfflineInterceptor @Inject constructor(private val networkHandler: NetworkHandler) : Interceptor {
 
     @Throws(IOException::class)
     override fun intercept(chain: Interceptor.Chain): Response {
@@ -23,13 +23,13 @@ class WeatherOfflineInterceptor @Inject constructor(private val networkHandler: 
         val DEFAULT_CACHE_REQUEST_TTL = 60
         val DEFAULT_CACHE_RESPONSE_TTL = 60 * 60 * 24
 
-        var request  = chain.request()
+        var request = chain.request()
         if (networkHandler.isConnected!!) {
             Log.d(TAG, "Cache miss! Network is available tho.")
             request = request.newBuilder().header("Cache-Control", "public, max-age=" + DEFAULT_CACHE_REQUEST_TTL).build()
         } else {
             Log.d(TAG, "Cache hit! no network")
-            request = request.newBuilder().header("Cache-Control", "public, only-if-cached, max-stale=" + DEFAULT_CACHE_RESPONSE_TTL).build();
+            request = request.newBuilder().header("Cache-Control", "public, only-if-cached, max-stale=" + DEFAULT_CACHE_RESPONSE_TTL).build()
         }
         return chain.proceed(request)
     }

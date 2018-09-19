@@ -27,7 +27,7 @@ class Mapping {
             }
         }
         for (item in newAnyList) {
-            Log.d("CNV", "AFTER: ${item}")
+            Log.d("CNV", "AFTER: $item")
         }
         return newAnyList
     }

@@ -13,14 +13,15 @@ import kotlinx.android.synthetic.main.item_layout.view.*
 import org.threeten.bp.LocalDate
 import org.threeten.bp.OffsetDateTime
 import org.threeten.bp.format.TextStyle
-import java.util.*
+import java.util.Locale
+
 import javax.inject.Inject
 import kotlin.properties.Delegates
 
 const val TAGA = "ForecastAdapter"
 
 @VadretApplicationScope
-class ForecastAdapter @Inject constructor(): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class ForecastAdapter @Inject constructor() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     internal var collection: List<Any> by Delegates.observable(listOf()) {
         _, _, _ -> notifyDataSetChanged()
@@ -31,7 +32,7 @@ class ForecastAdapter @Inject constructor(): RecyclerView.Adapter<RecyclerView.V
         const val TYPE_FORECAST = 1
     }
 
-    class WeekdayViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
+    class WeekdayViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         fun bind(localDate: LocalDate) {
             itemView.weekDay.text = localDate
                     .dayOfWeek
@@ -40,7 +41,7 @@ class ForecastAdapter @Inject constructor(): RecyclerView.Adapter<RecyclerView.V
         }
     }
 
-    class ForecastViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
+    class ForecastViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         fun bind(timeSerie: TimeSerie) {
 
             Log.d(TAGA, "TimeSerie: ${timeSerie.parameters}")
@@ -112,7 +113,7 @@ class ForecastAdapter @Inject constructor(): RecyclerView.Adapter<RecyclerView.V
             }
         }
     }
-    
+
     override fun getItemViewType(position: Int): Int {
         return when (collection[position]) {
             is LocalDate -> TYPE_WEEKDAY

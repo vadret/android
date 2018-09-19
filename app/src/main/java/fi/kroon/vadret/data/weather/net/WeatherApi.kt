@@ -13,10 +13,10 @@ interface WeatherApi {
      */
     @GET("/api/category/{category}/version/{version}/geotype/point/lon/{longitude}/lat/{latitude}/data.json")
     fun get(
-            @Path("category") category: String,
-            @Path("version") version: Int,
-            @Path("longitude") longitude: Double,
-            @Path("latitude") latitude: Double
+        @Path("category") category: String,
+        @Path("version") version: Int,
+        @Path("longitude") longitude: Double,
+        @Path("latitude") latitude: Double
     ): Single<Response<Weather>>
 
     /**
@@ -24,10 +24,10 @@ interface WeatherApi {
      */
     @GET("/api/category/mesan1g/version/1/geotype/multipoint/validtime/{validTime}/parameter/{p}/leveltype/{levelType}/level/{level}/data.json?with-geo=false")
     fun get(
-            @Path("validTime") validTime: String,
-            @Path("p") p: String,
-            @Path("levelType") levelType: String,
-            @Path("level") level: String
+        @Path("validTime") validTime: String,
+        @Path("p") p: String,
+        @Path("levelType") levelType: String,
+        @Path("level") level: String
     ): Single<Response<Weather>>
 
     /**
@@ -35,7 +35,7 @@ interface WeatherApi {
      */
     @GET("/api/category/mesan1g/version/2/geotype/point/lon/{longitude}/lat/{latitude}/data.json")
     fun get(
-            @Path("longitude") longitude: Double,
-            @Path("latitude") latitude: Double
+        @Path("longitude") longitude: Double,
+        @Path("latitude") latitude: Double
     )
 }

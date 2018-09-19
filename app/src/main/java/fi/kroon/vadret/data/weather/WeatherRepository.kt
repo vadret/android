@@ -15,12 +15,12 @@ const val TAG = "WeatherRepo"
 
 @VadretApplicationScope
 class WeatherRepository @Inject constructor(
-        val weatherApi: WeatherApi,
-        val networkHandler: NetworkHandler
+    val weatherApi: WeatherApi,
+    val networkHandler: NetworkHandler
 ) {
 
     fun get(request: Request): Single<Either<Failure, Weather>> {
-        return when(networkHandler.isConnected) {
+        return when (networkHandler.isConnected) {
             true -> Single.just(request).flatMap {
                 _ -> with(request) {
                 weatherApi.get(category, version, longitude, latitude).map {
@@ -37,8 +37,5 @@ class WeatherRepository @Inject constructor(
             }
             false, null -> Single.just(Either.Left(Failure.NetworkOfflineFailure()))
         }
-
-
-
     }
 }

@@ -15,7 +15,6 @@ import java.util.concurrent.TimeUnit
 @Module(includes = [ApplicationModule::class])
 class NetworkModule {
 
-
     @Module
     companion object {
 
@@ -51,9 +50,9 @@ class NetworkModule {
         @JvmStatic
         @VadretApplicationScope
         fun okHttpClient(
-                cache: Cache,
-                weatherOfflineInterceptor: WeatherOfflineInterceptor,
-                httpLoggingInterceptor: HttpLoggingInterceptor
+            cache: Cache,
+            weatherOfflineInterceptor: WeatherOfflineInterceptor,
+            httpLoggingInterceptor: HttpLoggingInterceptor
         ): OkHttpClient {
             return OkHttpClient.Builder()
                     .connectTimeout(DEFAULT_CONNECTION_TIMEOUT, TimeUnit.MILLISECONDS)

@@ -5,7 +5,7 @@ import fi.kroon.vadret.di.scope.VadretApplicationScope
 import javax.inject.Inject
 
 @VadretApplicationScope
-class AboutViewModel @Inject constructor(): BaseViewModel() {
+class AboutViewModel @Inject constructor() : BaseViewModel() {
 
     val libraries = listOf(
             ThirdParty(

@@ -12,8 +12,8 @@ import javax.inject.Inject
 const val TAG = "LocationProvider"
 
 class LocationProvider @Inject constructor(
-        private val context: Context
-): LocationListener {
+    private val context: Context
+) : LocationListener {
 
     fun getLocation(): Either<Failure, Location> {
 
@@ -53,7 +53,7 @@ class LocationProvider @Inject constructor(
                      * if no recent location exists, we must handle it somehow.
                      */
                     val location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
-                    val b = with (location) {
+                    val b = with(location) {
                         Location(
                                 latitude = latitude,
                                 longitude = longitude
@@ -71,12 +71,7 @@ class LocationProvider @Inject constructor(
                     )
 
                     val location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
-                    val b = with (location) {
-                       Location(
-                                latitude = latitude,
-                                longitude = longitude
-                       )
-                    }
+                    val b = with(location) { Location(latitude = latitude, longitude = longitude) }
                     return Either.Right(b)
                 }
             }

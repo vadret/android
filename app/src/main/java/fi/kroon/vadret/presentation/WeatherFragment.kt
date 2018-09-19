@@ -29,10 +29,9 @@ import fi.kroon.vadret.utils.extensions.viewModel
 import kotlinx.android.synthetic.main.weather_fragment.*
 import javax.inject.Inject
 
-
 const val TAG = "WeatherFragment"
 
-class WeatherFragment: BaseFragment() {
+class WeatherFragment : BaseFragment() {
 
     val REQUEST_ACCESS_FINE_LOCATION: Int = 1
 
@@ -55,7 +54,6 @@ class WeatherFragment: BaseFragment() {
      * a request to SMHI.
      */
 
-
     private fun getLocation() = locationProvider.getLocation().either(::handleFailure, ::handleNewRequest)
 
     private fun handleNewRequest(location: Location) {
@@ -64,10 +62,10 @@ class WeatherFragment: BaseFragment() {
          * This is horrible, there must be a better way
          * than doing this horrendous thing.
          */
-        val lat_str = "%.6f".format(location.latitude).replace(",",".")
-        val lon_str = "%.6f".format(location.longitude).replace(",",".")
-        Log.d(TAG, "Latitude: ${lat_str}")
-        Log.d(TAG, "Longitude: ${lon_str}")
+        val lat_str = "%.6f".format(location.latitude).replace(",", ".")
+        val lon_str = "%.6f".format(location.longitude).replace(",", ".")
+        Log.d(TAG, "Latitude: $lat_str")
+        Log.d(TAG, "Longitude: $lon_str")
 
         val request = Request(
                 latitude = lat_str.toDouble(),
@@ -103,7 +101,6 @@ class WeatherFragment: BaseFragment() {
         rv.layoutManager = LinearLayoutManager(this.context, LinearLayoutManager.VERTICAL, false)
         rv.adapter = forecastAdapter
         rv.hasFixedSize()
-
     }
 
     private fun loadWeather(request: Request) {
@@ -131,7 +128,7 @@ class WeatherFragment: BaseFragment() {
     }
 
     private fun handleSuccess(weather: Weather) {
-        Log.d(TAG, "HANDLING SUCCESS: ${weather}")
+        Log.d(TAG, "HANDLING SUCCESS: $weather")
         renderSuccess(timeSerieList = weather.timeSeries)
     }
 
@@ -140,12 +137,12 @@ class WeatherFragment: BaseFragment() {
     }
 
     private fun renderSuccess(timeSerieList: List<TimeSerie>) {
-        Log.d(TAG, "RENDERING SUCCESS: ${timeSerieList}")
+        Log.d(TAG, "RENDERING SUCCESS: $timeSerieList")
 
         val mapping = Mapping()
 
         val anylist: List<Any> = mapping.toAnyList(timeSerieList)
-        Log.d(TAG, "ANY LIST: ${anylist}")
+        Log.d(TAG, "ANY LIST: $anylist")
         forecastAdapter.collection = anylist
     }
 
@@ -166,11 +163,11 @@ class WeatherFragment: BaseFragment() {
         }
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray): Unit {
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         when (requestCode) {
             REQUEST_ACCESS_FINE_LOCATION -> {
                 // If request is cancelled, the result arrays are empty.
-                Log.d(TAG, "Request Code was: ${REQUEST_ACCESS_FINE_LOCATION}")
+                Log.d(TAG, "Request Code was: $REQUEST_ACCESS_FINE_LOCATION")
                 if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
                     Log.d(TAG, "Permission granted.")
                     Toast.makeText(this.context, R.string.permission_granted, Toast.LENGTH_LONG).show()

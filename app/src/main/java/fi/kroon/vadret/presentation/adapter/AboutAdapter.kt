@@ -12,7 +12,7 @@ import javax.inject.Inject
 import kotlin.properties.Delegates
 
 @VadretApplicationScope
-class AboutAdapter @Inject constructor(): RecyclerView.Adapter<AboutAdapter.ViewHolder>() {
+class AboutAdapter @Inject constructor() : RecyclerView.Adapter<AboutAdapter.ViewHolder>() {
 
     internal var collection: List<ThirdParty> by Delegates.observable(emptyList()) {
         _, _, _ -> notifyDataSetChanged()
@@ -22,7 +22,7 @@ class AboutAdapter @Inject constructor(): RecyclerView.Adapter<AboutAdapter.View
         fun bind(thirdParty: ThirdParty) {
 
             /*itemView.projectUrl.text = thirdParty.page*/
-            //itemView.sourceUrl.text = thirdParty.SOURCE
+            // itemView.sourceUrl.text = thirdParty.SOURCE
             itemView.title.text = thirdParty.title
             itemView.description.text = thirdParty.description
         }
@@ -38,5 +38,4 @@ class AboutAdapter @Inject constructor(): RecyclerView.Adapter<AboutAdapter.View
     }
 
     override fun getItemCount(): Int = collection.size
-
 }

@@ -12,7 +12,7 @@ import javax.inject.Inject
 const val TAG = "WeatherUseCase"
 
 class WeatherUseCase @Inject constructor(
-        private val weatherRepository: WeatherRepository
+    private val weatherRepository: WeatherRepository
 ) {
     fun get(request: Request): Single<Either<Failure, Weather>> {
         return Single.just(request).flatMap {
@@ -20,7 +20,7 @@ class WeatherUseCase @Inject constructor(
         }.doOnEvent {
             t1, t2 -> Log.d(TAG, "T1: $t1, T2: $t2")
         }.doOnError {
-            Log.d(TAG,"$it")
+            Log.d(TAG, "$it")
         }
     }
 }

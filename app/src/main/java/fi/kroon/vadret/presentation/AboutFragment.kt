@@ -12,8 +12,7 @@ import fi.kroon.vadret.utils.extensions.viewModel
 import kotlinx.android.synthetic.main.about_fragment.*
 import javax.inject.Inject
 
-
-class AboutFragment: BaseFragment() {
+class AboutFragment : BaseFragment() {
 
     /**
      *  ThirdParty page for external libraries
@@ -52,5 +51,4 @@ class AboutFragment: BaseFragment() {
         super.onDestroyView()
         aboutList.adapter = null
     }
-
 }

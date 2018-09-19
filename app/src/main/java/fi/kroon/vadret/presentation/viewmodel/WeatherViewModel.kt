@@ -12,8 +12,8 @@ const val TAG = "WeatherViewModel"
 
 @VadretApplicationScope
 class WeatherViewModel @Inject constructor(
-        private val weatherUseCase: WeatherUseCase
-): BaseViewModel() {
+    private val weatherUseCase: WeatherUseCase
+) : BaseViewModel() {
 
     fun get(request: Request) = weatherUseCase
             .get(request)
