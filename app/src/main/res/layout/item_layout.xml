@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/itemLayout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+
+    <TextView
+        android:id="@+id/temperature"
+        android:layout_width="28dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:text="88"
+        android:textAlignment="viewEnd"
+        app:layout_constraintStart_toEndOf="@+id/wsymb2"
+        tools:layout_editor_absoluteY="0dp" />
+
+    <TextView
+        android:id="@+id/tempUnit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/degree"
+        app:layout_constraintStart_toEndOf="@+id/temperature"
+        tools:layout_editor_absoluteY="0dp" />
+
+    <TextView
+        android:id="@+id/gust"
+        android:layout_width="32dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:textAlignment="viewEnd"
+        app:layout_constraintStart_toEndOf="@+id/time" />
+
+    <TextView
+        android:id="@+id/wsymb2"
+        android:layout_width="144dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:text="@string/wsymb2_heavy_snowfall"
+        app:layout_constraintStart_toEndOf="@+id/rHeader" />
+
+    <TextView
+        android:id="@+id/meterPerSecond"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="2dp"
+        android:text="@string/m_s"
+        app:layout_constraintStart_toEndOf="@+id/gust" />
+
+    <TextView
+        android:id="@+id/time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:layout_editor_absoluteX="0dp"
+        tools:layout_editor_absoluteY="0dp" />
+
+    <TextView
+        android:id="@+id/r"
+        android:layout_width="24dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:textAlignment="viewEnd"
+        app:layout_constraintStart_toEndOf="@+id/meterPerSecond" />
+
+    <TextView
+        android:id="@+id/rHeader"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="1dp"
+        android:text="@string/percent"
+        app:layout_constraintStart_toEndOf="@+id/r"
+        tools:layout_editor_absoluteY="0dp" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
