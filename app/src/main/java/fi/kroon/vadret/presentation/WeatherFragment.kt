@@ -2,21 +2,19 @@ package fi.kroon.vadret.presentation
 
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat.checkSelfPermission
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.android.material.snackbar.Snackbar
 import fi.kroon.vadret.R
 import fi.kroon.vadret.data.Request
 import fi.kroon.vadret.data.exception.Either
 import fi.kroon.vadret.data.exception.Failure
-import fi.kroon.vadret.data.location.model.Location
 import fi.kroon.vadret.data.location.exception.LocationFailure
+import fi.kroon.vadret.data.location.model.Location
 import fi.kroon.vadret.data.weather.WeatherMapper
 import fi.kroon.vadret.data.weather.exception.WeatherFailure
 import fi.kroon.vadret.data.weather.model.TimeSerie
@@ -27,24 +25,27 @@ import fi.kroon.vadret.presentation.viewmodel.WeatherViewModel
 import fi.kroon.vadret.utils.Schedulers
 import fi.kroon.vadret.utils.extensions.toVisible
 import fi.kroon.vadret.utils.extensions.viewModel
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.rxkotlin.addTo
 import kotlinx.android.synthetic.main.weather_fragment.*
+import timber.log.Timber
 import javax.inject.Inject
 
-const val TAG = "WeatherFragment"
-
 class WeatherFragment : BaseFragment() {
+    companion object {
+        const val REQUEST_ACCESS_FINE_LOCATION: Int = 1
 
-    val REQUEST_ACCESS_FINE_LOCATION: Int = 1
+    }
 
     override fun layoutId(): Int = R.layout.weather_fragment
+
+    private val subscriptions = CompositeDisposable()
 
     @Inject
     lateinit var schedulers: Schedulers
 
     @Inject
     lateinit var forecastAdapter: ForecastAdapter
-
-    private lateinit var swipeRefreshLayout: SwipeRefreshLayout
 
     private lateinit var weatherViewModel: WeatherViewModel
     private lateinit var locationViewModel: LocationViewModel
@@ -67,6 +68,11 @@ class WeatherFragment : BaseFragment() {
         requestLocationPermission()
     }
 
+    override fun onDestroy() {
+        subscriptions.clear()
+        super.onDestroy()
+    }
+
     private fun initialiseView() {
         refreshWeather.setOnRefreshListener {
             loadLocation()
@@ -83,17 +89,18 @@ class WeatherFragment : BaseFragment() {
         .observeOn(schedulers.ui())
         .onErrorReturn { Either.Left(LocationFailure.LocationNotAvailableFailure()) }
         .subscribe(::locationHandler)
+        .addTo(subscriptions)
 
     private fun locationHandler(data: Either<Failure, Location>) {
         data.either(::handleFailure, ::handleLocation)
     }
 
     private fun handleLocation(location: Location) {
-        val lat_str = "%.6f".format(location.latitude).replace(",", ".")
-        val lon_str = "%.6f".format(location.longitude).replace(",", ".")
+        val latStr = "%.6f".format(location.latitude).replace(",", ".")
+        val lonStr = "%.6f".format(location.longitude).replace(",", ".")
         val request = Request(
-            latitude = lat_str.toDouble(),
-            longitude = lon_str.toDouble()
+            latitude = latStr.toDouble(),
+            longitude = lonStr.toDouble()
         )
         loadWeather(request)
         refreshWeather.isRefreshing = false
@@ -101,12 +108,13 @@ class WeatherFragment : BaseFragment() {
 
     private fun loadWeather(request: Request) {
         rv.toVisible()
-        val disposable = weatherViewModel
-                .get(request)
-                .subscribeOn(schedulers.io())
-                .observeOn(schedulers.ui())
-                .onErrorReturn { Either.Left(Failure.IOException()) }
-                .subscribe(::weatherHandler)
+        weatherViewModel
+            .get(request)
+            .subscribeOn(schedulers.io())
+            .observeOn(schedulers.ui())
+            .onErrorReturn { Either.Left(Failure.IOException()) }
+            .subscribe(::weatherHandler)
+            .addTo(subscriptions)
     }
 
     private fun weatherHandler(data: Either<Failure, Weather>) {
@@ -124,7 +132,7 @@ class WeatherFragment : BaseFragment() {
     }
 
     private fun handleSuccess(weather: Weather) {
-        Log.d(TAG, "HANDLING SUCCESS: $weather")
+        Timber.d("HANDLING SUCCESS: $weather")
         renderSuccess(timeSerieList = weather.timeSeries)
     }
 
@@ -133,28 +141,28 @@ class WeatherFragment : BaseFragment() {
     }
 
     private fun renderSuccess(timeSerieList: List<TimeSerie>) {
-        Log.d(TAG, "RENDERING SUCCESS: $timeSerieList")
+        Timber.d("RENDERING SUCCESS: $timeSerieList")
 
         val mapping = WeatherMapper()
 
         val anylist: List<Any> = mapping.toAnyList(timeSerieList)
-        Log.d(TAG, "ANY LIST: $anylist")
+        Timber.d("ANY LIST: $anylist")
         forecastAdapter.collection = anylist
     }
 
     private fun requestLocationPermission() {
-        Log.d(TAG, "Requesting permission begin")
+        Timber.d("Requesting permission begin")
         if (checkSelfPermission(context!!,
-                        android.Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
-            Log.d(TAG, "Requesting: ${android.Manifest.permission.ACCESS_FINE_LOCATION}")
-            Log.d(TAG, "Requesting NOW.")
+                android.Manifest.permission.ACCESS_FINE_LOCATION)
+            != PackageManager.PERMISSION_GRANTED) {
+            Timber.d("Requesting: ${android.Manifest.permission.ACCESS_FINE_LOCATION}")
+            Timber.d("Requesting NOW.")
             requestPermissions(
-                    arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION),
-                    REQUEST_ACCESS_FINE_LOCATION
+                arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION),
+                REQUEST_ACCESS_FINE_LOCATION
             )
         } else {
-            Log.d(TAG, "Permission is already granted. Proceeding.")
+            Timber.d("Permission is already granted. Proceeding.")
             loadLocation()
         }
     }
@@ -163,19 +171,19 @@ class WeatherFragment : BaseFragment() {
         when (requestCode) {
             REQUEST_ACCESS_FINE_LOCATION -> {
                 // If request is cancelled, the result arrays are empty.
-                Log.d(TAG, "Request Code was: $REQUEST_ACCESS_FINE_LOCATION")
+                Timber.d("Request Code was: $REQUEST_ACCESS_FINE_LOCATION")
                 if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
-                    Log.d(TAG, "Permission granted.")
+                    Timber.d("Permission granted.")
                     Toast.makeText(this.context, R.string.permission_granted, Toast.LENGTH_LONG).show()
                     loadLocation()
                 } else {
-                    Log.d(TAG, "Permission denied.")
+                    Timber.d("Permission denied.")
                     Toast.makeText(this.context, R.string.permission_missing, Toast.LENGTH_LONG).show()
                 }
                 return
             }
             else -> {
-                Log.d(TAG, "Im leaving.")
+                Timber.d("Im leaving.")
                 super.onRequestPermissionsResult(requestCode, permissions, grantResults)
             }
         }
