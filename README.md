@@ -1,6 +1,8 @@
 [![Build Status](https://travis-ci.org/vadret/android.svg?branch=master)](https://travis-ci.org/vadret/android)
 [![ktlint](https://img.shields.io/badge/code%20style-%E2%9D%A4-FF4081.svg)](https://ktlint.github.io/)
 
+![Vädret](https://raw.githubusercontent.com/vadret/android/master/assets/logo.png)
+
 # Vädret!
 **Vädret** is a weather app for Sweden written in Kotlin. 
 Weather data is gathered from [SMHI Open Data Meteorological Analysis](https://opendata-download-metanalys.smhi.se). API documentation available in 
