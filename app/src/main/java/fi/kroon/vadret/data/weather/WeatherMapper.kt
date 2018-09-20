@@ -1,34 +1,34 @@
 package fi.kroon.vadret.data.weather
 
+import android.util.Log
+import fi.kroon.vadret.data.weather.model.TimeSerie
+import org.threeten.bp.LocalDate
+import org.threeten.bp.OffsetDateTime
+
 class WeatherMapper {
-
-    /**
-     * TimeSerie object, has a timestamp for a valid time interval (1 hr)
-     *
-     * This object is turned into a lightweight one immediatly since we
-     * dont use all that data.
-     */
-
-/*    fun toPresentation(timeSeriesList: List<TimeSerie>): List<TimeSeriesUi> {
-        return timeSeriesList.map {
-
-            ts -> with (ts) {
-                TimeSeriesUi(
-                        validTime = validTime,
-                        gust = ,
-                        wsymb2 = getWsymb2(ts.parameters),
-                        t =
-
-                )
+    fun toAnyList(timeSerieList: List<TimeSerie>): List<Any> {
+        /** Nasty hack */
+        val newAnyList: MutableList<Any> = mutableListOf()
+        var currentDate: LocalDate = OffsetDateTime.parse(timeSerieList.first().validTime).toLocalDate()
+        var re: TimeSerie? = null
+        for (timeSerie in timeSerieList) {
+            if (!newAnyList.contains(currentDate)) {
+                newAnyList.add(currentDate)
+            }
+            if (re != null) {
+                newAnyList.add(re)
+                re = null
+            }
+            if (OffsetDateTime.parse(timeSerie.validTime).toLocalDate() == currentDate) {
+                newAnyList.add(timeSerie)
+            } else {
+                re = timeSerie
+                currentDate = OffsetDateTime.parse(timeSerie.validTime).toLocalDate()
             }
         }
-    }*/
-
-/*    fun getWsymb2(parameterList: List<Parameter>): Wsymb2 {
-        return parameterList.map { parameter ->
-            when (parameter.name) {
-                "Wsymb2" -> Wsymb2(level = parameter.level.toInt(), value = parameter.values[0].toInt())
-            }
+        for (item in newAnyList) {
+            Log.d("CNV", "AFTER: $item")
         }
-    }*/
+        return newAnyList
+    }
 }

@@ -13,7 +13,7 @@ data itself is licensed under [Creative commons Erkännande 4.0 SE](https://www.
 
 * [Parameter data](https://opendata-download-metanalys.smhi.se/api/category/mesan1g/version/2/parameter.json)
 * [Parameter documentation](https://opendata.smhi.se/apidocs/metanalys/parameters.html)
-* [Point data](https://opendata-download-metanalys.smhi.se/api/category/mesan1g/version/2/geotype/point/lon/n.n/lat/m.m/data.json)
+* [Point data](https://opendata-download-metanalys.smhi.se/api/category/mesan1g/version/2/geotype/point/lon/18.0686/lat/59.3293/data.json)
 
 
 ## Architecture

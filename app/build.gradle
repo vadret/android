@@ -40,7 +40,7 @@ dependencies {
     def DAGGER_VERSION = "2.17"
     def RETROFIT_VERSION = "2.4.0"
     def MOSHI_VERSION = "1.6.0"
-    def KTLINT_VERSION = "0.25.1"
+    def KTLINT_VERSION = "0.28.0"
     def KTX_VERSION = "1.0.0-rc02"
     def NAVIGATION_VERSION = "1.0.0-alpha05"
     def LEAK_CANARY = "1.6.1"
@@ -75,7 +75,7 @@ dependencies {
     implementation "com.squareup.retrofit2:converter-moshi:${RETROFIT_VERSION}"
 
     // Okhttp 3
-    implementation "com.squareup.okhttp3:logging-interceptor:3.9.1"
+    implementation 'com.squareup.okhttp3:logging-interceptor:3.11.0'
 
     // KTX Core
     implementation "androidx.core:core-ktx:${KTX_VERSION}"
@@ -83,7 +83,7 @@ dependencies {
     implementation "androidx.legacy:legacy-support-v4:${KTX_VERSION}"
 
     // Mockito framework
-    testImplementation "org.mockito:mockito-core:2.19.1"
+    testImplementation 'org.mockito:mockito-core:2.22.0'
     implementation "androidx.constraintlayout:constraintlayout:1.1.3"
     implementation "com.google.android.material:material:${KTX_VERSION}"
 
@@ -97,7 +97,7 @@ dependencies {
     testImplementation "junit:junit:4.12"
 
     // Testing
-    androidTestImplementation "com.google.truth:truth:0.40"
+    androidTestImplementation 'com.google.truth:truth:0.42'
 
     // Dagger2
     implementation "com.google.dagger:dagger:${DAGGER_VERSION}"
@@ -105,8 +105,8 @@ dependencies {
 
     // RxJava2 with kotlin bindings
     implementation "io.reactivex.rxjava2:rxjava:${RXJAVA_VERSION}"
-    implementation "io.reactivex.rxjava2:rxkotlin:2.2.0"
-    implementation "io.reactivex.rxjava2:rxandroid:2.0.2"
+    implementation 'io.reactivex.rxjava2:rxkotlin:2.3.0'
+    implementation 'io.reactivex.rxjava2:rxandroid:2.1.0'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${KOTLIN_VERSION}"
     /*testImplementation "org.jetbrains.kotlin:kotlin-top-junit:${KOTLIN_VERSION}"*/
 
@@ -116,7 +116,8 @@ dependencies {
     // Linting
     ktlint "com.github.shyiko:ktlint:${KTLINT_VERSION}"
 }
-task ktlint(type: JavaExec, group: "kotlin verification") {
+
+tasks.register("ktlint", JavaExec) {
     description = "Check Kotlin code style."
     classpath = configurations.ktlint
     main = "com.github.shyiko.ktlint.Main"
@@ -126,7 +127,7 @@ task ktlint(type: JavaExec, group: "kotlin verification") {
     // see https://github.com/shyiko/ktlint#usage for more
 }
 check.dependsOn ktlint
-task ktlintFormat(type: JavaExec, group: "kotlin Formatting") {
+tasks.register("ktlintFormat", JavaExec) {
     description = "Fix Kotlin code style deviations."
     classpath = configurations.ktlint
     main = "com.github.shyiko.ktlint.Main"

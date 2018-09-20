@@ -7,6 +7,7 @@ import fi.kroon.vadret.di.modules.ApiServiceModule
 import fi.kroon.vadret.di.modules.SharedPreferencesModule
 import fi.kroon.vadret.di.modules.SchedulerModule
 import fi.kroon.vadret.di.modules.ViewModelModule
+import fi.kroon.vadret.di.modules.LocationServiceModule
 import fi.kroon.vadret.di.scope.VadretApplicationScope
 import fi.kroon.vadret.presentation.AboutFragment
 import fi.kroon.vadret.presentation.MainActivity
@@ -19,6 +20,7 @@ import fi.kroon.vadret.presentation.WeatherFragment
             ApiServiceModule::class,
             SharedPreferencesModule::class,
             SchedulerModule::class,
+            LocationServiceModule::class,
             ViewModelModule::class
         ]
 )

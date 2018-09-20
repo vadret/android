@@ -7,6 +7,8 @@ import android.os.Bundle
 import android.util.Log
 import fi.kroon.vadret.data.exception.Either
 import fi.kroon.vadret.data.exception.Failure
+import fi.kroon.vadret.data.location.exception.LocationFailure
+import fi.kroon.vadret.data.location.model.Location
 import javax.inject.Inject
 
 const val TAG = "LocationProvider"
@@ -15,7 +17,7 @@ class LocationProvider @Inject constructor(
     private val context: Context
 ) : LocationListener {
 
-    fun getLocation(): Either<Failure, Location> {
+    fun get(): Either<Failure, Location> {
 
         try {
             val locationManager: LocationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
@@ -53,13 +55,17 @@ class LocationProvider @Inject constructor(
                      * if no recent location exists, we must handle it somehow.
                      */
                     val location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
-                    val b = with(location) {
-                        Location(
+
+                    location?.let {
+                        return with(it) {
+                            Either.Right(Location(
                                 latitude = latitude,
                                 longitude = longitude
-                        )
+                            ))
+                        }
                     }
-                    return Either.Right(b)
+
+                    return Either.Left(LocationFailure.LocationNotAvailableFailure())
                 }
 
                 if (isGPSEnabled) {
@@ -71,14 +77,21 @@ class LocationProvider @Inject constructor(
                     )
 
                     val location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
-                    val b = with(location) { Location(latitude = latitude, longitude = longitude) }
-                    return Either.Right(b)
+                    location?.let {
+                        return with(it) {
+                            Either.Right(Location(
+                                latitude = latitude,
+                                longitude = longitude
+                            ))
+                        }
+                    }
+                    return Either.Left(LocationFailure.LocationNotAvailableFailure())
                 }
             }
         } catch (e: SecurityException) {
             e.printStackTrace()
         }
-        return Either.Left(LocationFailure.LocationFailure())
+        return Either.Left(LocationFailure.LocationNotAvailableFailure())
     }
 
     override fun onLocationChanged(location: android.location.Location?) {}

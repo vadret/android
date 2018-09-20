@@ -1,4 +1,4 @@
-package fi.kroon.vadret.data.location
+package fi.kroon.vadret.data.location.model
 
 data class Location(
     val latitude: Double,

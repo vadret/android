@@ -46,7 +46,7 @@
     <string name="m_s" translatable="false">m/s</string>
     <string name="degree" translatable="false">C°</string>
     <string name="no_location_permission">No location permission</string>
-    <string name="location_failure">Location failure</string>
+    <string name="location_failure">Location not available</string>
 
     <string name="data_not_available_at_this_location">No weather data available for this location.</string>
     <string name="permission_missing">Application is missing required permissions to function.</string>
