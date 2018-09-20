@@ -34,7 +34,6 @@ import javax.inject.Inject
 class WeatherFragment : BaseFragment() {
     companion object {
         const val REQUEST_ACCESS_FINE_LOCATION: Int = 1
-
     }
 
     override fun layoutId(): Int = R.layout.weather_fragment
