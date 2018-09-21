@@ -36,7 +36,7 @@ class WeatherViewModelTest {
 
     @Test
     fun useCaseReturnsSingle_shouldPassResult() {
-        val testWeatherEither = createTestWeatherEither(mockWeather)
+        val testWeatherEither = createWeatherEither(mockWeather)
         val testSingle = createMockWeatherSingle(testWeatherEither)
         doReturn(testSingle).`when`(mockWeatherUseCase).get(mockRequest)
 
@@ -48,7 +48,7 @@ class WeatherViewModelTest {
 
     @Test
     fun useCaseReturnsFailure_shouldPassFailure() {
-        val testFailureEither = createTestFailureEither()
+        val testFailureEither = createFailureEither()
         val testSingle = createFailureSingle(testFailureEither)
         doReturn(testSingle).`when`(mockWeatherUseCase).get(mockRequest)
 
@@ -71,16 +71,16 @@ class WeatherViewModelTest {
             .assertValueAt(0) { it is Either.Left<Failure> && it.a is Failure.IOException }
     }
 
-    private fun createTestFailureEither() =
+    private fun createFailureEither() =
         Either.Left(Failure.IOException())
 
-    private fun createFailureSingle(failureEither: Either.Left<Failure.IOException>) =
+    private fun createFailureSingle(failureEither: Either.Left<Failure>) =
         Single.just(failureEither)
 
     private fun createThrowableSingle() =
         Single.error<Either<Failure, Weather>>(testThrowable)
 
-    private fun createTestWeatherEither(mockWeather: Weather) =
+    private fun createWeatherEither(mockWeather: Weather) =
         Either.Right(mockWeather) as Either<Failure, Weather>
 
     private fun createMockWeatherSingle(value: Either<Failure, Weather>) =
