@@ -12,7 +12,9 @@ import fi.kroon.vadret.util.anyObject
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.ArgumentMatchers.*
+import org.mockito.ArgumentMatchers.anyString
+import org.mockito.ArgumentMatchers.anyFloat
+import org.mockito.ArgumentMatchers.anyLong
 import org.mockito.Mock
 import org.mockito.Mockito.doNothing
 import org.mockito.Mockito.doReturn
