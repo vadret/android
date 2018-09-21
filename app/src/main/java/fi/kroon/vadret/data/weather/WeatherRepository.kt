@@ -13,7 +13,7 @@ import javax.inject.Inject
 
 @VadretApplicationScope
 class WeatherRepository @Inject constructor(
-    val weatherApi: WeatherApi,
+    private val weatherApi: WeatherApi,
     val networkHandler: NetworkHandler
 ) {
     fun get(request: Request): Single<Either<Failure, Weather>> {
