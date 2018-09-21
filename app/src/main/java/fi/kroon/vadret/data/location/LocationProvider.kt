@@ -1,6 +1,6 @@
 package fi.kroon.vadret.data.location
 
-import android.content.Context
+import android.annotation.SuppressLint
 import android.location.LocationListener
 import android.location.LocationManager
 import android.os.Bundle
@@ -12,13 +12,15 @@ import timber.log.Timber
 import javax.inject.Inject
 
 class LocationProvider @Inject constructor(
-    private val context: Context
+    private val locationManager: LocationManager
 ) : LocationListener {
+    companion object {
+        const val MIN_TIME = 1000L * 60L
+        const val MIN_DISTANCE = 100f
+    }
 
     fun get(): Either<Failure, Location> {
-
         try {
-            val locationManager: LocationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
             val isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
             val isNlpEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
 
@@ -28,68 +30,68 @@ class LocationProvider @Inject constructor(
              *  to use the application.
              */
 
-            if (isGPSEnabled) {
-                Timber.d("GPS permission is available.")
-            }
-
-            if (isNlpEnabled) {
-                Timber.d("NLP permission is available.")
-            }
+            logAvailableSource(isGPSEnabled, isNlpEnabled)
 
             if (!isGPSEnabled and !isNlpEnabled) {
                 Timber.d("No location permissions available.")
                 return Either.Left(LocationFailure.NoLocationPermissions())
             } else {
-                if (isNlpEnabled) {
-                    locationManager.requestLocationUpdates(
-                            LocationManager.NETWORK_PROVIDER,
-                            1000L * 60L,
-                            100f,
-                            this
-                    )
-                    Timber.d("Location manager fetching from NLP.")
+                val location = getLocation(isNlpEnabled, isGPSEnabled)
 
-                    /**
-                     * if no recent location exists, we must handle it somehow.
-                     */
-                    val location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
+                /**
+                 * if no recent location exists, we must handle it somehow.
+                 */
 
-                    location?.let {
-                        return with(it) {
-                            Either.Right(Location(
-                                latitude = latitude,
-                                longitude = longitude
-                            ))
-                        }
+                location?.let {
+                    return with(it) {
+                        Either.Right(Location(
+                            latitude = latitude,
+                            longitude = longitude
+                        ))
                     }
-
-                    return Either.Left(LocationFailure.LocationNotAvailableFailure())
-                }
-
-                if (isGPSEnabled) {
-                    locationManager.requestLocationUpdates(
-                            LocationManager.GPS_PROVIDER,
-                            1000L * 60,
-                            100f,
-                            this
-                    )
-
-                    val location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
-                    location?.let {
-                        return with(it) {
-                            Either.Right(Location(
-                                latitude = latitude,
-                                longitude = longitude
-                            ))
-                        }
-                    }
-                    return Either.Left(LocationFailure.LocationNotAvailableFailure())
                 }
             }
         } catch (e: SecurityException) {
             e.printStackTrace()
         }
+
         return Either.Left(LocationFailure.LocationNotAvailableFailure())
+    }
+
+    private fun getLocation(isNlpEnabled: Boolean, isGPSEnabled: Boolean): android.location.Location? {
+        return when {
+            isNlpEnabled -> {
+                Timber.d("Location manager fetching from NLP.")
+                getLocationFromProvider(LocationManager.NETWORK_PROVIDER)
+            }
+            isGPSEnabled -> {
+                Timber.d("Location manager fetching from GPS.")
+                getLocationFromProvider(LocationManager.GPS_PROVIDER)
+            }
+            else -> null
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    fun getLocationFromProvider(provider: String): android.location.Location? {
+        locationManager.requestLocationUpdates(
+            provider,
+            MIN_TIME,
+            MIN_DISTANCE,
+            this
+        )
+
+        return locationManager.getLastKnownLocation(provider)
+    }
+
+    private fun logAvailableSource(isGPSEnabled: Boolean, isNlpEnabled: Boolean) {
+        if (isGPSEnabled) {
+            Timber.d("GPS permission is available.")
+        }
+
+        if (isNlpEnabled) {
+            Timber.d("NLP permission is available.")
+        }
     }
 
     override fun onLocationChanged(location: android.location.Location?) {}
