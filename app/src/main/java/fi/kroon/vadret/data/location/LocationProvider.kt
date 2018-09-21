@@ -4,14 +4,12 @@ import android.content.Context
 import android.location.LocationListener
 import android.location.LocationManager
 import android.os.Bundle
-import android.util.Log
 import fi.kroon.vadret.data.exception.Either
 import fi.kroon.vadret.data.exception.Failure
 import fi.kroon.vadret.data.location.exception.LocationFailure
 import fi.kroon.vadret.data.location.model.Location
+import timber.log.Timber
 import javax.inject.Inject
-
-const val TAG = "LocationProvider"
 
 class LocationProvider @Inject constructor(
     private val context: Context
@@ -31,15 +29,15 @@ class LocationProvider @Inject constructor(
              */
 
             if (isGPSEnabled) {
-                Log.d(TAG, "GPS permission is available.")
+                Timber.d("GPS permission is available.")
             }
 
             if (isNlpEnabled) {
-                Log.d(TAG, "NLP permission is available.")
+                Timber.d("NLP permission is available.")
             }
 
             if (!isGPSEnabled and !isNlpEnabled) {
-                Log.d(TAG, "No location permissions available.")
+                Timber.d("No location permissions available.")
                 return Either.Left(LocationFailure.NoLocationPermissions())
             } else {
                 if (isNlpEnabled) {
@@ -49,7 +47,7 @@ class LocationProvider @Inject constructor(
                             100f,
                             this
                     )
-                    Log.d(TAG, "Location manager fetching from NLP.")
+                    Timber.d("Location manager fetching from NLP.")
 
                     /**
                      * if no recent location exists, we must handle it somehow.

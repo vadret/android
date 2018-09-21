@@ -1,9 +1,9 @@
 package fi.kroon.vadret.data.weather
 
-import android.util.Log
 import fi.kroon.vadret.data.weather.model.TimeSerie
 import org.threeten.bp.LocalDate
 import org.threeten.bp.OffsetDateTime
+import timber.log.Timber
 
 class WeatherMapper {
     fun toAnyList(timeSerieList: List<TimeSerie>): List<Any> {
@@ -26,9 +26,11 @@ class WeatherMapper {
                 currentDate = OffsetDateTime.parse(timeSerie.validTime).toLocalDate()
             }
         }
+
         for (item in newAnyList) {
-            Log.d("CNV", "AFTER: $item")
+            Timber.tag("CNV").d("AFTER: $item")
         }
+
         return newAnyList
     }
 }

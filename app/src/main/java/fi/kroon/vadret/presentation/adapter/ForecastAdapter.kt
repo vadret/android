@@ -1,6 +1,5 @@
 package fi.kroon.vadret.presentation.adapter
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,12 +12,10 @@ import kotlinx.android.synthetic.main.item_layout.view.*
 import org.threeten.bp.LocalDate
 import org.threeten.bp.OffsetDateTime
 import org.threeten.bp.format.TextStyle
+import timber.log.Timber
 import java.util.Locale
-
 import javax.inject.Inject
 import kotlin.properties.Delegates
-
-const val TAGA = "ForecastAdapter"
 
 @VadretApplicationScope
 class ForecastAdapter @Inject constructor() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -44,23 +41,23 @@ class ForecastAdapter @Inject constructor() : RecyclerView.Adapter<RecyclerView.
     class ForecastViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         fun bind(timeSerie: TimeSerie) {
 
-            Log.d(TAGA, "TimeSerie: ${timeSerie.parameters}")
+            Timber.d("TimeSerie: ${timeSerie.parameters}")
 
             itemView.time.text = OffsetDateTime.parse(timeSerie.validTime).toLocalTime().toString()
 
             timeSerie.parameters.map {
 
                 if (it.name == "t") {
-                    Log.d(TAGA, "t: ${it.values[0]}")
+                    Timber.d("t: ${it.values[0]}")
                     itemView.temperature.text = it.values[0].toString()
                 } else if (it.name == "r") {
-                    Log.d(TAGA, "r: ${it.values[0]}")
+                    Timber.d("r: ${it.values[0]}")
                     itemView.r.text = it.values[0].toInt().toString()
                 } else if (it.name == "gust") {
-                    Log.d(TAGA, "gust: ${it.values[0]}")
+                    Timber.d("gust: ${it.values[0]}")
                     itemView.gust.text = it.values[0].toString()
                 } else if (it.name == "Wsymb2") {
-                    Log.d(TAGA, "wsymb2: ${it.values[0]}")
+                    Timber.d("wsymb2: ${it.values[0]}")
                     itemView.wsymb2.setText(handleWsymb2(it.values[0].toInt()))
                 }
             }
