@@ -11,7 +11,6 @@ import javax.inject.Inject
 class LocationRepository @Inject constructor(
     private val locationProvider: LocationProvider
 ) {
-
     fun get(): Single<Either<Failure, Location>> {
         return Single.just(
             locationProvider.get()

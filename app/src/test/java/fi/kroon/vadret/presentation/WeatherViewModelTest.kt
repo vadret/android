@@ -37,7 +37,7 @@ class WeatherViewModelTest {
     @Test
     fun useCaseReturnsSingle_shouldPassResult() {
         val testWeatherEither = createWeatherEither(mockWeather)
-        val testSingle = createMockWeatherSingle(testWeatherEither)
+        val testSingle = createWeatherSingle(testWeatherEither)
         doReturn(testSingle).`when`(mockWeatherUseCase).get(mockRequest)
 
         testViewModel
@@ -83,6 +83,6 @@ class WeatherViewModelTest {
     private fun createWeatherEither(mockWeather: Weather) =
         Either.Right(mockWeather) as Either<Failure, Weather>
 
-    private fun createMockWeatherSingle(value: Either<Failure, Weather>) =
+    private fun createWeatherSingle(value: Either<Failure, Weather>) =
         Single.just(value)
 }

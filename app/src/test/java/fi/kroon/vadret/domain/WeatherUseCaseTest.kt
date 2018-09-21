@@ -35,7 +35,7 @@ class WeatherUseCaseTest {
 
     @Test
     fun repositoryReturnsSingle_shouldPassResult() {
-        val testWeatherEither = createTestWeatherEither(mockWeather)
+        val testWeatherEither = createWeatherEither(mockWeather)
         val testSingle = createWeatherSingle(testWeatherEither)
         Mockito.doReturn(testSingle).`when`(mockWeatherRepository).get(mockRequest)
 
@@ -77,7 +77,7 @@ class WeatherUseCaseTest {
     private fun createThrowableSingle() =
         Single.error<Either<Failure, Weather>>(testThrowable)
 
-    private fun createTestWeatherEither(mockWeather: Weather) =
+    private fun createWeatherEither(mockWeather: Weather) =
         Either.Right(mockWeather) as Either<Failure, Weather>
 
     private fun createWeatherSingle(value: Either<Failure, Weather>) =
