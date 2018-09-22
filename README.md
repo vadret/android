@@ -1,4 +1,5 @@
-[![Build Status](https://travis-ci.org/vadret/android.svg?branch=master)](https://travis-ci.org/vadret/android)
+[![travis-ci](https://travis-ci.org/vadret/android.svg?branch=master)](https://travis-ci.org/vadret/android)
+[![codecov](https://codecov.io/gh/vadret/android/branch/master/graph/badge.svg)](https://codecov.io/gh/vadret/android)
 [![ktlint](https://img.shields.io/badge/code%20style-%E2%9D%A4-FF4081.svg)](https://ktlint.github.io/)
 
 ![Vädret](https://raw.githubusercontent.com/vadret/android/master/assets/logo.png)

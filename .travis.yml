@@ -20,4 +20,6 @@ android:
 script:
   - "./gradlew ktlint"
   - "./gradlew clean build"
-  - "./gradlew test"
+  - "./gradlew test jacocoTestReport"
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
