@@ -49,6 +49,13 @@ class AboutViewModel @Inject constructor() : BaseViewModel() {
                     description = "RxJava – Reactive Extensions for the JVM – a library for composing asynchronous and event-based programs using observable sequences for the Java VM.",
                     page = "https://github.com/ReactiveX/RxJava",
                     license = "https://github.com/ReactiveX/RxJava/blob/2.x/license"
+            ),
+            ThirdParty(
+                    author = "Jake Wharton",
+                    title = "Timber",
+                    description = "A logger with a small, extensible API which provides utility on top of Android's normal Log class.",
+                    page = "https://github.com/JakeWharton/timber",
+                    license = "https://github.com/JakeWharton/timber/blob/master/LICENSE.txt"
             )
     )
 
