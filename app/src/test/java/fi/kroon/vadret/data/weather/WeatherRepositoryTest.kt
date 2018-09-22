@@ -1,4 +1,4 @@
-package fi.kroon.vadret.data
+package fi.kroon.vadret.data.weather
 
 /*import fi.kroon.vadret.data.exception.Either
 import fi.kroon.vadret.data.weather.exception.WeatherFailure

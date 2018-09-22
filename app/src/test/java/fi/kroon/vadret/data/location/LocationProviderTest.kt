@@ -1,4 +1,4 @@
-package fi.kroon.vadret.data
+package fi.kroon.vadret.data.location
 
 import android.location.Location
 import android.location.LocationListener
@@ -7,7 +7,6 @@ import android.location.LocationManager.GPS_PROVIDER
 import android.location.LocationManager.NETWORK_PROVIDER
 import fi.kroon.vadret.data.exception.Either
 import fi.kroon.vadret.data.exception.Failure
-import fi.kroon.vadret.data.location.LocationProvider
 import fi.kroon.vadret.data.location.exception.LocationFailure
 import fi.kroon.vadret.util.anyObject
 import org.junit.Before
@@ -17,8 +16,8 @@ import org.mockito.ArgumentMatchers.anyFloat
 import org.mockito.ArgumentMatchers.anyLong
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mock
-import org.mockito.Mockito.doReturn
 import org.mockito.Mockito.doNothing
+import org.mockito.Mockito.doReturn
 import org.mockito.Mockito.doThrow
 import org.mockito.junit.MockitoJUnitRunner
 

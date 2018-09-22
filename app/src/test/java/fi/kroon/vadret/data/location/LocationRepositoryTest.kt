@@ -1,9 +1,7 @@
-package fi.kroon.vadret.data
+package fi.kroon.vadret.data.location
 
 import fi.kroon.vadret.data.exception.Either
 import fi.kroon.vadret.data.exception.Failure
-import fi.kroon.vadret.data.location.LocationProvider
-import fi.kroon.vadret.data.location.LocationRepository
 import fi.kroon.vadret.data.location.model.Location
 import org.junit.Before
 import org.junit.Test
