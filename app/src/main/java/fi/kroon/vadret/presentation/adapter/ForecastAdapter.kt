@@ -58,12 +58,13 @@ class ForecastAdapter @Inject constructor() : RecyclerView.Adapter<RecyclerView.
                     itemView.gust.text = it.values[0].toString()
                 } else if (it.name == "Wsymb2") {
                     Timber.d("wsymb2: ${it.values[0]}")
-                    itemView.wsymb2.setText(handleWsymb2(it.values[0].toInt()))
+                    itemView.wsymb2.setText(handleWsymb2Description(it.values[0].toInt()))
+                    itemView.wsymb2Icon.setImageResource(handleWsymb2Icon(it.values[0].toInt()))
                 }
             }
         }
 
-        private fun handleWsymb2(index: Int): Int {
+        private fun handleWsymb2Description(index: Int): Int {
             return when (index) {
                 1 -> R.string.wsymb2_clear_sky
                 2 -> R.string.wsymb2_nearly_clear_sky
@@ -94,6 +95,41 @@ class ForecastAdapter @Inject constructor() : RecyclerView.Adapter<RecyclerView.
                 27 -> R.string.wsymb2_heavy_snowfall
                 else -> {
                     R.string.wsymb2_clear_sky
+                }
+            }
+        }
+
+        fun handleWsymb2Icon(index: Int): Int {
+            return when (index) {
+                1 -> R.drawable.wsymb2_clear_sky
+                2 -> R.drawable.wsymb2_nearly_clear_sky
+                3 -> R.drawable.wsymb2_variable_cloudiness
+                4 -> R.drawable.wsymb2_halfclear_sky
+                5 -> R.drawable.wsymb2_cloudy_sky
+                6 -> R.drawable.wsymb2_overcast
+                7 -> R.drawable.wsymb2_fog
+                8 -> R.drawable.wsymb2_light_rain_showers
+                9 -> R.drawable.wsymb2_moderate_rain_showers
+                10 -> R.drawable.wsymb2_heavy_rain_showers
+                11 -> R.drawable.wsymb2_thunderstorm
+                12 -> R.drawable.wsymb2_light_sleet_showers
+                13 -> R.drawable.wsymb2_moderate_sleet_showers
+                14 -> R.drawable.wsymb2_heavy_sleet_showers
+                15 -> R.drawable.wsymb2_light_snow_showers
+                16 -> R.drawable.wsymb2_moderate_snow_showers
+                17 -> R.drawable.wsymb2_heavy_snow_showers
+                18 -> R.drawable.wsymb2_light_rain
+                19 -> R.drawable.wsymb2_moderate_rain
+                20 -> R.drawable.wsymb2_heavy_rain
+                21 -> R.drawable.wsymb2_thunder
+                22 -> R.drawable.wsymb2_light_sleet
+                23 -> R.drawable.wsymb2_moderate_sleet
+                24 -> R.drawable.wsymb2_heavy_sleet
+                25 -> R.drawable.wsymb2_light_snowfall
+                26 -> R.drawable.wsymb2_moderate_snowfall
+                27 -> R.drawable.wsymb2_heavy_snowfall
+                else -> {
+                    R.drawable.wsymb2_clear_sky
                 }
             }
         }

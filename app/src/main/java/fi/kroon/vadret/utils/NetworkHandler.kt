@@ -6,8 +6,6 @@ import android.net.NetworkInfo
 import javax.inject.Inject
 
 class NetworkHandler @Inject constructor(private val context: Context) {
-
-    // networkInfo?.isConnected guarantees network conn. is fully usable
     val isConnected get() = context.networkInfo?.isConnected
 }
 

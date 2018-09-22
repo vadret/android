@@ -7,5 +7,6 @@
     <color name="colorAccent">#D81B60</color>
     <color name="yellow">#fac413</color>
     <color name="yellowlight">#ffd900</color>
-    <color name="hax">#11237b</color>
+    <color name="hax">#11237B</color>
+    <color name="blueview">#343856</color>
 </resources>

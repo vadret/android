@@ -125,6 +125,7 @@ class WeatherFragment : BaseFragment() {
             is WeatherFailure.NoWeatherAvailable -> renderFailure(R.string.no_weather_available)
             is Failure.IOException -> renderFailure(R.string.io_exception)
             is Failure.NetworkException -> renderFailure(R.string.network_failure)
+            is Failure.NetworkOfflineFailure -> renderFailure(R.string.no_network_available)
             is LocationFailure.NoLocationPermissions -> renderFailure(R.string.no_location_permission)
             is LocationFailure.LocationNotAvailableFailure -> renderFailure(R.string.location_failure)
         }
