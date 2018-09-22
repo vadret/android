@@ -70,7 +70,7 @@ class WeatherViewModelTest {
             .assertNoErrors()
             .assertValueAt(0) { it is Either.Left<Failure> && it.a is Failure.IOException }
     }
-  
+
     private fun createFailureEither() =
         Either.Left(Failure.IOException())
 
