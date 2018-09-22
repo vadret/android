@@ -7,7 +7,7 @@
     <string name="wsymb2_clear_sky">Clear sky</string>
     <string name="wsymb2_nearly_clear_sky">Nearly clear sky</string>
     <string name="wsymb2_variable_cloudiness">Variable cloudiness</string>
-    <string name="wsymb2_halfclear_sky">Halfclear sky</string>
+    <string name="wsymb2_halfclear_sky">Half clear sky</string>
     <string name="wsymb2_cloudy_sky">Cloudy sky</string>
     <string name="wsymb2_overcast">Overcast</string>
     <string name="wsymb2_fog">Fog</string>
@@ -47,6 +47,7 @@
     <string name="degree" translatable="false">C°</string>
     <string name="no_location_permission">No location permission</string>
     <string name="location_failure">Location not available</string>
+    <string name="no_network_available">No network available</string>
 
     <string name="data_not_available_at_this_location">No weather data available for this location.</string>
     <string name="permission_missing">Application is missing required permissions to function.</string>

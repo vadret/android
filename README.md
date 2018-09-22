@@ -16,9 +16,11 @@ data itself is licensed under [Creative commons Erkännande 4.0 SE](https://www.
 * [Parameter documentation](https://opendata.smhi.se/apidocs/metanalys/parameters.html)
 * [Point data](https://opendata-download-metanalys.smhi.se/api/category/mesan1g/version/2/geotype/point/lon/18.0686/lat/59.3293/data.json)
 
-
 ## Architecture
 This project tries to obey the [Clean Architecture](https://8thlight.com/blog/uncle-bob/2012/08/13/the-clean-architecture.html) approach to application design.
+
+![App drawer](https://raw.githubusercontent.com/vadret/android/master/assets/drawer.png)
+![Weather](https://raw.githubusercontent.com/vadret/android/master/assets/weather.png)
 
 ## Android Architecture Components
 
