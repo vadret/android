@@ -1,93 +1,114 @@
 package fi.kroon.vadret.data.weather
 
-/*import fi.kroon.vadret.data.exception.Either
-import fi.kroon.vadret.data.weather.exception.WeatherFailure
-import fi.kroon.vadret.data.weather.WeatherMapper
-import fi.kroon.vadret.data.weather.WeatherRepository
+import fi.kroon.vadret.data.Request
+import fi.kroon.vadret.data.exception.Either
+import fi.kroon.vadret.data.exception.Failure
 import fi.kroon.vadret.data.weather.model.Weather
-import fi.kroon.vadret.data.weather.model.Parameter
-import fi.kroon.vadret.data.weather.model.Geometry
-import fi.kroon.vadret.data.weather.model.TimeSerie
 import fi.kroon.vadret.data.weather.net.WeatherApi
 import fi.kroon.vadret.utils.NetworkHandler
+import io.reactivex.Single
 import org.junit.Before
 import org.junit.Test
-import org.mockito.ArgumentMatchers
+import org.junit.runner.RunWith
 import org.mockito.Mock
-import org.mockito.Mockito
-import org.mockito.Mockito.`when`
-import org.mockito.Mockito.verify
-import org.mockito.Mockito.verifyNoMoreInteractions
-import org.mockito.Mockito.times
-import org.mockito.MockitoAnnotations
+import org.mockito.Mockito.doReturn
+import org.mockito.Mockito.doThrow
+import org.mockito.junit.MockitoJUnitRunner
+import retrofit2.Response
 
-
+@RunWith(MockitoJUnitRunner::class)
 class WeatherRepositoryTest {
-
-    private lateinit var weatherRepository: WeatherRepository
+    @Mock
+    private lateinit var mockWeatherApi: WeatherApi
 
     @Mock
-    private lateinit var weatherApi: WeatherApi
+    private lateinit var mockNetworkHandler: NetworkHandler
 
     @Mock
-    private lateinit var weatherMapper: WeatherMapper
+    private lateinit var mockResponse: Response<Weather>
 
     @Mock
-    private lateinit var networkHandler: NetworkHandler
+    private lateinit var mockWeather: Weather
 
-    val request = Request(longitude = 59.3293, latitude = 18.0686)
+    private lateinit var testWeatherRepository: WeatherRepository
 
     @Before
-    @Throws(Exception::class)
-    fun setUp() {
-        MockitoAnnotations.initMocks(this)
-        weatherRepository = WeatherRepository(weatherApi, networkHandler)
+    fun setup() {
+        testWeatherRepository = WeatherRepository(mockWeatherApi, mockNetworkHandler)
     }
 
     @Test
-    @Throws(Exception::class)
-    fun `fetching weather data fails`() {
-        val failure = WeatherFailure()
-        `when`(weatherApi.get(request.longitude, request.latitude)).thenReturn(failure)
-        weatherRepository.get(request).test().assertError(failure)
-        verify(weatherApi, Mockito.times(1)).get(request.longitude, request.latitude)
-        verifyNoMoreInteractions(weatherApi)
+    fun networkHandlerIsNotConnected_shouldReturnNetworkOfflineFailureSingle() {
+        val testRequest = createTestRequest()
+        doReturn(false).`when`(mockNetworkHandler).isConnected
+
+        testWeatherRepository
+            .get(testRequest)
+            .test()
+            .assertComplete()
+            .assertNoErrors()
+            .assertValueAt(0) { it is Either.Left<Failure> && it.a is Failure.NetworkOfflineFailure }
     }
 
     @Test
-    @Throws(Exception::class)
-    fun `fetching weather data succeeds`() {
-        val response = listOf(
-            Weather(
-                approvedTime = "2018-09-20T04:37:37Z",
-                geometry = Geometry(
-                    type = "Point",
-                    coordinates = listOf(listOf(59.3293), listOf(18.0686))
-                ),
-                referenceTime = "2018-09-19T15:00:00Z",
-                timeSeries = listOf(
-                    TimeSerie(
-                        validTime = "2018-09-20T03:00:00Z",
-                        parameters = listOf(
-                            Parameter(
-                                name = "Wsymb2",
-                                level = "0",
-                                levelType = "hl",
-                                unit = "category",
-                                values = listOf(
-                                    111.11
-                                )
-                            )
-                        )
-                    )
-                )
-            )
-        )
+    fun networkHandlerIsNullConnected_shouldReturnNetworkOfflineFailureSingle() {
+        val testRequest = createTestRequest()
+        doReturn(null).`when`(mockNetworkHandler).isConnected
 
-        `when`(weatherApi.get(ArgumentMatchers.anyDouble(), ArgumentMatchers.anyDouble())).thenReturn(response)
-
-        weatherRepository.get(request).test().assertValue(Either.Right(response))
-        verify(weatherApi, times(1)).get(request.longitude, request.latitude)
-        verifyNoMoreInteractions(weatherApi)
+        testWeatherRepository
+            .get(testRequest)
+            .test()
+            .assertComplete()
+            .assertNoErrors()
+            .assertValueAt(0) { it is Either.Left<Failure> && it.a is Failure.NetworkOfflineFailure }
     }
-}*/
+
+    @Test
+    fun weatherApiThrowsError_shouldReturnNetworkExceptionFailureSingle() {
+        val testRequest = createTestRequest()
+        doReturn(true).`when`(mockNetworkHandler).isConnected
+        doThrow(RuntimeException()).`when`(mockWeatherApi)
+            .get(testRequest.category, testRequest.version, testRequest.longitude, testRequest.latitude)
+
+        testWeatherRepository
+            .get(testRequest)
+            .test()
+            .assertComplete()
+            .assertNoErrors()
+            .assertValueAt(0) { it is Either.Left<Failure> && it.a is Failure.NetworkException }
+    }
+
+    @Test
+    fun weatherApiReturnsNull_shouldReturnNetworkExceptionFailureSingle() {
+        val testRequest = createTestRequest()
+        doReturn(true).`when`(mockNetworkHandler).isConnected
+        doReturn(null).`when`(mockWeatherApi)
+            .get(testRequest.category, testRequest.version, testRequest.longitude, testRequest.latitude)
+
+        testWeatherRepository
+            .get(testRequest)
+            .test()
+            .assertComplete()
+            .assertNoErrors()
+            .assertValueAt(0) { it is Either.Left<Failure> && it.a is Failure.NetworkException }
+    }
+
+    @Test
+    fun weatherApiReturnsWeather_shouldReturnWeatherEitherSingle() {
+        val testRequest = createTestRequest()
+        doReturn(true).`when`(mockNetworkHandler).isConnected
+        doReturn(mockWeather).`when`(mockResponse).body()
+        doReturn(Single.just(mockResponse)).`when`(mockWeatherApi)
+            .get(testRequest.category, testRequest.version, testRequest.longitude, testRequest.latitude)
+
+        testWeatherRepository
+            .get(testRequest)
+            .test()
+            .assertComplete()
+            .assertNoErrors()
+            .assertValueAt(0) { it is Either.Right<Weather> && it.b == mockWeather }
+    }
+
+    private fun createTestRequest() =
+        Request()
+}

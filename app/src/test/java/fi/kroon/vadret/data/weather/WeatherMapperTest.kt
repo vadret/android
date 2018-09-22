@@ -34,7 +34,7 @@ class WeatherMapperTest {
 
         val result = testWeatherMapper.toAnyList(nonEmptyList)
 
-        assert(result.size == nonEmptyList.size + 1)
+        assert(result.size == nonEmptyList.size.inc())
     }
 
     @Test
@@ -43,7 +43,7 @@ class WeatherMapperTest {
 
         val result = testWeatherMapper.toAnyList(nonEmptyList)
 
-        assert(result.size == nonEmptyList.size + 1)
+        assert(result.size == nonEmptyList.size.inc())
     }
 
     private fun createNonEmptyList(size: Int): List<TimeSerie> =
