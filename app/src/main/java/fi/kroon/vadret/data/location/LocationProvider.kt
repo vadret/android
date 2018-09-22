@@ -43,6 +43,7 @@ class LocationProvider @Inject constructor(
                  */
 
                 location?.let {
+                    Timber.d("Location found lat:${it.latitude}  lon:${it.longitude}")
                     return with(it) {
                         Either.Right(Location(
                             latitude = latitude,
@@ -59,17 +60,30 @@ class LocationProvider @Inject constructor(
     }
 
     private fun getLocation(isNlpEnabled: Boolean, isGPSEnabled: Boolean): android.location.Location? {
-        return when {
-            isNlpEnabled -> {
-                Timber.d("Location manager fetching from NLP.")
-                getLocationFromProvider(LocationManager.NETWORK_PROVIDER)
-            }
-            isGPSEnabled -> {
-                Timber.d("Location manager fetching from GPS.")
-                getLocationFromProvider(LocationManager.GPS_PROVIDER)
-            }
-            else -> null
+        var location: android.location.Location? = null
+
+        if (isNlpEnabled) {
+            location = getLocationFromNLPProvider()
         }
+
+        /**
+         * If getting location from NLP failed, we can try to get it from GPS
+         */
+        if (location == null && isGPSEnabled) {
+            location = getLocationFromGPSProvider()
+        }
+
+        return location
+    }
+
+    private fun getLocationFromGPSProvider(): android.location.Location? {
+        Timber.d("Location manager fetching from GPS.")
+        return getLocationFromProvider(LocationManager.GPS_PROVIDER)
+    }
+
+    private fun getLocationFromNLPProvider(): android.location.Location? {
+        Timber.d("Location manager fetching from NLP.")
+        return getLocationFromProvider(LocationManager.NETWORK_PROVIDER)
     }
 
     @SuppressLint("MissingPermission")
