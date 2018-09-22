@@ -6,8 +6,17 @@ import org.threeten.bp.OffsetDateTime
 import timber.log.Timber
 
 class WeatherMapper {
-    fun toAnyList(timeSerieList: List<TimeSerie>): List<Any> {
-        /** Nasty hack */
+    fun toAnyList(timeSerieList: List<TimeSerie>): List<Any> =
+        if (timeSerieList.isNotEmpty()) {
+            mapTimeSerieList(timeSerieList)
+        } else {
+            listOf()
+        }
+
+    private fun mapTimeSerieList(timeSerieList: List<TimeSerie>): MutableList<Any> {
+        /**
+         * todo: Nasty hack
+         */
         val newAnyList: MutableList<Any> = mutableListOf()
         var currentDate: LocalDate = OffsetDateTime.parse(timeSerieList.first().validTime).toLocalDate()
         var re: TimeSerie? = null
