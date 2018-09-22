@@ -28,14 +28,10 @@ class AboutAdapter @Inject constructor() : RecyclerView.Adapter<AboutAdapter.Vie
         }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val dependency = LayoutInflater.from(parent.context).inflate(R.layout.about, parent, false)
-        return ViewHolder(dependency)
-    }
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder =
+        ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.about, parent, false))
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(collection[position])
-    }
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) = holder.bind(collection[position])
 
     override fun getItemCount(): Int = collection.size
 }

@@ -12,7 +12,6 @@ import javax.inject.Inject
 class LocationUseCase @Inject constructor(
     private val locationRepository: LocationRepository
 ) {
-
     fun get(): Single<Either<Failure, Location>> {
         return locationRepository.get()
             .doOnEvent { t1, t2 ->

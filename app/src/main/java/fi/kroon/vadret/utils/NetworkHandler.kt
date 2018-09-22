@@ -9,7 +9,7 @@ class NetworkHandler @Inject constructor(private val context: Context) {
     val isConnected get() = context.networkInfo?.isConnected
 }
 
-val Context.networkInfo: NetworkInfo? get() =
-    (
-            this.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-            ).activeNetworkInfo
+val Context.networkInfo: NetworkInfo?
+    get() = (
+        this.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        ).activeNetworkInfo
