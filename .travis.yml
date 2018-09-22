@@ -20,3 +20,4 @@ android:
 script:
   - "./gradlew ktlint"
   - "./gradlew clean build"
+  - "./gradlew test"
