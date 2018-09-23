@@ -18,20 +18,31 @@ class AboutAdapter @Inject constructor() : RecyclerView.Adapter<AboutAdapter.Vie
         _, _, _ -> notifyDataSetChanged()
     }
 
-    class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        fun bind(thirdParty: ThirdParty) {
+    private var clickListener: AboutAdapterOnRowClickInterface? = null
 
-            /*itemView.projectUrl.text = thirdParty.page*/
-            // itemView.sourceUrl.text = thirdParty.SOURCE
+    class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        fun bind(thirdParty: ThirdParty, clickListener: AboutAdapterOnRowClickInterface?) {
             itemView.title.text = thirdParty.title
             itemView.description.text = thirdParty.description
+
+            itemView.projectUrl.setOnClickListener{clickListener?.onProjectClick(thirdParty.page)}
+            itemView.licenseUrl.setOnClickListener{clickListener?.onLicenceClick(thirdParty.license)}
+            itemView.sourceUrl.setOnClickListener{clickListener?.onSourceClick(thirdParty.source)}
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder =
         ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.about, parent, false))
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) = holder.bind(collection[position])
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) = holder.bind(collection[position], clickListener)
 
     override fun getItemCount(): Int = collection.size
+
+    fun registerListener(listener: AboutAdapterOnRowClickInterface){
+        this.clickListener = listener
+    }
+
+    fun unregisterListener(){
+        this.clickListener = null
+    }
 }
