@@ -14,8 +14,8 @@ import kotlin.properties.Delegates
 @VadretApplicationScope
 class AboutAdapter @Inject constructor() : RecyclerView.Adapter<AboutAdapter.ViewHolder>() {
 
-    internal var collection: List<ThirdParty> by Delegates.observable(emptyList()) {
-        _, _, _ -> notifyDataSetChanged()
+    internal var collection: List<ThirdParty> by Delegates.observable(emptyList()) { _, _, _ ->
+        notifyDataSetChanged()
     }
 
     private var clickListener: AboutAdapterOnRowClickInterface? = null
@@ -25,9 +25,9 @@ class AboutAdapter @Inject constructor() : RecyclerView.Adapter<AboutAdapter.Vie
             itemView.title.text = thirdParty.title
             itemView.description.text = thirdParty.description
 
-            itemView.projectUrl.setOnClickListener{clickListener?.onProjectClick(thirdParty.page)}
-            itemView.licenseUrl.setOnClickListener{clickListener?.onLicenceClick(thirdParty.license)}
-            itemView.sourceUrl.setOnClickListener{clickListener?.onSourceClick(thirdParty.source)}
+            itemView.projectUrl.setOnClickListener { clickListener?.onProjectClick(thirdParty.page) }
+            itemView.licenseUrl.setOnClickListener { clickListener?.onLicenceClick(thirdParty.license) }
+            itemView.sourceUrl.setOnClickListener { clickListener?.onSourceClick(thirdParty.source) }
         }
     }
 
@@ -38,11 +38,11 @@ class AboutAdapter @Inject constructor() : RecyclerView.Adapter<AboutAdapter.Vie
 
     override fun getItemCount(): Int = collection.size
 
-    fun registerListener(listener: AboutAdapterOnRowClickInterface){
+    fun registerListener(listener: AboutAdapterOnRowClickInterface) {
         this.clickListener = listener
     }
 
-    fun unregisterListener(){
+    fun unregisterListener() {
         this.clickListener = null
     }
 }

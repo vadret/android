@@ -15,7 +15,6 @@ import fi.kroon.vadret.utils.extensions.viewModel
 import kotlinx.android.synthetic.main.about_fragment.*
 import javax.inject.Inject
 
-
 class AboutFragment : BaseFragment(), AboutAdapterOnRowClickInterface {
     /**
      *  ThirdParty page for external libraries
