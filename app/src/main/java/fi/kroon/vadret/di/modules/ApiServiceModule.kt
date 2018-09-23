@@ -4,6 +4,8 @@ import com.squareup.moshi.Moshi
 import dagger.Module
 import dagger.Provides
 import fi.kroon.vadret.data.BASE_API_URL
+import fi.kroon.vadret.data.alert.AlertApi
+import fi.kroon.vadret.data.alert.AlertRepository
 import fi.kroon.vadret.data.weather.WeatherRepository
 import fi.kroon.vadret.data.weather.net.WeatherApi
 import fi.kroon.vadret.di.scope.VadretApplicationScope
@@ -28,6 +30,16 @@ class ApiServiceModule {
         @JvmStatic
         @VadretApplicationScope
         fun weatherApi(retrofit: Retrofit) = retrofit.create(WeatherApi::class.java)
+
+        @Provides
+        @JvmStatic
+        @VadretApplicationScope
+        fun alertRepository(alertApi: AlertApi, networkHandler: NetworkHandler) = AlertRepository(alertApi, networkHandler)
+
+        @Provides
+        @JvmStatic
+        @VadretApplicationScope
+        fun alertApi(retrofit: Retrofit) = retrofit.create(AlertApi::class.java)
 
         @Provides
         @JvmStatic

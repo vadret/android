@@ -55,7 +55,7 @@ class WeatherFragment : BaseFragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        rv.adapter = null
+        forecastRv.adapter = null
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -70,9 +70,9 @@ class WeatherFragment : BaseFragment() {
             loadLocation()
             refreshWeather.isRefreshing = false
         }
-        rv.layoutManager = LinearLayoutManager(this.context, RecyclerView.VERTICAL, false)
-        rv.adapter = forecastAdapter
-        rv.hasFixedSize()
+        forecastRv.layoutManager = LinearLayoutManager(this.context, RecyclerView.VERTICAL, false)
+        forecastRv.adapter = forecastAdapter
+        forecastRv.hasFixedSize()
     }
 
     private fun loadLocation() = locationViewModel
@@ -99,7 +99,7 @@ class WeatherFragment : BaseFragment() {
     }
 
     private fun loadWeather(request: Request) {
-        rv.toVisible()
+        forecastRv.toVisible()
         weatherViewModel
             .get(request)
             .subscribeOn(schedulers.io())
@@ -130,7 +130,7 @@ class WeatherFragment : BaseFragment() {
     }
 
     private fun renderFailure(@StringRes message: Int) {
-        return Snackbar.make(rv, message, Snackbar.LENGTH_LONG).show()
+        return Snackbar.make(forecastRv, message, Snackbar.LENGTH_LONG).show()
     }
 
     private fun renderSuccess(timeSerieList: List<TimeSerie>) {

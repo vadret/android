@@ -42,8 +42,7 @@
     <string name="no_location_permission">Standortberechtigung fehlt</string>
     <string name="location_failure">Standortdaten nicht verfügbar</string>
     <string name="data_not_available_at_this_location">Wetter ist für diesen Ort nicht verfügbar</string>
-    <string name="permission_missing">
-Der App fehlt die erforderliche Berechtigung zum Arbeiten</string>
+    <string name="permission_missing">Der App fehlt die erforderliche Berechtigung zum Arbeiten</string>
     <string name="permission_granted">Berechtigung gewährt!</string>
     <string name="permission_denied">Berechtigung verweigert!</string>
     <string name="slogan">Öffne Code, öffne Daten</string>

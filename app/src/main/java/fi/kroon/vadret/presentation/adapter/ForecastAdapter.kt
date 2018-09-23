@@ -7,8 +7,8 @@ import androidx.recyclerview.widget.RecyclerView
 import fi.kroon.vadret.R
 import fi.kroon.vadret.data.weather.model.TimeSerie
 import fi.kroon.vadret.di.scope.VadretApplicationScope
-import kotlinx.android.synthetic.main.item_header.view.*
-import kotlinx.android.synthetic.main.item_layout.view.*
+import kotlinx.android.synthetic.main.weather_item_header.view.*
+import kotlinx.android.synthetic.main.weather_item.view.*
 import org.threeten.bp.LocalDate
 import org.threeten.bp.OffsetDateTime
 import org.threeten.bp.format.TextStyle
@@ -155,8 +155,8 @@ class ForecastAdapter @Inject constructor() : RecyclerView.Adapter<RecyclerView.
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when (viewType) {
-            TYPE_WEEKDAY -> WeekdayViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_header, parent, false))
-            else -> ForecastViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_layout, parent, false))
+            TYPE_WEEKDAY -> WeekdayViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.weather_item_header, parent, false))
+            else -> ForecastViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.weather_item, parent, false))
         }
     }
 

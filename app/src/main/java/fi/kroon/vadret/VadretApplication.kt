@@ -37,7 +37,7 @@ class VadretApplication : Application() {
 
     private fun initLeakCanary() {
         if (LeakCanary.isInAnalyzerProcess(this)) {
-            Timber.d("LeakCanary is inn analyzer process")
+            Timber.d("LeakCanary is in analyzer process")
             return
         }
         LeakCanary.install(this)

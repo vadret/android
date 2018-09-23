@@ -36,4 +36,5 @@
         app:layout_constraintTop_toBottomOf="@+id/tabLayout"
         tools:itemCount="10"
         tools:listitem="@layout/third_party_list_row" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
