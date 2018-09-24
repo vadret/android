@@ -21,6 +21,38 @@ class AboutViewModel @Inject constructor(
 
     private val libraries = listOf(
         ThirdParty(
+            author = "The Wikimedia Foundation",
+            title = "Wikimedia Maps",
+            description = "The Wikimedia Maps service is provided openly to the public free of charge.",
+            page = "https://maps.wikimedia.org/",
+            source = "",
+            license = "https://foundation.wikimedia.org/wiki/Maps_Terms_of_Use"
+        ),
+        ThirdParty(
+            author = "© OpenStreetMap contributors",
+            title = "OpenStreetMap",
+            page = "https://www.openstreetmap.org/",
+            source = "",
+            description = "OpenStreetMap is built by a community of mappers that contribute and maintain data about roads, trails, cafés, railway stations, and much more, all over the world.",
+            license = "https://www.openstreetmap.org/copyright"
+        ),
+        ThirdParty(
+            author = "Osmdroid",
+            title = "Osmdroid",
+            description = "osmdroid is a (almost) full/free replacement for Android's MapView (v1 API) class.",
+            page = "http://osmdroid.github.io/osmdroid/",
+            source = "https://github.com/osmdroid/osmdroid",
+            license = "https://github.com/osmdroid/osmdroid/blob/master/LICENSE"
+        ),
+        ThirdParty(
+            author = "Square, Inc",
+            title = "Picasso",
+            description = "A powerful image downloading and caching library for Android",
+            page = "http://square.github.io/picasso/",
+            source = "https://github.com/square/picasso",
+            license = "https://github.com/square/picasso/blob/master/LICENSE.txt"
+        ),
+        ThirdParty(
             author = "Square, Inc",
             title = "Retrofit",
             description = "Type-safe HTTP client for Android and Java by Square, Inc.",

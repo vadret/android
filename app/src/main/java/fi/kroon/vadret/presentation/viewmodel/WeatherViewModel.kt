@@ -1,6 +1,6 @@
 package fi.kroon.vadret.presentation.viewmodel
 
-import fi.kroon.vadret.data.Request
+import fi.kroon.vadret.data.weather.WeatherRequest
 import fi.kroon.vadret.data.exception.Either
 import fi.kroon.vadret.data.exception.Failure
 import fi.kroon.vadret.data.weather.model.Weather
@@ -14,6 +14,7 @@ import javax.inject.Inject
 class WeatherViewModel @Inject constructor(
     private val weatherUseCase: WeatherUseCase
 ) : BaseViewModel() {
+
     companion object {
         private const val FIFTEEN_SEC_IN_MILLIS = 15000
     }
@@ -21,9 +22,9 @@ class WeatherViewModel @Inject constructor(
     private var lastCacheInvalidationTimestamp: Long = 0
     private var forceCacheInvalidation = false
 
-    fun get(request: Request): Single<Either<Failure, Weather>> {
+    fun get(weatherRequest: WeatherRequest): Single<Either<Failure, Weather>> {
         val res = weatherUseCase
-            .get(request, forceCacheInvalidation)
+            .get(weatherRequest, forceCacheInvalidation)
             .doOnEvent { t1, t2 ->
                 Timber.d("T1: $t1, T2: $t2")
             }.doOnError {

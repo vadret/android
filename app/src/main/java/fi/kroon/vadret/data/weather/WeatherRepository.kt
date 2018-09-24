@@ -1,7 +1,6 @@
 package fi.kroon.vadret.data.weather
 
 import fi.kroon.vadret.data.HEADER_NO_CACHE
-import fi.kroon.vadret.data.Request
 import fi.kroon.vadret.data.exception.Either
 import fi.kroon.vadret.data.exception.Failure
 import fi.kroon.vadret.data.weather.model.Weather
@@ -17,9 +16,9 @@ class WeatherRepository @Inject constructor(
     private val weatherApi: WeatherApi,
     val networkHandler: NetworkHandler
 ) {
-    fun get(request: Request, forceCacheInvalidation: Boolean = false): Single<Either<Failure, Weather>> =
-        Single.just(request).flatMap { _ ->
-            with(request) {
+    fun get(weatherRequest: WeatherRequest, forceCacheInvalidation: Boolean = false): Single<Either<Failure, Weather>> =
+        Single.just(weatherRequest).flatMap { _ ->
+            with(weatherRequest) {
                 weatherApi.get(category, version, longitude, latitude, getCacheHeader(forceCacheInvalidation)).map {
                     Timber.d("Response: ${it.body()}")
                     Either.Right(it.body()!!) as Either<Failure, Weather>

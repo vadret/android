@@ -55,6 +55,7 @@
     <string name="permission_denied">Permission denied!</string>
 
     <string name="percent" translatable="false">%</string>
+
     <string name="about_app_tab_title">About app</string>
     <string name="libraries_tab_title">Libraries</string>
     <string name="about_app_description">Weather app for Sweden</string>
@@ -72,4 +73,6 @@
     <string name="project_third_party">Project</string>
     <string name="source_third_party">Source</string>
     <string name="license_third_party">License</string>
+
+    <string name="openstreetmap_copyright_notice" translatable="false">Wikimedia maps | Map data © OpenStreetMap contributors</string>
 </resources>

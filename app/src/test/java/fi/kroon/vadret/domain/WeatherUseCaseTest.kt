@@ -1,6 +1,6 @@
 package fi.kroon.vadret.domain
 
-import fi.kroon.vadret.data.Request
+import fi.kroon.vadret.data.weather.WeatherRequest
 import fi.kroon.vadret.data.exception.Either
 import fi.kroon.vadret.data.exception.Failure
 import fi.kroon.vadret.data.weather.WeatherRepository
@@ -19,7 +19,7 @@ class WeatherUseCaseTest {
     lateinit var mockWeatherRepository: WeatherRepository
 
     @Mock
-    lateinit var mockRequest: Request
+    lateinit var mockWeatherRequest: WeatherRequest
 
     @Mock
     lateinit var mockWeather: Weather
@@ -37,10 +37,10 @@ class WeatherUseCaseTest {
     fun repositoryReturnsSingle_shouldPassResult() {
         val testWeatherEither = createWeatherEither(mockWeather)
         val testSingle = createWeatherSingle(testWeatherEither)
-        Mockito.doReturn(testSingle).`when`(mockWeatherRepository).get(mockRequest)
+        Mockito.doReturn(testSingle).`when`(mockWeatherRepository).get(mockWeatherRequest)
 
         testUseCase
-            .get(mockRequest)
+            .get(mockWeatherRequest)
             .test()
             .assertResult(testWeatherEither)
     }
@@ -49,10 +49,10 @@ class WeatherUseCaseTest {
     fun repositoryReturnsFailure_shouldPassFailure() {
         val testFailureEither = createFailureEither()
         val testSingle = createFailureSingle(testFailureEither)
-        Mockito.doReturn(testSingle).`when`(mockWeatherRepository).get(mockRequest)
+        Mockito.doReturn(testSingle).`when`(mockWeatherRepository).get(mockWeatherRequest)
 
         testUseCase
-            .get(mockRequest)
+            .get(mockWeatherRequest)
             .test()
             .assertResult(testFailureEither)
     }
@@ -60,10 +60,10 @@ class WeatherUseCaseTest {
     @Test
     fun repositoryThrowsException_shouldReturnIOExceptionEither() {
         val testSingle = createThrowableSingle()
-        Mockito.doReturn(testSingle).`when`(mockWeatherRepository).get(mockRequest)
+        Mockito.doReturn(testSingle).`when`(mockWeatherRepository).get(mockWeatherRequest)
 
         testUseCase
-            .get(mockRequest)
+            .get(mockWeatherRequest)
             .test()
             .assertError(Throwable::class.java)
     }

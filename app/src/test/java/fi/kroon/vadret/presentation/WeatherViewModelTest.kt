@@ -1,6 +1,6 @@
 package fi.kroon.vadret.presentation
 
-import fi.kroon.vadret.data.Request
+import fi.kroon.vadret.data.weather.WeatherRequest
 import fi.kroon.vadret.data.exception.Either
 import fi.kroon.vadret.data.exception.Failure
 import fi.kroon.vadret.data.weather.model.Weather
@@ -20,7 +20,7 @@ class WeatherViewModelTest {
     lateinit var mockWeatherUseCase: WeatherUseCase
 
     @Mock
-    lateinit var mockRequest: Request
+    lateinit var mockWeatherRequest: WeatherRequest
 
     @Mock
     lateinit var mockWeather: Weather
@@ -38,10 +38,10 @@ class WeatherViewModelTest {
     fun useCaseReturnsSingle_shouldPassResult() {
         val testWeatherEither = createWeatherEither(mockWeather)
         val testSingle = createWeatherSingle(testWeatherEither)
-        doReturn(testSingle).`when`(mockWeatherUseCase).get(mockRequest)
+        doReturn(testSingle).`when`(mockWeatherUseCase).get(mockWeatherRequest)
 
         testViewModel
-            .get(mockRequest)
+            .get(mockWeatherRequest)
             .test()
             .assertResult(testWeatherEither)
     }
@@ -50,10 +50,10 @@ class WeatherViewModelTest {
     fun useCaseReturnsFailure_shouldPassFailure() {
         val testFailureEither = createFailureEither()
         val testSingle = createFailureSingle(testFailureEither)
-        doReturn(testSingle).`when`(mockWeatherUseCase).get(mockRequest)
+        doReturn(testSingle).`when`(mockWeatherUseCase).get(mockWeatherRequest)
 
         testViewModel
-            .get(mockRequest)
+            .get(mockWeatherRequest)
             .test()
             .assertResult(testFailureEither)
     }
@@ -61,10 +61,10 @@ class WeatherViewModelTest {
     @Test
     fun useCaseThrowsException_shouldReturnIOExceptionEither() {
         val testSingle = createThrowableSingle()
-        doReturn(testSingle).`when`(mockWeatherUseCase).get(mockRequest)
+        doReturn(testSingle).`when`(mockWeatherUseCase).get(mockWeatherRequest)
 
         testViewModel
-            .get(mockRequest)
+            .get(mockWeatherRequest)
             .test()
             .assertComplete()
             .assertNoErrors()
