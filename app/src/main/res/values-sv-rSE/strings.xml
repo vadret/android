@@ -47,4 +47,7 @@
     <string name="permission_denied">Tillstånd nekat!</string>
     <string name="slogan">Öppen kod, öppna data</string>
     <string name="no_network_available">Nätverket ej tillgängligt</string>
+    <string name="about_app_tab_title">" "</string>
+    <string name="libraries_tab_title">" "</string>
+    <string name="about_app_description">" "</string>
 </resources>

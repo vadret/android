@@ -55,4 +55,9 @@
     <string name="permission_denied">Permission denied!</string>
 
     <string name="percent" translatable="false">%</string>
+    <string name="about_app_tab_title">ABOUT</string>
+    <string name="libraries_tab_title">LIBRARIES</string>
+    <string name="about_app_description">Weather app for Sweden</string>
+
+    <string name="cd_about_app_icon" translatable="false">AboutAppImage</string>
 </resources>

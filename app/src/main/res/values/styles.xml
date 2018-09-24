@@ -17,4 +17,15 @@
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.MaterialComponents.Dark.ActionBar"/>
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.MaterialComponents.Light"/>
 
+    <style name="TitleText">
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">@dimen/title_text_size</item>
+
+    </style>
+
+    <style name="TitleHintText">
+        <item name="android:textStyle">italic</item>
+        <item name="android:textSize">@dimen/title_hint_text_size</item>
+    </style>
+
 </resources>
