@@ -1,4 +1,4 @@
-package fi.kroon.vadret.presentation.adapter
+package fi.kroon.vadret.presentation.adapter.listener
 
 interface AboutAdapterOnRowClickInterface {
     fun onProjectClick(url: String)

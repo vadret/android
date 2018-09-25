@@ -9,8 +9,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.tabs.TabLayout
 import fi.kroon.vadret.R
 import fi.kroon.vadret.presentation.adapter.AboutAdapter
-import fi.kroon.vadret.presentation.adapter.AboutAdapterOnRowClickInterface
+import fi.kroon.vadret.presentation.adapter.BaseRowRecyclerAdapter
+import fi.kroon.vadret.presentation.adapter.listener.AboutAdapterOnRowClickInterface
+import fi.kroon.vadret.presentation.adapter.listener.BaseRowOnClickInterface
 import fi.kroon.vadret.presentation.common.AbstractOnTabSelectedListener
+import fi.kroon.vadret.presentation.common.model.BaseRowModel
+import fi.kroon.vadret.presentation.dialog.ChangelogDialog
 import fi.kroon.vadret.presentation.viewmodel.AboutViewModel
 import fi.kroon.vadret.utils.extensions.toGone
 import fi.kroon.vadret.utils.extensions.toVisible
@@ -19,7 +23,8 @@ import kotlinx.android.synthetic.main.about_app_tab_layout.*
 import kotlinx.android.synthetic.main.about_fragment.*
 import javax.inject.Inject
 
-class AboutFragment : BaseFragment(), AboutAdapterOnRowClickInterface {
+class AboutFragment : BaseFragment(), AboutAdapterOnRowClickInterface, BaseRowOnClickInterface {
+
     companion object {
         const val TAB_ABOUT_POSITION = 0
         const val TAB_LIBRARIES_POSITION = 1
@@ -33,6 +38,9 @@ class AboutFragment : BaseFragment(), AboutAdapterOnRowClickInterface {
 
     @Inject
     lateinit var aboutAdapter: AboutAdapter
+
+    @Inject
+    lateinit var infoAdapter: BaseRowRecyclerAdapter
 
     private lateinit var aboutViewModel: AboutViewModel
 
@@ -48,8 +56,51 @@ class AboutFragment : BaseFragment(), AboutAdapterOnRowClickInterface {
         loadDependencies()
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        aboutAdapter.unregisterListener()
+        infoAdapter.unregisterListener()
+        aboutList.adapter = null
+        infoList.adapter = null
+    }
+
+    override fun onProjectClick(url: String) {
+        openUrlInBrowser(url)
+    }
+
+    override fun onLicenceClick(url: String) {
+        openUrlInBrowser(url)
+    }
+
+    override fun onSourceClick(url: String) {
+        openUrlInBrowser(url)
+    }
+
+    override fun onBaseRowClick(baseRowModel: BaseRowModel) {
+        if (baseRowModel.titleResId == R.string.changelog_row_title) {
+            handleChangelogOnClick()
+        } else if (baseRowModel.titleResId == R.string.souce_code_row_title) {
+            handleSourceCodeRowOnClick(baseRowModel)
+        }
+    }
+
+    private fun handleSourceCodeRowOnClick(baseRowModel: BaseRowModel) {
+        baseRowModel.urlResId?.let {
+            openUrlInBrowser(getString(it))
+        }
+    }
+
+    private fun handleChangelogOnClick() {
+        openChangelogDialog()
+    }
+
+    private fun openChangelogDialog() {
+        ChangelogDialog().show(fragmentManager, ChangelogDialog.TAG)
+    }
+
     private fun initialiseView() {
         setupAboutList()
+        setupInfoList()
         setupTabs()
     }
 
@@ -76,8 +127,14 @@ class AboutFragment : BaseFragment(), AboutAdapterOnRowClickInterface {
         aboutLayout.toVisible()
     }
 
+    private fun setupInfoList() {
+        infoAdapter.setListener(this)
+        infoList.layoutManager = LinearLayoutManager(this.context, RecyclerView.VERTICAL, false)
+        infoList.adapter = infoAdapter
+    }
+
     private fun setupAboutList() {
-        aboutAdapter.registerListener(this)
+        aboutAdapter.setListener(this)
         aboutList.layoutManager = LinearLayoutManager(this.context, RecyclerView.VERTICAL, false)
         aboutList.adapter = aboutAdapter
     }
@@ -89,24 +146,7 @@ class AboutFragment : BaseFragment(), AboutAdapterOnRowClickInterface {
 
     private fun loadDependencies() {
         aboutLayout.toVisible()
-        aboutAdapter.collection = aboutViewModel.get()
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        aboutAdapter.unregisterListener()
-        aboutList.adapter = null
-    }
-
-    override fun onProjectClick(url: String) {
-        openUrlInBrowser(url)
-    }
-
-    override fun onLicenceClick(url: String) {
-        openUrlInBrowser(url)
-    }
-
-    override fun onSourceClick(url: String) {
-        openUrlInBrowser(url)
+        aboutAdapter.collection = aboutViewModel.getLibraries()
+        infoAdapter.collection = aboutViewModel.getInfoRows()
     }
 }

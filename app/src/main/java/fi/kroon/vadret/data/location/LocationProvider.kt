@@ -67,7 +67,7 @@ class LocationProvider @Inject constructor(
         }
 
         /**
-         * If getting location from NLP failed, we can try to get it from GPS
+         * If getting location from NLP failed, we can try to getLibraries it from GPS
          */
         if (location == null && isGPSEnabled) {
             location = getLocationFromGPSProvider()

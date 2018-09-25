@@ -1,13 +1,15 @@
 package fi.kroon.vadret.presentation.viewmodel
 
+import fi.kroon.vadret.R
 import fi.kroon.vadret.data.ThirdParty
 import fi.kroon.vadret.di.scope.VadretApplicationScope
+import fi.kroon.vadret.presentation.common.model.BaseRowModel
 import javax.inject.Inject
 
 @VadretApplicationScope
 class AboutViewModel @Inject constructor() : BaseViewModel() {
 
-    val libraries = listOf(
+    private val libraries = listOf(
         ThirdParty(
             author = "Square, Inc",
             title = "Retrofit",
@@ -66,5 +68,30 @@ class AboutViewModel @Inject constructor() : BaseViewModel() {
         )
     )
 
-    fun get() = libraries
+    fun getLibraries() = libraries
+
+    private val infoRows = listOf(
+        BaseRowModel(
+            iconResId = R.drawable.ic_info_outline,
+            titleResId = R.string.version_row_title,
+            hintResId = R.string.app_version
+        ),
+        BaseRowModel(
+            iconResId = R.drawable.ic_copyright,
+            titleResId = R.string.license_row_title,
+            hintResId = R.string.license_row_hint,
+            urlResId = R.string.app_license_url
+        ),
+        BaseRowModel(
+            iconResId = R.drawable.ic_history,
+            titleResId = R.string.changelog_row_title
+        ),
+        BaseRowModel(
+            iconResId = R.drawable.ic_code,
+            titleResId = R.string.souce_code_row_title,
+            urlResId = R.string.app_github_url
+        )
+    )
+
+    fun getInfoRows() = infoRows
 }

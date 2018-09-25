@@ -60,4 +60,13 @@
     <string name="about_app_description">Weather app for Sweden</string>
 
     <string name="cd_about_app_icon" translatable="false">AboutAppImage</string>
+    <string name="version_row_title">Version</string>
+    <string name="license_row_title">License</string>
+    <string name="changelog_row_title">Changelog</string>
+    <string name="souce_code_row_title">Source code</string>
+    <string name="license_row_hint" translatable="false">app_license</string>
+    <string name="app_github_url" translatable="false">https://github.com/vadret/android</string>
+    <string name="app_license_url">https://github.com/vadret/android/blob/master/LICENSE</string>
+    <string name="changelog_dialog_title">Changelog</string>
+    <string name="ok">OK</string>
 </resources>

@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.RecyclerView
 import fi.kroon.vadret.R
 import fi.kroon.vadret.data.ThirdParty
 import fi.kroon.vadret.di.scope.VadretApplicationScope
+import fi.kroon.vadret.presentation.adapter.listener.AboutAdapterOnRowClickInterface
 import kotlinx.android.synthetic.main.about.view.*
 import javax.inject.Inject
 import kotlin.properties.Delegates
@@ -38,7 +39,7 @@ class AboutAdapter @Inject constructor() : RecyclerView.Adapter<AboutAdapter.Vie
 
     override fun getItemCount(): Int = collection.size
 
-    fun registerListener(listener: AboutAdapterOnRowClickInterface) {
+    fun setListener(listener: AboutAdapterOnRowClickInterface) {
         this.clickListener = listener
     }
 

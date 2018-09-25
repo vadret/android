@@ -20,7 +20,9 @@
         app:tabTextColor="@android:color/white"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" /><include layout="@layout/about_app_tab_layout" />
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <include layout="@layout/about_app_tab_layout" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/aboutList"
@@ -36,5 +38,4 @@
         app:layout_constraintTop_toBottomOf="@+id/tabLayout"
         tools:itemCount="10"
         tools:listitem="@layout/about" />
-
 </androidx.constraintlayout.widget.ConstraintLayout>
