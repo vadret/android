@@ -27,7 +27,7 @@ class AboutAdapter @Inject constructor() : RecyclerView.Adapter<AboutAdapter.Vie
             itemView.description.text = thirdParty.description
 
             itemView.projectUrl.setOnClickListener { clickListener?.onProjectClick(thirdParty.page) }
-            itemView.licenseUrl.setOnClickListener { clickListener?.onLicenceClick(thirdParty.license) }
+            itemView.licenseUrl.setOnClickListener { clickListener?.onLicenseClick(thirdParty.license) }
             itemView.sourceUrl.setOnClickListener { clickListener?.onSourceClick(thirdParty.source) }
         }
     }

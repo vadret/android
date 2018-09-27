@@ -67,6 +67,7 @@ dependencies {
     // LifeCycle -- only for the viewmodel
     implementation "androidx.lifecycle:lifecycle-extensions:${LIFE_CYCLE_VERSION}"
     kapt "androidx.lifecycle:lifecycle-compiler:${LIFE_CYCLE_VERSION}"
+    testImplementation "android.arch.core:core-testing:${LIFE_CYCLE_VERSION}"
 
     // LeakCanary
     debugImplementation "com.squareup.leakcanary:leakcanary-android:${LEAK_CANARY}"

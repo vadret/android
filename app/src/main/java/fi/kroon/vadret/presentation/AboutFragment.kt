@@ -30,10 +30,6 @@ class AboutFragment : BaseFragment(), AboutAdapterOnRowClickInterface, BaseRowOn
         const val TAB_LIBRARIES_POSITION = 1
     }
 
-    /**
-     *  ThirdParty page for external libraries
-     */
-
     override fun layoutId(): Int = R.layout.about_fragment
 
     @Inject
@@ -77,7 +73,7 @@ class AboutFragment : BaseFragment(), AboutAdapterOnRowClickInterface, BaseRowOn
         openUrlInBrowser(url)
     }
 
-    override fun onLicenceClick(url: String) {
+    override fun onLicenseClick(url: String) {
         openUrlInBrowser(url)
     }
 
@@ -90,6 +86,8 @@ class AboutFragment : BaseFragment(), AboutAdapterOnRowClickInterface, BaseRowOn
             handleChangelogOnClick()
         } else if (baseRowModel.titleResId == R.string.souce_code_row_title) {
             handleSourceCodeRowOnClick(baseRowModel)
+        } else if (baseRowModel.urlResId != null) {
+            openUrlInBrowser(getString(baseRowModel.urlResId))
         }
     }
 

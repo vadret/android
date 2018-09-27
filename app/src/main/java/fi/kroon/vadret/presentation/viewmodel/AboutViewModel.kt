@@ -5,7 +5,6 @@ import androidx.lifecycle.MutableLiveData
 import fi.kroon.vadret.R
 import fi.kroon.vadret.data.ThirdParty
 import fi.kroon.vadret.data.exception.Either
-import fi.kroon.vadret.data.location.exception.LocationFailure
 import fi.kroon.vadret.di.scope.VadretApplicationScope
 import fi.kroon.vadret.domain.ChangelogUseCase
 import fi.kroon.vadret.presentation.common.model.BaseRowModel
@@ -109,13 +108,14 @@ class AboutViewModel @Inject constructor(
     fun getChangelogText(): LiveData<String> {
         changelogUseCase.get()
             .subscribe({
-                if(it is Either.Right<String>){
+                if (it is Either.Right<String>) {
                     changelogMessage.value = it.b
+                } else {
+                    Timber.e("Changelog read error has occurred!")
                 }
-            },{
+            }, {
                 Timber.e(it)
-            })
-            .addTo(subscriptions)
+            }).addTo(subscriptions)
 
         return changelogMessage
     }

@@ -25,7 +25,6 @@ import fi.kroon.vadret.presentation.viewmodel.WeatherViewModel
 import fi.kroon.vadret.utils.Schedulers
 import fi.kroon.vadret.utils.extensions.toVisible
 import fi.kroon.vadret.utils.extensions.viewModel
-import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 import kotlinx.android.synthetic.main.weather_fragment.*
 import timber.log.Timber
@@ -37,7 +36,6 @@ class WeatherFragment : BaseFragment() {
     }
 
     override fun layoutId(): Int = R.layout.weather_fragment
-
 
     @Inject
     lateinit var schedulers: Schedulers

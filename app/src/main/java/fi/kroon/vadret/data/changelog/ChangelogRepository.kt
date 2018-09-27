@@ -9,14 +9,11 @@ import io.reactivex.Single
 import timber.log.Timber
 import javax.inject.Inject
 
-
 class ChangelogRepository
 @Inject constructor(private val fileReader: RawTextFileReader) {
     fun get(): Single<Either<Failure, String>> {
         return Single.just(
-            Either.Right(
-                fileReader.readFile(R.raw.changelog)
-            ) as Either<Failure, String>
+            fileReader.readFile(R.raw.changelog)
         ).doOnEvent { t1, t2 ->
             Timber.d("T1: $t1, T2: $t2")
         }.doOnError {
