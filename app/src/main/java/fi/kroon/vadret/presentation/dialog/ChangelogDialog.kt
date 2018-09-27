@@ -10,10 +10,13 @@ class ChangelogDialog : DialogFragment() {
     companion object {
         const val TAG = "changelog"
     }
+
+    private var message: String = ""
+
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val builder = AlertDialog.Builder(activity)
         builder
-            .setMessage(readChangelogFile())
+            .setMessage(message)
             .setTitle(R.string.changelog_dialog_title)
             .setPositiveButton(R.string.ok) { d, _ ->
                 d.dismiss()
@@ -22,7 +25,7 @@ class ChangelogDialog : DialogFragment() {
         return builder.create()
     }
 
-    private fun readChangelogFile(): String {
-        return "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAaa"
+    fun setMessage(message: String) = apply {
+        this.message = message
     }
 }

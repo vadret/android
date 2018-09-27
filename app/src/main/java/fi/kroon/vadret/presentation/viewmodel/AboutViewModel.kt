@@ -1,13 +1,24 @@
 package fi.kroon.vadret.presentation.viewmodel
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import fi.kroon.vadret.R
 import fi.kroon.vadret.data.ThirdParty
+import fi.kroon.vadret.data.exception.Either
+import fi.kroon.vadret.data.location.exception.LocationFailure
 import fi.kroon.vadret.di.scope.VadretApplicationScope
+import fi.kroon.vadret.domain.ChangelogUseCase
 import fi.kroon.vadret.presentation.common.model.BaseRowModel
+import io.reactivex.rxkotlin.addTo
+import timber.log.Timber
 import javax.inject.Inject
 
 @VadretApplicationScope
-class AboutViewModel @Inject constructor() : BaseViewModel() {
+class AboutViewModel @Inject constructor(
+    private val changelogUseCase: ChangelogUseCase
+) : BaseViewModel() {
+
+    private var changelogMessage = MutableLiveData<String>()
 
     private val libraries = listOf(
         ThirdParty(
@@ -94,4 +105,18 @@ class AboutViewModel @Inject constructor() : BaseViewModel() {
     )
 
     fun getInfoRows() = infoRows
+
+    fun getChangelogText(): LiveData<String> {
+        changelogUseCase.get()
+            .subscribe({
+                if(it is Either.Right<String>){
+                    changelogMessage.value = it.b
+                }
+            },{
+                Timber.e(it)
+            })
+            .addTo(subscriptions)
+
+        return changelogMessage
+    }
 }

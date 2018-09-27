@@ -44,6 +44,8 @@ class AboutFragment : BaseFragment(), AboutAdapterOnRowClickInterface, BaseRowOn
 
     private lateinit var aboutViewModel: AboutViewModel
 
+    private var changelogMessage: String = ""
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         cmp.inject(this)
@@ -54,6 +56,13 @@ class AboutFragment : BaseFragment(), AboutAdapterOnRowClickInterface, BaseRowOn
         super.onViewCreated(view, savedInstanceState)
         initialiseView()
         loadDependencies()
+        observeViewModel()
+    }
+
+    private fun observeViewModel() {
+        aboutViewModel.getChangelogText().observe({ this.lifecycle }, {
+            changelogMessage = it
+        })
     }
 
     override fun onDestroyView() {
@@ -95,7 +104,9 @@ class AboutFragment : BaseFragment(), AboutAdapterOnRowClickInterface, BaseRowOn
     }
 
     private fun openChangelogDialog() {
-        ChangelogDialog().show(fragmentManager, ChangelogDialog.TAG)
+        ChangelogDialog()
+            .setMessage(changelogMessage)
+            .show(fragmentManager, ChangelogDialog.TAG)
     }
 
     private fun initialiseView() {

@@ -38,7 +38,6 @@ class WeatherFragment : BaseFragment() {
 
     override fun layoutId(): Int = R.layout.weather_fragment
 
-    private val subscriptions = CompositeDisposable()
 
     @Inject
     lateinit var schedulers: Schedulers
@@ -65,11 +64,6 @@ class WeatherFragment : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
         initialiseView()
         requestLocationPermission()
-    }
-
-    override fun onDestroy() {
-        subscriptions.clear()
-        super.onDestroy()
     }
 
     private fun initialiseView() {
