@@ -69,4 +69,7 @@
     <string name="app_license_url" translatable="false">https://github.com/vadret/android/blob/master/LICENSE</string>
     <string name="changelog_dialog_title">Changelog</string>
     <string name="ok" translatable="false">OK</string>
+    <string name="project_third_party">Project</string>
+    <string name="source_third_party">Source</string>
+    <string name="license_third_party">License</string>
 </resources>

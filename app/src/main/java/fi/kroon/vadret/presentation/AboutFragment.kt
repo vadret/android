@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.tabs.TabLayout
 import fi.kroon.vadret.R
-import fi.kroon.vadret.presentation.adapter.AboutAdapter
+import fi.kroon.vadret.presentation.adapter.ThirdPartyAdapter
 import fi.kroon.vadret.presentation.adapter.BaseRowRecyclerAdapter
 import fi.kroon.vadret.presentation.adapter.listener.AboutAdapterOnRowClickInterface
 import fi.kroon.vadret.presentation.adapter.listener.BaseRowOnClickInterface
@@ -33,7 +33,7 @@ class AboutFragment : BaseFragment(), AboutAdapterOnRowClickInterface, BaseRowOn
     override fun layoutId(): Int = R.layout.about_fragment
 
     @Inject
-    lateinit var aboutAdapter: AboutAdapter
+    lateinit var thirdPartyAdapter: ThirdPartyAdapter
 
     @Inject
     lateinit var infoAdapter: BaseRowRecyclerAdapter
@@ -63,7 +63,7 @@ class AboutFragment : BaseFragment(), AboutAdapterOnRowClickInterface, BaseRowOn
 
     override fun onDestroyView() {
         super.onDestroyView()
-        aboutAdapter.unregisterListener()
+        thirdPartyAdapter.unregisterListener()
         infoAdapter.unregisterListener()
         aboutList.adapter = null
         infoList.adapter = null
@@ -143,9 +143,9 @@ class AboutFragment : BaseFragment(), AboutAdapterOnRowClickInterface, BaseRowOn
     }
 
     private fun setupAboutList() {
-        aboutAdapter.setListener(this)
+        thirdPartyAdapter.setListener(this)
         aboutList.layoutManager = LinearLayoutManager(this.context, RecyclerView.VERTICAL, false)
-        aboutList.adapter = aboutAdapter
+        aboutList.adapter = thirdPartyAdapter
     }
 
     private fun openUrlInBrowser(url: String) {
@@ -155,7 +155,7 @@ class AboutFragment : BaseFragment(), AboutAdapterOnRowClickInterface, BaseRowOn
 
     private fun loadDependencies() {
         aboutLayout.toVisible()
-        aboutAdapter.collection = aboutViewModel.getLibraries()
+        thirdPartyAdapter.collection = aboutViewModel.getLibraries()
         infoAdapter.collection = aboutViewModel.getInfoRows()
     }
 }
