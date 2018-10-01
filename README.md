@@ -29,9 +29,10 @@ This project tries to obey the [Clean Architecture](https://8thlight.com/blog/un
 * [RxJava2](https://github.com/ReactiveX/RxJava)
 * [Dagger2](https://github.com/google/dagger)
 * [Retrofit2](https://github.com/square/retrofit)
+* [Timber](https://github.com/JakeWharton/timber)
 
 ## Code Style
-This project uses [ktlint](https://github.com/shyiko/ktlint) for linting.
+This project uses [ktlint](https://github.com/shyiko/ktlint) for linting and [codecov](https://codecov.io/gh/vadret/android) for measuring test coverage.
 
 ## License
 
