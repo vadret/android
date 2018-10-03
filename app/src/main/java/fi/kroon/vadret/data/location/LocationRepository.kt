@@ -17,7 +17,7 @@ class LocationRepository @Inject constructor(
         ).doOnEvent { t1, t2 ->
             Timber.d("T1: $t1, T2: $t2")
         }.doOnError {
-            Timber.d("$it")
+            Timber.e("$it")
         }.onErrorReturn {
             Either.Left(LocationFailure.LocationNotAvailableFailure())
         }

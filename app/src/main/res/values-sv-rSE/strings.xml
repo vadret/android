@@ -47,4 +47,15 @@
     <string name="permission_denied">Tillstånd nekat!</string>
     <string name="slogan">Öppen kod, öppna data</string>
     <string name="no_network_available">Nätverket ej tillgängligt</string>
+    <string name="about_app_tab_title">Om appen</string>
+    <string name="libraries_tab_title">Bibliotek</string>
+    <string name="about_app_description">Väderapp för Sverige!</string>
+    <string name="version_row_title">Version</string>
+    <string name="license_row_title">Licens</string>
+    <string name="souce_code_row_title">Källkod</string>
+    <string name="changelog_row_title">Changelog</string>
+    <string name="changelog_dialog_title">Changelog</string>
+    <string name="project_third_party">PROJEKT</string>
+    <string name="source_third_party">Källkod</string>
+    <string name="license_third_party">Licens</string>
 </resources>

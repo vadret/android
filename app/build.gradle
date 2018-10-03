@@ -16,7 +16,7 @@ android {
         minSdkVersion 21
         targetSdkVersion 28
         versionCode 1
-        versionName "1.0"
+        versionName "0.0.1"
         vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner "androidx.top.runner.AndroidJUnitRunner"
     }
@@ -24,9 +24,12 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            resValue "string", "app_version", "${defaultConfig.versionName}"
         }
         debug {
             testCoverageEnabled = true
+            versionNameSuffix ".debug"
+            resValue "string", "app_version", "${defaultConfig.versionName}${versionNameSuffix}"
         }
     }
     lintOptions {
@@ -64,6 +67,7 @@ dependencies {
     // LifeCycle -- only for the viewmodel
     implementation "androidx.lifecycle:lifecycle-extensions:${LIFE_CYCLE_VERSION}"
     kapt "androidx.lifecycle:lifecycle-compiler:${LIFE_CYCLE_VERSION}"
+    testImplementation "android.arch.core:core-testing:${LIFE_CYCLE_VERSION}"
 
     // LeakCanary
     debugImplementation "com.squareup.leakcanary:leakcanary-android:${LEAK_CANARY}"

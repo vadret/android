@@ -7,12 +7,13 @@ import androidx.recyclerview.widget.RecyclerView
 import fi.kroon.vadret.R
 import fi.kroon.vadret.data.ThirdParty
 import fi.kroon.vadret.di.scope.VadretApplicationScope
-import kotlinx.android.synthetic.main.about.view.*
+import fi.kroon.vadret.presentation.adapter.listener.AboutAdapterOnRowClickInterface
+import kotlinx.android.synthetic.main.third_party_list_row.view.*
 import javax.inject.Inject
 import kotlin.properties.Delegates
 
 @VadretApplicationScope
-class AboutAdapter @Inject constructor() : RecyclerView.Adapter<AboutAdapter.ViewHolder>() {
+class ThirdPartyAdapter @Inject constructor() : RecyclerView.Adapter<ThirdPartyAdapter.ViewHolder>() {
 
     internal var collection: List<ThirdParty> by Delegates.observable(emptyList()) { _, _, _ ->
         notifyDataSetChanged()
@@ -26,19 +27,19 @@ class AboutAdapter @Inject constructor() : RecyclerView.Adapter<AboutAdapter.Vie
             itemView.description.text = thirdParty.description
 
             itemView.projectUrl.setOnClickListener { clickListener?.onProjectClick(thirdParty.page) }
-            itemView.licenseUrl.setOnClickListener { clickListener?.onLicenceClick(thirdParty.license) }
+            itemView.licenseUrl.setOnClickListener { clickListener?.onLicenseClick(thirdParty.license) }
             itemView.sourceUrl.setOnClickListener { clickListener?.onSourceClick(thirdParty.source) }
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder =
-        ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.about, parent, false))
+        ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.third_party_list_row, parent, false))
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) = holder.bind(collection[position], clickListener)
 
     override fun getItemCount(): Int = collection.size
 
-    fun registerListener(listener: AboutAdapterOnRowClickInterface) {
+    fun setListener(listener: AboutAdapterOnRowClickInterface) {
         this.clickListener = listener
     }
 
