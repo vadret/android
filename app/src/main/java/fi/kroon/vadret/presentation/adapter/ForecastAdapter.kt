@@ -13,7 +13,7 @@ import org.threeten.bp.LocalDate
 import org.threeten.bp.OffsetDateTime
 import org.threeten.bp.format.TextStyle
 import timber.log.Timber
-import java.util.*
+import java.util.Locale
 import javax.inject.Inject
 import kotlin.properties.Delegates
 
