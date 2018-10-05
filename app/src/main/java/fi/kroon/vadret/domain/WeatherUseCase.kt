@@ -12,10 +12,10 @@ import javax.inject.Inject
 class WeatherUseCase @Inject constructor(
     private val weatherRepository: WeatherRepository
 ) {
-    fun get(request: Request): Single<Either<Failure, Weather>> {
+    fun get(request: Request, forceCacheInvalidation: Boolean = false): Single<Either<Failure, Weather>> {
         return Single.just(request)
             .flatMap { _ ->
-                weatherRepository.get(request)
+                weatherRepository.get(request, forceCacheInvalidation)
             }.doOnEvent { t1, t2 ->
                 Timber.d("T1: $t1, T2: $t2")
             }.doOnError {

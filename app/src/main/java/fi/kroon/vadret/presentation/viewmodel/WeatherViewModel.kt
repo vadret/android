@@ -14,13 +14,31 @@ import javax.inject.Inject
 class WeatherViewModel @Inject constructor(
     private val weatherUseCase: WeatherUseCase
 ) : BaseViewModel() {
-    fun get(request: Request): Single<Either<Failure, Weather>> = weatherUseCase
-        .get(request)
-        .doOnEvent { t1, t2 ->
-            Timber.d("T1: $t1, T2: $t2")
-        }.doOnError {
-            Timber.d("$it")
-        }.onErrorReturn {
-            Either.Left(Failure.IOException())
+    companion object {
+        private const val FIFTEEN_SEC_IN_MILLIS = 15000
+    }
+
+    private var lastCacheInvalidationTimestamp: Long = 0
+    private var forceCacheInvalidation = false
+
+    fun get(request: Request): Single<Either<Failure, Weather>> {
+        val res = weatherUseCase
+            .get(request, forceCacheInvalidation)
+            .doOnEvent { t1, t2 ->
+                Timber.d("T1: $t1, T2: $t2")
+            }.doOnError {
+                Timber.d("$it")
+            }.onErrorReturn {
+                Either.Left(Failure.IOException())
+            }
+        forceCacheInvalidation = false
+        return res
+    }
+
+    fun forceCacheInvalidationForNextRequest() {
+        if ((System.currentTimeMillis() - FIFTEEN_SEC_IN_MILLIS) <= lastCacheInvalidationTimestamp || lastCacheInvalidationTimestamp == 0L) {
+            forceCacheInvalidation = true
+            lastCacheInvalidationTimestamp = System.currentTimeMillis()
         }
+    }
 }

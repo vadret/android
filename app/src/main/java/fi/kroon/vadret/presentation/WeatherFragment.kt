@@ -66,6 +66,7 @@ class WeatherFragment : BaseFragment() {
 
     private fun initialiseView() {
         refreshWeather.setOnRefreshListener {
+            weatherViewModel.forceCacheInvalidationForNextRequest()
             loadLocation()
             refreshWeather.isRefreshing = false
         }

@@ -42,7 +42,6 @@ class ForecastAdapter @Inject constructor() : RecyclerView.Adapter<RecyclerView.
         fun bind(timeSerie: TimeSerie) {
 
             Timber.d("TimeSerie: ${timeSerie.parameters}")
-
             itemView.time.text = OffsetDateTime.parse(timeSerie.validTime).toLocalTime().toString()
 
             timeSerie.parameters.map {
