@@ -1,0 +1,9 @@
+api_key_env: CROWDIN_API_KEY
+project_identifier_env: CROWDIN_PROJECT_ID
+base_path: app/src/main
+base_url: 'https://github.com/vadret/android'
+preserve_hierarchy: true
+files:
+  - 
+    source: /res/values/strings.xml
+    translation: /res/values-%android_code%/%original_file_name%

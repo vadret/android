@@ -1,5 +1,6 @@
 [![travis-ci](https://travis-ci.org/vadret/android.svg?branch=master)](https://travis-ci.org/vadret/android)
 [![codecov](https://codecov.io/gh/vadret/android/branch/master/graph/badge.svg)](https://codecov.io/gh/vadret/android)
+[![crowdin](https://d322cqt584bo4o.cloudfront.net/vadret/localized.svg)](https://crowdin.com/project/vadret)
 [![ktlint](https://img.shields.io/badge/code%20style-%E2%9D%A4-FF4081.svg)](https://ktlint.github.io/)
 
 ![Vädret](https://raw.githubusercontent.com/vadret/android/master/assets/logo.png)
@@ -36,6 +37,9 @@ This project tries to obey the [Clean Architecture](https://8thlight.com/blog/un
 
 ## Code Style
 This project uses [ktlint](https://github.com/shyiko/ktlint) for linting and [codecov](https://codecov.io/gh/vadret/android) for measuring test coverage.
+
+## Translation
+This project uses [crowdin](https://crowdin.com/) as localization management platform.
 
 ## License
 
