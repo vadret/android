@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="colorPrimary">#252f4e</color>
+    <color name="colorPrimaryDark">#202842</color>
+    <color name="dashboard">#34426e</color>
+    <color name="colorAccent">#D81B60</color>
+    <color name="yellow">#fac413</color>
+    <color name="yellowlight">#ffd900</color>
+    <color name="hax">#11237B</color>
+    <color name="blueview">#343856</color>
+</resources>
