@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="BaseAppTheme" parent="Theme.MaterialComponents.Light.DarkActionBar">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
+    <style name="AppTheme" parent="BaseAppTheme"/>
+
+    <style name="AppTheme.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.MaterialComponents.Dark.ActionBar"/>
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.MaterialComponents.Light"/>
+
+    <style name="TitleText">
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">@dimen/title_text_size</item>
+
+    </style>
+
+    <style name="TitleHintText">
+        <item name="android:textStyle">italic</item>
+        <item name="android:textSize">@dimen/title_hint_text_size</item>
+    </style>
+
+    <style name="BaseRowTitleText">
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">@dimen/base_row_title_text_size</item>
+
+    </style>
+
+    <style name="BaseRowHintText">
+        <item name="android:textStyle">italic</item>
+        <item name="android:textSize">@dimen/base_row_hint_text_size</item>
+    </style>
+</resources>
