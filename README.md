@@ -38,8 +38,11 @@ This project tries to obey the [Clean Architecture](https://8thlight.com/blog/un
 ## Code Style
 This project uses [ktlint](https://github.com/shyiko/ktlint) for linting and [codecov](https://codecov.io/gh/vadret/android) for measuring test coverage.
 
-## Translation
-This project uses [crowdin](https://crowdin.com/) as localization management platform.
+## Localization
+This project uses [crowdin](https://crowdin.com/) as localization management platform. You
+can checkout this project [here](https://crowdin.com/project/vadret) to start translating.
+After your translation(s) has been approved, feel free to submit a pull request with your
+name added to `TRANSLATORS` file.
 
 ## License
 
