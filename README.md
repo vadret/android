@@ -38,6 +38,21 @@ This project tries to obey the [Clean Architecture](https://8thlight.com/blog/un
 ## Code Style
 This project uses [ktlint](https://github.com/shyiko/ktlint) for linting and [codecov](https://codecov.io/gh/vadret/android) for measuring test coverage.
 
+#### Linting
+```sh
+./gradlew ktlint 		# lint check
+./gradlew ktlintFormat 	# lint check format
+```
+
+## Code Contribution Guidelines
+If you would like to contribute code to the project fork the project and find an issue/feature you would like to work on. Ideally check with a maintainer so you dont work on something that might be in the workings already.
+
+Your pull request will be failed by the build server if it does not have passing unittests and lintchecks. A build can also be failed if you decrease the testing coverage.
+
+When submitting a pull request make sure you squash
+the commit(s) for that PR -- Do this so we can keep a clean
+git history.
+
 ## Localization
 This project uses [crowdin](https://crowdin.com/) as localization management platform. You
 can checkout this project [here](https://crowdin.com/project/vadret) to start translating.
