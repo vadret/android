@@ -13,7 +13,9 @@ import fi.kroon.vadret.presentation.AboutFragment
 import fi.kroon.vadret.presentation.AlertFragment
 import fi.kroon.vadret.presentation.MainActivity
 import fi.kroon.vadret.presentation.RadarFragment
+import fi.kroon.vadret.presentation.SettingsFragment
 import fi.kroon.vadret.presentation.WeatherFragment
+import fi.kroon.vadret.presentation.dialog.LocationDialog
 
 @VadretApplicationScope
 @Component(
@@ -33,4 +35,6 @@ interface VadretApplicationComponent {
     fun inject(weatherFragment: WeatherFragment)
     fun inject(aboutFragment: AboutFragment)
     fun inject(radarFragment: RadarFragment)
+    fun inject(locationDialog: LocationDialog)
+    fun inject(settingsFragment: SettingsFragment)
 }

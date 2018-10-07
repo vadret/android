@@ -81,6 +81,7 @@ class RadarFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initialiseMapView()
+        initialise()
     }
 
     override fun onResume() {

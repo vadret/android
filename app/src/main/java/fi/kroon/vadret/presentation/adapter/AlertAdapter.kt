@@ -32,8 +32,8 @@ class AlertAdapter @Inject constructor() : RecyclerView.Adapter<AlertAdapter.Vie
 
         private fun handleMsgType(string: String): Int {
             return when (string) {
-                "Alert" -> R.string.alert
-                else -> R.string.alert
+                "Alert" -> R.string.warning
+                else -> R.string.warning
             }
         }
     }

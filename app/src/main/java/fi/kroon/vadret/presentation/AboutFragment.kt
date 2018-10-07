@@ -104,7 +104,7 @@ class AboutFragment : BaseFragment(), AboutAdapterOnRowClickInterface, BaseRowOn
     private fun openChangelogDialog() {
         ChangelogDialog()
             .setMessage(changelogMessage)
-            .show(fragmentManager, ChangelogDialog.TAG)
+            .show(fragmentManager!!, ChangelogDialog.TAG)
     }
 
     private fun initialiseView() {

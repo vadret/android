@@ -57,6 +57,8 @@ When submitting a pull request make sure you squash
 the commit(s) for that PR -- Do this so we can keep a clean
 git history.
 
+* [More information here](https://github.com/vadret/android/blob/master/CONTRIBUTING.md)
+
 ## Localization
 This project uses [crowdin](https://crowdin.com/) as localization management platform. You
 can checkout this project [here](https://crowdin.com/project/vadret) to start translating.

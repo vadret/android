@@ -3,14 +3,18 @@ package fi.kroon.vadret.di.modules
 import com.squareup.moshi.Moshi
 import dagger.Module
 import dagger.Provides
+import fi.kroon.vadret.data.API_NOMINATIM_URL
 import fi.kroon.vadret.data.BASE_API_URL
 import fi.kroon.vadret.data.alert.AlertApi
 import fi.kroon.vadret.data.alert.AlertRepository
 import fi.kroon.vadret.data.API_RADAR_URL
+import fi.kroon.vadret.data.nominatim.NominatimRepository
+import fi.kroon.vadret.data.nominatim.net.NominatimApi
 import fi.kroon.vadret.data.radar.RadarRepository
 import fi.kroon.vadret.data.radar.net.RadarApi
 import fi.kroon.vadret.data.weather.WeatherRepository
 import fi.kroon.vadret.data.weather.net.WeatherApi
+import fi.kroon.vadret.di.qualifiers.Nominatim
 import fi.kroon.vadret.di.qualifiers.Radar
 import fi.kroon.vadret.di.qualifiers.Weather
 import fi.kroon.vadret.di.scope.VadretApplicationScope
@@ -59,9 +63,32 @@ class ApiServiceModule {
         @Provides
         @JvmStatic
         @VadretApplicationScope
+        fun nominatimApi(@Nominatim retrofit: Retrofit) = retrofit.create(NominatimApi::class.java)
+
+        @Provides
+        @JvmStatic
+        @VadretApplicationScope
+        fun nominatimRepository(nominatimApi: NominatimApi, networkHandler: NetworkHandler) = NominatimRepository(nominatimApi, networkHandler)
+
+        @Provides
+        @JvmStatic
+        @VadretApplicationScope
         fun moshi(): Moshi = Moshi
                 .Builder()
                 .build()
+
+        @Nominatim
+        @Provides
+        @JvmStatic
+        @VadretApplicationScope
+        fun retrofitNominatim(okHttpClient: OkHttpClient, moshi: Moshi): Retrofit {
+            return Retrofit.Builder()
+                .baseUrl(API_NOMINATIM_URL)
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                .addConverterFactory(MoshiConverterFactory.create(moshi))
+                .client(okHttpClient)
+                .build()
+        }
 
         @Weather
         @Provides

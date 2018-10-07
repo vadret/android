@@ -28,6 +28,7 @@ class AlertRepository @Inject constructor(
             }.doOnError {
                 Timber.d("Error occured: $it")
             }.onErrorReturn {
+                // TODO this should be a NoAlertAvailableFailure
                 Either.Left(Failure.NetworkException())
             }
             false -> Single.just(Either.Left(Failure.NetworkOfflineFailure()))

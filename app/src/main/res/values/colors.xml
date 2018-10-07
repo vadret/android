@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
     <color name="colorPrimary">#252f4e</color>
     <color name="colorPrimaryDark">#202842</color>
     <color name="dashboard">#34426e</color>
@@ -9,4 +8,8 @@
     <color name="yellowlight">#ffd900</color>
     <color name="hax">#11237B</color>
     <color name="blueview">#343856</color>
+    <color name="one">#7B4AC2</color>
+    <color name="two">#2b3595</color>
+    <color name="three">#573697</color>
+    <color name="actionbar">#742dd2</color>
 </resources>

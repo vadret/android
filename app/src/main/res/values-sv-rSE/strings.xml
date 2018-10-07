@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="about_app">Om appen</string>
+    <string name="about_app">Om</string>
     <string name="radar">Radar</string>
     <string name="wsymb2_clear_sky">Klart</string>
     <string name="wsymb2_nearly_clear_sky">Nästan klart</string>
@@ -55,13 +55,53 @@
     <string name="souce_code_row_title">Källkod</string>
     <string name="changelog_row_title">Changelog</string>
     <string name="changelog_dialog_title">Changelog</string>
-    <string name="project_third_party">PROJEKT</string>
+    <string name="project_third_party">Projekt</string>
     <string name="source_third_party">Källkod</string>
     <string name="license_third_party">Licens</string>
-    <string name="alert">Varning</string>
+    <string name="warning">Varning</string>
     <string name="weather">Vädret</string>
     <string name="thirdparty">Tredjepart</string>
     <string name="no_warnings_issued">Inga varningar utfärdade för tillfället</string>
     <string name="alert_severity">Allvarlighetsgrad</string>
-    <string name="alerts">Varningar</string>
+    <string name="warnings">Varningar</string>
+    <string name="county">län</string>
+    <string name="select">Välj</string>
+    <string name="setting_county">Län</string>
+    <string name="setting_city">Ort</string>
+    <string name="setting_longitude">Longitud</string>
+    <string name="setting_latitude">Latitud</string>
+    <string name="setting_location_title">Platsinställningar</string>
+    <string name="use_gps_by_default">Använd GPS som standard</string>
+    <string name="settings">Inställningar</string>
+    <string name="setting_language_description">Välj språk</string>
+    <string name="setting_language_title">Språk</string>
+    <string name="search">Sök</string>
+    <string name="search_failed">Sökning misslyckades</string>
+    <string name="setting_current_location">Nuvarande plats</string>
+    <string name="alert_description">Beskrivning</string>
+    <string name="alert_area_desc">Områdesbeskrivning</string>
+    <string name="alert_msg_type">Meddelandetyp</string>
+    <string name="alert_effective">Effektiv sedan</string>
+    <string name="alert_expires">utlöper</string>
+    <string name="alert_class">Varningsklass</string>
+    <string name="alert_subject">Rubrik</string>
+    <string name="no_alert_available">Inga varsler tillgängliga</string>
+    <string name="no_radar_available">Radarbilder ej tillgängliga</string>
+    <string name="alert_urgency">Angelägenhet</string>
+    <string name="permission_storage_denied">Lagringsrättighet nekat!</string>
+    <string name="permission_location_denied">Platsrättigheter nekat!</string>
+    <string name="preferences_updated_successfully">Uppdatering av inställningar lyckades!</string>
+    <string name="alerts">Varsel</string>
+    <string name="alert">Varsler</string>
+    <string name="search_results">Sökresultat</string>
+    <string name="no_results">Inga matchade resultat</string>
+    <string name="select_a_location">Välj en plats</string>
+    <string name="preferences_use_gps_by_default_desc" translatable="false">Använd GPS som standard</string>
+    <string name="gps_is_not_being_used">GPS-positionering kommer inte användas för att hämta vädert</string>
+    <string name="gps_is_being_used">GPS-positionering kommer användas för att hämta väder för aktuell plats</string>
+    <string name="http_service_unavailable_503">Tjänst Otillgänglig 503</string>
+    <string name="http_gateway_timeout_504">Gateway gjorde timeout 504</string>
+    <string name="http_forbidden_403">Åtkomst Förbjuden 403</string>
+    <string name="http_bad_request_400">Misslyckad Förfrågan 400</string>
+    <string name="http_internal_server_error_500">Internt Serverfel 500</string>
 </resources>

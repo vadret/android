@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Vädret</string>
-    <string name="openstreetmap_copyright_notice" translatable="false">Wikimedia kart | Kartdata © OpenStreetMap bidragsytere</string>
     <string name="alert_subject">Varseloverskrift</string>
     <string name="alert_class">Advarselsklasse:</string>
     <string name="alert_expires">utløper</string>
@@ -9,12 +7,12 @@
     <string name="alert_msg_type">Meldingstype</string>
     <string name="alert_urgency">Hastverk</string>
     <string name="alert_area_desc">Område Beskrivelse</string>
-    <string name="alerts">varsler</string>
+    <string name="warnings">varsler</string>
     <string name="alert_severity">alvorlighetsgrad</string>
     <string name="no_alert_available">Ingen advarsel tilgjengelig</string>
     <string name="thirdparty">Tredjepart</string>
     <string name="weather">Vær</string>
-    <string name="alert">Advarsel</string>
+    <string name="warning">Advarsel</string>
     <string name="license_third_party">Tillatelse</string>
     <string name="source_third_party">Kilde</string>
     <string name="project_third_party">Prosjekt</string>

@@ -60,10 +60,10 @@
     <string name="source_third_party">Lähde</string>
     <string name="license_third_party">Lisenssi</string>
     <string name="no_radar_available">Radar imagery not available</string>
-    <string name="alert">Warning</string>
+    <string name="warning">Warning</string>
     <string name="weather">Weather</string>
     <string name="no_warnings_issued">No warnings issued at present</string>
-    <string name="alerts">Alerts</string>
+    <string name="warnings">Alerts</string>
     <string name="alert_severity">Severity</string>
     <string name="alert_description">Description</string>
     <string name="alert_area_desc">Area Description</string>

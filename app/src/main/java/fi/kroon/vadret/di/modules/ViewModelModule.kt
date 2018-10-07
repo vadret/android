@@ -10,9 +10,13 @@ import fi.kroon.vadret.presentation.viewmodel.AlertViewModel
 import fi.kroon.vadret.presentation.viewmodel.LocationViewModel
 import fi.kroon.vadret.presentation.viewmodel.RadarViewModel
 import fi.kroon.vadret.presentation.viewmodel.WeatherViewModel
+import fi.kroon.vadret.presentation.viewmodel.NominatimViewModel
+import fi.kroon.vadret.presentation.viewmodel.SharedPreferencesViewModel
+import fi.kroon.vadret.presentation.viewmodel.SuggestionViewModel
 
 @Module
 abstract class ViewModelModule {
+
     @Binds
     internal abstract fun bindViewModelFactory(factory: ViewModelFactory): ViewModelProvider.Factory
 
@@ -28,6 +32,16 @@ abstract class ViewModelModule {
 
     @Binds
     @IntoMap
+    @ViewModelKey(SharedPreferencesViewModel::class)
+    abstract fun bindsSharedPreferencesViewModel(sharedPreferencesViewModel: SharedPreferencesViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(NominatimViewModel::class)
+    abstract fun bindsNominatimViewModel(nominatimViewModel: NominatimViewModel): ViewModel
+
+    @Binds
+    @IntoMap
     @ViewModelKey(WeatherViewModel::class)
     abstract fun bindsWeatherViewModel(weatherViewModel: WeatherViewModel): ViewModel
 
@@ -35,6 +49,11 @@ abstract class ViewModelModule {
     @IntoMap
     @ViewModelKey(LocationViewModel::class)
     abstract fun bindsLocationViewModel(locationViewModel: LocationViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(SuggestionViewModel::class)
+    abstract fun bindsSuggestionViewModel(suggestionViewModel: SuggestionViewModel): ViewModel
 
     @Binds
     @IntoMap

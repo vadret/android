@@ -33,4 +33,15 @@ class RawTextFileReader
             return Either.Left(ReaderFailure.IOFailure(e))
         }
     }
+
+    @Throws(IOException::class)
+    fun readFileAsList(@RawRes fileId: Int): Either<Failure, List<String>> {
+        try {
+            val inputStream = context.resources.openRawResource(fileId)
+            return Either.Right(inputStream.bufferedReader().readLines())
+        } catch (e: IOException) {
+            Timber.e(e)
+            return Either.Left(ReaderFailure.IOFailure(e))
+        }
+    }
 }

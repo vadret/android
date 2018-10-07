@@ -39,6 +39,7 @@ class WeatherRepositoryTest {
     @Test
     fun networkHandlerIsNotConnected_shouldReturnResponse() {
         val testRequest = createTestRequest()
+        doReturn(200).`when`(mockResponse).code()
         doReturn(false).`when`(mockNetworkHandler).isConnected
         doReturn(mockWeather).`when`(mockResponse).body()
         doReturn(Single.just(mockResponse)).`when`(mockWeatherApi)
@@ -85,6 +86,7 @@ class WeatherRepositoryTest {
     @Test
     fun weatherApiReturnsWeather_shouldReturnWeatherEitherSingle() {
         val testRequest = createTestRequest()
+        doReturn(200).`when`(mockResponse).code()
         doReturn(true).`when`(mockNetworkHandler).isConnected
         doReturn(mockWeather).`when`(mockResponse).body()
         doReturn(Single.just(mockResponse)).`when`(mockWeatherApi)

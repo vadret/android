@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/settingsFragment">
+    <PreferenceCategory android:title="@string/setting_location_title">
+        <SwitchPreference
+            android:key="@string/use_gps_by_defeault_key"
+            android:title="@string/use_gps_by_default"
+            android:persistent="true"
+            android:summaryOn="@string/gps_is_being_used"
+            android:summaryOff="@string/gps_is_not_being_used"
+            android:defaultValue="true"/>
+
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/setting_current_location">
+        <EditTextPreference
+            android:key="@string/city_key"
+            android:selectable="false"
+            android:persistent="true"
+            android:title="@string/setting_city" />
+
+        <EditTextPreference
+            android:key="@string/province_key"
+            android:selectable="false"
+            android:persistent="true"
+            android:title="@string/setting_county" />
+
+        <EditTextPreference
+            android:key="@string/latitude_key"
+            android:selectable="false"
+            android:persistent="true"
+            android:title="@string/setting_latitude" />
+
+        <EditTextPreference
+            android:key="@string/longitude_key"
+            android:selectable="false"
+            android:persistent="true"
+            android:title="@string/setting_longitude" />
+    </PreferenceCategory>
+</PreferenceScreen>

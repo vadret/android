@@ -11,9 +11,11 @@
     android:gravity="bottom"
     android:orientation="vertical"
     android:theme="@style/ThemeOverlay.AppCompat">
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="@drawable/weather_background">
 
         <ImageView
             android:id="@+id/imageView"
@@ -22,11 +24,11 @@
             android:layout_marginStart="8dp"
             android:layout_marginTop="48dp"
             android:layout_marginEnd="8dp"
-            android:src="@mipmap/ic_logo_round"
+            android:src="@mipmap/ic_launcher_round"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:srcCompat="@mipmap/ic_logo" />
+            tools:srcCompat="@mipmap/ic_launcher_round" />
 
         <TextView
             android:id="@+id/appName"

@@ -59,12 +59,12 @@
     <string name="project_third_party">Projekt</string>
     <string name="source_third_party">Kilde</string>
     <string name="license_third_party">Licens</string>
-    <string name="alert">Advarsel</string>
+    <string name="warning">Advarsel</string>
     <string name="weather">Vejr</string>
     <string name="thirdparty">Tredje part</string>
     <string name="no_alert_available">Ingen advarsel til rådighed</string>
     <string name="alert_severity">Alvorlighed</string>
-    <string name="alerts">Advarsler</string>
+    <string name="warnings">Advarsler</string>
     <string name="alert_area_desc">Område Beskrivelse</string>
     <string name="alert_urgency">Uopsættelighed</string>
     <string name="alert_msg_type">Meddelelsestype</string>

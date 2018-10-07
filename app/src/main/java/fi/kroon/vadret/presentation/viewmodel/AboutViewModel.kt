@@ -29,6 +29,22 @@ class AboutViewModel @Inject constructor(
             license = "https://github.com/permissions-dispatcher/PermissionsDispatcher/blob/master/LICENCE"
         ),
         ThirdParty(
+            author = "SMHI Open Data Meteorological Forecasts",
+            title = "SMHI Open Data API",
+            description = "SMHI Open Data Meteorological Forecasts, PMP, contains forecast data for the following 10 days. It is based on a number of forecast models statistical adjustments and manual edits.",
+            page = "https://opendata.smhi.se/apidocs/metfcst/index.html#about",
+            source = "",
+            license = "http://www.smhi.se/klimatdata/oppna-data/information-om-oppna-data/villkor-for-anvandning-1.30622"
+        ),
+        ThirdParty(
+            author = "© OpenStreetMap contributors",
+            title = "OpenStreetMap Nominatim",
+            description = "Nominatim (from the Latin, 'by name') is a tool to search OSM data by name and address and to generate synthetic addresses of OSM points (reverse geocoding). It can be found at nominatim.openstreetmap.org. ",
+            page = "http://nominatim.openstreetmap.org/",
+            source = "https://github.com/openstreetmap/Nominatim",
+            license = "https://operations.osmfoundation.org/policies/nominatim/"
+        ),
+        ThirdParty(
             author = "The Wikimedia Foundation",
             title = "Wikimedia Maps",
             description = "The Wikimedia Maps service is provided openly to the public free of charge.",

@@ -17,6 +17,9 @@
         <action
             android:id="@+id/action_weatherFragment_to_radarFragment"
             app:destination="@id/radarFragment" />
+        <action
+            android:id="@+id/action_weatherFragment_to_settingsFragment"
+            app:destination="@id/settingsFragment" />
     </fragment>
     <fragment
         android:id="@+id/radarFragment"
@@ -29,6 +32,10 @@
     <fragment
         android:id="@+id/alertFragment"
         android:name="fi.kroon.vadret.presentation.AlertFragment"
-        android:label="@string/alert" />
+        android:label="@string/warnings" />
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="fi.kroon.vadret.presentation.SettingsFragment"
+        android:label="@string/settings" />
 
 </navigation>

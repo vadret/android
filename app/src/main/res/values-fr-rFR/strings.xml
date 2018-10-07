@@ -53,10 +53,10 @@
     <string name="libraries_tab_title">Bibliothèques</string>
     <string name="about_app_description">Application météo pour la Suède</string>
     <string name="project_third_party">Projet</string>
-    <string name="alert">Avertissement</string>
+    <string name="warning">Avertissement</string>
     <string name="weather">Météo</string>
     <string name="no_alert_available">Pas d\'alerte disponible</string>
-    <string name="alerts">Alertes</string>
+    <string name="warnings">Alertes</string>
     <string name="alert_severity">Gravité</string>
     <string name="alert_area_desc">Zone de description</string>
     <string name="alert_urgency">Urgence</string>
