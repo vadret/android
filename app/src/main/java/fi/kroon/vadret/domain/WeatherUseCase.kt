@@ -1,6 +1,6 @@
 package fi.kroon.vadret.domain
 
-import fi.kroon.vadret.data.Request
+import fi.kroon.vadret.data.weather.WeatherRequest
 import fi.kroon.vadret.data.exception.Either
 import fi.kroon.vadret.data.exception.Failure
 import fi.kroon.vadret.data.weather.WeatherRepository
@@ -12,13 +12,14 @@ import javax.inject.Inject
 class WeatherUseCase @Inject constructor(
     private val weatherRepository: WeatherRepository
 ) {
-    fun get(request: Request): Single<Either<Failure, Weather>> {
-        return Single.just(request).flatMap { _ ->
-            weatherRepository.get(request)
-        }.doOnEvent { t1, t2 ->
-            Timber.d("T1: $t1, T2: $t2")
-        }.doOnError {
-            Timber.d("$it")
-        }
+    fun get(weatherRequest: WeatherRequest, forceCacheInvalidation: Boolean = false): Single<Either<Failure, Weather>> {
+        return Single.just(weatherRequest)
+            .flatMap { _ ->
+                weatherRepository.get(weatherRequest, forceCacheInvalidation)
+            }.doOnEvent { t1, t2 ->
+                Timber.d("T1: $t1, T2: $t2")
+            }.doOnError {
+                Timber.d("$it")
+            }
     }
 }

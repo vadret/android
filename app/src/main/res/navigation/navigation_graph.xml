@@ -11,10 +11,24 @@
         <action
             android:id="@+id/action_weatherFragment_to_aboutFragment"
             app:destination="@id/aboutFragment" />
+        <action
+            android:id="@+id/action_weatherFragment_to_alertFragment"
+            app:destination="@id/alertFragment" />
+        <action
+            android:id="@+id/action_weatherFragment_to_radarFragment"
+            app:destination="@id/radarFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/radarFragment"
+        android:name="fi.kroon.vadret.presentation.RadarFragment"
+        android:label="@string/radar" />
     <fragment
         android:id="@+id/aboutFragment"
         android:name="fi.kroon.vadret.presentation.AboutFragment"
         android:label="@string/about_app" />
+    <fragment
+        android:id="@+id/alertFragment"
+        android:name="fi.kroon.vadret.presentation.AlertFragment"
+        android:label="@string/alert" />
 
 </navigation>

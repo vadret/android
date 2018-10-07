@@ -3,4 +3,11 @@
     <dimen name="navigation_drawer_header_height">192dp</dimen>
     <dimen name="navigation_drawer_header_padding">16dp</dimen>
     <dimen name="navigation_drawer_image_width">100dp</dimen>
+    <dimen name="title_text_size">24sp</dimen>
+    <dimen name="title_hint_text_size">18sp</dimen>
+    <dimen name="base_row_title_text_size">16sp</dimen>
+    <dimen name="base_row_hint_text_size">14sp</dimen>
+    <dimen name="base_icon_height">64dp</dimen>
+    <dimen name="base_icon_width">64dp</dimen>
+    <dimen name="default_corner_radius">8dp</dimen>
 </resources>

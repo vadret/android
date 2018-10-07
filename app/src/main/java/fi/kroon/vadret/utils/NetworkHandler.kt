@@ -6,10 +6,8 @@ import android.net.NetworkInfo
 import javax.inject.Inject
 
 class NetworkHandler @Inject constructor(private val context: Context) {
-    val isConnected get() = context.networkInfo?.isConnected
+    val isConnected: Boolean get() = context.networkInfo?.isConnected == true
 }
 
-val Context.networkInfo: NetworkInfo? get() =
-    (
-            this.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-            ).activeNetworkInfo
+private val Context.networkInfo: NetworkInfo?
+    get() = (this.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager).activeNetworkInfo

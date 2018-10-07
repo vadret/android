@@ -1,6 +1,5 @@
 package fi.kroon.vadret.data.weather
 
-import fi.kroon.vadret.data.Request
 import fi.kroon.vadret.data.exception.Either
 import fi.kroon.vadret.data.exception.Failure
 import fi.kroon.vadret.data.weather.model.Weather
@@ -38,29 +37,19 @@ class WeatherRepositoryTest {
     }
 
     @Test
-    fun networkHandlerIsNotConnected_shouldReturnNetworkOfflineFailureSingle() {
+    fun networkHandlerIsNotConnected_shouldReturnResponse() {
         val testRequest = createTestRequest()
         doReturn(false).`when`(mockNetworkHandler).isConnected
+        doReturn(mockWeather).`when`(mockResponse).body()
+        doReturn(Single.just(mockResponse)).`when`(mockWeatherApi)
+            .get(testRequest.category, testRequest.version, testRequest.longitude, testRequest.latitude)
 
         testWeatherRepository
             .get(testRequest)
             .test()
             .assertComplete()
             .assertNoErrors()
-            .assertValueAt(0) { it is Either.Left<Failure> && it.a is Failure.NetworkOfflineFailure }
-    }
-
-    @Test
-    fun networkHandlerIsNullConnected_shouldReturnNetworkOfflineFailureSingle() {
-        val testRequest = createTestRequest()
-        doReturn(null).`when`(mockNetworkHandler).isConnected
-
-        testWeatherRepository
-            .get(testRequest)
-            .test()
-            .assertComplete()
-            .assertNoErrors()
-            .assertValueAt(0) { it is Either.Left<Failure> && it.a is Failure.NetworkOfflineFailure }
+            .assertValueAt(0) { it is Either.Right<Weather> && it.b == mockWeather }
     }
 
     @Test
@@ -110,5 +99,5 @@ class WeatherRepositoryTest {
     }
 
     private fun createTestRequest() =
-        Request()
+        WeatherRequest()
 }

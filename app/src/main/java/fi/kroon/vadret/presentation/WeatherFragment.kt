@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import fi.kroon.vadret.R
-import fi.kroon.vadret.data.Request
+import fi.kroon.vadret.data.weather.WeatherRequest
 import fi.kroon.vadret.data.exception.Either
 import fi.kroon.vadret.data.exception.Failure
 import fi.kroon.vadret.data.location.exception.LocationFailure
@@ -25,7 +25,6 @@ import fi.kroon.vadret.presentation.viewmodel.WeatherViewModel
 import fi.kroon.vadret.utils.Schedulers
 import fi.kroon.vadret.utils.extensions.toVisible
 import fi.kroon.vadret.utils.extensions.viewModel
-import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 import kotlinx.android.synthetic.main.weather_fragment.*
 import timber.log.Timber
@@ -37,8 +36,6 @@ class WeatherFragment : BaseFragment() {
     }
 
     override fun layoutId(): Int = R.layout.weather_fragment
-
-    private val subscriptions = CompositeDisposable()
 
     @Inject
     lateinit var schedulers: Schedulers
@@ -58,7 +55,7 @@ class WeatherFragment : BaseFragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        rv.adapter = null
+        forecastRv.adapter = null
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -67,19 +64,15 @@ class WeatherFragment : BaseFragment() {
         requestLocationPermission()
     }
 
-    override fun onDestroy() {
-        subscriptions.clear()
-        super.onDestroy()
-    }
-
     private fun initialiseView() {
         refreshWeather.setOnRefreshListener {
+            weatherViewModel.forceCacheInvalidationForNextRequest()
             loadLocation()
             refreshWeather.isRefreshing = false
         }
-        rv.layoutManager = LinearLayoutManager(this.context, RecyclerView.VERTICAL, false)
-        rv.adapter = forecastAdapter
-        rv.hasFixedSize()
+        forecastRv.layoutManager = LinearLayoutManager(this.context, RecyclerView.VERTICAL, false)
+        forecastRv.adapter = forecastAdapter
+        forecastRv.hasFixedSize()
     }
 
     private fun loadLocation() = locationViewModel
@@ -97,7 +90,7 @@ class WeatherFragment : BaseFragment() {
     private fun handleLocation(location: Location) {
         val latStr = "%.6f".format(location.latitude).replace(",", ".")
         val lonStr = "%.6f".format(location.longitude).replace(",", ".")
-        val request = Request(
+        val request = WeatherRequest(
             latitude = latStr.toDouble(),
             longitude = lonStr.toDouble()
         )
@@ -105,10 +98,10 @@ class WeatherFragment : BaseFragment() {
         refreshWeather.isRefreshing = false
     }
 
-    private fun loadWeather(request: Request) {
-        rv.toVisible()
+    private fun loadWeather(weatherRequest: WeatherRequest) {
+        forecastRv.toVisible()
         weatherViewModel
-            .get(request)
+            .get(weatherRequest)
             .subscribeOn(schedulers.io())
             .observeOn(schedulers.ui())
             .onErrorReturn { Either.Left(Failure.IOException()) }
@@ -137,7 +130,7 @@ class WeatherFragment : BaseFragment() {
     }
 
     private fun renderFailure(@StringRes message: Int) {
-        return Snackbar.make(rv, message, Snackbar.LENGTH_LONG).show()
+        return Snackbar.make(forecastRv, message, Snackbar.LENGTH_LONG).show()
     }
 
     private fun renderSuccess(timeSerieList: List<TimeSerie>) {
@@ -171,7 +164,7 @@ class WeatherFragment : BaseFragment() {
         when (requestCode) {
             REQUEST_ACCESS_FINE_LOCATION -> {
                 // If request is cancelled, the result arrays are empty.
-                Timber.d("Request Code was: $REQUEST_ACCESS_FINE_LOCATION")
+                Timber.d("WeatherRequest Code was: $REQUEST_ACCESS_FINE_LOCATION")
                 if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
                     Timber.d("Permission granted.")
                     Toast.makeText(this.context, R.string.permission_granted, Toast.LENGTH_LONG).show()

@@ -3,11 +3,12 @@
   -->
 
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-
     <item android:id="@+id/weatherFragment"
-        android:title="@string/app_name" />
-    <!--<item android:id="@+id/radarFragment"
-        android:title="@string/radar" />-->
+        android:title="@string/weather" />
+    <item android:id="@+id/alertFragment"
+        android:title="@string/alerts" />
+    <item android:id="@+id/radarFragment"
+        android:title="@string/radar" />
     <item android:id="@+id/aboutFragment"
         android:title="@string/about_app" />
 </menu>

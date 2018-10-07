@@ -7,7 +7,7 @@ import androidx.recyclerview.widget.RecyclerView
 import fi.kroon.vadret.R
 import fi.kroon.vadret.data.ThirdParty
 import fi.kroon.vadret.di.scope.VadretApplicationScope
-import kotlinx.android.synthetic.main.about.view.*
+import kotlinx.android.synthetic.main.about_item.view.*
 import javax.inject.Inject
 import kotlin.properties.Delegates
 
@@ -29,7 +29,7 @@ class AboutAdapter @Inject constructor() : RecyclerView.Adapter<AboutAdapter.Vie
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val dependency = LayoutInflater.from(parent.context).inflate(R.layout.about, parent, false)
+        val dependency = LayoutInflater.from(parent.context).inflate(R.layout.about_item, parent, false)
         return ViewHolder(dependency)
     }
 

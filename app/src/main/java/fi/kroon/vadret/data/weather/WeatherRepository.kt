@@ -1,6 +1,6 @@
 package fi.kroon.vadret.data.weather
 
-import fi.kroon.vadret.data.Request
+import fi.kroon.vadret.data.HEADER_NO_CACHE
 import fi.kroon.vadret.data.exception.Either
 import fi.kroon.vadret.data.exception.Failure
 import fi.kroon.vadret.data.weather.model.Weather
@@ -16,23 +16,26 @@ class WeatherRepository @Inject constructor(
     private val weatherApi: WeatherApi,
     val networkHandler: NetworkHandler
 ) {
-    fun get(request: Request): Single<Either<Failure, Weather>> {
-        return when (networkHandler.isConnected) {
-            true -> Single.just(request).flatMap { _ ->
-                with(request) {
-                    weatherApi.get(category, version, longitude, latitude).map {
-                        Timber.d("Response: ${it.body()}")
-                        Either.Right(it.body()!!) as Either<Failure, Weather>
-                    }
+    fun get(weatherRequest: WeatherRequest, forceCacheInvalidation: Boolean = false): Single<Either<Failure, Weather>> =
+        Single.just(weatherRequest).flatMap { _ ->
+            with(weatherRequest) {
+                weatherApi.get(category, version, longitude, latitude, getCacheHeader(forceCacheInvalidation)).map {
+                    Timber.d("Response: ${it.body()}")
+                    Either.Right(it.body()!!) as Either<Failure, Weather>
                 }
-            }.doOnEvent { t1, t2 ->
-                Timber.d("T1: $t1, T2: $t2")
-            }.doOnError {
-                Timber.d("Error occured: $it")
-            }.onErrorReturn {
-                Either.Left(Failure.NetworkException())
             }
-            false, null -> Single.just(Either.Left(Failure.NetworkOfflineFailure()))
+        }.doOnEvent { t1, t2 ->
+            Timber.d("T1: $t1, T2: $t2")
+        }.doOnError {
+            Timber.d("Error occurred: $it")
+        }.onErrorReturn {
+            Either.Left(Failure.NetworkException())
         }
+
+    private fun getCacheHeader(forceCacheInvalidation: Boolean) = if (networkHandler.isConnected && forceCacheInvalidation) {
+        // Allow invalidation only if there is a chance of getting new data
+        HEADER_NO_CACHE
+    } else {
+        null
     }
 }
