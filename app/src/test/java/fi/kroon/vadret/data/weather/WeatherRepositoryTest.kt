@@ -1,6 +1,5 @@
 package fi.kroon.vadret.data.weather
 
-import fi.kroon.vadret.data.Request
 import fi.kroon.vadret.data.exception.Either
 import fi.kroon.vadret.data.exception.Failure
 import fi.kroon.vadret.data.weather.model.Weather
@@ -100,5 +99,5 @@ class WeatherRepositoryTest {
     }
 
     private fun createTestRequest() =
-        Request()
+        WeatherRequest()
 }

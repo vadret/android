@@ -16,6 +16,8 @@ data itself is licensed under [Creative commons Erkännande 4.0 SE](https://www.
 * [Parameter data](https://opendata-download-metanalys.smhi.se/api/category/mesan1g/version/2/parameter.json)
 * [Parameter documentation](https://opendata.smhi.se/apidocs/metanalys/parameters.html)
 * [Point data](https://opendata-download-metanalys.smhi.se/api/category/mesan1g/version/2/geotype/point/lon/18.0686/lat/59.3293/data.json)
+* [Radar documentation](https://opendata.smhi.se/apidocs/radar/)
+* [Radar data](https://opendata.smhi.se/apidocs/radar/data.html)
 
 ## Architecture
 This project tries to obey the [Clean Architecture](https://8thlight.com/blog/uncle-bob/2012/08/13/the-clean-architecture.html) approach to application design.
@@ -23,6 +25,7 @@ This project tries to obey the [Clean Architecture](https://8thlight.com/blog/un
 ![App drawer](https://raw.githubusercontent.com/vadret/android/master/assets/drawer.png)
 ![Weather](https://raw.githubusercontent.com/vadret/android/master/assets/weather.png)
 ![Warning](https://raw.githubusercontent.com/vadret/android/master/assets/warning.png)
+![Radar](https://raw.githubusercontent.com/vadret/android/master/assets/radar.png)
 
 ## Android Architecture Components
 
