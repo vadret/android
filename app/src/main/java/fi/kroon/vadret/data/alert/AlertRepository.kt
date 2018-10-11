@@ -1,5 +1,6 @@
 package fi.kroon.vadret.data.alert
 
+import fi.kroon.vadret.data.alert.exception.AlertFailure
 import fi.kroon.vadret.data.alert.model.Alert
 import fi.kroon.vadret.data.exception.Either
 import fi.kroon.vadret.data.exception.Failure
@@ -18,7 +19,10 @@ class AlertRepository @Inject constructor(
         return when (networkHandler.isConnected) {
             true -> alertApi.get().map {
                 Timber.d("Response: ${it.body()}")
-                Either.Right(it.body()!!) as Either<Failure, Alert>
+                when (it.body()?.alert) {
+                    null -> Either.Left(AlertFailure.NoAlertAvailable())
+                    else -> Either.Right(it.body()!!)
+                } as Either<Failure, Alert>
             }.doOnEvent { t1, t2 ->
                 Timber.d("T1: $t1, T2: $t2")
             }.doOnError {

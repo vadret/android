@@ -132,6 +132,7 @@ class RadarFragment : BaseFragment() {
     private fun handleFailure(failure: Failure?) {
         when (failure) {
             is Failure.IOException -> renderFailure(R.string.io_exception)
+            is RadarFailure.NoRadarAvailable -> renderFailure(R.string.no_radar_available)
             is Failure.NetworkException -> renderFailure(R.string.network_failure)
             is Failure.NetworkOfflineFailure -> renderFailure(R.string.no_network_available)
         }
@@ -144,7 +145,8 @@ class RadarFragment : BaseFragment() {
             object : SeekBar.OnSeekBarChangeListener {
                 override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
                     Timber.d("onProgressChanged: ${radar.files[progress]}")
-                    renderRadar(radar.files[progress])
+                    if (::playRadarDisposable.isInitialized)
+                        renderRadar(radar.files[progress])
                 }
 
                 override fun onStartTrackingTouch(seekBar: SeekBar?) {
@@ -203,7 +205,7 @@ class RadarFragment : BaseFragment() {
                     Timber.d("Image loading failed.")
                 }
                 override fun onBitmapLoaded(bitmap: Bitmap?, from: Picasso.LoadedFrom?) {
-                    if (playRadarDisposable.isDisposed || subscriptions.isDisposed) {
+                    if (playRadarDisposable.isDisposed or subscriptions.isDisposed) {
                         Timber.d("Caller disposed assets. Return")
                         return
                     }
