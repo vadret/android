@@ -2,6 +2,7 @@ package fi.kroon.vadret.data.radar
 
 import fi.kroon.vadret.data.exception.Either
 import fi.kroon.vadret.data.exception.Failure
+import fi.kroon.vadret.data.radar.exception.RadarFailure
 import fi.kroon.vadret.data.radar.model.Radar
 import fi.kroon.vadret.data.radar.net.RadarApi
 import fi.kroon.vadret.utils.NetworkHandler
@@ -11,7 +12,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mock
 import org.mockito.Mockito.doReturn
-import org.mockito.Mockito.doThrow
 import org.mockito.junit.MockitoJUnitRunner
 import retrofit2.Response
 
@@ -56,7 +56,7 @@ class RadarRepositoryTest {
         val testRequest = RadarRequest()
 
         doReturn(true).`when`(mockNetworkHandler).isConnected
-        doThrow(RuntimeException()).`when`(mockRadarApi)
+        doReturn(Single.just(RuntimeException())).`when`(mockRadarApi)
             .get(testRequest.year, testRequest.month, testRequest.date, testRequest.format, testRequest.timeZone)
 
         testRadarRepository
@@ -72,7 +72,7 @@ class RadarRepositoryTest {
         val testRequest = RadarRequest()
 
         doReturn(true).`when`(mockNetworkHandler).isConnected
-        doReturn(null).`when`(mockRadarApi)
+        doReturn(Single.just("")).`when`(mockRadarApi)
             .get(testRequest.year, testRequest.month, testRequest.date, testRequest.format, testRequest.timeZone)
 
         testRadarRepository
@@ -88,7 +88,7 @@ class RadarRepositoryTest {
         val testRequest = RadarRequest()
 
         doReturn(true).`when`(mockNetworkHandler).isConnected
-        doReturn(mockRadar).`when`(mockResponse).body()
+        doReturn(mockRadar).`when`(mockResponse).body()?.files
         doReturn(Single.just(mockResponse)).`when`(mockRadarApi)
             .get(testRequest.year, testRequest.month, testRequest.date, testRequest.format, testRequest.timeZone)
 
@@ -98,5 +98,22 @@ class RadarRepositoryTest {
             .assertComplete()
             .assertNoErrors()
             .assertValueAt(0) { it is Either.Right<Radar> && it.b == mockRadar }
+    }
+
+    @Test
+    fun `radarApi returns empty response and fails with no radar available`() {
+        val testRequest = RadarRequest()
+
+        doReturn(true).`when`(mockNetworkHandler).isConnected
+        doReturn(null).`when`(mockResponse).body()?.files
+        doReturn(Single.just(mockResponse)).`when`(mockRadarApi)
+            .get(testRequest.year, testRequest.month, testRequest.date, testRequest.format, testRequest.timeZone)
+
+        testRadarRepository
+            .get(testRequest)
+            .test()
+            .assertComplete()
+            .assertNoErrors()
+            .assertValueAt(0) { it is Either.Left<Failure> && it.a is RadarFailure.NoRadarAvailable }
     }
 }
