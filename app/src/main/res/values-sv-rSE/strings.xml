@@ -60,9 +60,10 @@
   <string name="project_third_party">PROJEKT</string>
   <string name="source_third_party">Källkod</string>
   <string name="license_third_party">Licens</string>
+  <string name="no_radar_available">Radar imagery not available</string>
   <string name="alert">Varning</string>
   <string name="weather">Väder</string>
-  <string name="no_alert_available">Inga varningar tillgängliga</string>
+  <string name="no_warnings_issued">No warnings issued at present</string>
   <string name="alerts">Varningar</string>
   <string name="alert_severity">Allvarsgrad</string>
   <string name="alert_description">Beskrivning</string>
