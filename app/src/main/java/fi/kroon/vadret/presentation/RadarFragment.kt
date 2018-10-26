@@ -132,6 +132,7 @@ class RadarFragment : BaseFragment() {
     private fun handleFailure(failure: Failure?) {
         when (failure) {
             is Failure.IOException -> renderFailure(R.string.io_exception)
+            is RadarFailure.NoRadarAvailable -> renderFailure(R.string.no_radar_available)
             is Failure.NetworkException -> renderFailure(R.string.network_failure)
             is Failure.NetworkOfflineFailure -> renderFailure(R.string.no_network_available)
         }
@@ -144,15 +145,18 @@ class RadarFragment : BaseFragment() {
             object : SeekBar.OnSeekBarChangeListener {
                 override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
                     Timber.d("onProgressChanged: ${radar.files[progress]}")
-                    renderRadar(radar.files[progress])
+                    if (::playRadarDisposable.isInitialized)
+                        renderRadar(radar.files[progress])
                 }
 
                 override fun onStartTrackingTouch(seekBar: SeekBar?) {
                     Timber.d("Tracking started.")
+                    startNoAutoPlay()
                 }
 
                 override fun onStopTrackingTouch(seekBar: SeekBar?) {
                     Timber.d("Tracking stopped.")
+                    pauseNoAutoPlay()
                 }
             }
         )
@@ -167,6 +171,23 @@ class RadarFragment : BaseFragment() {
         }
     }
 
+    private fun pauseNoAutoPlay() {
+        if (!isToggled) {
+            if (::playRadarDisposable.isInitialized)
+                playRadarDisposable.dispose()
+            radarPlay.setImageResource(R.drawable.ic_play_arrow_white_24dp)
+        }
+    }
+
+    private fun startNoAutoPlay() {
+        if (!isToggled) {
+            radarPlay.setImageResource(R.drawable.ic_pause_white_24dp)
+            playRadarDisposable = playRadar()
+                .debounce(300, TimeUnit.MILLISECONDS)
+                .subscribe()
+        }
+    }
+
     private fun pause() {
         if (::playRadarDisposable.isInitialized)
             playRadarDisposable.dispose()
@@ -177,7 +198,8 @@ class RadarFragment : BaseFragment() {
     private fun start() {
         isToggled = true
         radarPlay.setImageResource(R.drawable.ic_pause_white_24dp)
-        playRadarDisposable = playRadar().subscribe()
+        playRadarDisposable = playRadar()
+            .subscribe()
     }
 
     private fun playRadar() = Observable
@@ -203,7 +225,7 @@ class RadarFragment : BaseFragment() {
                     Timber.d("Image loading failed.")
                 }
                 override fun onBitmapLoaded(bitmap: Bitmap?, from: Picasso.LoadedFrom?) {
-                    if (playRadarDisposable.isDisposed || subscriptions.isDisposed) {
+                    if (playRadarDisposable.isDisposed or subscriptions.isDisposed) {
                         Timber.d("Caller disposed assets. Return")
                         return
                     }

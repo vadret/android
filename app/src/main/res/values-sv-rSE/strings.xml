@@ -61,7 +61,7 @@
     <string name="alert">Varning</string>
     <string name="weather">Vädret</string>
     <string name="thirdparty">Tredjepart</string>
-    <string name="no_alert_available">Inga varningar tillgängliga</string>
+    <string name="no_warnings_issued">Inga varningar utfärdade för tillfället</string>
     <string name="alert_severity">Allvarlighetsgrad</string>
     <string name="alerts">Varningar</string>
 </resources>
