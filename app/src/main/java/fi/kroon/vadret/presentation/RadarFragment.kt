@@ -149,10 +149,12 @@ class RadarFragment : BaseFragment() {
 
                 override fun onStartTrackingTouch(seekBar: SeekBar?) {
                     Timber.d("Tracking started.")
+                    startNoAutoPlay()
                 }
 
                 override fun onStopTrackingTouch(seekBar: SeekBar?) {
                     Timber.d("Tracking stopped.")
+                    pauseNoAutoPlay()
                 }
             }
         )
@@ -167,6 +169,23 @@ class RadarFragment : BaseFragment() {
         }
     }
 
+    private fun pauseNoAutoPlay() {
+        if (!isToggled) {
+            if (::playRadarDisposable.isInitialized)
+                playRadarDisposable.dispose()
+            radarPlay.setImageResource(R.drawable.ic_play_arrow_white_24dp)
+        }
+    }
+
+    private fun startNoAutoPlay() {
+        if (!isToggled) {
+            radarPlay.setImageResource(R.drawable.ic_pause_white_24dp)
+            playRadarDisposable = playRadar()
+                .debounce(300, TimeUnit.MILLISECONDS)
+                .subscribe()
+        }
+    }
+
     private fun pause() {
         if (::playRadarDisposable.isInitialized)
             playRadarDisposable.dispose()
@@ -177,7 +196,8 @@ class RadarFragment : BaseFragment() {
     private fun start() {
         isToggled = true
         radarPlay.setImageResource(R.drawable.ic_pause_white_24dp)
-        playRadarDisposable = playRadar().subscribe()
+        playRadarDisposable = playRadar()
+            .subscribe()
     }
 
     private fun playRadar() = Observable
