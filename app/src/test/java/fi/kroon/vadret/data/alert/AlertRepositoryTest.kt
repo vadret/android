@@ -1,5 +1,6 @@
 package fi.kroon.vadret.data.alert
 
+import fi.kroon.vadret.data.alert.exception.AlertFailure
 import fi.kroon.vadret.data.alert.model.Alert
 import fi.kroon.vadret.data.exception.Either
 import fi.kroon.vadret.data.exception.Failure
@@ -70,13 +71,14 @@ class AlertRepositoryTest {
             .test()
             .assertComplete()
             .assertNoErrors()
-            .assertValueAt(0) { it is Either.Left<Failure> && it.a is Failure.NetworkException }
+            .assertValueAt(0) { it is Either.Left<Failure> && it.a is AlertFailure.NoAlertAvailable }
     }
 
     @Test
     fun `alertApi returns Alert`() {
+
         doReturn(true).`when`(mockNetworkHandler).isConnected
-        doReturn(mockAlert).`when`(mockResponse).body()
+        doReturn(mockAlert).`when`(mockResponse).body()?.alert
         doReturn(Single.just(mockResponse)).`when`(mockAlertApi).get()
 
         testAlertRepository

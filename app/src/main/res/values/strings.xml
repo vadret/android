@@ -75,11 +75,12 @@
     <string name="source_third_party">Source</string>
     <string name="license_third_party">License</string>
 
+    <string name="no_radar_available">Radar imagery not available</string>
 
     <string name="alert">Warning</string>
     <string name="weather">Weather</string>
 
-    <string name="no_alert_available">No alert available</string>
+    <string name="no_warnings_issued">No warnings issued at present</string>
     <string name="place_holder_string" translatable="false">Lorem Ipsum</string>
 
     <string name="alerts">Alerts</string>

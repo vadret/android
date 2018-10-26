@@ -77,13 +77,13 @@ class AlertFragment : BaseFragment() {
         renderAlert(warningList = alert.alert)
     }
 
-    private fun renderAlert(warningList: List<Warning>) {
-        alertAdapter.collection = warningList
+    private fun renderAlert(warningList: List<Warning>?) {
+        alertAdapter.collection = warningList!!
     }
 
     private fun handleFailure(failure: Failure?) {
         when (failure) {
-            is AlertFailure.NoAlertAvailable -> renderFailure(R.string.no_alert_available)
+            is AlertFailure.NoAlertAvailable -> renderFailure(R.string.no_warnings_issued)
             is Failure.IOException -> renderFailure(R.string.io_exception)
             is Failure.NetworkException -> renderFailure(R.string.network_failure)
             is Failure.NetworkOfflineFailure -> renderFailure(R.string.no_network_available)
