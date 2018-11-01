@@ -4,7 +4,23 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 apply plugin: "androidx.navigation.safeargs"
 apply plugin: 'jacoco'
+apply plugin: 'io.fabric'
 
+def static loadFromEnvironment(String key) {
+    return System.getenv(key)
+}
+
+def static loadFromFile(String key, String file) {
+    /**
+     *  loads a key from a file and returns
+     *  it. Else a empty string is returned.
+     */
+    def inputFileProperties = new Properties()
+    inputFileProperties.load(new FileInputStream(file))
+    return inputFileProperties[key]
+}
+
+def isRunningOnTravis = System.getenv("CI") == "true"
 android {
     compileSdkVersion 28
     dataBinding {
@@ -16,19 +32,59 @@ android {
         minSdkVersion 21
         targetSdkVersion 28
         versionCode 1
-        versionName "0.0.1"
+        versionName "0.1.0"
         vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner "androidx.top.runner.AndroidJUnitRunner"
+        if (isRunningOnTravis) {
+            manifestPlaceholders = [ FABRIC_API_KEY:loadFromEnvironment("FABRIC_API_KEY") ]
+        } else {
+            manifestPlaceholders = [ FABRIC_API_KEY:loadFromFile("FABRIC_API_KEY", ".env") ]
+        }
+
     }
+    signingConfigs {
+        release {
+            /**
+             *  if we are not running on travis, ie
+             *  locally we run this instead since
+             *  we can utilize a .env file instead.
+             */
+            /*keyAlias loadFromFile('keyAlias', 'keystore.properties')
+            keyPassword loadFromFile('keyPassword', 'keystore.properties')
+            storeFile file(loadFromFile('storeFile', 'keystore.properties'))
+            storePassword loadFromFile('storePassword', 'keystore.properties')*/
+            keyAlias
+            keyPassword
+            storeFile
+            storePassword
+        }
+    }
+    if (isRunningOnTravis) {
+        /**
+         *  This is for travis-ci
+         */
+        signingConfigs.release.storeFile = file("../.keystore")
+        signingConfigs.release.storePassword = loadFromEnvironment("storePassword")
+        signingConfigs.release.keyAlias = loadFromEnvironment("keyAlias")
+        signingConfigs.release.keyPassword = loadFromEnvironment("keyPassword")
+    } else {
+        signingConfigs.release.storeFile = file("../.keystore")
+        signingConfigs.release.storePassword = loadFromFile("storePassword", "keystore.properties")
+        signingConfigs.release.keyAlias = loadFromFile("keyAlias", "keystore.properties")
+        signingConfigs.release.keyPassword = loadFromFile("keyPassword", "keystore.properties")
+    }
+
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             resValue "string", "app_version", "${defaultConfig.versionName}"
+            signingConfig signingConfigs.release
         }
         debug {
+            ext.enableCrashlytics = false // disable on debug
             testCoverageEnabled = true
-            versionNameSuffix ".debug"
+            versionNameSuffix "-debug"
             resValue "string", "app_version", "${defaultConfig.versionName}${versionNameSuffix}"
         }
     }
@@ -54,12 +110,13 @@ dependencies {
     def MOSHI_VERSION = "1.7.0"
     def KTLINT_VERSION = "0.29.0"
     def KTX_VERSION = "1.0.0"
-    def NAVIGATION_VERSION = "1.0.0-alpha06"
+    def NAVIGATION_VERSION = "1.0.0-alpha07"
     def LEAK_CANARY = "1.6.2"
     def LIFE_CYCLE_VERSION = "2.0.0"
     def OSMDROID_VERSION = "6.0.2"
     def PICASSO_VERSION = "2.71828"
     def PERMISSIONS_DISPATCHER_VERSION = "4.0.0"
+    def CRASHLYTICS_VERSION = "2.9.5"
 
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
@@ -70,6 +127,11 @@ dependencies {
     // Permissions Dispatcher
     implementation "com.github.hotchemi:permissionsdispatcher:${PERMISSIONS_DISPATCHER_VERSION}"
     kapt "com.github.hotchemi:permissionsdispatcher-processor:${PERMISSIONS_DISPATCHER_VERSION}"
+
+    // Crashlytics
+    implementation("com.crashlytics.sdk.android:crashlytics:${CRASHLYTICS_VERSION}@aar") {
+        transitive = true;
+    }
 
     // Picasso
     implementation "com.squareup.picasso:picasso:${PICASSO_VERSION}"
@@ -93,7 +155,7 @@ dependencies {
     // Navigation
     implementation "android.arch.navigation:navigation-fragment-ktx:${NAVIGATION_VERSION}"
     implementation "android.arch.navigation:navigation-ui-ktx:${NAVIGATION_VERSION}"
-    androidTestImplementation "android.arch.navigation:navigation-testing-ktx:${NAVIGATION_VERSION}"
+    androidTestImplementation "android.arch.navigation:navigation-testing-ktx:1.0.0-alpha06"
 
     //Retrofit 2
     implementation "com.squareup.retrofit2:retrofit:${RETROFIT_VERSION}"
@@ -206,7 +268,7 @@ tasks.register("jacocoTestReport", JacocoReport) {
     ])
     executionData = files("$buildDir/jacoco/testDebugUnitTest.exec")
 }
-
 repositories {
+    maven { url 'https://maven.fabric.io/public' }
     mavenCentral()
 }

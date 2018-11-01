@@ -1,6 +1,11 @@
 ### AndroidStudio ###
 # Covers files to be ignored for android development using Android Studio.
 
+# App signing && env vars secrets
+.env
+keystore.properties
+.keystore
+
 # Built application files
 *.apk
 *.ap_
