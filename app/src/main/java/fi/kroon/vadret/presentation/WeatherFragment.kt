@@ -51,7 +51,6 @@ class WeatherFragment : BaseFragment() {
         cmp.inject(this)
         weatherViewModel = viewModel(viewModelFactory) {}
         locationViewModel = viewModel(viewModelFactory) {}
-        loadLocationWithPermissionCheck()
     }
 
     override fun onDestroyView() {
