@@ -14,5 +14,5 @@ data class Weather(
     val geometry: Geometry,
 
     @Json(name = "timeSeries")
-    val timeSeries: List<TimeSerie>
+    val timeSeries: List<TimeSerie>? = emptyList()
 )

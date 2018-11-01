@@ -1,25 +1,39 @@
 before_cache:
- - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
- - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
+- rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
+- rm -fr $HOME/.gradle/caches/*/plugin-resolution/
 cache:
- directories:
- - $HOME/.gradle/caches/
- - $HOME/.gradle/wrapper/
+  directories:
+  - "$HOME/.gradle/caches/"
+  - "$HOME/.gradle/wrapper/"
 language: android
 android:
   components:
-    - build-tools-28.0.3
-    - android-21
-    - android-22
-    - android-23
-    - android-24
-    - android-25
-    - android-26
-    - android-27
-    - android-28
+  - build-tools-28.0.3
+  - android-21
+  - android-22
+  - android-23
+  - android-24
+  - android-25
+  - android-26
+  - android-27
+  - android-28
 script:
-  - "./gradlew ktlint"
-  - "./gradlew clean build"
-  - "./gradlew test jacocoTestReport"
+- "./gradlew ktlint"
+- "./gradlew clean build"
+- "./gradlew test jacocoTestReport"
 after_success:
-  - bash <(curl -s https://codecov.io/bash)
+- bash <(curl -s https://codecov.io/bash)
+before_install:
+- openssl aes-256-cbc -K $encrypted_f7c7591dbff3_key -iv $encrypted_f7c7591dbff3_iv
+  -in .keystore.enc -out .keystore -d
+deploy:
+  provider: releases
+  overwrite: true
+  skip_cleanup: true
+  api_key:
+    secure: nHCCJP7UpLOefdgxMJYLfLVXGwSzs2Ox2qcF2Syuo4kTwUKYLu4dkCgUpFxg5JRf6gBkgnFIY1d6O3JiwV/XoS0kxxoRvGdeHrK/HcyPbbMgzNBezwTtwp9ls4U32vDsTYt3altDkEv5Dj/Gs/hn5HxVJOKsadUvQqqpjA6GtPCSWPigb0Ue8mvfBFwkEU023vdBGui/V8bf/GMiBEk0UK9f1Uf+QL0Jnts+7kilNMPNT2NT6mYzZFzQ2VCeMG7YJ5aqfm1L+6HthHU3DWw1FRf4MPo3wA15yrD7lDsXbCl980haXwBZhgeoPvMHrOWdpvBoSxnaAaG7RWRgLlO5Rb3k8M3Xs7k7RStmhHtzC2mIRrdcT0hFOjjlsns6fsV0l4YZIwKkHBEJ5gSh0fPusCGsAhnAIZVwrmg5EpAhHcd1CqkxnQzV2uCRHGTse5kW26DEIeP7yeopy8agqabT4zVZuqecD9jG9DPo23he4adcjFR24EOcI3w2GaglAyzEOHh1Frhl7RIqANkJSH2EEFqM6xiEKp3vfG18VeLvvQ0Rkv/WqHkBhC+p+iTKjKI6X3aUmX7t3ZMuuyhQYrngyvHKpWA4vaF/Sd9x4auOAha+y13ebXMcLlgrPW/CjGp4LsT5xWUyzZhj1IsqldD230sLrfilmSm43hZcygYxvTk=
+  file_glob: true
+  file: "**/app-release.apk"
+  on:
+    tags: true
+    repo: vadret/android

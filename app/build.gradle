@@ -4,7 +4,23 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 apply plugin: "androidx.navigation.safeargs"
 apply plugin: 'jacoco'
+apply plugin: 'io.fabric'
 
+def static loadFromEnvironment(String key) {
+    return System.getenv(key)
+}
+
+def static loadFromFile(String key, String file) {
+    /**
+     *  loads a key from a file and returns
+     *  it. Else a empty string is returned.
+     */
+    def inputFileProperties = new Properties()
+    inputFileProperties.load(new FileInputStream(file))
+    return inputFileProperties[key]
+}
+
+def isRunningOnTravis = System.getenv("CI") == "true"
 android {
     compileSdkVersion 28
     dataBinding {
@@ -19,19 +35,61 @@ android {
         minSdkVersion 21
         targetSdkVersion 28
         versionCode 1
-        versionName "0.0.1"
+        versionName "0.1.0"
         vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner "androidx.top.runner.AndroidJUnitRunner"
+        if (isRunningOnTravis) {
+            manifestPlaceholders = [ FABRIC_API_KEY:loadFromEnvironment("FABRIC_API_KEY") ]
+        } else {
+            manifestPlaceholders = [ FABRIC_API_KEY:loadFromFile("FABRIC_API_KEY", ".env") ]
+        }
+        //multiDexEnabled true
     }
-    buildTypes {
+    signingConfigs {
         release {
-            minifyEnabled false
+            keyAlias
+            keyPassword
+            storeFile
+            storePassword
+        }
+    }
+    if (isRunningOnTravis) {
+        /**
+         *  This is for travis-ci
+         */
+        signingConfigs.release.storeFile = file("../.keystore")
+        signingConfigs.release.storePassword = loadFromEnvironment("storePassword")
+        signingConfigs.release.keyAlias = loadFromEnvironment("keyAlias")
+        signingConfigs.release.keyPassword = loadFromEnvironment("keyPassword")
+    } else {
+        signingConfigs.release.storeFile = file("../.keystore")
+        signingConfigs.release.storePassword = loadFromFile("storePassword", "keystore.properties")
+        signingConfigs.release.keyAlias = loadFromFile("keyAlias", "keystore.properties")
+        signingConfigs.release.keyPassword = loadFromFile("keyPassword", "keystore.properties")
+    }
+
+    buildTypes {
+        github {
+            minifyEnabled true
+            zipAlignEnabled true
+            shrinkResources true
+            versionNameSuffix "-unsigned"
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            resValue "string", "app_version", "${defaultConfig.versionName}${versionNameSuffix}"
+            signingConfig debug.signingConfig
+        }
+        release {
+            minifyEnabled true
+            zipAlignEnabled true
+            shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             resValue "string", "app_version", "${defaultConfig.versionName}"
+            signingConfig signingConfigs.release
         }
         debug {
+            ext.enableCrashlytics = false
             testCoverageEnabled = true
-            versionNameSuffix ".debug"
+            versionNameSuffix "-debug"
             resValue "string", "app_version", "${defaultConfig.versionName}${versionNameSuffix}"
         }
     }
@@ -41,7 +99,7 @@ android {
 }
 
 jacoco {
-    toolVersion = "0.8.1"
+    toolVersion = "0.8.2"
     reportsDir = file("$buildDir/reports")
 }
 
@@ -63,6 +121,7 @@ dependencies {
     def OSMDROID_VERSION = "6.0.2"
     def PICASSO_VERSION = "2.71828"
     def PERMISSIONS_DISPATCHER_VERSION = "4.0.0"
+    def CRASHLYTICS_VERSION = "2.9.5"
 
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
@@ -73,6 +132,11 @@ dependencies {
     // Permissions Dispatcher
     implementation "com.github.hotchemi:permissionsdispatcher:${PERMISSIONS_DISPATCHER_VERSION}"
     kapt "com.github.hotchemi:permissionsdispatcher-processor:${PERMISSIONS_DISPATCHER_VERSION}"
+
+    // Crashlytics
+    implementation("com.crashlytics.sdk.android:crashlytics:${CRASHLYTICS_VERSION}@aar") {
+        transitive = true;
+    }
 
     // Picasso
     implementation "com.squareup.picasso:picasso:${PICASSO_VERSION}"
@@ -88,6 +152,7 @@ dependencies {
     // LeakCanary
     debugImplementation "com.squareup.leakcanary:leakcanary-android:${LEAK_CANARY}"
     releaseImplementation "com.squareup.leakcanary:leakcanary-android-no-op:${LEAK_CANARY}"
+    githubImplementation "com.squareup.leakcanary:leakcanary-android-no-op:${LEAK_CANARY}"
     debugImplementation "com.squareup.leakcanary:leakcanary-support-fragment:${LEAK_CANARY}"
 
     // Fragment
@@ -114,6 +179,7 @@ dependencies {
 
     // Mockito framework
     testImplementation 'org.mockito:mockito-core:2.23.0'
+
     implementation "androidx.constraintlayout:constraintlayout:2.0.0-alpha2"
 
     // @BEWARE Material version 1.1.0-alpha01 -- Causes color bug
@@ -121,6 +187,7 @@ dependencies {
 
     // Moshi
     implementation "com.squareup.moshi:moshi:${MOSHI_VERSION}"
+    implementation "com.squareup.moshi:moshi-adapters:${MOSHI_VERSION}"
     implementation "com.squareup.retrofit2:converter-moshi:${RETROFIT_VERSION}"
     kapt "com.squareup.moshi:moshi-kotlin-codegen:${MOSHI_VERSION}"
 
@@ -138,7 +205,7 @@ dependencies {
     implementation "io.reactivex.rxjava2:rxjava:${RXJAVA_VERSION}"
     implementation 'io.reactivex.rxjava2:rxkotlin:2.3.0'
     implementation 'io.reactivex.rxjava2:rxandroid:2.1.0'
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${KOTLIN_VERSION}"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.3.0"
     /*testImplementation "org.jetbrains.kotlin:kotlin-top-junit:${KOTLIN_VERSION}"*/
 
     // OffsetDateTime backport
@@ -170,7 +237,6 @@ tasks.register("ktlintFormat", JavaExec) {
     main = "com.github.shyiko.ktlint.Main"
     args "-F", "src/**/*.kt"
 }
-
 tasks.register("jacocoTestReport", JacocoReport) {
 
     group = "Reporting"
@@ -213,5 +279,6 @@ tasks.register("jacocoTestReport", JacocoReport) {
 }
 
 repositories {
+    maven { url 'https://maven.fabric.io/public' }
     mavenCentral()
 }

@@ -250,10 +250,8 @@ class WeatherFragment : BaseFragment() {
         .addTo(subscriptions)
 
     private fun setPreferencesHandler(data: Either<Failure, Unit>) {
-        data.either(::handleFailure, ::handlePreferencesSet)
+        data.either({ error -> handleFailure(error) }, { _ -> Timber.d("Settings updated") })
     }
-
-    private fun handlePreferencesSet(unit: Unit) = Timber.d("Preferences updated successfully.")
 
     private fun loadLocation() {
         locationViewModel
@@ -400,11 +398,15 @@ class WeatherFragment : BaseFragment() {
         return Snackbar.make(forecastRv, message, Snackbar.LENGTH_LONG).show()
     }
 
-    private fun renderWeather(timeSerieList: List<TimeSerie>) {
+    private fun renderWeather(timeSerieList: List<TimeSerie>?) {
         Timber.d("Rendering timeSerieList: $timeSerieList")
         val mapping = WeatherMapper()
-        val anylist: List<Any> = mapping.toAnyList(timeSerieList)
-        forecastAdapter.collection = anylist
+
+        timeSerieList?.let {
+            val anylist: List<Any> = mapping.toAnyList(it)
+            Timber.d("ANY LIST: $anylist")
+            forecastAdapter.collection = anylist
+        }
     }
 
     private fun getBooleanPreference(key: String) = sharedPreferencesViewModel

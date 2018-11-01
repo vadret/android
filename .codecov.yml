@@ -25,12 +25,15 @@ comment:
   behavior: default
   require_changes: no
 ignore:
-  - "**/*Adapter.kt"
+  - "**/adapter/*.kt"
+  - "**/common/*.kt"
   - "**/*Failure.kt"
   - "**/*Interface.kt"
   - "**/*Fragment.kt"
+  - "**/*Dialog.kt"
   - "**/model/*.kt"
   - "**/di/*.kt"
+  - "**/utils/**/*.kt"
   - "app/src/test"
   - "app/src/androidTest"
   - "app/src/main/res"

@@ -4,10 +4,10 @@ import com.squareup.moshi.Moshi
 import dagger.Module
 import dagger.Provides
 import fi.kroon.vadret.data.API_NOMINATIM_URL
+import fi.kroon.vadret.data.API_RADAR_URL
 import fi.kroon.vadret.data.BASE_API_URL
 import fi.kroon.vadret.data.alert.AlertApi
 import fi.kroon.vadret.data.alert.AlertRepository
-import fi.kroon.vadret.data.API_RADAR_URL
 import fi.kroon.vadret.data.nominatim.NominatimRepository
 import fi.kroon.vadret.data.nominatim.net.NominatimApi
 import fi.kroon.vadret.data.radar.RadarRepository

@@ -12,10 +12,16 @@
 #   public *;
 #}
 
-# Uncomment this to preserve the line number information for
-# debugging stack traces.
-#-keepattributes SourceFile,LineNumberTable
+-keep class fi.kroon.vadret.data.weather.model.** { *; }
+-keep class fi.kroon.vadret.data.radar.model.** { *; }
+-keep class fi.kroon.vadret.data.alert.model.** { *; }
+-keep class fi.kroon.vadret.data.nominatim.model.** { *; }
+-keep class fi.kroon.vadret.data.location.model.** { *; }
 
-# If you keep the line number information, uncomment this to
-# hide the original source file name.
-#-renamesourcefileattribute SourceFile
+# MATERIAL
+-keep class com.google.android.material.** { *; }
+-dontwarn com.google.android.material.**
+-dontnote com.google.android.material.**
+-dontwarn androidx.**
+-keep class androidx.** { *; }
+-keep interface androidx.** { *; }
