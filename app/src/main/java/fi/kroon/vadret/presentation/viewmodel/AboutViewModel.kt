@@ -21,6 +21,14 @@ class AboutViewModel @Inject constructor(
 
     private val libraries = listOf(
         ThirdParty(
+            author = "permissions-dispatcher",
+            title = "PermissionsDispatcher",
+            description = "Simple annotation-based API to handle runtime permissions.",
+            page = "https://permissions-dispatcher.github.io/PermissionsDispatcher/",
+            source = "https://github.com/permissions-dispatcher/PermissionsDispatcher",
+            license = "https://github.com/permissions-dispatcher/PermissionsDispatcher/blob/master/LICENCE"
+        ),
+        ThirdParty(
             author = "The Wikimedia Foundation",
             title = "Wikimedia Maps",
             description = "The Wikimedia Maps service is provided openly to the public free of charge.",
