@@ -59,12 +59,17 @@ dependencies {
     def LIFE_CYCLE_VERSION = "2.0.0"
     def OSMDROID_VERSION = "6.0.2"
     def PICASSO_VERSION = "2.71828"
+    def PERMISSIONS_DISPATCHER_VERSION = "4.0.0"
 
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
     /*androidTestImplementation('androidx.top.espresso:espresso-core:3.1.0-alpha3', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })*/
+
+    // Permissions Dispatcher
+    implementation "com.github.hotchemi:permissionsdispatcher:${PERMISSIONS_DISPATCHER_VERSION}"
+    kapt "com.github.hotchemi:permissionsdispatcher-processor:${PERMISSIONS_DISPATCHER_VERSION}"
 
     // Picasso
     implementation "com.squareup.picasso:picasso:${PICASSO_VERSION}"

@@ -1,21 +1,20 @@
 package fi.kroon.vadret.presentation
 
-import android.content.pm.PackageManager
+import android.Manifest
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.annotation.StringRes
-import androidx.core.content.ContextCompat.checkSelfPermission
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import fi.kroon.vadret.R
-import fi.kroon.vadret.data.weather.WeatherRequest
 import fi.kroon.vadret.data.exception.Either
 import fi.kroon.vadret.data.exception.Failure
 import fi.kroon.vadret.data.location.exception.LocationFailure
 import fi.kroon.vadret.data.location.model.Location
 import fi.kroon.vadret.data.weather.WeatherMapper
+import fi.kroon.vadret.data.weather.WeatherRequest
 import fi.kroon.vadret.data.weather.exception.WeatherFailure
 import fi.kroon.vadret.data.weather.model.TimeSerie
 import fi.kroon.vadret.data.weather.model.Weather
@@ -27,13 +26,14 @@ import fi.kroon.vadret.utils.extensions.toVisible
 import fi.kroon.vadret.utils.extensions.viewModel
 import io.reactivex.rxkotlin.addTo
 import kotlinx.android.synthetic.main.weather_fragment.*
+import permissions.dispatcher.NeedsPermission
+import permissions.dispatcher.OnPermissionDenied
+import permissions.dispatcher.RuntimePermissions
 import timber.log.Timber
 import javax.inject.Inject
 
+@RuntimePermissions
 class WeatherFragment : BaseFragment() {
-    companion object {
-        const val REQUEST_ACCESS_FINE_LOCATION: Int = 1
-    }
 
     override fun layoutId(): Int = R.layout.weather_fragment
 
@@ -51,6 +51,7 @@ class WeatherFragment : BaseFragment() {
         cmp.inject(this)
         weatherViewModel = viewModel(viewModelFactory) {}
         locationViewModel = viewModel(viewModelFactory) {}
+        loadLocationWithPermissionCheck()
     }
 
     override fun onDestroyView() {
@@ -61,7 +62,6 @@ class WeatherFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initialiseView()
-        requestLocationPermission()
     }
 
     private fun initialiseView() {
@@ -75,13 +75,21 @@ class WeatherFragment : BaseFragment() {
         forecastRv.hasFixedSize()
     }
 
-    private fun loadLocation() = locationViewModel
-        .get()
-        .subscribeOn(schedulers.io())
-        .observeOn(schedulers.ui())
-        .onErrorReturn { Either.Left(LocationFailure.LocationNotAvailableFailure()) }
-        .subscribe(::locationHandler)
-        .addTo(subscriptions)
+    @OnPermissionDenied(Manifest.permission.ACCESS_FINE_LOCATION)
+    fun onPermissionDenied() {
+        Toast.makeText(this.context, getString(R.string.permission_location_denied), Toast.LENGTH_LONG).show()
+    }
+
+    @NeedsPermission(Manifest.permission.ACCESS_FINE_LOCATION)
+    fun loadLocation() {
+        locationViewModel
+            .get()
+            .subscribeOn(schedulers.io())
+            .observeOn(schedulers.ui())
+            .onErrorReturn { Either.Left(LocationFailure.LocationNotAvailableFailure()) }
+            .subscribe(::locationHandler)
+            .addTo(subscriptions)
+    }
 
     private fun locationHandler(data: Either<Failure, Location>) {
         data.either(::handleFailure, ::handleLocation)
@@ -143,42 +151,8 @@ class WeatherFragment : BaseFragment() {
         forecastAdapter.collection = anylist
     }
 
-    private fun requestLocationPermission() {
-        Timber.d("Requesting permission begin")
-        if (checkSelfPermission(context!!,
-                android.Manifest.permission.ACCESS_FINE_LOCATION)
-            != PackageManager.PERMISSION_GRANTED) {
-            Timber.d("Requesting: ${android.Manifest.permission.ACCESS_FINE_LOCATION}")
-            Timber.d("Requesting NOW.")
-            requestPermissions(
-                arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION),
-                REQUEST_ACCESS_FINE_LOCATION
-            )
-        } else {
-            Timber.d("Permission is already granted. Proceeding.")
-            loadLocation()
-        }
-    }
-
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        when (requestCode) {
-            REQUEST_ACCESS_FINE_LOCATION -> {
-                // If request is cancelled, the result arrays are empty.
-                Timber.d("WeatherRequest Code was: $REQUEST_ACCESS_FINE_LOCATION")
-                if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
-                    Timber.d("Permission granted.")
-                    Toast.makeText(this.context, R.string.permission_granted, Toast.LENGTH_LONG).show()
-                    loadLocation()
-                } else {
-                    Timber.d("Permission denied.")
-                    Toast.makeText(this.context, R.string.permission_missing, Toast.LENGTH_LONG).show()
-                }
-                return
-            }
-            else -> {
-                Timber.d("Im leaving.")
-                super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-            }
-        }
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        onRequestPermissionsResult(requestCode, grantResults)
     }
 }

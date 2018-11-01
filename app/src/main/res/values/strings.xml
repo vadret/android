@@ -51,7 +51,9 @@
     <string name="no_network_available">No network available</string>
 
     <string name="data_not_available_at_this_location">No weather data available for this location.</string>
-    <string name="permission_missing">Application is missing required permissions to function.</string>
+    <string name="permission_storage_denied">Storage permission denied!</string>
+    <string name="permission_location_denied">Location permission denied!</string>
+    <string name="permission_missing">Some permissions missing. Functionality will be limited.</string>
     <string name="permission_granted">Permission allowed!</string>
     <string name="permission_denied">Permission denied!</string>
 
