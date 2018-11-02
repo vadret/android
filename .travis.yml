@@ -26,6 +26,7 @@ after_success:
 before_install:
 - openssl aes-256-cbc -K $encrypted_f7c7591dbff3_key -iv $encrypted_f7c7591dbff3_iv
   -in .keystore.enc -out .keystore -d
+# test
 deploy:
   provider: releases
   overwrite: true
