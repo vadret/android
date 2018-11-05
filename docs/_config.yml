@@ -17,7 +17,7 @@ title: Vädret
 email: niclas dot kroon at protonmail dot ch
 description: >- # this means to ignore newlines until "baseurl:"
   This is the home of the Vädret app, here you can find updates, licenses.
-baseurl: "" # the subpath of your site, e.g. /blog
+baseurl: "android/" # the subpath of your site, e.g. /blog
 url: "" # the base hostname & protocol for your site, e.g. http://example.com
 github_username: sphrak
 
