@@ -26,6 +26,7 @@ This project tries to obey the [Clean Architecture](https://8thlight.com/blog/un
 ![Weather](https://raw.githubusercontent.com/vadret/android/master/assets/weather.png)
 ![Warning](https://raw.githubusercontent.com/vadret/android/master/assets/warning.png)
 ![Radar](https://raw.githubusercontent.com/vadret/android/master/assets/radar.png)
+![Settings](https://raw.githubusercontent.com/vadret/android/master/assets/settings.png)
 
 ## Android Architecture Components
 
