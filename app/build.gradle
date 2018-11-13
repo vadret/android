@@ -21,6 +21,16 @@ def static loadFromFile(String key, String file) {
 }
 
 def isRunningOnTravis = System.getenv("CI") == "true"
+
+def getGitSha = { ->
+    def stdout = new ByteArrayOutputStream()
+    exec {
+        commandLine 'git', 'rev-parse', '--short' , 'HEAD'
+        standardOutput = stdout
+    }
+    return stdout.toString().trim()
+}
+
 android {
     compileSdkVersion 28
     dataBinding {
@@ -75,7 +85,7 @@ android {
             shrinkResources true
             versionNameSuffix "-unsigned"
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            resValue "string", "app_version", "${defaultConfig.versionName}${versionNameSuffix}"
+            resValue "string", "app_version", "${defaultConfig.versionName}${versionNameSuffix}-${getGitSha}"
             signingConfig debug.signingConfig
         }
         release {
@@ -89,8 +99,8 @@ android {
         debug {
             ext.enableCrashlytics = false
             testCoverageEnabled = true
-            versionNameSuffix "-debug"
-            resValue "string", "app_version", "${defaultConfig.versionName}${versionNameSuffix}"
+            versionNameSuffix "debug"
+            resValue "string", "app_version", "${defaultConfig.versionName}-${versionNameSuffix}-${getGitSha}"
         }
     }
     lintOptions {
