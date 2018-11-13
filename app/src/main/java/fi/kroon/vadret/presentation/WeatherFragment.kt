@@ -43,7 +43,7 @@ import fi.kroon.vadret.presentation.viewmodel.SharedPreferencesViewModel
 import fi.kroon.vadret.presentation.viewmodel.SuggestionViewModel
 import fi.kroon.vadret.presentation.viewmodel.WeatherViewModel
 import fi.kroon.vadret.utils.Schedulers
-import fi.kroon.vadret.utils.extensions.splitByCommaTakeFirst
+import fi.kroon.vadret.utils.extensions.splitBySpaceTakeFirst
 import fi.kroon.vadret.utils.extensions.toCoordinate
 import fi.kroon.vadret.utils.extensions.toGone
 import fi.kroon.vadret.utils.extensions.toInvisible
@@ -511,7 +511,7 @@ class WeatherFragment : BaseFragment() {
         nominatim.let { _ ->
             if (nominatim.address?.city != null && nominatim.address.state != null) {
                 val city = nominatim.address.city
-                val state = nominatim.address.state.splitByCommaTakeFirst()
+                val state = nominatim.address.state.splitBySpaceTakeFirst()
                 val banner: String by lazy { "$city, $state ${resources.getString(R.string.county)}" }
                 Timber.d("Updating actionbar: $banner")
 
@@ -523,7 +523,7 @@ class WeatherFragment : BaseFragment() {
                 }
             } else if (nominatim.address?.hamlet != null && nominatim.address.state != null) {
                 val city = nominatim.address.hamlet
-                val state = nominatim.address.state.splitByCommaTakeFirst()
+                val state = nominatim.address.state.splitBySpaceTakeFirst()
                 val banner: String by lazy { "$city, $state ${resources.getString(R.string.county)}" }
                 Timber.d("Updating actionbar: $banner")
                 putString(DEFAULT_CITY_KEY, city)
@@ -533,7 +533,7 @@ class WeatherFragment : BaseFragment() {
                 }
             } else if (nominatim.address?.village != null && nominatim.address.state != null) {
                 val city = nominatim.address.village
-                val state = nominatim.address.state.splitByCommaTakeFirst()
+                val state = nominatim.address.state.splitBySpaceTakeFirst()
                 val banner: String by lazy { "$city, $state ${resources.getString(R.string.county)}" }
                 Timber.d("Updating actionbar: $banner")
                 putString(DEFAULT_CITY_KEY, city)
