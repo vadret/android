@@ -19,6 +19,15 @@ data itself is licensed under [Creative commons Erkännande 4.0 SE](https://www.
 * [Radar documentation](https://opendata.smhi.se/apidocs/radar/)
 * [Radar data](https://opendata.smhi.se/apidocs/radar/data.html)
 
+## Download
+
+[<img src="https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png"
+      alt="Download from Google Play"
+      height="80">](https://play.google.com/store/apps/details?id=fi.kroon.vadret)
+[<img src="https://f-droid.org/badge/get-it-on.png"
+      alt="Get it on F-Droid"
+      height="80">](https://f-droid.org/packages/fi.kroon.vadret/)
+
 ## Architecture
 This project tries to obey the [Clean Architecture](https://8thlight.com/blog/uncle-bob/2012/08/13/the-clean-architecture.html) approach to application design.
 
