@@ -1,17 +1,16 @@
 package fi.kroon.vadret.presentation
 
-import android.Manifest
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.View
 import android.widget.SeekBar
-import android.widget.Toast
 import androidx.annotation.StringRes
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import com.squareup.picasso.Picasso
 import com.squareup.picasso.Target
+import fi.kroon.vadret.BuildConfig
 import fi.kroon.vadret.R
 import fi.kroon.vadret.data.DEFAULT_BOUNDINGBOX_CENTER_LATITUDE
 import fi.kroon.vadret.data.DEFAULT_BOUNDINGBOX_CENTER_LONGITUDE
@@ -39,6 +38,7 @@ import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
 import io.reactivex.rxkotlin.addTo
 import kotlinx.android.synthetic.main.radar_fragment.*
+import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.tilesource.XYTileSource
 import org.osmdroid.util.BoundingBox
 import org.osmdroid.util.GeoPoint
@@ -46,14 +46,10 @@ import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.GroundOverlay2
 import org.threeten.bp.OffsetDateTime
 import org.threeten.bp.format.DateTimeFormatter
-import permissions.dispatcher.NeedsPermission
-import permissions.dispatcher.OnPermissionDenied
-import permissions.dispatcher.RuntimePermissions
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
-@RuntimePermissions
 class RadarFragment : BaseFragment() {
 
     override fun layoutId() = R.layout.radar_fragment
@@ -75,7 +71,16 @@ class RadarFragment : BaseFragment() {
         super.onCreate(savedInstanceState)
         cmp.inject(this)
         radarViewModel = viewModel(viewModelFactory) {}
-        initialiseWithPermissionCheck()
+        initialiseMapConfiguration()
+    }
+
+    private fun initialiseMapConfiguration() {
+        val configuration = Configuration.getInstance()
+        val basePath = java.io.File(context?.cacheDir!!.absolutePath, "osmdroid")
+        configuration.osmdroidBasePath = basePath
+        val tileCache = java.io.File(configuration.osmdroidBasePath.absolutePath, "tile")
+        configuration.osmdroidTileCache = tileCache
+        configuration.userAgentValue = BuildConfig.APPLICATION_ID
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -102,7 +107,7 @@ class RadarFragment : BaseFragment() {
         mapView.onDetach()
     }
 
-    fun initialiseMapView() {
+    private fun initialiseMapView() {
         mapView = view?.findViewById(R.id.mapView)!!
         mapView.setTileSource(DEFAULT_TILE_SOURCE)
         mapView.isTilesScaledToDpi = true
@@ -115,7 +120,6 @@ class RadarFragment : BaseFragment() {
         mapView.setScrollableAreaLimitDouble(BoundingBox(DEFAULT_LATITUDE_MAX, DEFAULT_LONGITUDE_MAX, DEFAULT_LATITUDE_MIN, DEFAULT_LONGITUDE_MIN))
     }
 
-    @NeedsPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
     fun initialise() {
         loadRadar(RadarRequest())
     }
@@ -128,11 +132,6 @@ class RadarFragment : BaseFragment() {
             .onErrorReturn { Either.Left(RadarFailure.NoRadarAvailable()) }
             .subscribe(::radarHandler)
             .addTo(subscriptions)
-    }
-
-    @OnPermissionDenied(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-    fun onStoragePermissionDenied() {
-        Toast.makeText(this.context, getString(R.string.permission_storage_denied), Toast.LENGTH_LONG).show()
     }
 
     private fun radarHandler(data: Either<Failure, Radar>) {
