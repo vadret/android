@@ -58,6 +58,9 @@ This project uses [ktlint](https://github.com/shyiko/ktlint) for linting and [co
 ./gradlew ktlintFormat 	# lint check format
 ```
 
+## Changelog
+A changelog in the [keep-a-changelog](https://keepachangelog.com/en/1.0.0/) format is available [here](https://github.com/vadret/android/blob/master/app/src/main/res/raw/changelog.md).
+
 ## Code Contribution Guidelines
 If you would like to contribute code to the project fork the project and find an issue/feature you would like to work on. Ideally check with a maintainer so you dont work on something that might be in the workings already.
 
