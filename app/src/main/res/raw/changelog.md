@@ -26,13 +26,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added download links in readme Google Play, F-Droid
 
 ### Fixed
-- Survive configuration change
+- Temporary fix for configuration change
 - Localization bug caused 'county county' to appear
 
 ### Changed
 - Sort thirdparty libraries alphabetically
 - Debug builds contains rev-parse in version string
-- FAB only visible in non-GPS mode
 
 ### Removed
 - Storage permission no longer needed for caching map data
