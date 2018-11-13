@@ -131,7 +131,7 @@ dependencies {
     def OSMDROID_VERSION = "6.0.2"
     def PICASSO_VERSION = "2.71828"
     def PERMISSIONS_DISPATCHER_VERSION = "4.0.0"
-    def CRASHLYTICS_VERSION = "2.9.5"
+    def CRASHLYTICS_VERSION = "2.9.6"
 
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
