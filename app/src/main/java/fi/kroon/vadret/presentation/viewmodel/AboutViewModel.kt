@@ -132,6 +132,8 @@ class AboutViewModel @Inject constructor(
             source = "https://github.com/JakeWharton/timber",
             license = "https://github.com/JakeWharton/timber/blob/master/LICENSE.txt"
         )
+    ).sortedWith(
+        compareBy { it.title }
     )
 
     fun getLibraries() = libraries
