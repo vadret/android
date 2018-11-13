@@ -4,6 +4,7 @@ import fi.kroon.vadret.data.DEFAULT_SUGGESTION_LIMIT
 import fi.kroon.vadret.data.exception.Either
 import fi.kroon.vadret.data.exception.Failure
 import fi.kroon.vadret.data.exception.map
+import fi.kroon.vadret.data.suggestion.model.State
 import fi.kroon.vadret.domain.SuggestionUseCase
 import fi.kroon.vadret.utils.Schedulers
 import io.reactivex.Single

@@ -1,4 +1,4 @@
-package fi.kroon.vadret.presentation.viewmodel
+package fi.kroon.vadret.data.suggestion.model
 
 import androidx.recyclerview.widget.DiffUtil
 
