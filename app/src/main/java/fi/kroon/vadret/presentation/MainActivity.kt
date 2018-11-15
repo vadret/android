@@ -48,7 +48,6 @@ class MainActivity : AppCompatActivity() {
         return NavigationUI.navigateUp(
             Navigation.findNavController(this, R.id.nav_host_fragment),
             drawerLayout
-
         )
     }
 

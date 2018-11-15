@@ -6,7 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import fi.kroon.vadret.VadretApplication
+import fi.kroon.vadret.BaseApplication
 import fi.kroon.vadret.di.component.VadretApplicationComponent
 import io.reactivex.disposables.CompositeDisposable
 import javax.inject.Inject
@@ -17,7 +17,7 @@ abstract class BaseFragment : Fragment() {
     protected val subscriptions = CompositeDisposable()
 
     val cmp: VadretApplicationComponent by lazy(mode = LazyThreadSafetyMode.NONE) {
-        (activity?.application as VadretApplication).cmp
+        (activity?.application as BaseApplication).cmp
     }
 
     @Inject

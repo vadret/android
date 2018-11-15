@@ -47,13 +47,14 @@ android {
         versionCode 2
         versionName "0.1.1"
         vectorDrawables.useSupportLibrary = true
+        flavorDimensions "default"
         testInstrumentationRunner "androidx.top.runner.AndroidJUnitRunner"
         if (isRunningOnTravis) {
             manifestPlaceholders = [ FABRIC_API_KEY:loadFromEnvironment("FABRIC_API_KEY") ]
         } else {
             manifestPlaceholders = [ FABRIC_API_KEY:loadFromFile("FABRIC_API_KEY", ".env") ]
         }
-        //multiDexEnabled true
+        multiDexEnabled true
     }
     signingConfigs {
         release {
@@ -77,30 +78,40 @@ android {
         signingConfigs.release.keyAlias = loadFromFile("keyAlias", "keystore.properties")
         signingConfigs.release.keyPassword = loadFromFile("keyPassword", "keystore.properties")
     }
-
+    packagingOptions {
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/notice'
+        exclude 'META-INF/notice.txt'
+        exclude 'META-INF/license'
+        exclude 'META-INF/license.txt'
+    }
     buildTypes {
-        github {
-            minifyEnabled true
-            zipAlignEnabled true
-            shrinkResources true
-            versionNameSuffix "-unsigned"
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            resValue "string", "app_version", "${defaultConfig.versionName}${versionNameSuffix}-${getGitSha}"
-            signingConfig debug.signingConfig
-        }
         release {
             minifyEnabled true
             zipAlignEnabled true
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             resValue "string", "app_version", "${defaultConfig.versionName}"
-            signingConfig signingConfigs.release
         }
         debug {
             ext.enableCrashlytics = false
             testCoverageEnabled = true
             versionNameSuffix "debug"
             resValue "string", "app_version", "${defaultConfig.versionName}-${versionNameSuffix}-${getGitSha}"
+        }
+    }
+    productFlavors {
+        google {
+            signingConfig signingConfigs.release
+        }
+        fdroid {
+            signingConfig fdroid.signingConfig
+        }
+        github {
+            versionNameSuffix "unsigned"
+            signingConfig github.signingConfig
+            resValue "string", "app_version", "${defaultConfig.versionName}-${getGitSha}-${versionNameSuffix}"
         }
     }
     lintOptions {
@@ -143,10 +154,8 @@ dependencies {
     implementation "com.github.hotchemi:permissionsdispatcher:${PERMISSIONS_DISPATCHER_VERSION}"
     kapt "com.github.hotchemi:permissionsdispatcher-processor:${PERMISSIONS_DISPATCHER_VERSION}"
 
-    // Crashlytics
-    implementation("com.crashlytics.sdk.android:crashlytics:${CRASHLYTICS_VERSION}@aar") {
-        transitive = true;
-    }
+    // Crashlytics -- should only be available for the google product flavor
+    googleImplementation("com.crashlytics.sdk.android:crashlytics:${CRASHLYTICS_VERSION}@aar") { transitive = true }
 
     // Picasso
     implementation "com.squareup.picasso:picasso:${PICASSO_VERSION}"
@@ -162,7 +171,6 @@ dependencies {
     // LeakCanary
     debugImplementation "com.squareup.leakcanary:leakcanary-android:${LEAK_CANARY}"
     releaseImplementation "com.squareup.leakcanary:leakcanary-android-no-op:${LEAK_CANARY}"
-    githubImplementation "com.squareup.leakcanary:leakcanary-android-no-op:${LEAK_CANARY}"
     debugImplementation "com.squareup.leakcanary:leakcanary-support-fragment:${LEAK_CANARY}"
 
     // Fragment
@@ -216,7 +224,7 @@ dependencies {
     implementation 'io.reactivex.rxjava2:rxkotlin:2.3.0'
     implementation 'io.reactivex.rxjava2:rxandroid:2.1.0'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.3.0"
-    /*testImplementation "org.jetbrains.kotlin:kotlin-top-junit:${KOTLIN_VERSION}"*/
+    //testImplementation "org.jetbrains.kotlin:kotlin-top-junit:${KOTLIN_VERSION}"
 
     // OffsetDateTime backport
     implementation "com.jakewharton.threetenabp:threetenabp:1.1.1"

@@ -5,7 +5,7 @@ import android.content.SharedPreferences
 import android.os.Bundle
 import androidx.preference.PreferenceFragmentCompat
 import fi.kroon.vadret.R
-import fi.kroon.vadret.VadretApplication
+import fi.kroon.vadret.BaseApplication
 import fi.kroon.vadret.data.DEFAULT_PREFERENCES
 import fi.kroon.vadret.di.component.VadretApplicationComponent
 import javax.inject.Inject
@@ -16,7 +16,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
     lateinit var sharedPreferences: SharedPreferences
 
     val cmp: VadretApplicationComponent by lazy(mode = LazyThreadSafetyMode.NONE) {
-        (activity?.application as VadretApplication).cmp
+        (activity?.application as BaseApplication).cmp
     }
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
