@@ -20,6 +20,8 @@ android:
 script:
 - "./gradlew ktlint"
 - "./gradlew clean build"
+- "./gradlew tasks"
+- "./gradlew assembleGithub"
 - "./gradlew test jacocoTestReport"
 after_success:
 - bash <(curl -s https://codecov.io/bash)
@@ -33,7 +35,7 @@ deploy:
   api_key:
     secure: nHCCJP7UpLOefdgxMJYLfLVXGwSzs2Ox2qcF2Syuo4kTwUKYLu4dkCgUpFxg5JRf6gBkgnFIY1d6O3JiwV/XoS0kxxoRvGdeHrK/HcyPbbMgzNBezwTtwp9ls4U32vDsTYt3altDkEv5Dj/Gs/hn5HxVJOKsadUvQqqpjA6GtPCSWPigb0Ue8mvfBFwkEU023vdBGui/V8bf/GMiBEk0UK9f1Uf+QL0Jnts+7kilNMPNT2NT6mYzZFzQ2VCeMG7YJ5aqfm1L+6HthHU3DWw1FRf4MPo3wA15yrD7lDsXbCl980haXwBZhgeoPvMHrOWdpvBoSxnaAaG7RWRgLlO5Rb3k8M3Xs7k7RStmhHtzC2mIRrdcT0hFOjjlsns6fsV0l4YZIwKkHBEJ5gSh0fPusCGsAhnAIZVwrmg5EpAhHcd1CqkxnQzV2uCRHGTse5kW26DEIeP7yeopy8agqabT4zVZuqecD9jG9DPo23he4adcjFR24EOcI3w2GaglAyzEOHh1Frhl7RIqANkJSH2EEFqM6xiEKp3vfG18VeLvvQ0Rkv/WqHkBhC+p+iTKjKI6X3aUmX7t3ZMuuyhQYrngyvHKpWA4vaF/Sd9x4auOAha+y13ebXMcLlgrPW/CjGp4LsT5xWUyzZhj1IsqldD230sLrfilmSm43hZcygYxvTk=
   file_glob: true
-  file: "**/github/app-github-release.apk"
+  file: "**/app-github-release-unsigned.apk"
   on:
     tags: true
     repo: vadret/android
