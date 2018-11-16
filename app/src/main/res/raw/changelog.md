@@ -5,19 +5,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.2.0] -- TBD
-
-### Added
-- Forecast widget
-- Custom TIFF colored radar imagery
-- Shows current position on map
+## [0.1.3] -- 2018-11-18
 
 ### Fixed
-- Use custom adapter to serialize broken upstream response
-
-### Changed
-- Rx subscriptions happens in viewmodel
-- Recyclerview uses diffutil to support anim
+- Workaround for upstream API bug (issue: #50)
 
 ## [0.1.2] -- 2018-11-16
 
@@ -53,8 +44,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Radar imagery
 - 10 day weather forecast
 
-[Unreleased]: https://github.com/vadret/android/compare/0.1.2...HEAD
-[0.2.0]: https://github.com/vadret/android.compare/0.1.2...0.2.0
+[Unreleased]: https://github.com/vadret/android/compare/0.1.3...HEAD
+[0.1.3]: https://github.com/vadret/android/compare/0.1.2...0.1.3
 [0.1.2]: https://github.com/vadret/android/compare/0.1.1...0.1.2
 [0.1.1]: https://github.com/vadret/android/compare/0.1.0...0.1.1
 [0.1.0]: https://github.com/vadret/android/releases/tag/0.1.0

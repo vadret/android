@@ -8,6 +8,7 @@ import fi.kroon.vadret.data.API_RADAR_URL
 import fi.kroon.vadret.data.BASE_API_URL
 import fi.kroon.vadret.data.alert.AlertApi
 import fi.kroon.vadret.data.alert.AlertRepository
+import fi.kroon.vadret.data.alert.adapter.SingleToArrayAdapter
 import fi.kroon.vadret.data.nominatim.NominatimRepository
 import fi.kroon.vadret.data.nominatim.net.NominatimApi
 import fi.kroon.vadret.data.radar.RadarRepository
@@ -75,6 +76,7 @@ class ApiServiceModule {
         @VadretApplicationScope
         fun moshi(): Moshi = Moshi
                 .Builder()
+                .add(SingleToArrayAdapter.INSTANCE)
                 .build()
 
         @Nominatim
