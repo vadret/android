@@ -9,15 +9,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Forecast widget
-- Custom TIFF colored 
+- Custom TIFF colored radar imagery
 - Shows current position on map
 
-### Fixes
+### Fixed
 - Use custom adapter to serialize broken upstream response
 
 ### Changed
 - Rx subscriptions happens in viewmodel
 - Recyclerview uses diffutil to support anim
+
+## [0.1.2] -- 2018-11-16
+
+### Changed
+- Free and non-free build flavors
+
+### Fixed
+- Dropped legacy icons from lower api levels
 
 ## [0.1.1] -- 2018-11-13
 
@@ -37,15 +45,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Storage permission no longer needed for caching map data
 
 ## 0.1.0 -- 2018-11-12
-### Added
 
+### Added
 - Location by GPS
 - Location by Nominatim
 - Currently issued warnings
 - Radar imagery
 - 10 day weather forecast
 
-[Unreleased]: https://github.com/vadret/android/compare/0.1.0...HEAD
-[0.2.0]: https://github.com/vadret/android.compare/0.1.1...0.2.0
+[Unreleased]: https://github.com/vadret/android/compare/0.1.2...HEAD
+[0.2.0]: https://github.com/vadret/android.compare/0.1.2...0.2.0
+[0.1.2]: https://github.com/vadret/android/compare/0.1.1...0.1.2
 [0.1.1]: https://github.com/vadret/android/compare/0.1.0...0.1.1
 [0.1.0]: https://github.com/vadret/android/releases/tag/0.1.0
