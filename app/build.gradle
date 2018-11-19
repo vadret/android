@@ -110,9 +110,9 @@ android {
             signingConfig fdroid.signingConfig
         }
         github {
+            signingConfig signingConfigs.release
             ext.enableCrashlytics = false
-            versionNameSuffix "unsigned"
-            signingConfig github.signingConfig
+            versionNameSuffix "signed"
             resValue "string", "app_version", "${defaultConfig.versionName}-${getGitSha}-${versionNameSuffix}"
         }
     }
