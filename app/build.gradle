@@ -10,14 +10,15 @@ def static loadFromEnvironment(String key) {
     return System.getenv(key)
 }
 
-def static loadFromFile(String key, String file) {
-    /**
-     *  loads a key from a file and returns
-     *  it. Else a empty string is returned.
-     */
-    def inputFileProperties = new Properties()
-    inputFileProperties.load(new FileInputStream(file))
-    return inputFileProperties[key]
+def static loadFromFile(String key, String value) {
+    def properties = new Properties()
+    def loadedFile = new File(value)
+    if (loadedFile.canRead()) {
+        properties.load(new FileInputStream(value))
+        return properties[key]
+    } else {
+        return "INVALID_KEY"
+    }
 }
 
 def isRunningOnTravis = System.getenv("CI") == "true"
@@ -49,10 +50,9 @@ android {
         vectorDrawables.useSupportLibrary = true
         flavorDimensions "default"
         testInstrumentationRunner "androidx.top.runner.AndroidJUnitRunner"
+        manifestPlaceholders = [ FABRIC_API_KEY:loadFromFile("FABRIC_API_KEY", ".env") ]
         if (isRunningOnTravis) {
             manifestPlaceholders = [ FABRIC_API_KEY:loadFromEnvironment("FABRIC_API_KEY") ]
-        } else {
-            manifestPlaceholders = [ FABRIC_API_KEY:loadFromFile("FABRIC_API_KEY", ".env") ]
         }
         multiDexEnabled true
     }
@@ -106,9 +106,11 @@ android {
             signingConfig signingConfigs.release
         }
         fdroid {
+            ext.enableCrashlytics = false
             signingConfig fdroid.signingConfig
         }
         github {
+            ext.enableCrashlytics = false
             versionNameSuffix "unsigned"
             signingConfig github.signingConfig
             resValue "string", "app_version", "${defaultConfig.versionName}-${getGitSha}-${versionNameSuffix}"
