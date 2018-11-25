@@ -6,6 +6,7 @@ sealed class Failure {
     class NetworkException : Failure()
     class NetworkOfflineFailure : Failure()
 
+    class HttpNotModified304 : Failure()
     class HttpBadRequest400 : Failure()
     class HttpInternalServerError500 : Failure()
     class HttpForbidden403 : Failure()

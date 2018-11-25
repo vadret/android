@@ -78,6 +78,7 @@ class AlertRepositoryTest {
     fun `alertApi returns Alert`() {
 
         doReturn(true).`when`(mockNetworkHandler).isConnected
+        doReturn(200).`when`(mockResponse).code()
         doReturn(mockAlert).`when`(mockResponse).body()?.alert
         doReturn(Single.just(mockResponse)).`when`(mockAlertApi).get()
 

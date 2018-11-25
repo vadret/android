@@ -86,6 +86,7 @@ class AlertFragment : BaseFragment() {
             is AlertFailure.NoAlertAvailable -> renderFailure(R.string.no_warnings_issued)
             is Failure.IOException -> renderFailure(R.string.io_exception)
             is Failure.NetworkException -> renderFailure(R.string.network_failure)
+            is Failure.HttpNotModified304 -> renderFailure(R.string.http_not_modified_304)
             is Failure.NetworkOfflineFailure -> renderFailure(R.string.no_network_available)
         }
     }
