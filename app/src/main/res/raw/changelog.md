@@ -5,10 +5,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.1.3] -- 2018-11-18
+## [0.1.3] -- 2018-11-26
 
 ### Fixed
 - Workaround for upstream API bug (issue: #50)
+
+### Changed
+- Better error handling on empty response
 
 ## [0.1.2] -- 2018-11-16
 
