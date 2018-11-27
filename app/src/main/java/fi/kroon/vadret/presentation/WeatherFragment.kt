@@ -117,6 +117,7 @@ class WeatherFragment : BaseFragment() {
     override fun onResume() {
         super.onResume()
         showActionBar()
+        hideAppName()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -288,6 +289,7 @@ class WeatherFragment : BaseFragment() {
 
     private fun hideActionBar() = (activity as MainActivity).hideActionBar()
     private fun showActionBar() = (activity as MainActivity).showActionBar()
+    private fun hideAppName() = (activity as MainActivity).hideAppName()
 
     private fun collapseSearchView() = nominatimSearch.toGone()
 
