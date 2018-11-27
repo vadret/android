@@ -543,6 +543,16 @@ class WeatherFragment : BaseFragment() {
                 banner.let {
                     (activity as MainActivity).renderActionBarNominatim(it)
                 }
+            } else if (nominatim.address?.suburb != null && nominatim.address.state != null) {
+                val city = nominatim.address.suburb
+                val state = nominatim.address.state.splitBySpaceTakeFirst()
+                val banner: String by lazy { "$city, $state" }
+                Timber.d("Updating actionbar: $banner")
+                putString(DEFAULT_CITY_KEY, city)
+                putString(DEFAULT_PROVINCE_KEY, state)
+                banner.let {
+                    (activity as MainActivity).renderActionBarNominatim(it)
+                }
             } else {
                 Timber.d("Location Statusbar criteria was not met. Not rendering it.")
                 Timber.d("Nominatim: $nominatim")
