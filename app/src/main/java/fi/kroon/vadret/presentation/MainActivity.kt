@@ -18,6 +18,7 @@ import fi.kroon.vadret.utils.extensions.splitBySpaceTakeFirst
 import fi.kroon.vadret.utils.extensions.toGone
 import fi.kroon.vadret.utils.extensions.toVisible
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.nav_header.view.*
 import timber.log.Timber
 
 class MainActivity : AppCompatActivity() {
@@ -42,6 +43,18 @@ class MainActivity : AppCompatActivity() {
         PreferenceManager.setDefaultValues(this, DEFAULT_PREFERENCES, MODE_PRIVATE, R.xml.preferences, false)
 
         binding.navigationView.setupWithNavController(navController)
+        hideAppName()
+    }
+
+    fun hideAppName() {
+        val systemScale: Float = resources.displayMetrics.density
+        val fontScale: Float = resources.configuration.fontScale
+        Timber.d("System scale: $systemScale")
+        Timber.d("Font scale: $fontScale")
+
+        if (fontScale > 1.0 || systemScale > 2.625) {
+            toolBar.title = ""
+        }
     }
 
     override fun onSupportNavigateUp(): Boolean {

@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="fadedgray">#ccffffff</color>
     <color name="colorPrimary">#252f4e</color>
     <color name="colorPrimaryDark">#202842</color>
-    <color name="dashboard">#34426e</color>
+    <color name="dashboard">#5C2BAC</color>
     <color name="colorAccent">#D81B60</color>
     <color name="yellow">#fac413</color>
     <color name="yellowlight">#ffd900</color>

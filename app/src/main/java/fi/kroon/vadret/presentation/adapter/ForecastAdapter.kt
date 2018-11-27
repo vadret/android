@@ -49,12 +49,6 @@ class ForecastAdapter @Inject constructor() : RecyclerView.Adapter<RecyclerView.
                 if (it.name == "t") {
                     Timber.d("t: ${it.values[0]}")
                     itemView.temperature.text = it.values[0].toString()
-                } else if (it.name == "r") {
-                    Timber.d("r: ${it.values[0]}")
-                    itemView.r.text = it.values[0].toInt().toString()
-                } else if (it.name == "gust") {
-                    Timber.d("gust: ${it.values[0]}")
-                    itemView.gust.text = it.values[0].toString()
                 } else if (it.name == "Wsymb2") {
                     Timber.d("wsymb2: ${it.values[0]}")
                     itemView.wsymb2.setText(handleWsymb2Description(it.values[0].toInt()))
