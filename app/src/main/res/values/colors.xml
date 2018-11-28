@@ -13,4 +13,11 @@
     <color name="two">#2b3595</color>
     <color name="three">#573697</color>
     <color name="actionbar">#742dd2</color>
+    <color name="warning_class_1">#73FFAD1F</color>
+    <color name="warning_class_2">#a1E97D1F</color>
+    <color name="warning_class_3">#a1D12A2A</color>
+    <color name="message_high_temperature">#a1b5e5af</color>
+    <color name="risk_for_very_difficult_weather">#a175d5ff</color>
+    <color name="risk_for_fire">#a17B4AC2</color>
+    <color name="the_one">#1A7B4AC2</color>
 </resources>

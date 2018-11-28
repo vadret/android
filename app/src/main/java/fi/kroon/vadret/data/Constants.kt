@@ -34,3 +34,7 @@ const val FINLAND = "fi"
 const val POLAND = "pl"
 const val DENMARK = "dk"
 const val GERMANY = "de"
+const val SECOND_MILLIS = 1000
+const val MINUTE_MILLIS = 60 * SECOND_MILLIS
+const val HOUR_MILLIS = 60 * MINUTE_MILLIS
+const val DAY_MILLIS = 24 * HOUR_MILLIS
