@@ -15,10 +15,9 @@ class LocationViewModel @Inject constructor(
     private val locationUseCase: LocationUseCase
 ) : BaseViewModel() {
 
-    fun get(): Single<Either<Failure, Location>> = locationUseCase.get()
-        .doOnEvent { t1, t2 ->
-            Timber.d("T1: $t1, T2: $t2")
-        }.doOnError {
+    fun get(): Single<Either<Failure, Location>> = locationUseCase
+        .get()
+        .doOnError {
             Timber.d("$it")
         }.onErrorReturn {
             Either.Left(LocationFailure.LocationNotAvailableFailure())

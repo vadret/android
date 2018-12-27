@@ -14,10 +14,6 @@ import javax.inject.Inject
 class LocationProvider @Inject constructor(
     private val locationManager: LocationManager
 ) : LocationListener {
-    companion object {
-        const val MIN_TIME = 1000L * 60L
-        const val MIN_DISTANCE = 100f
-    }
 
     fun get(): Either<Failure, Location> {
         try {
@@ -87,16 +83,8 @@ class LocationProvider @Inject constructor(
     }
 
     @SuppressLint("MissingPermission")
-    fun getLocationFromProvider(provider: String): android.location.Location? {
-        locationManager.requestLocationUpdates(
-            provider,
-            MIN_TIME,
-            MIN_DISTANCE,
-            this
-        )
-
-        return locationManager.getLastKnownLocation(provider)
-    }
+    fun getLocationFromProvider(provider: String): android.location.Location? = locationManager
+        .getLastKnownLocation(provider)
 
     private fun logAvailableSource(isGPSEnabled: Boolean, isNlpEnabled: Boolean) {
         if (isGPSEnabled) {
