@@ -114,4 +114,5 @@
     <string name="published">Publicerad</string>
     <string name="in_the_future">i framtiden</string>
     <string name="preferences_use_gps_by_default_desc" translatable="false">Använd GPS som standard</string>
+    <string name="feels_like">Känns som</string>
 </resources>

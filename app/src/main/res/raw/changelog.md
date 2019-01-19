@@ -5,6 +5,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.7] -- 2019-01-19
+
+### Added
+- Show 'feels like' temperature
+
 ## [0.1.6] -- 2018-12-27
 
 ### Fixed
@@ -65,7 +70,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Radar imagery
 - 10 day weather forecast
 
-[Unreleased]: https://github.com/vadret/android/compare/0.1.6...HEAD
+[Unreleased]: https://github.com/vadret/android/compare/0.1.7...HEAD
+[0.1.7]: https://github.com/vadret/android/compare/0.1.6...0.1.7
 [0.1.6]: https://github.com/vadret/android/compare/0.1.5...0.1.6
 [0.1.5]: https://github.com/vadret/android/compare/0.1.4...0.1.5
 [0.1.4]: https://github.com/vadret/android/compare/0.1.3...0.1.4

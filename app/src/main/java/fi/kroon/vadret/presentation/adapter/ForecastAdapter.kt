@@ -5,10 +5,15 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import fi.kroon.vadret.R
+import fi.kroon.vadret.data.WINDCHILL_FORMULA_MAXIMUM
+import fi.kroon.vadret.data.WINDCHILL_FORMULA_MINIMUM
+import fi.kroon.vadret.data.MPS_TO_KMPH_FACTOR
 import fi.kroon.vadret.data.weather.model.TimeSerie
 import fi.kroon.vadret.di.scope.VadretApplicationScope
-import kotlinx.android.synthetic.main.weather_item_header.view.*
+import fi.kroon.vadret.utils.extensions.toVisible
+import fi.kroon.vadret.utils.extensions.toWindChill
 import kotlinx.android.synthetic.main.weather_item.view.*
+import kotlinx.android.synthetic.main.weather_item_header.view.*
 import org.threeten.bp.LocalDate
 import org.threeten.bp.OffsetDateTime
 import org.threeten.bp.format.TextStyle
@@ -44,15 +49,28 @@ class ForecastAdapter @Inject constructor() : RecyclerView.Adapter<RecyclerView.
             Timber.d("TimeSerie: ${timeSerie.parameters}")
             itemView.time.text = OffsetDateTime.parse(timeSerie.validTime).toLocalTime().toString()
 
-            timeSerie.parameters.map {
-
-                if (it.name == "t") {
-                    Timber.d("t: ${it.values[0]}")
-                    itemView.temperature.text = it.values[0].toString()
-                } else if (it.name == "Wsymb2") {
-                    Timber.d("wsymb2: ${it.values[0]}")
-                    itemView.wsymb2.setText(handleWsymb2Description(it.values[0].toInt()))
-                    itemView.wsymb2Icon.setImageResource(handleWsymb2Icon(it.values[0].toInt()))
+            timeSerie.parameters.map { parameter ->
+                if (parameter.name == "t") {
+                    Timber.d("t: ${parameter.values[0]}")
+                    itemView.temperature.text = parameter.values[0].toString()
+                    if (parameter.values[0] < WINDCHILL_FORMULA_MAXIMUM) {
+                        timeSerie.parameters.map {
+                            when (it.name) {
+                                "ws" -> {
+                                    if (it.values[0] * MPS_TO_KMPH_FACTOR > WINDCHILL_FORMULA_MINIMUM) {
+                                        itemView.feelsLikeTemperature.text = parameter.values[0].toWindChill(it.values[0])
+                                        itemView.feelsLikeTemperature.toVisible()
+                                        itemView.feelsLike.toVisible()
+                                        itemView.feelsLikeTempUnit.toVisible()
+                                    }
+                                }
+                            }
+                        }
+                    }
+                } else if (parameter.name == "Wsymb2") {
+                    Timber.d("wsymb2: ${parameter.values[0]}")
+                    itemView.wsymb2.setText(handleWsymb2Description(parameter.values[0].toInt()))
+                    itemView.wsymb2Icon.setImageResource(handleWsymb2Icon(parameter.values[0].toInt()))
                 }
             }
         }
