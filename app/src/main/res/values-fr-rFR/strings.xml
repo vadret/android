@@ -5,6 +5,7 @@
     <string name="thirdparty">Tiers</string>
     <string name="radar">Radar</string>
     <string name="slogan">Code ouvert, données ouvertes</string>
+    <string name="feels_like">Feels like</string>
     <string name="wsymb2_clear_sky">Ciel dégagé</string>
     <string name="wsymb2_nearly_clear_sky">Ciel presque limpide</string>
     <string name="wsymb2_variable_cloudiness">Varying cloudiness</string>
