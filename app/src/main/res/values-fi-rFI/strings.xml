@@ -5,6 +5,7 @@
     <string name="thirdparty">Thirdparty</string>
     <string name="radar">Tutka</string>
     <string name="slogan">Avoin lähdekoodi, avoin data</string>
+    <string name="feels_like">Feels like</string>
     <string name="wsymb2_clear_sky">Selkeä taivas</string>
     <string name="wsymb2_nearly_clear_sky">Lähes selkeä taivas</string>
     <string name="wsymb2_variable_cloudiness">Varying cloudiness</string>
