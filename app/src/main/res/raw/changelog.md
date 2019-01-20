@@ -5,10 +5,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.1.7] -- 2019-01-19
+## [0.1.7] -- 2019-01-20
 
 ### Added
 - Show 'feels like' temperature
+
+### Changed
+- Updated dependencies
 
 ## [0.1.6] -- 2018-12-27
 
