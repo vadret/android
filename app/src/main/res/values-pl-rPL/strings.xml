@@ -5,6 +5,7 @@
     <string name="thirdparty">Thirdparty</string>
     <string name="radar">Radar</string>
     <string name="slogan">Otwarty kod, otwarte dane</string>
+    <string name="feels_like">Feels like</string>
     <string name="wsymb2_clear_sky">Czyste niebo</string>
     <string name="wsymb2_nearly_clear_sky">Prawie czyste niebo</string>
     <string name="wsymb2_variable_cloudiness">Varying cloudiness</string>
