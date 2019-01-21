@@ -20,4 +20,5 @@
     <color name="risk_for_very_difficult_weather">#a175d5ff</color>
     <color name="risk_for_fire">#a17B4AC2</color>
     <color name="the_one">#1A7B4AC2</color>
+    <color name="shaded">#B4FFFFFF</color>
 </resources>

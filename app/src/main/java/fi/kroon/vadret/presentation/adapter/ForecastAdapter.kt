@@ -17,6 +17,8 @@ import kotlinx.android.synthetic.main.weather_item.view.*
 import kotlinx.android.synthetic.main.weather_item_header.view.*
 import org.threeten.bp.LocalDate
 import org.threeten.bp.OffsetDateTime
+import org.threeten.bp.format.DateTimeFormatter
+import org.threeten.bp.format.FormatStyle
 import org.threeten.bp.format.TextStyle
 import timber.log.Timber
 import java.util.Locale
@@ -37,10 +39,12 @@ class ForecastAdapter @Inject constructor() : RecyclerView.Adapter<RecyclerView.
 
     class WeekdayViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         fun bind(localDate: LocalDate) {
+            val formatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG)
+            itemView.date.text = localDate.format(formatter)
             itemView.weekDay.text = localDate
-                    .dayOfWeek
-                    .getDisplayName(TextStyle.FULL_STANDALONE, Locale.getDefault())
-                    .toUpperCase()
+                .dayOfWeek
+                .getDisplayName(TextStyle.FULL_STANDALONE, Locale.getDefault())
+                .toUpperCase()
         }
     }
 

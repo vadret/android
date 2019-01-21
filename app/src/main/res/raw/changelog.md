@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - 'Feels like' is now properly displayed
 
+### Added
+- Show date besides day
+
 ## [0.1.7] -- 2019-01-20
 
 ### Added

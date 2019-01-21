@@ -29,7 +29,7 @@
         android:layout_height="wrap_content"
         android:text="-1.0"
         android:textAlignment="viewEnd"
-        android:textColor="#B4FFFFFF"
+        android:textColor="@color/shaded"
         android:textSize="14sp"
         android:textStyle="italic"
         android:visibility="invisible"
