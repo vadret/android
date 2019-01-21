@@ -10,6 +10,7 @@ import fi.kroon.vadret.data.WINDCHILL_FORMULA_MINIMUM
 import fi.kroon.vadret.data.MPS_TO_KMPH_FACTOR
 import fi.kroon.vadret.data.weather.model.TimeSerie
 import fi.kroon.vadret.di.scope.VadretApplicationScope
+import fi.kroon.vadret.utils.extensions.toInvisible
 import fi.kroon.vadret.utils.extensions.toVisible
 import fi.kroon.vadret.utils.extensions.toWindChill
 import kotlinx.android.synthetic.main.weather_item.view.*
@@ -46,31 +47,38 @@ class ForecastAdapter @Inject constructor() : RecyclerView.Adapter<RecyclerView.
     class ForecastViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         fun bind(timeSerie: TimeSerie) {
 
-            Timber.d("TimeSerie: ${timeSerie.parameters}")
             itemView.time.text = OffsetDateTime.parse(timeSerie.validTime).toLocalTime().toString()
 
             timeSerie.parameters.map { parameter ->
                 if (parameter.name == "t") {
-                    Timber.d("t: ${parameter.values[0]}")
-                    itemView.temperature.text = parameter.values[0].toString()
-                    if (parameter.values[0] < WINDCHILL_FORMULA_MAXIMUM) {
+                    Timber.d("t: ${parameter.values.first()}")
+                    itemView.temperature.text = parameter.values.first().toString()
+                    if (parameter.values.first() < WINDCHILL_FORMULA_MAXIMUM) {
+                        Timber.d("Temperature ${parameter.values.first()} is less than $WINDCHILL_FORMULA_MAXIMUM")
                         timeSerie.parameters.map {
                             when (it.name) {
                                 "ws" -> {
-                                    if (it.values[0] * MPS_TO_KMPH_FACTOR > WINDCHILL_FORMULA_MINIMUM) {
-                                        itemView.feelsLikeTemperature.text = parameter.values[0].toWindChill(it.values[0])
+                                    if (it.values.first() * MPS_TO_KMPH_FACTOR > WINDCHILL_FORMULA_MINIMUM) {
+                                        Timber.d("Windspeed ${it.values.first() * MPS_TO_KMPH_FACTOR}  is greater than $WINDCHILL_FORMULA_MINIMUM so we render 'feels like'")
+                                        Timber.d("ws: ${it.values.first()}")
+                                        Timber.d("Feels like: ${parameter.values.first().toWindChill(it.values.first())}")
+                                        itemView.feelsLikeTemperature.text = parameter.values.first().toWindChill(it.values.first())
                                         itemView.feelsLikeTemperature.toVisible()
                                         itemView.feelsLike.toVisible()
                                         itemView.feelsLikeTempUnit.toVisible()
+                                    } else {
+                                        itemView.feelsLikeTemperature.toInvisible()
+                                        itemView.feelsLike.toInvisible()
+                                        itemView.feelsLikeTempUnit.toInvisible()
+                                        Timber.d("Windspeed ${it.values.first() * MPS_TO_KMPH_FACTOR}  is less than $WINDCHILL_FORMULA_MINIMUM so we DONT render 'feels like'")
                                     }
                                 }
                             }
                         }
                     }
                 } else if (parameter.name == "Wsymb2") {
-                    Timber.d("wsymb2: ${parameter.values[0]}")
-                    itemView.wsymb2.setText(handleWsymb2Description(parameter.values[0].toInt()))
-                    itemView.wsymb2Icon.setImageResource(handleWsymb2Icon(parameter.values[0].toInt()))
+                    itemView.wsymb2.setText(handleWsymb2Description(parameter.values.first().toInt()))
+                    itemView.wsymb2Icon.setImageResource(handleWsymb2Icon(parameter.values.first().toInt()))
                 }
             }
         }
