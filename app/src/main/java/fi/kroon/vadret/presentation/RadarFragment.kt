@@ -50,6 +50,7 @@ import timber.log.Timber
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
+// TODO - Refactor
 class RadarFragment : BaseFragment() {
 
     override fun layoutId() = R.layout.radar_fragment

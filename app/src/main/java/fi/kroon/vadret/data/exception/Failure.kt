@@ -14,7 +14,7 @@ sealed class Failure {
     class HttpGatewayTimeout504 : Failure()
 
     /**
-     * For feature specific failure
+     * For feature specific left
      * extend from FeatureFailure
      */
 

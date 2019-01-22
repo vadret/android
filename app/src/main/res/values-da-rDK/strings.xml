@@ -48,12 +48,12 @@
     <string name="permission_denied">Adgang nægtet!</string>
     <string name="slogan">Åben kode, åben data</string>
     <string name="no_network_available">Intet netværk tilgængeligt</string>
-    <string name="about_app_tab_title">Om app</string>
-    <string name="libraries_tab_title">Biblioteker</string>
+    <string name="about_app_about_title">Om app</string>
+    <string name="about_app_libraries_tab_title">Biblioteker</string>
     <string name="about_app_description">Vejr app for Sverige</string>
     <string name="version_row_title">Version</string>
     <string name="license_row_title">Licens</string>
-    <string name="souce_code_row_title">Kildekode</string>
+    <string name="source_code_row_title">Kildekode</string>
     <string name="changelog_row_title">Changelog</string>
     <string name="changelog_dialog_title">Changelog</string>
     <string name="project_third_party">Projekt</string>

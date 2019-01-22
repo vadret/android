@@ -1,6 +1,7 @@
 package fi.kroon.vadret
 
 import android.app.Application
+import android.content.Context
 import com.jakewharton.threetenabp.AndroidThreeTen
 import com.squareup.leakcanary.LeakCanary
 import fi.kroon.vadret.di.component.DaggerVadretApplicationComponent
@@ -10,7 +11,7 @@ import timber.log.Timber
 
 abstract class BaseApplication : Application() {
 
-    val cmp: VadretApplicationComponent by lazy {
+    val cmp: VadretApplicationComponent by lazy(LazyThreadSafetyMode.NONE) {
         DaggerVadretApplicationComponent
             .builder()
             .applicationModule(ApplicationModule(this))
@@ -43,5 +44,11 @@ abstract class BaseApplication : Application() {
 
     private fun initThreeTenAbp() {
         AndroidThreeTen.init(this)
+    }
+
+    companion object {
+        @JvmStatic
+        fun appComponent(context: Context) =
+            (context.applicationContext as BaseApplication).cmp
     }
 }

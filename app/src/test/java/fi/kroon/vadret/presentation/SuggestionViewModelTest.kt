@@ -2,7 +2,7 @@ package fi.kroon.vadret.presentation
 
 import fi.kroon.vadret.data.exception.Either
 import fi.kroon.vadret.data.exception.Failure
-import fi.kroon.vadret.domain.SuggestionUseCase
+import fi.kroon.vadret.domain.SuggestionTask
 import fi.kroon.vadret.presentation.viewmodel.SuggestionViewModel
 import fi.kroon.vadret.util.RxImmediateSchedulerRule
 import fi.kroon.vadret.utils.Schedulers
@@ -19,7 +19,7 @@ import org.mockito.junit.MockitoJUnitRunner
 class SuggestionViewModelTest {
 
     @Mock
-    lateinit var mockSuggestionUseCase: SuggestionUseCase
+    lateinit var mockSuggestionTask: SuggestionTask
 
     @Mock
     lateinit var mockStringList: List<String>
@@ -38,7 +38,7 @@ class SuggestionViewModelTest {
     @Before
     fun setup() {
         schedulers = Schedulers()
-        mockSuggestionViewModel = SuggestionViewModel(schedulers, mockSuggestionUseCase)
+        mockSuggestionViewModel = SuggestionViewModel(schedulers, mockSuggestionTask)
     }
 
     /*@Test
@@ -47,8 +47,8 @@ class SuggestionViewModelTest {
         val testStringListSingle = Single.just(testStringList)
 
         doReturn(testStringListSingle)
-            .`when`(mockSuggestionUseCase)
-            .get()
+            .`when`(mockSuggestionTask)
+            .invoke()
 
         mockSuggestionViewModel
             .filter(query)
@@ -62,8 +62,8 @@ class SuggestionViewModelTest {
         val testFailureSingle = Single.just(testFailure)
 
         doReturn(testFailureSingle)
-            .`when`(mockSuggestionUseCase)
-            .get()
+            .`when`(mockSuggestionTask)
+            .invoke()
 
         mockSuggestionViewModel
             .invoke(query)
@@ -72,11 +72,11 @@ class SuggestionViewModelTest {
     }
 
     /*@Test
-    fun `suggestion viewmodel get method propagates exception`() {
+    fun `suggestion viewmodel invoke method propagates exception`() {
         val testThrowableSingle = Single.error<Either<Failure, List<String>>>(testThrowable)
         doReturn(testThrowableSingle)
-            .`when`(mockSuggestionUseCase)
-            .get()
+            .`when`(mockSuggestionTask)
+            .invoke()
 
         mockSuggestionViewModel
             .filter(query)

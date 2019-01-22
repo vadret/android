@@ -8,8 +8,8 @@ import fi.kroon.vadret.data.MINUTE_MILLIS
 import org.threeten.bp.OffsetDateTime
 import timber.log.Timber
 
-fun String.splitByCommaTakeFirst() = this.split(",").get(0).trim()
-fun String.splitBySpaceTakeFirst() = this.split(" ").get(0).trim()
+fun String.splitByCommaTakeFirst(): String = this.split(",").get(0).trim()
+fun String.splitBySpaceTakeFirst(): String = this.split(" ").get(0).trim()
 fun String.splitToList(): List<String> = this.split(",").map { it.trim() }.filter { it.isNotEmpty() }.toList()
 fun String.parseToLocalDate() = OffsetDateTime.parse(this).toLocalDate()
 fun String.toTimeAgo(context: Context): String {

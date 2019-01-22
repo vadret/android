@@ -61,18 +61,21 @@
 
     <string name="percent" translatable="false">%</string>
 
-    <string name="about_app_tab_title">About app</string>
-    <string name="libraries_tab_title">Libraries</string>
+    <string name="about_app_about_title">About app</string>
+    <string name="about_app_libraries_tab_title">Libraries</string>
     <string name="about_app_description">Weather app for Sweden</string>
 
     <string name="cd_about_app_icon" translatable="false">AboutAppImage</string>
     <string name="version_row_title">Version</string>
     <string name="license_row_title">License</string>
     <string name="changelog_row_title">Changelog</string>
-    <string name="souce_code_row_title">Source code</string>
+    <string name="source_code_row_title">Source code</string>
+    <string name="app_release_page" translatable="false">https://github.com/vadret/android/releases</string>
     <string name="license_row_hint" translatable="false">Apache License, Version 2.0</string>
-    <string name="app_github_url" translatable="false">https://github.com/vadret/android</string>
+    <string name="app_github_url" translatable="false">https://vadret.github.io/android</string>
+    <string name="app_github_source_url" translatable="false">https://github.com/vadret/android</string>
     <string name="app_license_url" translatable="false">https://github.com/vadret/android/blob/master/LICENSE</string>
+    <string name="app_github_changelog_url" translatable="false">https://github.com/vadret/android/blob/master/app/src/main/res/raw/changelog.md</string>
     <string name="changelog_dialog_title">Changelog</string>
     <string name="ok" translatable="false">OK</string>
     <string name="select">Select</string>

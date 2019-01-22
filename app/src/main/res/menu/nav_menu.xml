@@ -1,6 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><!--
-  ~ Copyright © 2016 - 2018. Tåg Ut. All rights reserved.
-  -->
+<?xml version="1.0" encoding="utf-8"?>
 
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <group android:id="@+id/featureGroup">
@@ -15,7 +13,7 @@
     <group android:id="@+id/miscGroup">
         <item android:id="@+id/settingsFragment"
             android:title="@string/settings" />
-        <item android:id="@+id/aboutFragment"
+        <item android:id="@+id/aboutAppFragment"
             android:title="@string/about_app" />
     </group>
 </menu>

@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModelProvider
 import dagger.Binds
 import dagger.Module
 import dagger.multibindings.IntoMap
-import fi.kroon.vadret.presentation.viewmodel.AboutViewModel
 import fi.kroon.vadret.presentation.viewmodel.AlertViewModel
 import fi.kroon.vadret.presentation.viewmodel.LocationViewModel
 import fi.kroon.vadret.presentation.viewmodel.RadarViewModel
@@ -54,9 +53,4 @@ abstract class ViewModelModule {
     @IntoMap
     @ViewModelKey(SuggestionViewModel::class)
     abstract fun bindsSuggestionViewModel(suggestionViewModel: SuggestionViewModel): ViewModel
-
-    @Binds
-    @IntoMap
-    @ViewModelKey(AboutViewModel::class)
-    abstract fun bindsAboutViewModel(aboutViewModel: AboutViewModel): ViewModel
 }

@@ -14,13 +14,13 @@
     <string name="source_third_party">Źródła</string>
     <string name="project_third_party">Projekt</string>
     <string name="changelog_dialog_title">Changelog</string>
-    <string name="souce_code_row_title">Kod źródłowy</string>
+    <string name="source_code_row_title">Kod źródłowy</string>
     <string name="changelog_row_title">Changelog</string>
     <string name="license_row_title">Licencja</string>
     <string name="version_row_title">Wersja</string>
     <string name="about_app_description">Aplikacja pogodowa dla Szwecji</string>
-    <string name="libraries_tab_title">Biblioteki</string>
-    <string name="about_app_tab_title">O aplikacji</string>
+    <string name="about_app_libraries_tab_title">Biblioteki</string>
+    <string name="about_app_about_title">O aplikacji</string>
     <string name="location_failure">Lokalizacja niedostępna</string>
     <string name="no_location_permission">Brak pozwolenia na lokalizację</string>
     <string name="no_network_available">Brak sieci</string>

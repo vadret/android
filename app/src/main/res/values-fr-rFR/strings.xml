@@ -49,8 +49,8 @@
     <string name="permission_missing">Il manque les permissions requises pour que l\'application fonctionne.</string>
     <string name="permission_granted">Permission accordée !</string>
     <string name="permission_denied">Permission refusée !</string>
-    <string name="about_app_tab_title">A propos de l\'application</string>
-    <string name="libraries_tab_title">Bibliothèques</string>
+    <string name="about_app_about_title">A propos de l\'application</string>
+    <string name="about_app_libraries_tab_title">Bibliothèques</string>
     <string name="about_app_description">Application météo pour la Suède</string>
     <string name="project_third_party">Projet</string>
     <string name="warning">Avertissement</string>

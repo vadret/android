@@ -11,11 +11,16 @@ sealed class Either<out L, out R> {
     fun <L> left(a: L) = Either.Left(a)
     fun <R> right(b: R) = Either.Right(b)
 
-    fun either(fnL: (L) -> Any, fnR: (R) -> Any): Any =
+    fun <T> either(fnL: (L) -> T, fnR: (R) -> T): T =
             when (this) {
                 is Left -> fnL(a)
                 is Right -> fnR(b)
             }
+
+    companion object {
+        fun <L> left(a: L) = Either.Left(a) as Either<L, Nothing>
+        fun <R> right(b: R) = Either.Right(b) as Either<Failure, R>
+    }
 }
 
 fun <A, B, C> ((A) -> B).c(f: (B) -> C): (A) -> C = {

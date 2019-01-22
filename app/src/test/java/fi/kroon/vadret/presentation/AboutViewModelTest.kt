@@ -4,8 +4,6 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.Observer
 import fi.kroon.vadret.data.changelog.exception.ChangelogFailure
 import fi.kroon.vadret.data.exception.Either
-import fi.kroon.vadret.domain.ChangelogUseCase
-import fi.kroon.vadret.presentation.viewmodel.AboutViewModel
 import fi.kroon.vadret.util.RxImmediateSchedulerRule
 import io.reactivex.Single
 import org.junit.Before
@@ -31,7 +29,7 @@ class AboutViewModelTest {
     val instantTaskExecutorRule = InstantTaskExecutorRule()
 
     @Mock
-    lateinit var mockUseCase: ChangelogUseCase
+    lateinit var mockTask: ChangelogTask
     @Mock
     lateinit var observer: Observer<String>
 
@@ -41,7 +39,7 @@ class AboutViewModelTest {
 
     @Before
     fun setup() {
-        testViewModel = AboutViewModel(mockUseCase)
+        testViewModel = AboutViewModel(mockTask)
     }
 
     @Test
@@ -56,14 +54,14 @@ class AboutViewModelTest {
 
     @Test
     fun getChangelogText_shouldReturnInitEmpty() {
-        doReturn(Single.just(Either.Right(testChangelogText))).`when`(mockUseCase).get()
+        doReturn(Single.just(Either.Right(testChangelogText))).`when`(mockTask).get()
 
         testViewModel.getChangelogText().value.isNullOrBlank()
     }
 
     @Test
     fun getChangelogText_shouldReturnChangelog() {
-        doReturn(Single.just(Either.Right(testChangelogText))).`when`(mockUseCase).get()
+        doReturn(Single.just(Either.Right(testChangelogText))).`when`(mockTask).get()
 
         testViewModel.getChangelogText().observeForever(observer)
         verify(observer).onChanged(testChangelogText)
@@ -71,7 +69,7 @@ class AboutViewModelTest {
 
     @Test
     fun getChangelogTextFailure_shouldReturnInitEmpty() {
-        doReturn(Single.just(Either.Left(ChangelogFailure.FileNotAvailableFailure()))).`when`(mockUseCase).get()
+        doReturn(Single.just(Either.Left(ChangelogFailure.FileNotAvailableFailure()))).`when`(mockTask).get()
 
         testViewModel.getChangelogText().value.isNullOrBlank()
     }

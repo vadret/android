@@ -5,6 +5,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.0] -- 2019-01-24
+
+### Fixed
+- Refactored About page
+
 ## [0.1.8] -- 2019-01-21
 
 ### Fixed
@@ -81,7 +86,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Radar imagery
 - 10 day weather forecast
 
-[Unreleased]: https://github.com/vadret/android/compare/0.1.8...HEAD
+[Unreleased]: https://github.com/vadret/android/compare/0.2.0...HEAD
+[0.2.0]: https://github.com/vadret/android/compare/0.1.8...0.2.0
 [0.1.8]: https://github.com/vadret/android/compare/0.1.7...0.1.8
 [0.1.7]: https://github.com/vadret/android/compare/0.1.6...0.1.7
 [0.1.6]: https://github.com/vadret/android/compare/0.1.5...0.1.6

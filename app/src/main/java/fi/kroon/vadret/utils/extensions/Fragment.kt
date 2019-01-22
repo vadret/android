@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
+import fi.kroon.vadret.BaseApplication
 
 inline fun <reified T : ViewModel> Fragment.viewModel(factory: ViewModelProvider.Factory, body: T.() -> Unit): T {
     val vm = ViewModelProviders.of(this, factory)[T::class.java]
@@ -30,3 +31,4 @@ fun Fragment.hideKeyboard() {
 }
 
 fun Context.toToast(message: String, duration: Int = Toast.LENGTH_SHORT) = Toast.makeText(this, message, duration).show()
+fun Fragment.appComponent() = BaseApplication.appComponent(requireContext())

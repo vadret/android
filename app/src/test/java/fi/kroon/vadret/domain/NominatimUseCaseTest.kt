@@ -39,7 +39,7 @@ class NominatimUseCaseTest {
         mockNominatimUseCase = NominatimUseCase(mockNominatimRepository)
     }
 
-    // for get()
+    // for invoke()
 
     @Test
     fun `nominatim usecase returns a single`() {
@@ -70,10 +70,10 @@ class NominatimUseCaseTest {
         val testThrowableSingle = Single.error<Either<Failure, Nominatim>>(testThrowable)
         doReturn(testThrowableSingle)
             .`when`(mockNominatimRepository)
-            .get(mockNominatimRequest)
+            .invoke(mockNominatimRequest)
 
         mockNominatimUseCase
-            .get(mockNominatimRequest)
+            .invoke(mockNominatimRequest)
             .test()
             .assertError(Throwable::class.java)
     }*/
@@ -109,10 +109,10 @@ class NominatimUseCaseTest {
         val testThrowableSingle = Single.error<Either<Failure, Nominatim>>(testThrowable)
         doReturn(testThrowableSingle)
             .`when`(mockNominatimRepository)
-            .get(mockNominatimRequest)
+            .invoke(mockNominatimRequest)
 
         mockNominatimUseCase
-            .get(mockNominatimRequest)
+            .invoke(mockNominatimRequest)
             .test()
             .assertError(Throwable::class.java)
     }*/

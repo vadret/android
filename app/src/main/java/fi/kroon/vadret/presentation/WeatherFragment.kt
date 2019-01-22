@@ -33,7 +33,7 @@ import fi.kroon.vadret.data.weather.WeatherRequest
 import fi.kroon.vadret.data.weather.exception.WeatherFailure
 import fi.kroon.vadret.data.weather.model.TimeSerie
 import fi.kroon.vadret.data.weather.model.Weather
-import fi.kroon.vadret.presentation.adapter.ForecastAdapter
+import fi.kroon.vadret.presentation.adapter.WeatherAdapter
 import fi.kroon.vadret.presentation.adapter.SuggestionAdapter
 import fi.kroon.vadret.presentation.adapter.diff.SuggestionDiffUtil
 import fi.kroon.vadret.presentation.dialog.LocationDialog
@@ -74,7 +74,7 @@ class WeatherFragment : BaseFragment() {
     lateinit var schedulers: Schedulers
 
     @Inject
-    lateinit var forecastAdapter: ForecastAdapter
+    lateinit var weatherAdapter: WeatherAdapter
 
     @Inject
     lateinit var suggestionAdapter: SuggestionAdapter
@@ -221,7 +221,7 @@ class WeatherFragment : BaseFragment() {
             refreshWeather.isRefreshing = false
         }
         forecastRv.layoutManager = LinearLayoutManager(this.context, RecyclerView.VERTICAL, false)
-        forecastRv.adapter = forecastAdapter
+        forecastRv.adapter = weatherAdapter
         forecastRv.hasFixedSize()
     }
 
@@ -324,7 +324,6 @@ class WeatherFragment : BaseFragment() {
                         suggestionRecyclerView.adapter?.run {
                             state.diffResult?.dispatchUpdatesTo(this)
                         }
-                        "" // hack
                     }
                 )
             },
@@ -407,7 +406,7 @@ class WeatherFragment : BaseFragment() {
         timeSerieList?.let {
             val anylist: List<Any> = mapping.toAnyList(it)
             Timber.d("ANY LIST: $anylist")
-            forecastAdapter.collection = anylist
+            weatherAdapter.collection = anylist
         }
     }
 

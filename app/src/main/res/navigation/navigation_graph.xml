@@ -10,7 +10,7 @@
         android:label="@string/app_name" >
         <action
             android:id="@+id/action_weatherFragment_to_aboutFragment"
-            app:destination="@id/aboutFragment" />
+            app:destination="@id/aboutAppFragment" />
         <action
             android:id="@+id/action_weatherFragment_to_alertFragment"
             app:destination="@id/alertFragment" />
@@ -26,8 +26,8 @@
         android:name="fi.kroon.vadret.presentation.RadarFragment"
         android:label="@string/radar" />
     <fragment
-        android:id="@+id/aboutFragment"
-        android:name="fi.kroon.vadret.presentation.AboutFragment"
+        android:id="@+id/aboutAppFragment"
+        android:name="fi.kroon.vadret.presentation.aboutapp.AboutAppFragment"
         android:label="@string/about_app" />
     <fragment
         android:id="@+id/alertFragment"
