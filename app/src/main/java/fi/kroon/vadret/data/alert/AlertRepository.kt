@@ -2,9 +2,9 @@ package fi.kroon.vadret.data.alert
 
 import fi.kroon.vadret.data.alert.exception.AlertFailure
 import fi.kroon.vadret.data.alert.model.Alert
-import fi.kroon.vadret.data.exception.Either
-import fi.kroon.vadret.data.exception.Either.Right
-import fi.kroon.vadret.data.exception.Either.Left
+import fi.kroon.vadret.data.functional.Either
+import fi.kroon.vadret.data.functional.Either.Right
+import fi.kroon.vadret.data.functional.Either.Left
 import fi.kroon.vadret.data.exception.Failure
 import fi.kroon.vadret.di.scope.VadretApplicationScope
 import fi.kroon.vadret.utils.NetworkHandler
@@ -34,7 +34,7 @@ class AlertRepository @Inject constructor(
                     else -> Left(AlertFailure.NoAlertAvailable())
                 }
             }.doOnError {
-                Timber.d("Error occured: $it")
+                Timber.d("DisplayError occured: $it")
             }.onErrorReturn {
                 Either.Left(Failure.NetworkException())
             }

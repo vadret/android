@@ -5,7 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import fi.kroon.vadret.R
-import fi.kroon.vadret.data.library.local.LibraryEntity
+import fi.kroon.vadret.data.library.model.Library
 import fi.kroon.vadret.presentation.aboutapp.di.AboutAppScope
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.about_app_library_item.view.*
@@ -15,14 +15,14 @@ import javax.inject.Named
 @AboutAppScope
 class AboutAppLibraryAdapter @Inject constructor(
     @Named("projectUrl")
-    private val onOnProjectUrlClickSubject: PublishSubject<LibraryEntity>,
+    private val onOnProjectUrlClickSubject: PublishSubject<Library>,
     @Named("sourceUrl")
-    private val onSourceUrlClickSubject: PublishSubject<LibraryEntity>,
+    private val onSourceUrlClickSubject: PublishSubject<Library>,
     @Named("licenseUrl")
-    private val onLicenseUrlClickSubject: PublishSubject<LibraryEntity>
+    private val onLicenseUrlClickSubject: PublishSubject<Library>
 ) : RecyclerView.Adapter<AboutAppLibraryAdapter.ViewHolder>() {
 
-    private val list = mutableListOf<LibraryEntity>()
+    private val list = mutableListOf<Library>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return ViewHolder(LayoutInflater
@@ -55,13 +55,13 @@ class AboutAppLibraryAdapter @Inject constructor(
             }
         }
 
-        fun bind(libraryEntity: LibraryEntity) {
-            itemView.aboutAppLibraryItemTitleTextView.text = libraryEntity.title
-            itemView.aboutAppLibraryItemDescriptionTextView.text = libraryEntity.description
+        fun bind(library: Library) {
+            itemView.aboutAppLibraryItemTitleTextView.text = library.title
+            itemView.aboutAppLibraryItemDescriptionTextView.text = library.description
         }
     }
 
-    fun updateList(itemList: List<LibraryEntity>) {
+    fun updateList(itemList: List<Library>) {
         list.clear()
         list.addAll(itemList)
         notifyDataSetChanged()

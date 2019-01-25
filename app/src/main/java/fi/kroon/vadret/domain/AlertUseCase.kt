@@ -2,7 +2,7 @@ package fi.kroon.vadret.domain
 
 import fi.kroon.vadret.data.alert.AlertRepository
 import fi.kroon.vadret.data.alert.model.Alert
-import fi.kroon.vadret.data.exception.Either
+import fi.kroon.vadret.data.functional.Either
 import fi.kroon.vadret.data.exception.Failure
 import io.reactivex.Single
 import timber.log.Timber

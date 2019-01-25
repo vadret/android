@@ -2,12 +2,13 @@ package fi.kroon.vadret.utils.extensions
 
 import android.content.Context
 import fi.kroon.vadret.R
-import fi.kroon.vadret.data.DAY_MILLIS
-import fi.kroon.vadret.data.HOUR_MILLIS
-import fi.kroon.vadret.data.MINUTE_MILLIS
+import fi.kroon.vadret.utils.DAY_MILLIS
+import fi.kroon.vadret.utils.HOUR_MILLIS
+import fi.kroon.vadret.utils.MINUTE_MILLIS
 import org.threeten.bp.OffsetDateTime
 import timber.log.Timber
 
+fun String.Companion.empty() = ""
 fun String.splitByCommaTakeFirst(): String = this.split(",").get(0).trim()
 fun String.splitBySpaceTakeFirst(): String = this.split(" ").get(0).trim()
 fun String.splitToList(): List<String> = this.split(",").map { it.trim() }.filter { it.isNotEmpty() }.toList()

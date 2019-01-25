@@ -1,6 +1,6 @@
 package fi.kroon.vadret.utils.extensions
 
-import fi.kroon.vadret.data.MPS_TO_KMPH_FACTOR
+import fi.kroon.vadret.utils.MPS_TO_KMPH_FACTOR
 
 fun Double.toCoordinate() = "%.6f".format(this).replace(",", ".").toDouble()
 fun String.toCoordinate() = "%.6f".format(this.toDouble()).replace(",", ".").toDouble()

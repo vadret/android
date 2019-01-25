@@ -1,17 +1,6 @@
 package fi.kroon.vadret.util
 
-import androidx.annotation.NonNull
-import io.reactivex.Scheduler
-import io.reactivex.android.plugins.RxAndroidPlugins
-import io.reactivex.disposables.Disposable
-import io.reactivex.internal.schedulers.ExecutorScheduler
-import io.reactivex.plugins.RxJavaPlugins
-import org.junit.rules.TestRule
-import org.junit.runner.Description
-import org.junit.runners.model.Statement
-import java.util.concurrent.Executor
-import java.util.concurrent.TimeUnit
-
+/*
 class RxImmediateSchedulerRule : TestRule {
     private val immediate = object : Scheduler() {
         override fun scheduleDirect(@NonNull run: Runnable, delay: Long, @NonNull unit: TimeUnit): Disposable {
@@ -19,7 +8,11 @@ class RxImmediateSchedulerRule : TestRule {
         }
 
         override fun createWorker(): Worker {
-            return ExecutorScheduler.ExecutorWorker(Executor { it.run() })
+            return ExecutorScheduler.ExecutorWorker(
+                Executor {
+                    it.run()
+                }
+            )
         }
     }
 
@@ -42,4 +35,4 @@ class RxImmediateSchedulerRule : TestRule {
             }
         }
     }
-}
+}*/

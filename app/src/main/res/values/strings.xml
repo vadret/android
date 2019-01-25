@@ -6,6 +6,8 @@
     <string name="slogan">Open code, open data</string>
 
     <string name="feels_like">Feels like</string>
+    <string name="unknown_area">Unknown area</string>
+
     <string name="wsymb2_clear_sky">Clear sky</string>
     <string name="wsymb2_nearly_clear_sky">Nearly clear sky</string>
     <string name="wsymb2_variable_cloudiness">Varying cloudiness</string>
@@ -34,6 +36,26 @@
     <string name="wsymb2_moderate_snowfall">Moderate snowfall</string>
     <string name="wsymb2_heavy_snowfall">Heavy snowfall</string>
 
+    <!-- Wind direction -->
+    <string name="north">North</string>
+    <string name="north_north_east">North, North east</string>
+    <string name="north_east">North east</string>
+    <string name="east_north_east">East, North east</string>
+    <string name="east">East</string>
+    <string name="east_south_east">East, South east</string>
+    <string name="south_east">South east</string>
+    <string name="south_south_east">South, South east</string>
+    <string name="south">South</string>
+    <string name="south_south_west">South, South west</string>
+    <string name="south_west">South west </string>
+    <string name="west_south_west">West, South west</string>
+    <string name="west">West</string>
+    <string name="west_north_west">West, North west</string>
+    <string name="north_west">North west</string>
+    <string name="north_north_west">North, North west</string>
+    <string name="empty_wind_direction" translatable="false"></string>
+
+
     <string name="prsort_no_precipitation">No precipitation</string>
     <string name="prsort_snow">Snow</string>
     <string name="prsort_snow_and_rain">Snow and rain</string>
@@ -45,21 +67,31 @@
     <string name="io_exception">IOException</string>
     <string name="network_failure">Network Failure</string>
     <string name="no_weather_available">No weather available</string>
-    <string name="m_s" translatable="false">m/s</string>
-    <string name="degree" translatable="false">C°</string>
+
+    <string name="disk_cache_evict" translatable="false">Disk cache evication failed</string>
+    <string name="disk_cache_write" translatable="false">Disk cache write failed</string>
+    <string name="disk_cache_read" translatable="false">Disk cache read failed</string>
+
+    <string name="unhandled_error" translatable="false">Unhandled exception</string>
     <string name="no_location_permission">No location permission</string>
     <string name="location_failure">Location not available</string>
     <string name="no_network_available">No network available</string>
 
     <string name="data_not_available_at_this_location">No weather data available for this location.</string>
     <string name="preferences_updated_successfully">Preferences updated successfully!</string>
-    <string name="permission_storage_denied">Storage permission denied!</string>
-    <string name="permission_location_denied">Location permission denied!</string>
     <string name="permission_missing">Some permissions missing. Functionality will be limited.</string>
     <string name="permission_granted">Permission allowed!</string>
     <string name="permission_denied">Permission denied!</string>
 
+    <string name="sunset">Sunset</string>
+    <string name="sunrise">Sunrise</string>
+
+    <string name="sun_wont_rise_today">Sun won\'t rise today</string>
+    <string name="sun_wont_set_today">Sun won\'t set today</string>
+
     <string name="percent" translatable="false">%</string>
+    <string name="m_s" translatable="false">m/s</string>
+    <string name="degree" translatable="false">°</string>
 
     <string name="about_app_about_title">About app</string>
     <string name="about_app_libraries_tab_title">Libraries</string>
@@ -126,6 +158,7 @@
     <string name="setting_language_description">Select preferred language</string>
     <string name="setting_language_title">Language</string>
     <string name="setting_location_title">Location settings</string>
+    <string name="setting_municipality">Municipality</string>
     <string name="setting_latitude">Latitude</string>
     <string name="setting_longitude">Longitude</string>
     <string name="setting_city">City</string>
@@ -137,23 +170,24 @@
     <string name="gps_is_being_used">GPS position will be used each time to fetch weather for current location</string>
 
     // HTTP STATUS CODES
-    <string name="http_forbidden_403">Access Forbidden 403</string>
-    <string name="http_bad_request_400">Bad Request 400</string>
-    <string name="http_internal_server_error_500">Internal Server Error 500</string>
-    <string name="http_service_unavailable_503">Service Unavailable 503</string>
-    <string name="http_gateway_timeout_504">Gateway timeout 504</string>
-    <string name="http_not_modified_304">Not modified 304</string>
+    <string name="http_forbidden_403" translatable="false">Access Forbidden 403</string>
+    <string name="http_bad_request_400" translatable="false">Bad Request 400</string>
+    <string name="http_internal_server_error_500" translatable="false">Internal Server Error 500</string>
+    <string name="http_service_unavailable_503" translatable="false">Service Unavailable 503</string>
+    <string name="http_gateway_timeout_504" translatable="false">Gateway timeout 504</string>
+    <string name="http_not_modified_304" translatable="false">Not modified 304</string>
 
     // settings failure
     <string name="weather_requirement_not_satisfied" translatable="false">No location available. You must select a location.</string>
 
     // settings keys
-    <string name="use_gps_by_defeault_key" translatable="false">use_gps_by_default</string>
+    <!--<string localityName="use_gps_by_defeault_key" translatable="false">use_gps_by_default</string>-->
     <string name="has_required_params_for_reverse_key" translatable="false">has_required_params_for_reverse</string>
-    <string name="city_key" translatable="false">default_city</string>
-    <string name="province_key" translatable="false">default_province</string>
-    <string name="latitude_key" translatable="false">default_latitude</string>
-    <string name="longitude_key" translatable="false">default_longitude</string>
+    <!--<string localityName="city_key" translatable="false">default_city</string>
+    <string localityName="province_key" translatable="false">default_province</string>
+    <string localityName="latitude_key" translatable="false">default_latitude</string>
+    <string localityName="longitude_key" translatable="false">default_longitude</string>-->
     <string name="no_alert_available">No alerts available</string>
     <string name="alert">Alert</string>
+
 </resources>

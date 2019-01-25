@@ -1,11 +1,11 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="BaseAppTheme" parent="Theme.MaterialComponents.Light.DarkActionBar">
-        <item name="colorPrimary">@color/one</item>
-        <item name="colorPrimaryDark">@color/three</item>
-        <!--<item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>-->
+    <style name="BaseAppTheme" parent="Theme.MaterialComponents.Light">
+        <item name="colorPrimary">@color/light</item>
+        <item name="colorPrimaryDark">@color/light_smoke</item>
+        <!--<item localityName="colorPrimary">@color/colorPrimary</item>
+        <item localityName="colorPrimaryDark">@color/colorPrimaryDark</item>-->
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
@@ -16,8 +16,25 @@
         <item name="windowNoTitle">true</item>
     </style>
 
+    <style name="LinearProgress" parent="Theme.AppCompat.Light">
+        <item name="colorAccent">@color/blue_faience</item>
+        <item name="android:progressBackgroundTint">@color/shaded</item>
+    </style>
+
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.MaterialComponents.Dark.ActionBar"/>
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.MaterialComponents.Light"/>
+
+    <style name="BaseTextLight">
+        <item name="android:textColor">@color/light</item>
+    </style>
+
+    <style name="BaseTextDark">
+        <item name="android:textColor">@color/dark</item>
+    </style>
+
+    <style name="BaseTextDarkShaded">
+        <item name="android:textColor">@color/dark_shaded</item>
+    </style>
 
     <style name="TitleText">
         <item name="android:textStyle">bold</item>

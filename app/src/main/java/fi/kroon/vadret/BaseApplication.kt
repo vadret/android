@@ -11,6 +11,12 @@ import timber.log.Timber
 
 abstract class BaseApplication : Application() {
 
+    companion object {
+        @JvmStatic
+        fun appComponent(context: Context) =
+            (context.applicationContext as BaseApplication).cmp
+    }
+
     val cmp: VadretApplicationComponent by lazy(LazyThreadSafetyMode.NONE) {
         DaggerVadretApplicationComponent
             .builder()
@@ -24,6 +30,7 @@ abstract class BaseApplication : Application() {
         plantTimber()
         initThreeTenAbp()
         initLeakCanary()
+        cacheDir.delete()
     }
 
     private fun plantTimber() {
@@ -44,11 +51,5 @@ abstract class BaseApplication : Application() {
 
     private fun initThreeTenAbp() {
         AndroidThreeTen.init(this)
-    }
-
-    companion object {
-        @JvmStatic
-        fun appComponent(context: Context) =
-            (context.applicationContext as BaseApplication).cmp
     }
 }

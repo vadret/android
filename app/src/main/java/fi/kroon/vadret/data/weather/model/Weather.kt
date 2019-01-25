@@ -1,7 +1,11 @@
 package fi.kroon.vadret.data.weather.model
 
+import android.os.Parcelable
 import com.squareup.moshi.Json
+import kotlinx.android.parcel.Parcelize
+import java.io.Serializable
 
+@Parcelize
 data class Weather(
 
     @Json(name = "approvedTime")
@@ -15,4 +19,5 @@ data class Weather(
 
     @Json(name = "timeSeries")
     val timeSeries: List<TimeSerie>? = emptyList()
-)
+
+) : Serializable, Parcelable

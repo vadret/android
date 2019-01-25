@@ -46,7 +46,7 @@ data class Info(
     @Json(name = "web")
     val web: String,
 
-    @Json(name = "parameter")
+    @Json(name = "parameters")
     val parameter: List<Parameter>,
 
     @Json(name = "area")

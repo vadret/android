@@ -1,25 +1,24 @@
 package fi.kroon.vadret.data.location
 
-import fi.kroon.vadret.data.exception.Either
 import fi.kroon.vadret.data.exception.Failure
+import fi.kroon.vadret.data.functional.Either
 import fi.kroon.vadret.data.location.exception.LocationFailure
+import fi.kroon.vadret.data.location.local.LocationLocalDataSource
 import fi.kroon.vadret.data.location.model.Location
+import fi.kroon.vadret.utils.extensions.asLeft
 import io.reactivex.Single
 import timber.log.Timber
 import javax.inject.Inject
 
 class LocationRepository @Inject constructor(
-    private val locationProvider: LocationProvider
+    private val locationLocalDataSource: LocationLocalDataSource
 ) {
-    fun get(): Single<Either<Failure, Location>> {
-        return Single.just(
-            locationProvider.get()
-        ).doOnEvent { t1, t2 ->
-            Timber.d("T1: $t1, T2: $t2")
+    operator fun invoke(): Single<Either<Failure, Location>> =
+        Single.fromCallable {
+            locationLocalDataSource()
         }.doOnError {
-            Timber.e("$it")
+            Timber.e("LocationRepositoryFailure: $it")
         }.onErrorReturn {
-            Either.Left(LocationFailure.LocationNotAvailableFailure())
+            LocationFailure.LocationNotAvailable().asLeft()
         }
-    }
 }

@@ -1,15 +1,6 @@
 package fi.kroon.vadret.presentation
 
-import android.content.Context
-import android.content.SharedPreferences
-import android.os.Bundle
-import androidx.preference.PreferenceFragmentCompat
-import fi.kroon.vadret.R
-import fi.kroon.vadret.BaseApplication
-import fi.kroon.vadret.data.DEFAULT_PREFERENCES
-import fi.kroon.vadret.di.component.VadretApplicationComponent
-import javax.inject.Inject
-
+/*
 class SettingsFragment : PreferenceFragmentCompat() {
 
     @Inject
@@ -20,7 +11,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
     }
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
-        cmp.inject(this)
+        // cmp.inject(this)
         getPreferenceManager().setSharedPreferencesName(DEFAULT_PREFERENCES)
         getPreferenceManager().setSharedPreferencesMode(Context.MODE_PRIVATE)
         setPreferencesFromResource(R.xml.preferences, rootKey)
@@ -33,4 +24,4 @@ class SettingsFragment : PreferenceFragmentCompat() {
         findPreference(getString(R.string.latitude_key)).setSummary(sharedPreferences.getString(getString(R.string.latitude_key), "None"))
         findPreference(getString(R.string.longitude_key)).setSummary(sharedPreferences.getString(getString(R.string.longitude_key), "None"))
     }
-}
+}*/

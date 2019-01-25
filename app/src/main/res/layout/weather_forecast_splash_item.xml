@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/itemLayout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="5dp"
+    android:background="@drawable/weather_forecast_item_rounded"
+    android:elevation="4dp"
+    android:orientation="vertical">
+
+    <ImageView
+        android:id="@+id/sunriseIcon"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:tint="@color/dark_shaded"
+        app:layout_constraintEnd_toStartOf="@+id/verticalGuidelineFirst"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/wsymb2_sun" />
+
+    <TextView
+        android:id="@+id/sunriseTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/sunrise"
+        android:textSize="12sp"
+        app:layout_constraintEnd_toEndOf="@+id/sunriseIcon"
+        app:layout_constraintStart_toStartOf="@+id/sunriseIcon"
+        app:layout_constraintTop_toBottomOf="@+id/sunriseIcon" />
+
+    <TextView
+        android:id="@+id/sunriseDateTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="05:31"
+        android:textSize="12sp"
+        app:layout_constraintEnd_toEndOf="@+id/sunriseTitle"
+        app:layout_constraintStart_toStartOf="@+id/sunriseTitle"
+        app:layout_constraintTop_toBottomOf="@+id/sunriseTitle" />
+
+    <ImageView
+        android:id="@+id/sunsetIcon"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:tint="@color/dark_shaded"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/verticalGuidelineSecond"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/wsymb2_moon" />
+
+    <TextView
+        android:id="@+id/sunsetTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/sunset"
+        android:textSize="12sp"
+        app:layout_constraintEnd_toEndOf="@+id/sunsetIcon"
+        app:layout_constraintStart_toStartOf="@+id/sunsetIcon"
+        app:layout_constraintTop_toBottomOf="@+id/sunsetIcon" />
+
+    <TextView
+        android:id="@+id/sunsetDateTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="16:23"
+        android:textSize="12sp"
+        app:layout_constraintEnd_toEndOf="@+id/sunsetTitle"
+        app:layout_constraintStart_toStartOf="@+id/sunsetTitle"
+        app:layout_constraintTop_toBottomOf="@+id/sunsetTitle" />
+
+    <TextView
+        android:id="@+id/humidityPercent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:text="53"
+        app:layout_constraintEnd_toEndOf="@+id/humidityPercentIcon"
+        app:layout_constraintStart_toStartOf="@+id/humidityPercentIcon"
+        app:layout_constraintTop_toBottomOf="@+id/humidityPercentIcon" />
+
+    <TextView
+        android:id="@+id/windSpeed"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:text="9m/s"
+        app:layout_constraintEnd_toEndOf="@+id/windSpeedIcon"
+        app:layout_constraintStart_toStartOf="@+id/windSpeedIcon"
+        app:layout_constraintTop_toBottomOf="@+id/windSpeedIcon" />
+
+    <ImageView
+        android:id="@+id/humidityPercentIcon"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="8dp"
+        android:tint="@color/dark_shaded"
+        app:layout_constraintEnd_toStartOf="@+id/verticalGuidelineFirst"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/horizontalGuideline"
+        app:srcCompat="@drawable/wsymb2_droplet" />
+
+    <ImageView
+        android:id="@+id/windSpeedIcon"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="8dp"
+        android:tint="@color/dark_shaded"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/verticalGuidelineSecond"
+        app:layout_constraintTop_toTopOf="@+id/horizontalGuideline"
+        app:srcCompat="@drawable/wsymb2_wind" />
+
+    <ImageView
+        android:id="@+id/temperatureIconSplash"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="8dp"
+        android:tint="@color/dark_shaded"
+        app:layout_constraintEnd_toStartOf="@+id/verticalGuidelineSecond"
+        app:layout_constraintStart_toStartOf="@+id/verticalGuidelineFirst"
+        app:layout_constraintTop_toTopOf="@+id/horizontalGuideline"
+        app:srcCompat="@drawable/wsymb2_thermometer" />
+
+    <TextView
+        android:id="@+id/temperatureLeft"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="4dp"
+        android:text="20°"
+        app:layout_constraintEnd_toStartOf="@+id/centerHorizontalGuideline"
+        app:layout_constraintTop_toBottomOf="@+id/temperatureIconSplash" />
+
+    <TextView
+        android:id="@+id/precipitationCode"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:gravity="center"
+        android:text="@string/wsymb2_heavy_sleet"
+        android:textSize="12sp"
+        app:layout_constraintEnd_toStartOf="@+id/verticalGuidelineSecond"
+        app:layout_constraintStart_toStartOf="@+id/verticalGuidelineFirst"
+        app:layout_constraintTop_toBottomOf="@+id/currentTemperature" />
+
+    <TextView
+        android:id="@+id/currentTemperature"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:text="16.1"
+        android:textSize="24sp"
+        app:layout_constraintEnd_toStartOf="@+id/verticalGuidelineSecond"
+        app:layout_constraintStart_toStartOf="@+id/verticalGuidelineFirst"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/horizontalGuideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.5" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/verticalGuidelineFirst"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.33" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/verticalGuidelineSecond"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.67" />
+
+    <TextView
+        android:id="@+id/windDirection"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:text="@string/south_east"
+        android:textColor="@color/light_smoke"
+        app:layout_constraintEnd_toEndOf="@+id/windSpeed"
+        app:layout_constraintStart_toStartOf="@+id/windSpeed"
+        app:layout_constraintTop_toBottomOf="@+id/windSpeed" />
+
+    <TextView
+        android:id="@+id/temperatureRight"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="4dp"
+        android:text="17°"
+        android:textColor="@color/light_smoke"
+        app:layout_constraintStart_toStartOf="@+id/centerHorizontalGuideline"
+        app:layout_constraintTop_toBottomOf="@+id/temperatureIconSplash" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/centerHorizontalGuideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.50121653" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+

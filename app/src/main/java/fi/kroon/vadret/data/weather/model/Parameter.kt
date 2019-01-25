@@ -1,10 +1,11 @@
 package fi.kroon.vadret.data.weather.model
 
 import com.squareup.moshi.Json
+import java.io.Serializable
 
 data class Parameter(
 
-    @Json(name = "name")
+    @Json(name = "localityName")
     val name: String,
 
     @Json(name = "levelType")
@@ -18,4 +19,4 @@ data class Parameter(
 
     @Json(name = "values")
     val values: List<Double>
-)
+) : Serializable

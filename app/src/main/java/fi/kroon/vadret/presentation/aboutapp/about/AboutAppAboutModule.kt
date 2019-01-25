@@ -2,7 +2,7 @@ package fi.kroon.vadret.presentation.aboutapp.about
 
 import dagger.Module
 import dagger.Provides
-import fi.kroon.vadret.data.aboutinfo.local.AboutInfoEntity
+import fi.kroon.vadret.data.aboutinfo.model.AboutInfo
 import fi.kroon.vadret.presentation.aboutapp.di.AboutAppScope
 import io.reactivex.subjects.PublishSubject
 
@@ -18,7 +18,7 @@ object AboutAppAboutModule {
     @Provides
     @JvmStatic
     @AboutAppScope
-    fun provideOnAboutAppAboutInfoItemClickSubject(): PublishSubject<AboutInfoEntity> =
+    fun provideOnAboutAppAboutInfoItemClickSubject(): PublishSubject<AboutInfo> =
         PublishSubject.create()
 
     @Provides

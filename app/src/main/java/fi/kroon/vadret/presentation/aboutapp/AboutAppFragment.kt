@@ -10,7 +10,7 @@ import com.google.android.material.tabs.TabLayout
 import com.jakewharton.rxbinding3.material.selections
 import fi.kroon.vadret.R
 import fi.kroon.vadret.utils.extensions.appComponent
-import io.reactivex.BackpressureStrategy
+import fi.kroon.vadret.utils.extensions.toObservable
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
@@ -59,13 +59,8 @@ class AboutAppFragment : Fragment() {
         setup()
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-    }
-
     override fun onDestroy() {
         super.onDestroy()
-
         subscriptions.clear()
     }
 
@@ -79,7 +74,6 @@ class AboutAppFragment : Fragment() {
     private fun setupEvents() {
         Observable.mergeArray(
             onInitEventSubject
-                .toFlowable(BackpressureStrategy.BUFFER)
                 .toObservable(),
             aboutAppTabLayout
                 .selections()

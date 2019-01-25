@@ -13,6 +13,7 @@
     <color name="two">#2b3595</color>
     <color name="three">#573697</color>
     <color name="actionbar">#742dd2</color>
+    <!-- SMHI WARNING -->
     <color name="warning_class_1">#73FFAD1F</color>
     <color name="warning_class_2">#a1E97D1F</color>
     <color name="warning_class_3">#a1D12A2A</color>
@@ -20,5 +21,57 @@
     <color name="risk_for_very_difficult_weather">#a175d5ff</color>
     <color name="risk_for_fire">#a17B4AC2</color>
     <color name="the_one">#1A7B4AC2</color>
+
+    <!-- New 3 Color Gradient -->
+    <!-- #746bd1, #7074da, #6c7ee2, #6887ea, #6490f2, #848ef1, #9f8cef, #b78aea, #e17cce, #fa73aa, #ff7583, #fb815f -->
+    <color name="color_gradient_0">#4A4394</color>
+    <color name="color_gradient_1">#5A52AF</color>
+    <color name="color_gradient_2">#6A61CC</color>
+    <color name="color_gradient_3">#746bd1</color>
+    <color name="color_gradient_4">#7074da</color>
+    <color name="color_gradient_5">#6c7ee2</color>
+    <color name="color_gradient_6">#6887ea</color>
+    <color name="color_gradient_7">#6490f2</color>
+    <color name="color_gradient_8">#848ef1</color>
+    <color name="color_gradient_9">#9f8cef</color>
+    <color name="color_gradient_10">#b78aea</color>
+    <color name="color_gradient_11">#e17cce</color>
+    <color name="color_gradient_12">#fa73aa</color>
+    <color name="color_gradient_13">#ff7583</color>
+    <color name="color_gradient_14">#fb815f</color>
+    <color name="color_gradient_15">#E9704E</color>
+    <color name="color_gradient_16">#F5704B</color>
+
+
+    <!-- Temperature Gradient Color -->
+    <color name="less_than_minus_ten">#A10B1933</color>
+    <color name="less_than_minus_five">#A125457A</color>
+    <color name="less_than_minus_two_and_a_half">#A13D668A</color>
+    <color name="less_than_minus_a_half">#A17B9EBE</color>
+    <color name="less_than_one">#A16C8EAD</color>
+    <color name="less_than_zero">#A16B92CC</color>
+    <color name="less_than_two">#A18A74AC</color>
+    <color name="less_than_three">#C4BDCE</color>
+    <color name="less_than_four">#A1D1AE72</color>
+    <color name="less_than_five">#BAC7AE5B</color>
+    <color name="less_than_seven_and_a_half">#A1EED628</color>
+    <color name="less_than_ten">#A1EEAC17</color>
+    <color name="less_than_fiftheen">#A1B88766</color>
+    <color name="less_than_twenty">#A1973535</color>
+    <color name="less_than_twenty_five">#A17E1616</color>
+    <color name="less_than_thirty">#A19B0808</color>
+    <color name="less_than_thirty_five">#A1BE0909</color>
+
+    <color name="blue_faience">#6779CA</color>
     <color name="shaded">#B4FFFFFF</color>
+
+    <!-- Smoke -->
+    <color name="light">#FDFDFD</color>
+    <color name="light_smoke">#BDBDBD</color>
+    <!-- dunkelgrau -->
+    <color name="dark">#343434</color>
+    <color name="dark_shaded">#606264</color>
+    <color name="dark_shaded_border">#D6D6D6</color>
+    <!-- Eigengrau -->
+    <color name="eigen_grau">#16161d</color>
 </resources>

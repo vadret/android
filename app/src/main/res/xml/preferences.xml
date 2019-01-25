@@ -1,40 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/settingsFragment">
     <PreferenceCategory android:title="@string/setting_location_title">
         <SwitchPreference
-            android:key="@string/use_gps_by_defeault_key"
-            android:title="@string/use_gps_by_default"
+            android:defaultValue="false"
+            android:key="AUTOMATIC_LOCATION_MODE"
             android:persistent="true"
-            android:summaryOn="@string/gps_is_being_used"
             android:summaryOff="@string/gps_is_not_being_used"
-            android:defaultValue="true"/>
-
+            android:summaryOn="@string/gps_is_being_used"
+            android:title="@string/use_gps_by_default" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/setting_current_location">
         <EditTextPreference
-            android:key="@string/city_key"
-            android:selectable="false"
+            android:key="LOCALITY"
             android:persistent="true"
+            android:selectable="false"
             android:title="@string/setting_city" />
 
         <EditTextPreference
-            android:key="@string/province_key"
-            android:selectable="false"
+            android:key="COUNTY"
             android:persistent="true"
+            android:selectable="false"
             android:title="@string/setting_county" />
 
         <EditTextPreference
-            android:key="@string/latitude_key"
-            android:selectable="false"
+            android:key="LATITUDE"
             android:persistent="true"
+            android:selectable="false"
             android:title="@string/setting_latitude" />
 
         <EditTextPreference
-            android:key="@string/longitude_key"
-            android:selectable="false"
+            android:key="MUNICIPALITY"
             android:persistent="true"
+            android:selectable="false"
+            android:title="@string/setting_municipality" />
+
+        <EditTextPreference
+            android:key="LONGITUDE"
+            android:persistent="true"
+            android:selectable="false"
             android:title="@string/setting_longitude" />
     </PreferenceCategory>
 </PreferenceScreen>

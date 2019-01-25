@@ -8,7 +8,7 @@
 
     <!-- ABOUT APP - FIRST TAB -->
 
-    <!-- Holds app name, and slogan -->
+    <!-- Holds app localityName, and slogan -->
     <androidx.cardview.widget.CardView
             android:id="@+id/aboutAppAboutTitleCardView"
             android:layout_width="match_parent"

@@ -1,7 +1,7 @@
 package fi.kroon.vadret.data.radar
 
-import fi.kroon.vadret.data.DEFAULT_RADAR_FILE_FORMAT
-import fi.kroon.vadret.data.DEFAULT_TIME_ZONE
+import fi.kroon.vadret.utils.DEFAULT_RADAR_FILE_FORMAT
+import fi.kroon.vadret.utils.DEFAULT_TIME_ZONE
 import org.threeten.bp.LocalDate
 import org.threeten.bp.ZoneOffset
 

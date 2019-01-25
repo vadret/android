@@ -5,10 +5,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.2.0] -- 2019-01-24
+## [1.0.0] -- 2019-03-15
+
+### Added
+- New app icon
+- New theme
+- Sunset/Sunrise times
+- Wind direction
 
 ### Fixed
-- Refactored About page
+- Survive device rotation/process death
+
+### Changed
+- App completely rewritten
+- External libraries updated
+- Several bugfixes and internal improvements
 
 ## [0.1.8] -- 2019-01-21
 
@@ -86,8 +97,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Radar imagery
 - 10 day weather forecast
 
-[Unreleased]: https://github.com/vadret/android/compare/0.2.0...HEAD
-[0.2.0]: https://github.com/vadret/android/compare/0.1.8...0.2.0
+[Unreleased]: https://github.com/vadret/android/compare/1.0.0...HEAD
+[1.0.0]: https://github.com/vadret/android/compare/0.1.8...1.0.0
 [0.1.8]: https://github.com/vadret/android/compare/0.1.7...0.1.8
 [0.1.7]: https://github.com/vadret/android/compare/0.1.6...0.1.7
 [0.1.6]: https://github.com/vadret/android/compare/0.1.5...0.1.6

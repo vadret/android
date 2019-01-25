@@ -10,7 +10,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import fi.kroon.vadret.R
-import fi.kroon.vadret.data.library.local.LibraryEntity
+import fi.kroon.vadret.data.library.model.Library
 import fi.kroon.vadret.presentation.MainActivity
 import fi.kroon.vadret.presentation.aboutapp.AboutAppFragment
 import fi.kroon.vadret.utils.extensions.toObservable
@@ -18,7 +18,6 @@ import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.subjects.PublishSubject
-import kotlinx.android.synthetic.main.about_app_about_fragment.*
 import kotlinx.android.synthetic.main.about_app_library_fragment.*
 import timber.log.Timber
 import javax.inject.Inject
@@ -31,15 +30,15 @@ class AboutAppLibraryFragment : Fragment() {
 
     @Inject
     @field:[Named("projectUrl")]
-    lateinit var onOnProjectUrlClickSubject: PublishSubject<LibraryEntity>
+    lateinit var onOnProjectUrlClickSubject: PublishSubject<Library>
 
     @Inject
     @field:[Named("sourceUrl")]
-    lateinit var onSourceUrlClickSubject: PublishSubject<LibraryEntity>
+    lateinit var onSourceUrlClickSubject: PublishSubject<Library>
 
     @Inject
     @field:[Named("licenseUrl")]
-    lateinit var onLicenseUrlClickSubject: PublishSubject<LibraryEntity>
+    lateinit var onLicenseUrlClickSubject: PublishSubject<Library>
 
     @Inject
     lateinit var viewModel: AboutAppLibraryViewModel
@@ -79,11 +78,6 @@ class AboutAppLibraryFragment : Fragment() {
         subscriptions.clear()
     }
 
-    /*override fun onDestroyView() {
-        super.onDestroyView()
-        aboutAppLibraryRecyclerView.adapter = null
-    }*/
-
     private fun setup() {
         setupRecyclerView()
         setupEvents()
@@ -102,22 +96,19 @@ class AboutAppLibraryFragment : Fragment() {
                 .toObservable(),
             onOnProjectUrlClickSubject
                 .toObservable()
-                .map {
-                    entity: LibraryEntity ->
+                .map { entity: Library ->
                     AboutAppLibraryView.Event
                         .OnProjectUrlClick(entity)
                 },
             onSourceUrlClickSubject
                 .toObservable()
-                .map {
-                    entity: LibraryEntity ->
+                .map { entity: Library ->
                     AboutAppLibraryView.Event
                         .OnSourceUrlClick(entity)
                 },
             onLicenseUrlClickSubject
                 .toObservable()
-                .map {
-                    entity: LibraryEntity ->
+                .map { entity: Library ->
                     AboutAppLibraryView.Event
                         .OnLicenseUrlClick(entity)
                 }
@@ -140,17 +131,12 @@ class AboutAppLibraryFragment : Fragment() {
 
     private fun render(viewState: AboutAppLibraryView.State) =
         when (viewState.renderEvent) {
-
             AboutAppLibraryView.RenderEvent.Init -> Unit
-
             is AboutAppLibraryView.RenderEvent.DisplayLibrary ->
                 displayLibraries(viewState.renderEvent)
-
             is AboutAppLibraryView.RenderEvent.OpenUrl ->
                 openUrlInBrowser(viewState.renderEvent.url)
-
             AboutAppLibraryView.RenderEvent.None -> Unit
-
             is AboutAppLibraryView.RenderEvent.Error -> Unit
         }
 

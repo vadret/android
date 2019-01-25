@@ -12,27 +12,27 @@ import com.squareup.picasso.Picasso
 import com.squareup.picasso.Target
 import fi.kroon.vadret.BuildConfig
 import fi.kroon.vadret.R
-import fi.kroon.vadret.data.DEFAULT_BOUNDINGBOX_CENTER_LATITUDE
-import fi.kroon.vadret.data.DEFAULT_BOUNDINGBOX_CENTER_LONGITUDE
-import fi.kroon.vadret.data.DEFAULT_LATITUDE_MAX
-import fi.kroon.vadret.data.DEFAULT_LATITUDE_MIN
-import fi.kroon.vadret.data.DEFAULT_LONGITUDE_MAX
-import fi.kroon.vadret.data.DEFAULT_LONGITUDE_MIN
-import fi.kroon.vadret.data.DEFAULT_RADAR_FILE_EXTENSION
-import fi.kroon.vadret.data.DEFAULT_RADAR_INTERVAL
-import fi.kroon.vadret.data.DEFAULT_TILE_SOURCE_URL
-import fi.kroon.vadret.data.DEFAULT_ZOOM_LEVEL
-import fi.kroon.vadret.data.MAXIMUM_ZOOM_LEVEL
-import fi.kroon.vadret.data.MINIMUM_ZOOM_LEVEL
-import fi.kroon.vadret.data.OFFSET
-import fi.kroon.vadret.data.exception.Either
 import fi.kroon.vadret.data.exception.Failure
+import fi.kroon.vadret.data.functional.Either
 import fi.kroon.vadret.data.radar.RadarRequest
 import fi.kroon.vadret.data.radar.exception.RadarFailure
 import fi.kroon.vadret.data.radar.model.File
 import fi.kroon.vadret.data.radar.model.Radar
 import fi.kroon.vadret.presentation.viewmodel.RadarViewModel
+import fi.kroon.vadret.utils.DEFAULT_BOUNDINGBOX_CENTER_LATITUDE
+import fi.kroon.vadret.utils.DEFAULT_BOUNDINGBOX_CENTER_LONGITUDE
+import fi.kroon.vadret.utils.DEFAULT_BOUNDINGBOX_LATITUDE_MAX
+import fi.kroon.vadret.utils.DEFAULT_BOUNDINGBOX_LATITUDE_MIN
+import fi.kroon.vadret.utils.DEFAULT_BOUNDINGBOX_LONGITUDE_MAX
+import fi.kroon.vadret.utils.DEFAULT_BOUNDINGBOX_LONGITUDE_MIN
+import fi.kroon.vadret.utils.DEFAULT_RADAR_FILE_EXTENSION
+import fi.kroon.vadret.utils.DEFAULT_RADAR_INTERVAL
+import fi.kroon.vadret.utils.DEFAULT_RADAR_ZOOM_LEVEL
+import fi.kroon.vadret.utils.FILE_COUNT_OFFSET
+import fi.kroon.vadret.utils.MAXIMUM_ZOOM_LEVEL
+import fi.kroon.vadret.utils.MINIMUM_ZOOM_LEVEL
 import fi.kroon.vadret.utils.Schedulers
+import fi.kroon.vadret.utils.WIKIMEDIA_TILE_SOURCE_URL
 import fi.kroon.vadret.utils.extensions.viewModel
 import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
@@ -53,6 +53,10 @@ import javax.inject.Inject
 // TODO - Refactor
 class RadarFragment : BaseFragment() {
 
+    companion object {
+        // fixme add
+    }
+
     override fun layoutId() = R.layout.radar_fragment
 
     @Inject
@@ -66,7 +70,8 @@ class RadarFragment : BaseFragment() {
     private lateinit var radarSeekbar: SeekBar
     private lateinit var radarPlay: FloatingActionButton
 
-    private val DEFAULT_TILE_SOURCE = XYTileSource("wikimedia", 1, 18, 256, DEFAULT_RADAR_FILE_EXTENSION, arrayOf(DEFAULT_TILE_SOURCE_URL))
+    // FIXME wikimedia -> companion object const val
+    private val DEFAULT_TILE_SOURCE = XYTileSource("wikimedia", 1, 18, 256, DEFAULT_RADAR_FILE_EXTENSION, arrayOf(WIKIMEDIA_TILE_SOURCE_URL))
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -113,12 +118,12 @@ class RadarFragment : BaseFragment() {
         mapView.setTileSource(DEFAULT_TILE_SOURCE)
         mapView.isTilesScaledToDpi = true
         mapView.setMultiTouchControls(true)
-        mapView.setBuiltInZoomControls(false)
+        mapView.setBuiltInZoomControls(false) // TODO deprecated
         mapView.maxZoomLevel = MAXIMUM_ZOOM_LEVEL
         mapView.minZoomLevel = MINIMUM_ZOOM_LEVEL
         mapView.controller.setCenter(GeoPoint(DEFAULT_BOUNDINGBOX_CENTER_LATITUDE, DEFAULT_BOUNDINGBOX_CENTER_LONGITUDE))
-        mapView.controller.setZoom(DEFAULT_ZOOM_LEVEL)
-        mapView.setScrollableAreaLimitDouble(BoundingBox(DEFAULT_LATITUDE_MAX, DEFAULT_LONGITUDE_MAX, DEFAULT_LATITUDE_MIN, DEFAULT_LONGITUDE_MIN))
+        mapView.controller.setZoom(DEFAULT_RADAR_ZOOM_LEVEL)
+        mapView.setScrollableAreaLimitDouble(BoundingBox(DEFAULT_BOUNDINGBOX_LATITUDE_MAX, DEFAULT_BOUNDINGBOX_LONGITUDE_MAX, DEFAULT_BOUNDINGBOX_LATITUDE_MIN, DEFAULT_BOUNDINGBOX_LONGITUDE_MIN))
     }
 
     fun initialise() {
@@ -150,7 +155,7 @@ class RadarFragment : BaseFragment() {
 
     private fun handleRadar(radar: Radar) {
         radarSeekbar = view?.findViewById(R.id.radarSeekBar)!!
-        radarSeekbar.max = radar.files.size - OFFSET
+        radarSeekbar.max = radar.files.size - FILE_COUNT_OFFSET
         radarSeekbar.setOnSeekBarChangeListener(
             object : SeekBar.OnSeekBarChangeListener {
                 override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
@@ -234,6 +239,7 @@ class RadarFragment : BaseFragment() {
                 override fun onBitmapFailed(e: Exception?, errorDrawable: Drawable?) {
                     Timber.d("Image loading failed.")
                 }
+
                 override fun onBitmapLoaded(bitmap: Bitmap?, from: Picasso.LoadedFrom?) {
                     if (playRadarDisposable.isDisposed or subscriptions.isDisposed) {
                         Timber.d("Caller disposed assets. Return")
@@ -246,8 +252,8 @@ class RadarFragment : BaseFragment() {
                     val radarOverlay = GroundOverlay2()
                     radarOverlay.image = bitmap
                     radarOverlay.setPosition(
-                        GeoPoint(DEFAULT_LATITUDE_MAX, DEFAULT_LONGITUDE_MIN),
-                        GeoPoint(DEFAULT_LATITUDE_MIN, DEFAULT_LONGITUDE_MAX)
+                        GeoPoint(DEFAULT_BOUNDINGBOX_LATITUDE_MAX, DEFAULT_BOUNDINGBOX_LONGITUDE_MIN),
+                        GeoPoint(DEFAULT_BOUNDINGBOX_LATITUDE_MIN, DEFAULT_BOUNDINGBOX_LONGITUDE_MAX)
                     )
                     mapView.overlayManager.add(radarOverlay)
                     mapView.invalidate()

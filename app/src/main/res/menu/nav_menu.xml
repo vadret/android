@@ -2,7 +2,7 @@
 
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <group android:id="@+id/featureGroup">
-        <item android:id="@+id/weatherFragment"
+        <item android:id="@+id/weatherForecastFragment"
             android:title="@string/weather" />
         <item android:id="@+id/radarFragment"
             android:title="@string/radar" />

@@ -10,7 +10,7 @@ import fi.kroon.vadret.R
 import fi.kroon.vadret.data.alert.exception.AlertFailure
 import fi.kroon.vadret.data.alert.model.Alert
 import fi.kroon.vadret.data.alert.model.Warning
-import fi.kroon.vadret.data.exception.Either
+import fi.kroon.vadret.data.functional.Either
 import fi.kroon.vadret.data.exception.Failure
 import fi.kroon.vadret.presentation.adapter.AlertAdapter
 import fi.kroon.vadret.presentation.viewmodel.AlertViewModel
@@ -36,7 +36,7 @@ class AlertFragment : BaseFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        cmp.inject(this)
+        // cmp.inject(this)
         alertViewModel = viewModel(viewModelFactory) {}
     }
 

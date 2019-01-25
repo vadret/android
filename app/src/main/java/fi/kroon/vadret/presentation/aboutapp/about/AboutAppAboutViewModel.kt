@@ -2,8 +2,8 @@ package fi.kroon.vadret.presentation.aboutapp.about
 
 import android.content.Context
 import fi.kroon.vadret.R
-import fi.kroon.vadret.data.aboutinfo.local.AboutInfoEntity
-import fi.kroon.vadret.data.exception.Either
+import fi.kroon.vadret.data.aboutinfo.model.AboutInfo
+import fi.kroon.vadret.data.functional.Either
 import fi.kroon.vadret.data.exception.Failure
 import fi.kroon.vadret.domain.AboutInfoTask
 import fi.kroon.vadret.utils.extensions.asObservable
@@ -46,7 +46,7 @@ class AboutAppAboutViewModel @Inject constructor(
 
     private fun onInitEvent(): Observable<AboutAppAboutView.State> =
         aboutInfoTask()
-            .map { result: Either<Failure, List<AboutInfoEntity>> ->
+            .map { result: Either<Failure, List<AboutInfo>> ->
 
                 result.either(
                     { _: Failure ->
@@ -54,7 +54,7 @@ class AboutAppAboutViewModel @Inject constructor(
 
                         state
                     },
-                    { list: List<AboutInfoEntity> ->
+                    { list: List<AboutInfo> ->
 
                         val renderEvent: AboutAppAboutView.RenderEvent.DisplayInfo =
                             AboutAppAboutView.RenderEvent.DisplayInfo(list)
@@ -66,7 +66,7 @@ class AboutAppAboutViewModel @Inject constructor(
                 )
             }.toObservable()
 
-    private fun onItemClickEvent(item: AboutInfoEntity): Observable<AboutAppAboutView.State> =
+    private fun onItemClickEvent(item: AboutInfo): Observable<AboutAppAboutView.State> =
         when {
 
             item.titleResourceId == R.string.changelog_row_title -> {

@@ -10,13 +10,15 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import fi.kroon.vadret.R
-import fi.kroon.vadret.data.aboutinfo.local.AboutInfoEntity
+import fi.kroon.vadret.data.aboutinfo.model.AboutInfo
 import fi.kroon.vadret.presentation.MainActivity
 import fi.kroon.vadret.presentation.aboutapp.AboutAppFragment
 import fi.kroon.vadret.utils.extensions.toObservable
 import io.reactivex.Observable
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
+import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.about_app_about_fragment.*
 import javax.inject.Inject
@@ -27,7 +29,7 @@ class AboutAppAboutFragment : Fragment() {
     lateinit var onInitEventSubject: PublishSubject<AboutAppAboutView.Event.OnInit>
 
     @Inject
-    lateinit var onAboutInfoItemClickSubject: PublishSubject<AboutInfoEntity>
+    lateinit var onAboutInfoItemClickSubject: PublishSubject<AboutInfo>
 
     @Inject
     lateinit var viewModel: AboutAppAboutViewModel
@@ -68,8 +70,6 @@ class AboutAppAboutFragment : Fragment() {
         subscriptions.clear()
     }
 
-    // --------------------------------------------------------------------------------------------------
-
     private fun setup() {
         setupRecyclerView()
         setupEvents()
@@ -88,16 +88,18 @@ class AboutAppAboutFragment : Fragment() {
                 .toObservable(),
             onAboutInfoItemClickSubject
                 .toObservable()
-                .map { entity: AboutInfoEntity ->
+                .map { entity: AboutInfo ->
                     AboutAppAboutView
                         .Event
                         .OnItemClick(entity)
                 }
-        ).compose(
-            viewModel()
-        ).subscribe(
-            ::render
-        ).addTo(subscriptions)
+        ).observeOn(Schedulers.io())
+            .compose(
+                viewModel()
+            ).observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                ::render
+            ).addTo(subscriptions)
 
         onInitEventSubject
             .onNext(

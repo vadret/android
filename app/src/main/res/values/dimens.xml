@@ -10,4 +10,20 @@
     <dimen name="base_icon_height">64dp</dimen>
     <dimen name="base_icon_width">64dp</dimen>
     <dimen name="default_corner_radius">8dp</dimen>
+
+
+    <dimen name="activity_padding">16dp</dimen>
+    <dimen name="placeholder_image">50dp</dimen>
+    <dimen name="placeholder_text_height">8dp</dimen>
+    <dimen name="activity_padding_horizontal">16dp</dimen>
+    <dimen name="padding_10">10dp</dimen>
+    <dimen name="time">42dp</dimen>
+    <dimen name="weather_description">210dp</dimen>
+    <dimen name="temperature">25dp</dimen>
+    <dimen name="celcius">25dp</dimen>
+    <dimen name="feelsLikeTemperature">40dp</dimen>
+    <dimen name="weatherIcon">48dp</dimen>
+    <dimen name="weekday_placeholder">120dp</dimen>
+    <dimen name="date_placeholder">70dp</dimen>
+
 </resources>

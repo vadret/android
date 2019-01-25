@@ -1,14 +1,14 @@
 package fi.kroon.vadret.presentation.aboutapp.about
 
 import android.os.Parcelable
-import fi.kroon.vadret.data.aboutinfo.local.AboutInfoEntity
+import fi.kroon.vadret.data.aboutinfo.model.AboutInfo
 import kotlinx.android.parcel.Parcelize
 
 object AboutAppAboutView {
 
     sealed class Event {
         object OnInit : Event()
-        class OnItemClick(val item: AboutInfoEntity) : Event()
+        class OnItemClick(val item: AboutInfo) : Event()
     }
 
     data class State(
@@ -18,7 +18,7 @@ object AboutAppAboutView {
     sealed class RenderEvent {
         object Init : RenderEvent()
         object None : RenderEvent()
-        class DisplayInfo(val list: List<AboutInfoEntity>) : RenderEvent()
+        class DisplayInfo(val list: List<AboutInfo>) : RenderEvent()
         class OpenUrl(val url: String) : RenderEvent()
         class Error(val message: String) : RenderEvent()
     }

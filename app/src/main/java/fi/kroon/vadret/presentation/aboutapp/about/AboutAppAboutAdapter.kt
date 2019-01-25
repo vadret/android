@@ -6,7 +6,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import fi.kroon.vadret.R
-import fi.kroon.vadret.data.aboutinfo.local.AboutInfoEntity
+import fi.kroon.vadret.data.aboutinfo.model.AboutInfo
 import fi.kroon.vadret.presentation.aboutapp.di.AboutAppScope
 import fi.kroon.vadret.utils.extensions.toGone
 import io.reactivex.subjects.PublishSubject
@@ -15,10 +15,10 @@ import javax.inject.Inject
 
 @AboutAppScope
 class AboutAppAboutAdapter @Inject constructor(
-    private val onAboutAppAboutInfoItemClickSubject: PublishSubject<AboutInfoEntity>
+    private val onAboutAppAboutInfoItemClickSubject: PublishSubject<AboutInfo>
 ) : RecyclerView.Adapter<AboutAppAboutAdapter.ViewHolder>() {
 
-    private val list = mutableListOf<AboutInfoEntity>()
+    private val list = mutableListOf<AboutInfo>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
 
@@ -42,7 +42,7 @@ class AboutAppAboutAdapter @Inject constructor(
             }
         }
 
-        fun bind(entity: AboutInfoEntity) {
+        fun bind(entity: AboutInfo) {
             with(itemView) {
                 with(entity) {
                     iconResourceId?.let { id ->
@@ -64,9 +64,9 @@ class AboutAppAboutAdapter @Inject constructor(
         }
     }
 
-    fun updateList(entityList: List<AboutInfoEntity>) {
-        list.clear()
-        list.addAll(entityList)
+    fun updateList(list: List<AboutInfo>) {
+        this.list.clear()
+        this.list.addAll(list)
         notifyDataSetChanged()
     }
 }

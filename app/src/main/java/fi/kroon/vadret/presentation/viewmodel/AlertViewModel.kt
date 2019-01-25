@@ -1,7 +1,7 @@
 package fi.kroon.vadret.presentation.viewmodel
 
 import fi.kroon.vadret.data.alert.model.Alert
-import fi.kroon.vadret.data.exception.Either
+import fi.kroon.vadret.data.functional.Either
 import fi.kroon.vadret.data.exception.Failure
 import fi.kroon.vadret.domain.AlertUseCase
 import io.reactivex.Single

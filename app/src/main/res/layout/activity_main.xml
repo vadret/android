@@ -13,29 +13,26 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
 
-            <com.google.android.material.appbar.AppBarLayout
-                xmlns:tools="http://schemas.android.com/tools"
+            <com.google.android.material.appbar.AppBarLayout xmlns:tools="http://schemas.android.com/tools"
                 android:id="@+id/appbar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:theme="@style/AppTheme.AppBarOverlay"
                 tools:showIn="@layout/activity_main">
 
                 <androidx.appcompat.widget.Toolbar
                     android:id="@+id/toolBar"
                     android:layout_width="match_parent"
-                    android:layout_height="?attr/actionBarSize"
-                    app:popupTheme="@style/AppTheme.PopupOverlay">
+                    android:layout_height="?attr/actionBarSize">
 
                     <TextView
                         android:id="@+id/currentLocationName"
+                        style="@style/BaseTextDarkShaded"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="end"
                         android:paddingStart="0dp"
                         android:paddingEnd="16dp"
-                        android:visibility="gone"
-                        android:layout_gravity="end"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
-
+                        android:visibility="gone" />
                 </androidx.appcompat.widget.Toolbar>
             </com.google.android.material.appbar.AppBarLayout>
 

@@ -119,6 +119,10 @@ android {
     lintOptions {
         abortOnError false
     }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
 }
 
 jacoco {
@@ -141,17 +145,26 @@ dependencies {
     def KTX_VERSION = "1.0.0"
     def NAVIGATION_VERSION = "1.0.0-alpha06"
     def LEAK_CANARY = "1.6.3"
-    def LIFE_CYCLE_VERSION = "2.1.0-alpha01"
+    def LIFE_CYCLE_VERSION = "2.1.0-alpha02"
     def OSMDROID_VERSION = "6.0.3"
     def PICASSO_VERSION = "2.71828"
     def PERMISSIONS_DISPATCHER_VERSION = "4.1.0"
     def CRASHLYTICS_VERSION = "2.9.8"
+    def OK_HTTP_VERSION = "3.13.1"
+    def OK_IO_VERSION = "2.2.2"
 
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
     /*androidTestImplementation('androidx.top.espresso:espresso-core:3.1.0-alpha3', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })*/
+
+    implementation "com.squareup.okio:okio:${OK_IO_VERSION}"
+    implementation "com.squareup.okhttp3:okhttp:${OK_HTTP_VERSION}"
+
+    implementation "org.apache.commons:commons-csv:1.5"
+    implementation 'com.afollestad:rxkprefs:1.2.2'
+    implementation 'com.facebook.shimmer:shimmer:0.4.0'
 
     // Permissions Dispatcher
     implementation "com.github.hotchemi:permissionsdispatcher:${PERMISSIONS_DISPATCHER_VERSION}"
@@ -177,11 +190,11 @@ dependencies {
     debugImplementation "com.squareup.leakcanary:leakcanary-support-fragment:${LEAK_CANARY}"
 
     // Fragment
-    implementation "androidx.fragment:fragment-ktx:1.1.0-alpha03"
+    implementation "androidx.fragment:fragment-ktx:1.1.0-alpha04"
 
     // Navigation
-    implementation "android.arch.navigation:navigation-fragment-ktx:1.0.0-alpha09"
-    implementation "android.arch.navigation:navigation-ui-ktx:1.0.0-alpha09"
+    implementation "android.arch.navigation:navigation-fragment-ktx:1.0.0-beta02"
+    implementation "android.arch.navigation:navigation-ui-ktx:1.0.0-beta02"
     androidTestImplementation "android.arch.navigation:navigation-testing-ktx:${NAVIGATION_VERSION}"
 
     //Retrofit 2
@@ -193,8 +206,8 @@ dependencies {
     implementation 'com.squareup.okhttp3:logging-interceptor:3.12.1'
 
     // KTX Core
-    implementation 'androidx.core:core-ktx:1.1.0-alpha03'
-    implementation 'androidx.appcompat:appcompat:1.1.0-alpha01'
+    implementation 'androidx.core:core-ktx:1.1.0-alpha04'
+    implementation 'androidx.appcompat:appcompat:1.1.0-alpha02'
     implementation "androidx.legacy:legacy-support-v4:${KTX_VERSION}"
     implementation "androidx.preference:preference:${KTX_VERSION}"
 

@@ -1,8 +1,8 @@
 package fi.kroon.vadret.presentation.aboutapp.library
 
-import fi.kroon.vadret.data.exception.Either
+import fi.kroon.vadret.data.functional.Either
 import fi.kroon.vadret.data.exception.Failure
-import fi.kroon.vadret.data.library.local.LibraryEntity
+import fi.kroon.vadret.data.library.model.Library
 import fi.kroon.vadret.domain.LibraryTask
 import fi.kroon.vadret.utils.extensions.asObservable
 import io.reactivex.Observable
@@ -56,7 +56,7 @@ class AboutAppLibraryViewModel @Inject constructor(
 
     private fun onInitEvent(): Observable<AboutAppLibraryView.State> =
         libraryTask()
-            .map { result: Either<Failure, List<LibraryEntity>> ->
+            .map { result: Either<Failure, List<Library>> ->
 
                 result.either(
                     { _: Failure ->
@@ -64,7 +64,7 @@ class AboutAppLibraryViewModel @Inject constructor(
 
                         state
                     },
-                    { list: List<LibraryEntity> ->
+                    { list: List<Library> ->
                         val renderEvent: AboutAppLibraryView.RenderEvent.DisplayLibrary =
                             AboutAppLibraryView.RenderEvent.DisplayLibrary(list)
                         state = state.copy(renderEvent = renderEvent)

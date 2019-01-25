@@ -5,16 +5,16 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import fi.kroon.vadret.R
-import fi.kroon.vadret.data.WINDCHILL_FORMULA_MAXIMUM
-import fi.kroon.vadret.data.WINDCHILL_FORMULA_MINIMUM
-import fi.kroon.vadret.data.MPS_TO_KMPH_FACTOR
 import fi.kroon.vadret.data.weather.model.TimeSerie
 import fi.kroon.vadret.di.scope.VadretApplicationScope
+import fi.kroon.vadret.utils.MPS_TO_KMPH_FACTOR
+import fi.kroon.vadret.utils.WINDCHILL_FORMULA_MAXIMUM
+import fi.kroon.vadret.utils.WINDCHILL_FORMULA_MINIMUM
 import fi.kroon.vadret.utils.extensions.toInvisible
 import fi.kroon.vadret.utils.extensions.toVisible
 import fi.kroon.vadret.utils.extensions.toWindChill
-import kotlinx.android.synthetic.main.weather_item.view.*
-import kotlinx.android.synthetic.main.weather_item_header.view.*
+import kotlinx.android.synthetic.main.weather_forecast_date_item.view.*
+import kotlinx.android.synthetic.main.weather_forecast_item.view.*
 import org.threeten.bp.LocalDate
 import org.threeten.bp.OffsetDateTime
 import org.threeten.bp.format.DateTimeFormatter
@@ -28,8 +28,8 @@ import kotlin.properties.Delegates
 @VadretApplicationScope
 class WeatherAdapter @Inject constructor() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    internal var collection: List<Any> by Delegates.observable(listOf()) {
-        _, _, _ -> notifyDataSetChanged()
+    internal var collection: List<Any> by Delegates.observable(listOf()) { _, _, _ ->
+        notifyDataSetChanged()
     }
 
     companion object {
@@ -64,7 +64,6 @@ class WeatherAdapter @Inject constructor() : RecyclerView.Adapter<RecyclerView.V
                                 "ws" -> {
                                     if (it.values.first() * MPS_TO_KMPH_FACTOR > WINDCHILL_FORMULA_MINIMUM) {
                                         Timber.d("Windspeed ${it.values.first() * MPS_TO_KMPH_FACTOR}  is greater than $WINDCHILL_FORMULA_MINIMUM so we render 'feels like'")
-                                        Timber.d("ws: ${it.values.first()}")
                                         Timber.d("Feels like: ${parameter.values.first().toWindChill(it.values.first())}")
                                         itemView.feelsLikeTemperature.text = parameter.values.first().toWindChill(it.values.first())
                                         itemView.feelsLikeTemperature.toVisible()
@@ -122,8 +121,8 @@ class WeatherAdapter @Inject constructor() : RecyclerView.Adapter<RecyclerView.V
             }
         }
 
-        fun handleWsymb2Icon(index: Int): Int {
-            return when (index) {
+        private fun handleWsymb2Icon(index: Int): Int =
+            when (index) {
                 1 -> R.drawable.wsymb2_clear_sky
                 2 -> R.drawable.wsymb2_nearly_clear_sky
                 3 -> R.drawable.wsymb2_variable_cloudiness
@@ -155,9 +154,8 @@ class WeatherAdapter @Inject constructor() : RecyclerView.Adapter<RecyclerView.V
                     R.drawable.wsymb2_clear_sky
                 }
             }
-        }
 
-        fun handlePrSort(prSort: Int) {
+        private fun handlePrSort(prSort: Int) {
             when (prSort) {
                 0 -> R.string.prsort_no_precipitation
                 1 -> R.string.prsort_snow
@@ -179,8 +177,8 @@ class WeatherAdapter @Inject constructor() : RecyclerView.Adapter<RecyclerView.V
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when (viewType) {
-            TYPE_WEEKDAY -> WeekdayViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.weather_item_header, parent, false))
-            else -> ForecastViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.weather_item, parent, false))
+            TYPE_WEEKDAY -> WeekdayViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.weather_forecast_date_item, parent, false))
+            else -> ForecastViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.weather_forecast_item, parent, false))
         }
     }
 

@@ -1,6 +1,6 @@
 package fi.kroon.vadret.data.radar
 
-import fi.kroon.vadret.data.exception.Either
+import fi.kroon.vadret.data.functional.Either
 import fi.kroon.vadret.data.exception.Failure
 import fi.kroon.vadret.data.radar.exception.RadarFailure
 import fi.kroon.vadret.data.radar.model.Radar
@@ -27,7 +27,7 @@ class RadarRepository @Inject constructor(
             }.doOnEvent { t1, t2 ->
                 Timber.d("T1: $t1, T2: $t2")
             }.doOnError {
-                Timber.d("Error occured: $it")
+                Timber.d("DisplayError occured: $it")
             }.onErrorReturn {
                 Either.Left(Failure.NetworkException())
             }
