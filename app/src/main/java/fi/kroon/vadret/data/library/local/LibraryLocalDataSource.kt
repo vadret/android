@@ -3,7 +3,7 @@ package fi.kroon.vadret.data.library.local
 import fi.kroon.vadret.data.functional.Either
 import fi.kroon.vadret.data.exception.Failure
 import fi.kroon.vadret.data.library.model.Library
-import fi.kroon.vadret.di.scope.VadretApplicationScope
+import fi.kroon.vadret.core.di.scope.VadretApplicationScope
 import io.reactivex.Single
 import javax.inject.Inject
 

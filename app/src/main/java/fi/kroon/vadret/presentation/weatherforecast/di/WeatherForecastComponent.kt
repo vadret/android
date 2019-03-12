@@ -15,9 +15,7 @@ interface WeatherForecastComponent {
 
     @Subcomponent.Builder
     interface Builder {
-
         fun forecastModule(module: WeatherForecastModule): Builder
-
         fun build(): WeatherForecastComponent
     }
 }

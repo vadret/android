@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="8dp"
+    android:background="@drawable/weather_forecast_item_rounded"
+    android:elevation="4dp"
+    android:orientation="vertical"
+    android:theme="@style/AppTheme">
+
+    <View
+        android:id="@+id/alertStartColorBarPlaceHolder"
+        style="@style/BaseTextDark"
+        android:layout_width="6dp"
+        android:layout_height="0dp"
+        android:layout_alignParentEnd="true"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/alertTitlePlaceHolder"
+        style="@style/BaseTextDark"
+        android:layout_width="256dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:background="@android:color/darker_gray"
+        android:textAllCaps="false"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toEndOf="@+id/alertStartColorBar"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/warningIconPlaceHolder"
+        style="@style/BaseTextDark"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="4dp"
+        android:background="@android:color/darker_gray"
+        app:layout_constraintStart_toEndOf="@+id/alertStartColorBar"
+        app:layout_constraintTop_toBottomOf="@+id/alertTitle" />
+
+    <TextView
+        android:id="@+id/alertDescriptionPlaceHolder"
+        style="@style/BaseTextDark"
+        android:layout_width="0dp"
+        android:layout_height="128dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="16dp"
+        android:background="@android:color/darker_gray"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/alertStartColorBar"
+        app:layout_constraintTop_toBottomOf="@+id/warningIcon" />
+
+    <com.google.android.material.chip.ChipGroup
+        android:id="@+id/chipGroupPlaceHolder"
+        style="@style/BaseTextDark"
+        android:layout_width="0dp"
+        android:layout_height="20dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        android:background="@android:color/darker_gray"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/alertStartColorBarPlaceHolder"
+        app:layout_constraintTop_toBottomOf="@+id/alertDescriptionPlaceHolder" />
+
+    <TextView
+        android:id="@+id/issuedPlaceHolder"
+        style="@style/BaseTextDark"
+        android:layout_width="0dp"
+        android:layout_height="20dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="8dp"
+        android:textSize="14sp"
+        android:background="@android:color/darker_gray"
+        app:layout_constraintBottom_toTopOf="@+id/alertDescriptionPlaceHolder"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/warningIconPlaceHolder"
+        app:layout_constraintTop_toBottomOf="@+id/alertTitlePlaceHolder" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

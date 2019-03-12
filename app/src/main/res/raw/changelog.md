@@ -5,13 +5,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [1.0.0] -- 2019-03-15
+## [1.0.0] -- 2019-03-31
 
 ### Added
 - New app icon
 - New theme
 - Sunset/Sunrise times
-- Wind direction
+- Wind direction/speed
+- New bottom navigation
 
 ### Fixed
 - Survive device rotation/process death
@@ -19,7 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - App completely rewritten
 - External libraries updated
-- Several bugfixes and internal improvements
+- Several bugfixes and major internal improvements
 
 ## [0.1.8] -- 2019-01-21
 

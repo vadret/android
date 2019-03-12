@@ -5,21 +5,19 @@
 
 ![Vädret](https://raw.githubusercontent.com/vadret/android/master/assets/logo.png)
 
-# Vädret!
-**Vädret** is a weather app for Sweden written in Kotlin. 
-Weather data is gathered from [SMHI Open Data Meteorological Analysis](https://opendata-download-metanalys.smhi.se). API documentation available in 
-english [here](https://opendata.smhi.se/apidocs/metanalys/index.html) -- the
-data itself is licensed under [Creative commons Erkännande 4.0 SE](https://www.smhi.se/klimatdata/oppna-data/information-om-oppna-data/villkor-for-anvandning-1.30622).
+# Vädret
+Vädret is a simple weather app for Sweden written in Kotlin with reactive streams from RxJava2. Icons
+used in this project can be found [here](https://github.com/vadret/assets).
+Weather data is collected from [SMHI Open Data Meteorological Forecast](https://opendata-download-metfcst.smhi.se/).
+The data is licensed under [Creative commons Erkännande 4.0 SE](https://www.smhi.se/klimatdata/oppna-data/information-om-oppna-data/villkor-for-anvandning-1.30622).
 
-## SMHI API
+## SMHI Open Data API Docs
 
-* [Parameter data](https://opendata-download-metanalys.smhi.se/api/category/mesan1g/version/2/parameter.json)
-* [Parameter documentation](https://opendata.smhi.se/apidocs/metanalys/parameters.html)
-* [Point data](https://opendata-download-metanalys.smhi.se/api/category/mesan1g/version/2/geotype/point/lon/18.0686/lat/59.3293/data.json)
-* [Radar documentation](https://opendata.smhi.se/apidocs/radar/)
-* [Radar data](https://opendata.smhi.se/apidocs/radar/data.html)
+* [Metrological Forecast](https://opendata-download-metfcst.smhi.se/)
+* [Warnings](https://opendata-download-warnings.smhi.se/) 
+* [Radar](https://opendata-download-radar.smhi.se/)
 
-## Download
+## Download app
 
 [<img src="https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png"
       alt="Download from Google Play"
@@ -28,40 +26,35 @@ data itself is licensed under [Creative commons Erkännande 4.0 SE](https://www.
       alt="Get it on F-Droid"
       height="80">](https://f-droid.org/packages/fi.kroon.vadret/)
 
-## Architecture
-This project tries to obey the [Clean Architecture](https://8thlight.com/blog/uncle-bob/2012/08/13/the-clean-architecture.html) approach to application design.
+_**Note**: While both distribution channels track the same branch, each release are signed with different keys.
+Thus you cannot install the F-droid version and upgrade via Play store unless you first uninstall the F-droid version._
 
-![App drawer](https://raw.githubusercontent.com/vadret/android/master/assets/drawer.png)
+## Architecture
+
+This project is built on concepts from [Clean Architecture](https://8thlight.com/blog/uncle-bob/2012/08/13/the-clean-architecture.html) to software design. The presentation layer is heavily inspired by Jake Wharton's talk on _[Managing State with RxJava](https://www.youtube.com/watch?v=0IKHxjkgop4)_. The project also applies the use of the `Either` type as proposed by [Fernando Cejas](https://github.com/android10/Android-CleanArchitecture-Kotlin/blob/master/app/src/main/kotlin/com/fernandocejas/sample/core/functional/Either.kt) with some additional extensions added.
+
 ![Weather](https://raw.githubusercontent.com/vadret/android/master/assets/weather.png)
 ![Warning](https://raw.githubusercontent.com/vadret/android/master/assets/warning.png)
 ![Radar](https://raw.githubusercontent.com/vadret/android/master/assets/radar.png)
-![Settings](https://raw.githubusercontent.com/vadret/android/master/assets/settings.png)
 
 ## Android Architecture Components
 
-* [Navigation Architecture Component](https://developer.android.com/topic/libraries/architecture/navigation/)
+* [Navigation Architecture Component](https://developer.android.com/guide/navigation/)
 * [Android KTX](https://developer.android.com/kotlin/ktx)
-
-### Libraries
-
-* [RxJava2](https://github.com/ReactiveX/RxJava)
-* [Dagger2](https://github.com/google/dagger)
-* [Retrofit2](https://github.com/square/retrofit)
-* [Timber](https://github.com/JakeWharton/timber)
 
 ## Code Style
 This project uses [ktlint](https://github.com/shyiko/ktlint) for linting and [codecov](https://codecov.io/gh/vadret/android) for measuring test coverage.
 
 #### Linting
 ```sh
-./gradlew ktlint 		# lint check
-./gradlew ktlintFormat 	# lint check format
+./gradlew ktlint
+./gradlew ktlintFormat
 ```
 
 ## Changelog
-A changelog in the [keep-a-changelog](https://keepachangelog.com/en/1.0.0/) format is available [here](https://github.com/vadret/android/blob/master/app/src/main/res/raw/changelog.md).
+Changelog available [here](https://github.com/vadret/android/blob/master/app/src/main/res/raw/changelog.md) in [keep-a-changelog](https://keepachangelog.com/en/1.0.0/) format.
 
-## Code Contribution Guidelines
+## Contributor Guidelines
 If you would like to contribute code to the project fork the project and find an issue/feature you would like to work on. Ideally check with a maintainer so you dont work on something that might be in the workings already.
 
 Your pull request will be failed by the build server if it does not have passing unittests and lintchecks. A build can also be failed if you decrease the testing coverage.

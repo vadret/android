@@ -13,7 +13,8 @@ object WeatherForecastModule {
     @Provides
     @JvmStatic
     @WeatherForecastScope
-    fun provideOnStateParcelUpdated(): PublishSubject<WeatherForecastView.Event.OnStateParcelUpdated> = PublishSubject.create()
+    fun provideOnStateParcelUpdated(): PublishSubject<WeatherForecastView.Event.OnStateParcelUpdated> =
+        PublishSubject.create()
 
     @Provides
     @JvmStatic

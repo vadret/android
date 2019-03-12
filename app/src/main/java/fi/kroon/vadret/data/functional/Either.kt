@@ -2,6 +2,12 @@ package fi.kroon.vadret.data.functional
 
 import io.reactivex.Single
 
+/**
+ *  This class is heavily based on Fernando Cejas Open Source Project
+ *  Either class with additional extensions.
+ *
+ *  https://github.com/android10/Android-CleanArchitecture-Kotlin
+ */
 sealed class Either<out L0, out R0> {
 
     data class Left<out L1>(val a: L1) : Either<L1, Nothing>()

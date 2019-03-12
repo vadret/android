@@ -86,7 +86,7 @@ object SunsetUtil {
      * civil twilight dawn, the second element is the civil twilight dusk.
      * This will return null if there is no civil twilight. (Ex: no twilight in Antarctica in December)
      */
-    fun getCivilTwilight(
+    private fun getCivilTwilight(
         day: Calendar,
         latitude: Double,
         longitude: Double
@@ -104,7 +104,7 @@ object SunsetUtil {
      * nautical twilight dawn, the second element is the nautical twilight dusk.
      * This will return null if there is no nautical twilight. (Ex: no twilight in Antarctica in December)
      */
-    fun getNauticalTwilight(/**/
+    private fun getNauticalTwilight(
         day: Calendar,
         latitude: Double,
         longitude: Double
@@ -122,7 +122,7 @@ object SunsetUtil {
      * astronomical twilight dawn, the second element is the  astronomical twilight dusk.
      * This will return null if there is no astronomical twilight. (Ex: no twilight in Antarctica in December)
      */
-    fun getAstronomicalTwilight(
+    private fun getAstronomicalTwilight(
         day: Calendar,
         latitude: Double,
         longitude: Double
@@ -159,32 +159,32 @@ object SunsetUtil {
      * @return the Julian date for the given Gregorian date.
      * @see <a href="http://en.wikipedia.org/wiki/Julian_day#Converting_Julian_or_Gregorian_calendar_date_to_Julian_Day_Number">Converting to Julian day number on Wikipedia</a>
      */
-    fun getJulianDate(gregorianDate: Calendar): Double {
+    private fun getJulianDate(gregorianDate: Calendar): Double {
         // Convert the date to the UTC time zone.
-        val tzUTC = TimeZone.getTimeZone("UTC")
-        val gregorianDateUTC = Calendar.getInstance(tzUTC)
-        gregorianDateUTC.timeInMillis = gregorianDate.getTimeInMillis()
+        val tzUTC: TimeZone = TimeZone.getTimeZone("UTC")
+        val gregorianDateUTC: Calendar = Calendar.getInstance(tzUTC)
+        gregorianDateUTC.timeInMillis = gregorianDate.timeInMillis
         // For the year (Y) astronomical year numbering is used, thus 1 BC is 0,
         // 2 BC is -1, and 4713 BC is -4712.
-        val year = gregorianDateUTC.get(Calendar.YEAR)
+        val year: Int = gregorianDateUTC.get(Calendar.YEAR)
         // The months (M) January to December are 1 to 12
-        val month = gregorianDateUTC.get(Calendar.MONTH) + 1
+        val month: Int = gregorianDateUTC.get(Calendar.MONTH) + 1
         // D is the day of the month.
-        val day = gregorianDateUTC.get(Calendar.DAY_OF_MONTH)
-        val a = (14 - month) / 12
-        val y = year + 4800 - a
-        val m = month + 12 * a - 3
+        val day: Int = gregorianDateUTC.get(Calendar.DAY_OF_MONTH)
+        val a: Int = (14 - month) / 12
+        val y: Int = year + 4800 - a
+        val m: Int = month + 12 * a - 3
 
-        val julianDay = day + (153 * m + 2) / 5 + 365 * y + y / 4 - y / 100 + y / 400 - 32045
-        val hour = gregorianDateUTC.get(Calendar.HOUR_OF_DAY)
-        val minute = gregorianDateUTC.get(Calendar.MINUTE)
-        val second = gregorianDateUTC.get(Calendar.SECOND)
+        val julianDay: Int = day + (153 * m + 2) / 5 + 365 * y + y / 4 - y / 100 + y / 400 - 32045
+        val hour: Int = gregorianDateUTC.get(Calendar.HOUR_OF_DAY)
+        val minute: Int = gregorianDateUTC.get(Calendar.MINUTE)
+        val second: Int = gregorianDateUTC.get(Calendar.SECOND)
 
         return (julianDay.toDouble() + (hour.toDouble() - 12) / 24 +
             minute.toDouble() / 1440 + second.toDouble() / 86400)
     }
 
-    fun getGregorianDate(julianDate: Double): Calendar {
+    private fun getGregorianDate(julianDate: Double): Calendar {
 
         val DAYS_PER_4000_YEARS: Int = 146097
         val DAYS_PER_CENTURY: Int = 36524
@@ -244,17 +244,18 @@ object SunsetUtil {
         val dayFraction: Double = julianDate + 0.5 - J
 
         // Ex: 0.717*24 = 17.208 hours. We truncate to 17 hours.
-        val hours = (dayFraction * 24).toInt()
+        val hours: Int = (dayFraction * 24).toInt()
         // Ex: 17.208 - 17 = 0.208 days. 0.208*60 = 12.48 minutes. We truncate
         // to 12 minutes.
-        val minutes = ((dayFraction * 24 - hours) * 60.0).toInt()
+        val minutes: Int = ((dayFraction * 24 - hours) * 60.0).toInt()
         // Ex: 17.208*60 - (17*60 + 12) = 1032.48 - 1032 = 0.48 minutes. 0.48*60
         // = 28.8 seconds.
         // We round to 29 seconds.
-        val seconds = (dayFraction * 24.0 * 3600.0 - (hours * 3600 + minutes * 60) + .5).toInt()
+        val seconds: Int = (dayFraction * 24.0 * 3600.0 - (hours * 3600 + minutes * 60) + .5).toInt()
 
         // Create the gregorian date in UTC.
-        val gregorianDateUTC = Calendar.getInstance(TimeZone
+        val gregorianDateUTC = Calendar
+            .getInstance(TimeZone
             .getTimeZone("UTC"))
         gregorianDateUTC.set(Calendar.YEAR, year)
         gregorianDateUTC.set(Calendar.MONTH, month)
@@ -265,7 +266,7 @@ object SunsetUtil {
         gregorianDateUTC.set(Calendar.MILLISECOND, 0)
 
         // Convert to a Gregorian date in the local time zone.
-        val gregorianDate = Calendar.getInstance()
+        val gregorianDate: Calendar = Calendar.getInstance()
         gregorianDate.timeInMillis = gregorianDateUTC.timeInMillis
         return gregorianDate
     }
@@ -285,17 +286,17 @@ object SunsetUtil {
         // longitudeNegative = -longitude
 
         // Get the given date as a Julian date.
-        val julianDate = getJulianDate(day)
+        val julianDate: Double = getJulianDate(day)
 
         // Calculate current Julian cycle (number of days since 2000-01-01).
         val nStar: Double = (julianDate - JULIAN_DATE_2000_01_01.toDouble() - CONST_0009 -
             longitude / CONST_360)
-        val n = Math.round(nStar).toDouble()
+        val n: Double = Math.round(nStar).toDouble()
 
         // Approximate solar noon
         val jStar: Double = JULIAN_DATE_2000_01_01.toDouble() + CONST_0009 + longitude / CONST_360 + n
         // Solar mean anomaly
-        val m = Math
+        val m: Double = Math
             .toRadians((357.5291 + 0.98560028 * (jStar - JULIAN_DATE_2000_01_01)) % CONST_360)
 
         // Equation of center
@@ -328,7 +329,7 @@ object SunsetUtil {
      * sunrise, the second element is the SUNSET_UTIL. This will return null if there is no sunrise or SUNSET_UTIL. (Ex: no sunrise in Antarctica in June)
      * @see [Sunrise equation on Wikipedia](http://en.wikipedia.org/wiki/Sunrise_equation)
      */
-    fun getSunriseSunset(
+    private fun getSunriseSunset(
         day: Calendar,
         latitude: Double,
         longitudePositive: Double,
@@ -337,14 +338,14 @@ object SunsetUtil {
 
         // var longitude: Double = longitude
 
-        val solarEquationVariables = getSolarEquationVariables(day, longitudePositive)
+        val solarEquationVariables: SolarEquationVariables = getSolarEquationVariables(day, longitudePositive)
 
-        val longitude = longitudePositive.unaryMinus()
+        val longitude: Double = longitudePositive.unaryMinus()
 
-        val latitudeRad = Math.toRadians(latitude)
+        val latitudeRad: Double = Math.toRadians(latitude)
 
         // Hour angle
-        val omega = Math.acos((Math.sin(Math.toRadians(sunAltitude)) - Math
+        val omega: Double = Math.acos((Math.sin(Math.toRadians(sunAltitude)) - Math
             .sin(latitudeRad) * Math.sin(solarEquationVariables.delta)) / (Math.cos(latitudeRad) * Math.cos(solarEquationVariables.delta)))
 
         if (java.lang.Double.isNaN(omega)) {
@@ -352,20 +353,20 @@ object SunsetUtil {
         }
 
         // Sunset_DEL
-        val jset = (JULIAN_DATE_2000_01_01.toDouble() +
+        val jset: Double = (JULIAN_DATE_2000_01_01.toDouble() +
             CONST_0009 +
             ((Math.toDegrees(omega) + longitude) / CONST_360 + solarEquationVariables.n + 0.0053 * Math.sin(solarEquationVariables.m) - 0.0069 * Math.sin(2 * solarEquationVariables.lambda)))
 
         // Sunrise
-        val jrise = solarEquationVariables.jTransit - (jset - solarEquationVariables.jTransit)
+        val jrise: Double = solarEquationVariables.jTransit - (jset - solarEquationVariables.jTransit)
         // Convert SUNSET_UTIL and sunrise to Gregorian dates, in UTC
-        val gregRiseUTC = getGregorianDate(jrise)
-        val gregSetUTC = getGregorianDate(jset)
+        val gregRiseUTC: Calendar = getGregorianDate(jrise)
+        val gregSetUTC: Calendar = getGregorianDate(jset)
 
         // Convert the SUNSET_UTIL and sunrise to the timezone of the day parameter
-        val gregRise = Calendar.getInstance(day.timeZone)
+        val gregRise: Calendar = Calendar.getInstance(day.timeZone)
         gregRise.timeInMillis = gregRiseUTC.timeInMillis
-        val gregSet = Calendar.getInstance(day.timeZone)
+        val gregSet: Calendar = Calendar.getInstance(day.timeZone)
         gregSet.timeInMillis = gregSetUTC.timeInMillis
         return arrayOf(gregRise, gregSet)
     }
@@ -381,16 +382,16 @@ object SunsetUtil {
      * @see [Sunrise equation on Wikipedia](http://en.wikipedia.org/wiki/Sunrise_equation)
      */
     fun getSolarNoon(day: Calendar, latitude: Double, longitude: Double): Calendar? {
-        val solarEquationVariables = getSolarEquationVariables(day, longitude)
+        val solarEquationVariables: SolarEquationVariables = getSolarEquationVariables(day, longitude)
 
         // Add a check for Antarctica in June and December (sun always down or up, respectively).
         // In this case, jTransit will be filled in, but we need to check the hour angle omega for
         // sunrise.
         // If there's no sunrise (omega is NaN), there's no solar noon.
-        val latitudeRad = Math.toRadians(latitude)
+        val latitudeRad: Double = Math.toRadians(latitude)
 
         // Hour angle
-        val omega = Math.acos((Math.sin(Math.toRadians(SUN_ALTITUDE_SUNRISE_SUNSET)) - Math
+        val omega: Double = Math.acos((Math.sin(Math.toRadians(SUN_ALTITUDE_SUNRISE_SUNSET)) - Math
             .sin(latitudeRad) * Math.sin(solarEquationVariables.delta)) / (Math.cos(latitudeRad) * Math.cos(solarEquationVariables.delta)))
 
         if (java.lang.Double.isNaN(omega)) {
@@ -398,8 +399,8 @@ object SunsetUtil {
         }
 
         // Convert jTransit Gregorian dates, in UTC
-        val gregNoonUTC = getGregorianDate(solarEquationVariables.jTransit)
-        val gregNoon = Calendar.getInstance(day.timeZone)
+        val gregNoonUTC: Calendar = getGregorianDate(solarEquationVariables.jTransit)
+        val gregNoon: Calendar = Calendar.getInstance(day.timeZone)
         gregNoon.timeInMillis = gregNoonUTC.timeInMillis
         return gregNoon
     }
@@ -412,7 +413,7 @@ object SunsetUtil {
      * before the SUNSET_UTIL for that location.
      */
     fun isDay(latitude: Double, longitude: Double): Boolean {
-        val now = Calendar.getInstance()
+        val now: Calendar = Calendar.getInstance()
         return isDay(now, latitude, longitude)
     }
 
@@ -424,22 +425,22 @@ object SunsetUtil {
      * true if the given datetime at the location is after the sunrise and
      * before the SUNSET_UTIL for that location.
      */
-    fun isDay(calendar: Calendar, latitude: Double, longitude: Double): Boolean {
-        val sunriseSunset = getSunriseSunset(calendar, latitude, longitude)
+    private fun isDay(calendar: Calendar, latitude: Double, longitude: Double): Boolean {
+        val sunriseSunset: Array<Calendar>? = getSunriseSunset(calendar, latitude, longitude)
         // In extreme latitudes, there may be no sunrise/SUNSET_UTIL time in summer or
         // winter, because it will be day or night 24 hours
         if (sunriseSunset == null) {
-            val month = calendar.get(Calendar.MONTH) // Reminder: January = 0
+            val month: Int = calendar.get(Calendar.MONTH) // Reminder: January = 0
             return if (latitude > 0) {
                 // Always day at the north pole in June
                 // Always night at the north pole in December
-                month >= 3 && month <= 10
+                month in 3..10
             } else {
                 month < 3 || month > 10
             }
         }
-        val sunrise = sunriseSunset[0]
-        val sunset = sunriseSunset[1]
+        val sunrise: Calendar = sunriseSunset[0]
+        val sunset: Calendar = sunriseSunset[1]
         return calendar.after(sunrise) && calendar.before(sunset)
     }
 
@@ -451,7 +452,7 @@ object SunsetUtil {
      * before the astronomical twilight dawn for that location.
      */
     fun isNight(latitude: Double, longitude: Double): Boolean {
-        val now = Calendar.getInstance()
+        val now: Calendar = Calendar.getInstance()
         return isNight(now, latitude, longitude)
     }
 
@@ -465,19 +466,19 @@ object SunsetUtil {
      */
     @SuppressLint("SimpleDateFormat")
     fun isNight(calendar: Calendar, latitude: Double, longitude: Double): Boolean {
-        val astronomicalTwilight = getAstronomicalTwilight(calendar, latitude, longitude)
+        val astronomicalTwilight: Array<Calendar>? = getAstronomicalTwilight(calendar, latitude, longitude)
         if (astronomicalTwilight == null) {
-            val month = calendar.get(Calendar.MONTH) // Reminder: January = 0
+            val month: Int = calendar.get(Calendar.MONTH) // Reminder: January = 0
             return if (latitude > 0) {
                 month < 3 || month > 10
             } else {
                 // Always night at the south pole in June
                 // Always day at the south pole in December
-                month >= 3 && month <= 10
+                month in 3..10
             }
         }
-        val dawn = astronomicalTwilight[0]
-        val dusk = astronomicalTwilight[1]
+        val dawn: Calendar = astronomicalTwilight[0]
+        val dusk: Calendar = astronomicalTwilight[1]
         val format = SimpleDateFormat("yyyy/MM/dd HH:mm:ss z")
         format.timeZone = calendar.timeZone
         return calendar.before(dawn) || calendar.after(dusk)
@@ -491,7 +492,7 @@ object SunsetUtil {
      * or between civil twilight dawn and sunrise.
      */
     fun isCivilTwilight(latitude: Double, longitude: Double): Boolean {
-        val today = Calendar.getInstance()
+        val today: Calendar = Calendar.getInstance()
         return isCivilTwilight(today, latitude, longitude)
     }
 
@@ -504,7 +505,7 @@ object SunsetUtil {
      * or between civil twilight dawn and sunrise.
      */
     fun isCivilTwilight(calendar: Calendar, latitude: Double, longitude: Double): Boolean {
-        val sunriseSunset = getSunriseSunset(calendar, latitude, longitude)
+        val sunriseSunset: Array<Calendar> = getSunriseSunset(calendar, latitude, longitude)
             ?: return false
         val civilTwilight = getCivilTwilight(calendar, latitude, longitude)
             ?: return false
@@ -520,7 +521,7 @@ object SunsetUtil {
      * or between nautical and civil twilight dawn.
      */
     fun isNauticalTwilight(latitude: Double, longitude: Double): Boolean {
-        val today = Calendar.getInstance()
+        val today: Calendar = Calendar.getInstance()
         return isNauticalTwilight(today, latitude, longitude)
     }
 
@@ -532,10 +533,10 @@ object SunsetUtil {
      * This returns true if the given time at the location is between civil and nautical twilight dusk
      * or between nautical and civil twilight dawn.
      */
-    fun isNauticalTwilight(calendar: Calendar, latitude: Double, longitude: Double): Boolean {
-        val civilTwilight = getCivilTwilight(calendar, latitude, longitude)
+    private fun isNauticalTwilight(calendar: Calendar, latitude: Double, longitude: Double): Boolean {
+        val civilTwilight: Array<Calendar> = getCivilTwilight(calendar, latitude, longitude)
             ?: return false
-        val nauticalTwilight = getNauticalTwilight(calendar, latitude, longitude)
+        val nauticalTwilight: Array<Calendar> = getNauticalTwilight(calendar, latitude, longitude)
             ?: return false
 
         return calendar.after(civilTwilight[1]) && calendar.before(nauticalTwilight[1]) || calendar.after(nauticalTwilight[0]) && calendar.before(civilTwilight[0])
@@ -549,7 +550,7 @@ object SunsetUtil {
      * or between astronomical and nautical twilight dawn.
      */
     fun isAstronomicalTwilight(latitude: Double, longitude: Double): Boolean {
-        val today = Calendar.getInstance()
+        val today: Calendar = Calendar.getInstance()
         return isAstronomicalTwilight(today, latitude, longitude)
     }
 
@@ -561,10 +562,10 @@ object SunsetUtil {
      * This returns true if the given time at the location is between nautical and astronomical twilight dusk
      * or between astronomical and nautical twilight dawn.
      */
-    fun isAstronomicalTwilight(calendar: Calendar, latitude: Double, longitude: Double): Boolean {
-        val nauticalTwilight = getNauticalTwilight(calendar, latitude, longitude)
+    private fun isAstronomicalTwilight(calendar: Calendar, latitude: Double, longitude: Double): Boolean {
+        val nauticalTwilight: Array<Calendar> = getNauticalTwilight(calendar, latitude, longitude)
             ?: return false
-        val astronomicalTwilight = getAstronomicalTwilight(calendar, latitude, longitude)
+        val astronomicalTwilight: Array<Calendar> = getAstronomicalTwilight(calendar, latitude, longitude)
             ?: return false
 
         return calendar.after(nauticalTwilight[1]) && calendar.before(astronomicalTwilight[1]) || calendar.after(astronomicalTwilight[0]) && calendar.before(nauticalTwilight[0])
@@ -576,7 +577,7 @@ object SunsetUtil {
      * @return true if it is civil, nautical, or astronomical twilight currently at the given location.
      */
     fun isTwilight(latitude: Double, longitude: Double): Boolean {
-        val today = Calendar.getInstance()
+        val today: Calendar = Calendar.getInstance()
         return isTwilight(today, latitude, longitude)
     }
 
@@ -586,7 +587,7 @@ object SunsetUtil {
      * @param calendar the given datetime to check for twilight
      * @return true if at the given location and calendar, it is civil, nautical, or astronomical twilight.
      */
-    fun isTwilight(calendar: Calendar, latitude: Double, longitude: Double): Boolean {
+    private fun isTwilight(calendar: Calendar, latitude: Double, longitude: Double): Boolean {
         return (isCivilTwilight(calendar, latitude, longitude) ||
             isNauticalTwilight(calendar, latitude, longitude) ||
             isAstronomicalTwilight(calendar, latitude, longitude))
@@ -608,17 +609,17 @@ object SunsetUtil {
      * @return the number of milliseconds between sunrise and SUNSET_UTIL.
      */
     fun getDayLength(calendar: Calendar, latitude: Double, longitude: Double): Long {
-        val sunriseSunset = getSunriseSunset(calendar, latitude, longitude)
+        val sunriseSunset: Array<Calendar>? = getSunriseSunset(calendar, latitude, longitude)
         if (sunriseSunset == null) {
-            val month = calendar.get(Calendar.MONTH) // Reminder: January = 0
+            val month: Int = calendar.get(Calendar.MONTH) // Reminder: January = 0
             return if (latitude > 0) {
-                if (month >= 3 && month <= 10) {
+                if (month in 3..10) {
                     MILLISECONDS_IN_DAY // Always day at the north pole in June
                 } else {
                     0 // Always night at the north pole in December
                 }
             } else {
-                if (month >= 3 && month <= 10) {
+                if (month in 3..10) {
                     0 // Always night at the south pole in June
                 } else {
                     MILLISECONDS_IN_DAY // Always day at the south pole in December

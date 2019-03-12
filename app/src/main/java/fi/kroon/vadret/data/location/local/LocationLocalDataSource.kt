@@ -28,7 +28,9 @@ class LocationLocalDataSource @Inject constructor(
     operator fun invoke(): Either<Failure, fi.kroon.vadret.data.location.model.Location> = when {
         (isGPSEnabled.not() && isNetworkLocationProviderEnabled.not()) -> {
             Timber.e("DisplayError: isGPSEnabled: $isGPSEnabled, isNetworkLocationProviderEnabled: $isNetworkLocationProviderEnabled")
-            LocationFailure.LocationProviderDisabled().asLeft()
+            LocationFailure
+                .LocationProviderDisabled
+                .asLeft()
         }
         else -> getLocation(
             isNetworkLocationProviderEnabled,
@@ -39,12 +41,13 @@ class LocationLocalDataSource @Inject constructor(
                 latitude = position.latitude,
                 longitude = position.longitude
             ).asRight()
-        } ?: LocationFailure.LocationNotAvailable().asLeft()
+        } ?: LocationFailure
+            .LocationNotAvailable
+            .asLeft()
     }
 
     @SuppressLint("MissingPermission")
     private fun getLocation(isNetworkLocationProviderEnabled: Boolean, isGpsEnabled: Boolean): android.location.Location? {
-        Timber.d("INFO: isGpsEnabled: $isGpsEnabled, isNetworkLocationProviderEnabled: $isNetworkLocationProviderEnabled")
         return when {
             (isNetworkLocationProviderEnabled && isGpsEnabled) -> {
                 Timber.d("Trying NETWORK_PROVIDER. If fails proceed with GPS_PROVIDER")

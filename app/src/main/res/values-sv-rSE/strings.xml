@@ -35,7 +35,6 @@
     <string name="prsort_drizzle">Duggregn</string>
     <string name="prsort_freezing_rain">Underkylt regn</string>
     <string name="prsort_freezing_drizzle">Underkylt duggregn</string>
-    <string name="io_exception">I/O Exception</string>
     <string name="network_failure">Nätverksfel</string>
     <string name="no_weather_available">Inget väder tillgängligt</string>
     <string name="wsymb2_thunderstorm">Åskväder</string>
@@ -96,11 +95,6 @@
     <string name="select_a_location">Välj en plats</string>
     <string name="gps_is_not_being_used">GPS-positionering kommer inte användas för att hämta vädert</string>
     <string name="gps_is_being_used">GPS-positionering kommer användas för att hämta väder för aktuell plats</string>
-    <string name="http_service_unavailable_503">Tjänst Otillgänglig 503</string>
-    <string name="http_gateway_timeout_504">Gateway gjorde timeout 504</string>
-    <string name="http_forbidden_403">Åtkomst Förbjuden 403</string>
-    <string name="http_bad_request_400">Misslyckad Förfrågan 400</string>
-    <string name="http_internal_server_error_500">Internt Serverfel 500</string>
     <string name="a_minute_ago">en minut sedan</string>
     <string name="an_hour_ago">en timme sedan</string>
     <string name="days_ago">dagar sedan</string>
@@ -111,7 +105,6 @@
     <string name="moments_ago">nyss</string>
     <string name="published">Publicerad</string>
     <string name="in_the_future">i framtiden</string>
-    <string name="preferences_use_gps_by_default_desc" translatable="false">Använd GPS som standard</string>
     <string name="feels_like">Känns som</string>
     <string name="south">Syd</string>
     <string name="south_east">Sydöst</string>
@@ -135,4 +128,7 @@
     <string name="unknown_area">Okänd plats</string>
     <string name="sun_wont_rise_today">Ingen gryning idag</string>
     <string name="sun_wont_set_today">Ingen skymning idag</string>
+    <string name="unhandled_error" translatable="false">Okänt fel</string>
+    <string name="location_provider_disabled">Platstjänst är inaktiverad</string>
+    <string name="failed_loading_file">Kunde ej läsa in filen</string>
 </resources>

@@ -49,6 +49,8 @@ class LocationRepositoryTest : BaseUnitTest() {
             .assertValueAt(0) { it is Either.Left<Failure> && it.a is LocationFailure.LocationNotAvailable }
     }
 
-    private fun getLocationFailure() = LocationFailure.LocationNotAvailable().asLeft()
+    private fun getLocationFailure() = LocationFailure
+        .LocationNotAvailable
+        .asLeft()
     private fun createLocationEither(location: Location): Either<Failure, Location> = Either.Right(location)
 }

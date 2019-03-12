@@ -1,12 +1,16 @@
 package fi.kroon.vadret.presentation.weatherforecast
 
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import fi.kroon.vadret.R
 import fi.kroon.vadret.presentation.weatherforecast.di.WeatherForecastScope
+import fi.kroon.vadret.presentation.weatherforecast.model.BaseWeatherForecastModel
+import fi.kroon.vadret.presentation.weatherforecast.model.WeatherForecastDateItemModel
+import fi.kroon.vadret.presentation.weatherforecast.model.WeatherForecastHeadlineModel
+import fi.kroon.vadret.presentation.weatherforecast.model.WeatherForecastItemModel
+import fi.kroon.vadret.presentation.weatherforecast.model.WeatherForecastSplashItemModel
 import fi.kroon.vadret.utils.extensions.toGone
 import fi.kroon.vadret.utils.extensions.toInvisible
 import fi.kroon.vadret.utils.extensions.toVisible
@@ -22,9 +26,7 @@ import java.util.Locale
 import javax.inject.Inject
 
 @WeatherForecastScope
-class WeatherForecastAdapter @Inject constructor(
-    val context: Context
-) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class WeatherForecastAdapter @Inject constructor() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private val list: MutableList<BaseWeatherForecastModel> = mutableListOf()
     private val formatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG)
@@ -71,9 +73,9 @@ class WeatherForecastAdapter @Inject constructor(
 
         fun bind(item: WeatherForecastSplashItemModel) {
 
-            val percentSymbol: String = context.getString(R.string.percent)
-            val degreeSymbol: String = context.getString(R.string.degree)
-            val meterPerSecond: String = context.getString(R.string.m_s)
+            val percentSymbol: String = itemView.context.getString(R.string.percent)
+            val degreeSymbol: String = itemView.context.getString(R.string.degree)
+            val meterPerSecond: String = itemView.context.getString(R.string.m_s)
 
             val tempString = "${item.temperature}$degreeSymbol"
             itemView.currentTemperature.text = tempString
@@ -91,7 +93,7 @@ class WeatherForecastAdapter @Inject constructor(
             itemView.windSpeed.text = item.windSpeed.toString()
 
             item.windDirection?.let { windDirectionDegree: Double ->
-                val directionString: String = context.getString(handleWindDirection(windDirectionDegree))
+                val directionString: String = itemView.context.getString(handleWindDirection(windDirectionDegree))
                 itemView.windDirection.text = directionString
             }
             val windSpeedString = "${item.windSpeed}$meterPerSecond"

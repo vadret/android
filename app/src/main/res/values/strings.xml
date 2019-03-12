@@ -64,7 +64,7 @@
     <string name="prsort_freezing_rain">Freezing rain</string>
     <string name="prsort_freezing_drizzle">Freezing drizzle</string>
 
-    <string name="io_exception">IOException</string>
+    <string name="io_exception" translatable="false">IOException</string>
     <string name="network_failure">Network Failure</string>
     <string name="no_weather_available">No weather available</string>
 
@@ -72,10 +72,12 @@
     <string name="disk_cache_write" translatable="false">Disk cache write failed</string>
     <string name="disk_cache_read" translatable="false">Disk cache read failed</string>
 
-    <string name="unhandled_error" translatable="false">Unhandled exception</string>
+    <string name="unhandled_error">Unhandled exception</string>
     <string name="no_location_permission">No location permission</string>
     <string name="location_failure">Location not available</string>
     <string name="no_network_available">No network available</string>
+    <string name="location_provider_disabled">Location provider is disabled</string>
+    <string name="failed_loading_file">Could not read file</string>
 
     <string name="data_not_available_at_this_location">No weather data available for this location.</string>
     <string name="preferences_updated_successfully">Preferences updated successfully!</string>
@@ -181,12 +183,8 @@
     <string name="weather_requirement_not_satisfied" translatable="false">No location available. You must select a location.</string>
 
     // settings keys
-    <!--<string localityName="use_gps_by_defeault_key" translatable="false">use_gps_by_default</string>-->
     <string name="has_required_params_for_reverse_key" translatable="false">has_required_params_for_reverse</string>
-    <!--<string localityName="city_key" translatable="false">default_city</string>
-    <string localityName="province_key" translatable="false">default_province</string>
-    <string localityName="latitude_key" translatable="false">default_latitude</string>
-    <string localityName="longitude_key" translatable="false">default_longitude</string>-->
+
     <string name="no_alert_available">No alerts available</string>
     <string name="alert">Alert</string>
 

@@ -8,7 +8,8 @@ fun Double.toWindChill(wind: Double): String {
 
     /**
      *  If temperature is <= 10 we do this calculation
-     *  Reference implementation: https://web.archive.org/web/20060427103553/http://www.msc.ec.gc.ca/education/windchill/science_equations_e.cfm
+     *  Reference implementation: https://web.archive.org/web/20060427103553/
+     *  http://www.msc.ec.gc.ca/education/windchill/science_equations_e.cfm
      */
     val temperature = this
     val kmPh = wind * MPS_TO_KMPH_FACTOR

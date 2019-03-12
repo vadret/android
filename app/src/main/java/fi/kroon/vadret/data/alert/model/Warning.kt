@@ -1,6 +1,7 @@
 package fi.kroon.vadret.data.alert.model
 
 import com.squareup.moshi.Json
+import java.io.Serializable
 
 data class Warning(
 
@@ -27,4 +28,5 @@ data class Warning(
 
     @Json(name = "info")
     val info: Info
-)
+
+) : Serializable

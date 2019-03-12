@@ -3,15 +3,14 @@ package fi.kroon.vadret.data.weatherforecast
 import fi.kroon.vadret.BaseUnitTest
 import fi.kroon.vadret.data.functional.Either
 import fi.kroon.vadret.data.exception.Failure
-import fi.kroon.vadret.data.weather.WeatherForecastRepository
-import fi.kroon.vadret.data.weather.exception.WeatherForecastFailure
-import fi.kroon.vadret.data.weather.local.WeatherForecastLocalKeyValueDataSource
-import fi.kroon.vadret.data.weather.net.WeatherForecastNetDataSource
-import fi.kroon.vadret.data.weather.model.Weather
-import fi.kroon.vadret.data.weather.model.WeatherOut
+import fi.kroon.vadret.data.weatherforecast.exception.WeatherForecastFailure
+import fi.kroon.vadret.data.weatherforecast.local.WeatherForecastLocalKeyValueDataSource
+import fi.kroon.vadret.data.weatherforecast.net.WeatherForecastNetDataSource
+import fi.kroon.vadret.data.weatherforecast.model.Weather
+import fi.kroon.vadret.data.weatherforecast.model.WeatherOut
 import fi.kroon.vadret.utils.CONNECTED
-import fi.kroon.vadret.utils.DEFAULT_FALLBACK_LATITUDE
-import fi.kroon.vadret.utils.DEFAULT_FALLBACK_LONGITUDE
+import fi.kroon.vadret.utils.DEFAULT_LATITUDE
+import fi.kroon.vadret.utils.DEFAULT_LONGITUDE
 import fi.kroon.vadret.utils.HTTP_200_OK
 import fi.kroon.vadret.utils.HTTP_204_NO_CONTENT
 import fi.kroon.vadret.utils.HTTP_400_BAD_REQUEST
@@ -50,8 +49,8 @@ class WeatherForecastRepositoryTest : BaseUnitTest() {
     private lateinit var testWeatherForecastRepository: WeatherForecastRepository
 
     private val weatherForecastRequest: WeatherOut = WeatherOut(
-        latitude = DEFAULT_FALLBACK_LATITUDE.toDouble(),
-        longitude = DEFAULT_FALLBACK_LONGITUDE.toDouble()
+        latitude = DEFAULT_LATITUDE.toDouble(),
+        longitude = DEFAULT_LONGITUDE.toDouble()
     )
 
     @Before

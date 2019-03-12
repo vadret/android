@@ -5,29 +5,25 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
-import fi.kroon.vadret.BaseApplication
-import fi.kroon.vadret.di.component.VadretApplicationComponent
-import io.reactivex.disposables.CompositeDisposable
-import javax.inject.Inject
+import fi.kroon.vadret.data.nominatim.model.Locality
+import timber.log.Timber
 
 abstract class BaseFragment : Fragment() {
 
     abstract fun layoutId(): Int
-    protected val subscriptions = CompositeDisposable()
 
-    val cmp: VadretApplicationComponent by lazy(mode = LazyThreadSafetyMode.NONE) {
-        (activity?.application as BaseApplication).cmp
+    abstract fun renderError(errorCode: Int)
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        Timber.d("ON CREATE VIEW")
+        return inflater.inflate(layoutId(), container, false)
     }
 
-    @Inject
-    lateinit var viewModelFactory: ViewModelProvider.Factory
+    fun hideActionBarLocalityName() =
+        (requireActivity() as MainActivity)
+            .disableLocalityActionBar()
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
-            inflater.inflate(layoutId(), container, false)
-
-    override fun onDestroy() {
-        subscriptions.clear()
-        super.onDestroy()
-    }
+    fun displayActionBarLocalityName(locality: Locality) =
+        (requireActivity() as MainActivity)
+            .displayLocalityActionBar(locality)
 }

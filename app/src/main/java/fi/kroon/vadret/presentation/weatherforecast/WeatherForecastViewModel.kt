@@ -3,13 +3,13 @@ package fi.kroon.vadret.presentation.weatherforecast
 import fi.kroon.vadret.data.exception.Failure
 import fi.kroon.vadret.data.functional.Either
 import fi.kroon.vadret.data.nominatim.model.Locality
-import fi.kroon.vadret.domain.GetAutoCompleteService
-import fi.kroon.vadret.domain.GetLocationModeTask
-import fi.kroon.vadret.domain.GetWeatherForecastService
-import fi.kroon.vadret.domain.SetDefaultLocationInformationTask
-import fi.kroon.vadret.domain.SetLocationInformationTask
-import fi.kroon.vadret.domain.SetLocationModeTask
-import fi.kroon.vadret.presentation.BaseViewModelV2
+import fi.kroon.vadret.domain.weatherforecast.GetAutoCompleteService
+import fi.kroon.vadret.domain.weatherforecast.GetLocationModeTask
+import fi.kroon.vadret.domain.weatherforecast.GetWeatherForecastService
+import fi.kroon.vadret.domain.weatherforecast.SetDefaultLocationInformationTask
+import fi.kroon.vadret.domain.weatherforecast.SetLocationInformationTask
+import fi.kroon.vadret.domain.weatherforecast.SetLocationModeTask
+import fi.kroon.vadret.presentation.BaseViewModel
 import fi.kroon.vadret.presentation.weatherforecast.di.WeatherForecastScope
 import fi.kroon.vadret.utils.DEFAULT_DEBOUNCE_MILLIS
 import fi.kroon.vadret.utils.extensions.asObservable
@@ -29,10 +29,7 @@ class WeatherForecastViewModel @Inject constructor(
     private val setLocationInformationTask: SetLocationInformationTask,
     private val enableGpsLocationModeTask: SetLocationModeTask,
     private val getLocationModeTask: GetLocationModeTask
-) : BaseViewModelV2() {
-
-    private val currentTimeMillis: Long
-        get() = System.currentTimeMillis()
+) : BaseViewModel() {
 
     operator fun invoke(): ObservableTransformer<WeatherForecastView.Event,
         WeatherForecastView.State> = onEvent
@@ -106,12 +103,46 @@ class WeatherForecastViewModel @Inject constructor(
         }
     }
 
-    private fun handleRuntimeLocationPermissionMode(): Observable<WeatherForecastView.State> {
-        Timber.d("handleRuntimeLocationPermissionMode")
-        return when (state.hasRunTimeLocationPermission) {
-            true -> omitLocationPermissionGrantedCheck()
-            false -> omitLocationPermissionDeniedCheck()
-            null -> onRequestLocationPermission()
+    private fun onViewInitialisedEvent(event: WeatherForecastView.Event.OnViewInitialised): Observable<WeatherForecastView.State> =
+        getLocationModeTask()
+            .flatMapObservable { result: Either<Failure, Boolean> ->
+                result.either(
+                    { failure: Failure ->
+                        Timber.e("handleRuntimeLocationPermissionMode: Failure: $failure")
+
+                        val errorCode: Int = getErrorCode(failure)
+                        val renderEvent: WeatherForecastView.RenderEvent.DisplayError = WeatherForecastView
+                            .RenderEvent
+                            .DisplayError(errorCode)
+
+                        state = state.copy(renderEvent = renderEvent)
+                        state.asObservable()
+                    },
+                    { locationMode: Boolean ->
+                        restoreStateFromStateParcel(event.stateParcel)
+                        when (locationMode) {
+                            true -> onRequestLocationPermission()
+                            false -> onLocationPermissionDeniedEvent()
+                        }
+                    }
+                )
+            }
+
+    private fun restoreStateFromStateParcel(stateParcel: WeatherForecastView.StateParcel?) {
+        Timber.d("restoreStateFromStateParcel: $stateParcel")
+
+        stateParcel?.run {
+            state = state.copy(
+                forceNet = forceNet,
+                searchText = searchText,
+                isSearchToggled = isSearchToggled,
+                wasRestoredFromStateParcel = true,
+                startLoading = startLoading,
+                stopLoading = stopLoading,
+                startRefreshing = startRefreshing,
+                stopRefreshing = stopRefreshing,
+                timeStamp = timeStamp
+            )
         }
     }
 
@@ -141,7 +172,6 @@ class WeatherForecastViewModel @Inject constructor(
     private fun preLoadingWeatherForecast(): Observable<WeatherForecastView.State> =
         when {
             state.isSearchToggled -> {
-                Timber.d("WeatherForecastView.RenderEvent.DisableSearchView: state.isSearchToggled = ${state.isSearchToggled}")
                 val renderEvent: WeatherForecastView.RenderEvent.DisableSearchView =
                     WeatherForecastView.RenderEvent.DisableSearchView(
                         text = String.empty()
@@ -154,7 +184,6 @@ class WeatherForecastViewModel @Inject constructor(
                 state.asObservable()
             }
             state.startLoading -> {
-                Timber.d("WeatherForecastView.RenderEvent.StartShimmerEffect: state.startLoading = ${state.startLoading}")
                 state = state.copy(
                     renderEvent = WeatherForecastView.RenderEvent.StartShimmerEffect,
                     startLoading = false,
@@ -163,7 +192,6 @@ class WeatherForecastViewModel @Inject constructor(
                 state.asObservable()
             }
             state.startRefreshing -> {
-                Timber.d("WeatherForecastView.RenderEvent.StartProgressBarEffect: state.startRefreshing = ${state.startRefreshing}")
                 state = state.copy(
                     renderEvent = WeatherForecastView.RenderEvent.StartProgressBarEffect,
                     startRefreshing = false,
@@ -185,13 +213,14 @@ class WeatherForecastViewModel @Inject constructor(
         when {
             state.isSearchToggled -> {
                 state = state.copy(
-                    renderEvent = WeatherForecastView.RenderEvent.DisableSearchView(text = String.empty()),
+                    renderEvent = WeatherForecastView
+                        .RenderEvent
+                        .DisableSearchView(text = String.empty()),
                     isSearchToggled = false
                 )
                 state.asObservable()
             }
             state.wasRestoredFromStateParcel -> {
-                Timber.d("WeatherForecastView.RenderEvent.RestoreScrollPosition: state.wasRestoredFromStateParcel = ${state.wasRestoredFromStateParcel}")
                 state = state.copy(
                     renderEvent = WeatherForecastView.RenderEvent.RestoreScrollPosition,
                     wasRestoredFromStateParcel = false
@@ -199,7 +228,6 @@ class WeatherForecastViewModel @Inject constructor(
                 state.asObservable()
             }
             state.stopLoading -> {
-                Timber.d("WeatherForecastView.RenderEvent.StopShimmerEffect: state.stopLoading = ${state.stopLoading}")
                 state = state.copy(
                     renderEvent = WeatherForecastView.RenderEvent.StopShimmerEffect,
                     stopLoading = false
@@ -207,7 +235,6 @@ class WeatherForecastViewModel @Inject constructor(
                 state.asObservable()
             }
             state.stopRefreshing -> {
-                Timber.d("WeatherForecastView.RenderEvent.StopProgressBarEffect: state.stopRefreshing = ${state.stopRefreshing}")
                 state = state.copy(
                     renderEvent = WeatherForecastView.RenderEvent.StopProgressBarEffect,
                     stopRefreshing = false
@@ -217,6 +244,7 @@ class WeatherForecastViewModel @Inject constructor(
             else -> {
                 Timber.d("endLoadingWeatherForecast ended.")
                 updateStateParcel()
+                state.asObservable()
             }
         }
 
@@ -225,33 +253,11 @@ class WeatherForecastViewModel @Inject constructor(
         return endLoadingWeatherForecast()
     }
 
-    private fun onViewInitialisedEvent(event: WeatherForecastView.Event.OnViewInitialised): Observable<WeatherForecastView.State> {
-        Timber.d("onViewInitialisedEvent")
-        restoreStateFromStateParcel(event.stateParcel)
-        return handleRuntimeLocationPermissionMode()
-    }
-
     private fun onSwipedToRefreshEvent(): Observable<WeatherForecastView.State> {
         Timber.d("onSwipedToRefreshEvent")
         state = state.copy(forceNet = true)
         updateStateToRefreshing()
         return preLoadingWeatherForecast()
-    }
-
-    private fun omitLocationPermissionGrantedCheck(): Observable<WeatherForecastView.State> {
-        Timber.d("omitLocationPermissionGrantedCheck")
-        state = state.copy(
-            renderEvent = WeatherForecastView.RenderEvent.OmitLocationPermissionGrantedCheck
-        )
-        return state.asObservable()
-    }
-
-    private fun omitLocationPermissionDeniedCheck(): Observable<WeatherForecastView.State> {
-        Timber.d("omitLocationPermissionDeniedCheck")
-        state = state.copy(
-            renderEvent = WeatherForecastView.RenderEvent.OmitLocationPermissionDeniedCheck
-        )
-        return state.asObservable()
     }
 
     private fun onRequestLocationPermission(): Observable<WeatherForecastView.State> {
@@ -263,8 +269,6 @@ class WeatherForecastViewModel @Inject constructor(
     }
 
     private fun updateStateParcel(): Observable<WeatherForecastView.State> {
-        Timber.d("updateStateParcel")
-        Timber.d("State updated: $state")
         state = state.copy(
             renderEvent = WeatherForecastView.RenderEvent.UpdateStateParcel,
             startRefreshing = false,
@@ -285,9 +289,7 @@ class WeatherForecastViewModel @Inject constructor(
                 setLocationInformationTask(event.autoCompleteItem)
                     .flatMapObservable {
                         state = state.copy(
-                            forceNet = true,
-                            hasRunTimeLocationPermission = false
-
+                            forceNet = true
                         )
                         updateStateToRefreshing()
                         preLoadingWeatherForecast()
@@ -341,13 +343,11 @@ class WeatherForecastViewModel @Inject constructor(
                         enableGpsLocationModeTask(false).flatMap {
                             setLocationInformationTask(data.newFilteredList.first())
                         }.flatMapObservable {
-
                             updateStateToRefreshing()
                             state = state.copy(
                                 forceNet = true,
                                 searchText = String.empty(),
-                                isSearchToggled = true,
-                                hasRunTimeLocationPermission = false
+                                isSearchToggled = true
                             )
                             preLoadingWeatherForecast()
                         }
@@ -368,7 +368,6 @@ class WeatherForecastViewModel @Inject constructor(
                         state.asObservable()
                     },
                     {
-                        state = state.copy(hasRunTimeLocationPermission = false)
                         preLoadingWeatherForecast()
                     }
                 )
@@ -383,7 +382,7 @@ class WeatherForecastViewModel @Inject constructor(
             .map { result: Either<Failure, GetWeatherForecastService.Data> ->
                 result.either(
                     { failure: Failure ->
-                        Timber.e("loadWeatherForecast: $failure")
+                        Timber.e("loadWeatherForecastFailure: $failure")
                         val errorCode: Int = getErrorCode(failure)
                         val renderEvent: WeatherForecastView.RenderEvent.DisplayError = WeatherForecastView.RenderEvent.DisplayError(errorCode)
 
@@ -393,10 +392,10 @@ class WeatherForecastViewModel @Inject constructor(
                     { data: GetWeatherForecastService.Data ->
                         val renderEvent: WeatherForecastView.RenderEvent.DisplayWeatherForecast =
                             WeatherForecastView.RenderEvent.DisplayWeatherForecast(
-                                data.baseWeatherForecastModelList,
-                                Locality(name = data.localityName)
+                                list = data.baseWeatherForecastModelList,
+                                locality = Locality(name = data.localityName)
                             )
-                        state = state.copy(renderEvent = renderEvent, timeStamp = data.timestamp)
+                        state = state.copy(renderEvent = renderEvent, timeStamp = data.timeStamp)
                         state
                     }
                 )
@@ -408,24 +407,6 @@ class WeatherForecastViewModel @Inject constructor(
             isSearchToggled = true
         )
         return state.asObservable()
-    }
-
-    private fun restoreStateFromStateParcel(stateParcel: WeatherForecastView.StateParcel?) {
-        Timber.d("restoreStateFromStateParcel: $stateParcel")
-        stateParcel?.run {
-            state = state.copy(
-                forceNet = forceNet,
-                searchText = searchText,
-                isSearchToggled = isSearchToggled,
-                wasRestoredFromStateParcel = true,
-                startLoading = startLoading,
-                stopLoading = stopLoading,
-                startRefreshing = startRefreshing,
-                stopRefreshing = stopRefreshing,
-                timeStamp = timeStamp,
-                hasRunTimeLocationPermission = hasRunTimeLocationPermission
-            )
-        }
     }
 
     private fun updateStateToLoadingAndRefreshing(): Observable<WeatherForecastView.State> {
@@ -460,7 +441,7 @@ class WeatherForecastViewModel @Inject constructor(
             .flatMapObservable { result: Either<Failure, Unit> ->
                 result.either(
                     { failure: Failure ->
-                        Timber.e("onLocationPermissionGrantedEvent: $failure")
+                        Timber.e("onLocationPermissionGrantedFailure: $failure")
                         val errorCode = getErrorCode(failure)
                         val renderEvent = WeatherForecastView.RenderEvent.DisplayError(errorCode)
 
@@ -468,8 +449,7 @@ class WeatherForecastViewModel @Inject constructor(
                         state.asObservable()
                     },
                     {
-                        Timber.d("Location mode updated, proceeding to fetch weather.")
-                        state = state.copy(hasRunTimeLocationPermission = true)
+                        Timber.d("Location mode updated to true -- proceeding to fetch weather.")
                         updateStateToLoadingAndRefreshing()
                         preLoadingWeatherForecast()
                     }
@@ -491,7 +471,6 @@ class WeatherForecastViewModel @Inject constructor(
                         state.asObservable()
                     },
                     { locationMode: Boolean ->
-                        state = state.copy(hasRunTimeLocationPermission = false)
                         updateStateToLoadingAndRefreshing()
                         when (locationMode) {
                             false -> preLoadingWeatherForecast()

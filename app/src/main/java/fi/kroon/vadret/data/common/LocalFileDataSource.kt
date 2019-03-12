@@ -39,7 +39,9 @@ class LocalFileDataSource @Inject constructor(
         }.doOnError {
             Timber.e("$it")
         }.onErrorReturn {
-            LocalFileReaderFailure.IOFailure().asLeft()
+            LocalFileReaderFailure
+                .ReadFailure
+                .asLeft()
         }
 
     fun readList(@RawRes fileId: Int): Single<Either<Failure, List<String>>> =
@@ -50,7 +52,9 @@ class LocalFileDataSource @Inject constructor(
         }.doOnError {
             Timber.e("$it")
         }.onErrorReturn {
-            LocalFileReaderFailure.IOFailure().asLeft()
+            LocalFileReaderFailure
+                .ReadFailure
+                .asLeft()
         }
 
     fun readCsvList(@RawRes fileId: Int): Single<Either<Failure, List<AutoCompleteItem>>> =
@@ -76,6 +80,8 @@ class LocalFileDataSource @Inject constructor(
         }.doOnError {
             Timber.e("$it")
         }.onErrorReturn {
-            LocalFileReaderFailure.IOFailure().asLeft()
+            LocalFileReaderFailure
+                .ReadFailure
+                .asLeft()
         }
 }

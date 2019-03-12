@@ -1,16 +1,19 @@
 package fi.kroon.vadret.data.nominatim
 
-import fi.kroon.vadret.data.functional.Either
+import fi.kroon.vadret.core.di.scope.VadretApplicationScope
 import fi.kroon.vadret.data.exception.Failure
+import fi.kroon.vadret.data.functional.Either
 import fi.kroon.vadret.data.nominatim.exception.NominatimFailure
 import fi.kroon.vadret.data.nominatim.model.Nominatim
 import fi.kroon.vadret.data.nominatim.model.NominatimOut
 import fi.kroon.vadret.data.nominatim.model.NominatimReverseOut
 import fi.kroon.vadret.data.nominatim.net.NominatimNetDataSource
-import fi.kroon.vadret.di.scope.VadretApplicationScope
 import fi.kroon.vadret.utils.NetworkHandler
 import fi.kroon.vadret.utils.extensions.asLeft
+import fi.kroon.vadret.utils.extensions.asRight
+import fi.kroon.vadret.utils.extensions.asSingle
 import io.reactivex.Single
+import retrofit2.Response
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -28,17 +31,29 @@ class NominatimRepository @Inject constructor(
                 nameDetails = request.nameDetails,
                 countryCodes = request.countrycodes,
                 addressDetails = request.addressDetails
-            ).map { response ->
+            ).map { response: Response<List<Nominatim>> ->
                 when (response.body()) {
-                    null -> NominatimFailure.NominatimNotAvailable().asLeft()
-                    else -> Either.Right(response.body()!!)
+                    null -> NominatimFailure
+                        .NominatimNotAvailable
+                        .asLeft()
+                    else -> {
+                        response.body()!!
+                            .asRight()
+                    }
                 }
             }.doOnError {
                 Timber.e("$it")
             }.onErrorReturn {
-                Failure.NetworkException().asLeft()
+                Failure
+                    .NetworkException
+                    .asLeft()
             }
-            false -> Single.just(Failure.NetworkOfflineFailure().asLeft())
+            false -> {
+                Failure
+                    .NetworkOfflineFailure
+                    .asLeft()
+                    .asSingle()
+            }
         }
 
     fun reverse(request: NominatimReverseOut): Single<Either<Failure, Nominatim>> =
@@ -50,14 +65,26 @@ class NominatimRepository @Inject constructor(
                 zoom = request.zoom
             ).map { response ->
                 when (response.body()) {
-                    null -> NominatimFailure.NominatimNotAvailable().asLeft()
-                    else -> Either.Right(response.body()!!)
+                    null -> NominatimFailure
+                        .NominatimNotAvailable
+                        .asLeft()
+                    else -> {
+                        response.body()!!
+                            .asRight()
+                    }
                 }
             }.doOnError {
                 Timber.e("$it")
             }.onErrorReturn {
-                Failure.NetworkException().asLeft()
+                Failure
+                    .NetworkException
+                    .asLeft()
             }
-            false -> Single.just(Failure.NetworkOfflineFailure().asLeft())
+            false -> {
+                Failure
+                    .NetworkOfflineFailure
+                    .asLeft()
+                    .asSingle()
+            }
         }
 }

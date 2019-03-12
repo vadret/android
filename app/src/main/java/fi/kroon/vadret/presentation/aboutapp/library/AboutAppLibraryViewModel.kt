@@ -3,7 +3,7 @@ package fi.kroon.vadret.presentation.aboutapp.library
 import fi.kroon.vadret.data.functional.Either
 import fi.kroon.vadret.data.exception.Failure
 import fi.kroon.vadret.data.library.model.Library
-import fi.kroon.vadret.domain.LibraryTask
+import fi.kroon.vadret.domain.aboutapp.GetLibraryTask
 import fi.kroon.vadret.utils.extensions.asObservable
 import io.reactivex.Observable
 import io.reactivex.ObservableTransformer
@@ -11,7 +11,7 @@ import javax.inject.Inject
 
 class AboutAppLibraryViewModel @Inject constructor(
     private var state: AboutAppLibraryView.State,
-    private val libraryTask: LibraryTask
+    private val getLibraryTask: GetLibraryTask
 ) {
     operator fun invoke(): ObservableTransformer<AboutAppLibraryView.Event, AboutAppLibraryView.State> = onEvent
 
@@ -29,7 +29,6 @@ class AboutAppLibraryViewModel @Inject constructor(
         }
     }
 
-    // Transitioning
     private val eventToViewState = ObservableTransformer<AboutAppLibraryView.Event,
         AboutAppLibraryView.State> { upstream: Observable<AboutAppLibraryView.Event> ->
 
@@ -48,14 +47,12 @@ class AboutAppLibraryViewModel @Inject constructor(
     }
 
     private fun onLibraryButtonClick(url: String): Observable<AboutAppLibraryView.State> {
-
         state = state.copy(renderEvent = AboutAppLibraryView.RenderEvent.OpenUrl(url))
-
         return state.asObservable()
     }
 
     private fun onInitEvent(): Observable<AboutAppLibraryView.State> =
-        libraryTask()
+        getLibraryTask()
             .map { result: Either<Failure, List<Library>> ->
 
                 result.either(

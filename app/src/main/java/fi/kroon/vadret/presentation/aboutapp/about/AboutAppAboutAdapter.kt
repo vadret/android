@@ -18,14 +18,12 @@ class AboutAppAboutAdapter @Inject constructor(
     private val onAboutAppAboutInfoItemClickSubject: PublishSubject<AboutInfo>
 ) : RecyclerView.Adapter<AboutAppAboutAdapter.ViewHolder>() {
 
-    private val list = mutableListOf<AboutInfo>()
+    private val list: MutableList<AboutInfo> = mutableListOf()
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-
-        return ViewHolder(LayoutInflater
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder =
+        ViewHolder(LayoutInflater
             .from(parent.context)
             .inflate(R.layout.about_app_about_item, parent, false))
-    }
 
     override fun getItemCount(): Int = list.size
 
@@ -55,13 +53,10 @@ class AboutAppAboutAdapter @Inject constructor(
             }
         }
 
-        private fun setTextOrMakeGone(textView: TextView, resId: Int?) {
-            if (resId != null) {
-                textView.setText(resId)
-            } else {
-                textView.toGone()
-            }
-        }
+        private fun setTextOrMakeGone(textView: TextView, resId: Int?) =
+            resId?.let { id: Int ->
+                textView.setText(id)
+            } ?: textView.toGone()
     }
 
     fun updateList(list: List<AboutInfo>) {

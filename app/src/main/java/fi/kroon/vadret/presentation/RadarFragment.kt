@@ -1,57 +1,8 @@
 package fi.kroon.vadret.presentation
 
-import android.graphics.Bitmap
-import android.graphics.drawable.Drawable
-import android.os.Bundle
-import android.view.View
-import android.widget.SeekBar
-import androidx.annotation.StringRes
-import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.android.material.snackbar.Snackbar
-import com.squareup.picasso.Picasso
-import com.squareup.picasso.Target
-import fi.kroon.vadret.BuildConfig
-import fi.kroon.vadret.R
-import fi.kroon.vadret.data.exception.Failure
-import fi.kroon.vadret.data.functional.Either
-import fi.kroon.vadret.data.radar.RadarRequest
-import fi.kroon.vadret.data.radar.exception.RadarFailure
-import fi.kroon.vadret.data.radar.model.File
-import fi.kroon.vadret.data.radar.model.Radar
-import fi.kroon.vadret.presentation.viewmodel.RadarViewModel
-import fi.kroon.vadret.utils.DEFAULT_BOUNDINGBOX_CENTER_LATITUDE
-import fi.kroon.vadret.utils.DEFAULT_BOUNDINGBOX_CENTER_LONGITUDE
-import fi.kroon.vadret.utils.DEFAULT_BOUNDINGBOX_LATITUDE_MAX
-import fi.kroon.vadret.utils.DEFAULT_BOUNDINGBOX_LATITUDE_MIN
-import fi.kroon.vadret.utils.DEFAULT_BOUNDINGBOX_LONGITUDE_MAX
-import fi.kroon.vadret.utils.DEFAULT_BOUNDINGBOX_LONGITUDE_MIN
-import fi.kroon.vadret.utils.DEFAULT_RADAR_FILE_EXTENSION
-import fi.kroon.vadret.utils.DEFAULT_RADAR_INTERVAL
-import fi.kroon.vadret.utils.DEFAULT_RADAR_ZOOM_LEVEL
-import fi.kroon.vadret.utils.FILE_COUNT_OFFSET
-import fi.kroon.vadret.utils.MAXIMUM_ZOOM_LEVEL
-import fi.kroon.vadret.utils.MINIMUM_ZOOM_LEVEL
-import fi.kroon.vadret.utils.Schedulers
-import fi.kroon.vadret.utils.WIKIMEDIA_TILE_SOURCE_URL
-import fi.kroon.vadret.utils.extensions.viewModel
-import io.reactivex.Observable
-import io.reactivex.disposables.Disposable
-import io.reactivex.rxkotlin.addTo
-import kotlinx.android.synthetic.main.radar_fragment.*
-import org.osmdroid.config.Configuration
-import org.osmdroid.tileprovider.tilesource.XYTileSource
-import org.osmdroid.util.BoundingBox
-import org.osmdroid.util.GeoPoint
-import org.osmdroid.views.MapView
-import org.osmdroid.views.overlay.GroundOverlay2
-import org.threeten.bp.OffsetDateTime
-import org.threeten.bp.format.DateTimeFormatter
-import timber.log.Timber
-import java.util.concurrent.TimeUnit
-import javax.inject.Inject
-
 // TODO - Refactor
-class RadarFragment : BaseFragment() {
+/*
+class RadarFragment  {
 
     companion object {
         // fixme add
@@ -263,4 +214,4 @@ class RadarFragment : BaseFragment() {
     }
 
     private fun renderFailure(@StringRes message: Int) = Snackbar.make(view!!, message, Snackbar.LENGTH_LONG).show()
-}
+}*/

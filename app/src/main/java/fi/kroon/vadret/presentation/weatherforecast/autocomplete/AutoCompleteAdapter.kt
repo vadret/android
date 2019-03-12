@@ -34,13 +34,20 @@ class AutoCompleteAdapter @Inject constructor(
         }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = ViewHolder(
-        LayoutInflater.from(parent.context).inflate(R.layout.weather_forecast_auto_complete_item, parent, false)
-    )
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder =
+        ViewHolder(
+            LayoutInflater
+                .from(parent.context)
+                .inflate(
+                    R.layout.weather_forecast_auto_complete_item,
+                    parent,
+                    false
+                )
+        )
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) = holder.bind(list[position])
 
-    override fun getItemCount() = list.size
+    override fun getItemCount(): Int = list.size
 
     fun updateList(itemList: List<AutoCompleteItem>) {
         list.clear()

@@ -19,6 +19,8 @@ class LocationRepository @Inject constructor(
         }.doOnError {
             Timber.e("LocationRepositoryFailure: $it")
         }.onErrorReturn {
-            LocationFailure.LocationNotAvailable().asLeft()
+            LocationFailure
+                .LocationNotAvailable
+                .asLeft()
         }
 }

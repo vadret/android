@@ -4,9 +4,9 @@ import android.app.Application
 import android.content.Context
 import com.jakewharton.threetenabp.AndroidThreeTen
 import com.squareup.leakcanary.LeakCanary
-import fi.kroon.vadret.di.component.DaggerVadretApplicationComponent
-import fi.kroon.vadret.di.component.VadretApplicationComponent
-import fi.kroon.vadret.di.modules.ApplicationModule
+import fi.kroon.vadret.core.di.component.DaggerVadretApplicationComponent
+import fi.kroon.vadret.core.di.component.VadretApplicationComponent
+import fi.kroon.vadret.core.di.modules.ContextModule
 import timber.log.Timber
 
 abstract class BaseApplication : Application() {
@@ -20,7 +20,7 @@ abstract class BaseApplication : Application() {
     val cmp: VadretApplicationComponent by lazy(LazyThreadSafetyMode.NONE) {
         DaggerVadretApplicationComponent
             .builder()
-            .applicationModule(ApplicationModule(this))
+            .contextModule(ContextModule(this))
             .build()
     }
 

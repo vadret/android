@@ -9,8 +9,8 @@ import fi.kroon.vadret.data.exception.Failure
 import fi.kroon.vadret.data.location.exception.LocationFailure
 import fi.kroon.vadret.data.location.model.Location
 import fi.kroon.vadret.data.location.local.LocationLocalDataSource
-import fi.kroon.vadret.utils.DEFAULT_FALLBACK_LATITUDE
-import fi.kroon.vadret.utils.DEFAULT_FALLBACK_LONGITUDE
+import fi.kroon.vadret.utils.DEFAULT_LATITUDE
+import fi.kroon.vadret.utils.DEFAULT_LONGITUDE
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mock
@@ -97,7 +97,7 @@ class LocationLocalDataSourceTest : BaseUnitTest() {
     }*/
 
     private fun setupMockLocationReturns() {
-        doReturn(DEFAULT_FALLBACK_LONGITUDE.toDouble()).`when`(mockAndroidLocation).longitude
-        doReturn(DEFAULT_FALLBACK_LATITUDE.toDouble()).`when`(mockAndroidLocation).latitude
+        doReturn(DEFAULT_LONGITUDE.toDouble()).`when`(mockAndroidLocation).longitude
+        doReturn(DEFAULT_LATITUDE.toDouble()).`when`(mockAndroidLocation).latitude
     }
 }

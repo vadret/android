@@ -5,6 +5,7 @@ import androidx.annotation.StringRes
 import androidx.recyclerview.widget.DiffUtil
 import fi.kroon.vadret.data.autocomplete.model.AutoCompleteItem
 import fi.kroon.vadret.data.nominatim.model.Locality
+import fi.kroon.vadret.presentation.weatherforecast.model.BaseWeatherForecastModel
 import fi.kroon.vadret.utils.extensions.empty
 import kotlinx.android.parcel.Parcelize
 
@@ -33,7 +34,6 @@ object WeatherForecastView {
 
     data class State(
         val forceNet: Boolean = false,
-        val hasRunTimeLocationPermission: Boolean? = null,
         val isInitialised: Boolean = false,
         val isSearchToggled: Boolean = false,
         val renderEvent: RenderEvent = RenderEvent.None,
@@ -49,8 +49,6 @@ object WeatherForecastView {
     sealed class RenderEvent {
         object None : RenderEvent()
         object RequestLocationPermission : RenderEvent()
-        object OmitLocationPermissionGrantedCheck : RenderEvent()
-        object OmitLocationPermissionDeniedCheck : RenderEvent()
         object StartShimmerEffect : RenderEvent()
         object StartProgressBarEffect : RenderEvent()
         object StopShimmerEffect : RenderEvent()
@@ -67,7 +65,6 @@ object WeatherForecastView {
     @Parcelize
     data class StateParcel(
         val forceNet: Boolean,
-        val hasRunTimeLocationPermission: Boolean?,
         val isSearchToggled: Boolean,
         val searchText: String = String.empty(),
         val startLoading: Boolean,

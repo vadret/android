@@ -5,7 +5,7 @@ import fi.kroon.vadret.R
 import fi.kroon.vadret.data.aboutinfo.model.AboutInfo
 import fi.kroon.vadret.data.functional.Either
 import fi.kroon.vadret.data.exception.Failure
-import fi.kroon.vadret.domain.AboutInfoTask
+import fi.kroon.vadret.domain.aboutapp.GetAboutInfoTask
 import fi.kroon.vadret.utils.extensions.asObservable
 import io.reactivex.Observable
 import io.reactivex.ObservableTransformer
@@ -13,7 +13,7 @@ import javax.inject.Inject
 
 class AboutAppAboutViewModel @Inject constructor(
     private var state: AboutAppAboutView.State,
-    private val aboutInfoTask: AboutInfoTask,
+    private val getAboutInfoTask: GetAboutInfoTask,
     private val context: Context
 ) {
     operator fun invoke(): ObservableTransformer<AboutAppAboutView.Event, AboutAppAboutView.State> = onEvent
@@ -29,7 +29,7 @@ class AboutAppAboutViewModel @Inject constructor(
             )
         }
     }
-    // Transitioning
+
     private val eventToViewState = ObservableTransformer<AboutAppAboutView.Event,
         AboutAppAboutView.State> { upstream: Observable<AboutAppAboutView.Event> ->
 
@@ -45,7 +45,7 @@ class AboutAppAboutViewModel @Inject constructor(
     }
 
     private fun onInitEvent(): Observable<AboutAppAboutView.State> =
-        aboutInfoTask()
+        getAboutInfoTask()
             .map { result: Either<Failure, List<AboutInfo>> ->
 
                 result.either(

@@ -1,6 +1,7 @@
 package fi.kroon.vadret.data.alert.model
 
 import com.squareup.moshi.Json
+import java.io.Serializable
 
 data class Info(
 
@@ -51,4 +52,4 @@ data class Info(
 
     @Json(name = "area")
     val area: Area
-)
+) : Serializable

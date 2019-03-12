@@ -5,22 +5,11 @@
     android:id="@+id/weatherForecastFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/fragment_background"
     android:orientation="vertical">
 
-    <!--<ProgressBar
-        android:id="@+id/progress_horizontal"
-        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:indeterminate="true"
-        android:theme="@style/LinearProgress"
-        android:visibility="visible"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />-->
-
     <FrameLayout
-        android:id="@+id/frameLayout"
+        android:id="@+id/weatherForecastFrameLayout"
         android:layout_width="match_parent"
         android:layout_height="4dp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -39,22 +28,25 @@
     </FrameLayout>
 
     <com.facebook.shimmer.ShimmerFrameLayout
-        android:id="@+id/shimmerEffect"
+        android:id="@+id/weatherForecastShimmerEffect"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="28dp"
         android:visibility="gone"
-        app:shimmer_auto_start="false"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        app:shimmer_auto_start="false">
 
         <!-- This is placeholder data -->
         <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
+
+            <!-- TODO -->
+            <!-- <include layout="splash-item-layout">-->
 
             <include layout="@layout/weather_forecast_date_placeholder_item" />
 
@@ -99,7 +91,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/weatherForecastRecyclerView"
             android:layout_width="match_parent"
@@ -111,7 +102,6 @@
             tools:listitem="@layout/weather_forecast_item" />
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
-
 
     <androidx.appcompat.widget.SearchView
         android:id="@+id/weatherForecastSearchView"

@@ -12,7 +12,6 @@
         android:layout_width="@dimen/base_icon_width"
         android:layout_height="@dimen/base_icon_height"
         android:layout_marginStart="8dp"
-        android:contentDescription="Icon"
         android:scaleType="center"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
