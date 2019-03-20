@@ -4,14 +4,14 @@ import fi.kroon.vadret.data.exception.Failure
 import fi.kroon.vadret.data.functional.Either
 import fi.kroon.vadret.domain.alert.GetAlertService
 import fi.kroon.vadret.presentation.BaseViewModel
-import fi.kroon.vadret.presentation.alert.di.AlertScope
+import fi.kroon.vadret.presentation.alert.di.AlertFeatureScope
 import fi.kroon.vadret.utils.extensions.asObservable
 import io.reactivex.Observable
 import io.reactivex.ObservableTransformer
 import timber.log.Timber
 import javax.inject.Inject
 
-@AlertScope
+@AlertFeatureScope
 class AlertViewModel @Inject constructor(
     private var state: AlertView.State,
     private val getAlertService: GetAlertService
@@ -25,8 +25,6 @@ class AlertViewModel @Inject constructor(
             Observable.mergeArray(
                 shared.ofType(AlertView.Event.OnFailureHandled::class.java),
                 shared.ofType(AlertView.Event.OnViewInitialised::class.java),
-                shared.ofType(AlertView.Event.OnShimmerEffectStarted::class.java),
-                shared.ofType(AlertView.Event.OnShimmerEffectStopped::class.java),
                 shared.ofType(AlertView.Event.OnProgressBarEffectStarted::class.java),
                 shared.ofType(AlertView.Event.OnProgressBarEffectStopped::class.java),
                 shared.ofType(AlertView.Event.OnSwipedToRefresh::class.java),
@@ -44,8 +42,6 @@ class AlertViewModel @Inject constructor(
             when (event) {
                 is AlertView.Event.OnViewInitialised -> onViewInitialisedEvent(event)
                 AlertView.Event.OnFailureHandled -> onFailureHandledEvent()
-                AlertView.Event.OnShimmerEffectStarted -> onShimmerEffectStartedEvent()
-                AlertView.Event.OnShimmerEffectStopped -> onShimmerEffectStoppedEvent()
                 AlertView.Event.OnProgressBarEffectStarted -> onProgressBarEffectStartedEvent()
                 AlertView.Event.OnProgressBarEffectStopped -> onProgressBarEffectStoppedEvent()
                 AlertView.Event.OnSwipedToRefresh -> onSwipedToRefreshEvent()
@@ -58,15 +54,6 @@ class AlertViewModel @Inject constructor(
 
     private fun preLoadingAlert(): Observable<AlertView.State> =
         when {
-            state.startLoading -> {
-                Timber.d("AlertView.RenderEvent.StartShimmerEffect: state.startLoading = ${state.startLoading}")
-                state = state.copy(
-                    renderEvent = AlertView.RenderEvent.StartShimmerEffect,
-                    startLoading = false,
-                    stopLoading = true
-                )
-                state.asObservable()
-            }
             state.startRefreshing -> {
                 Timber.d("AlertView.RenderEvent.StartProgressBarEffect: state.startRefreshing = ${state.startRefreshing}")
                 state = state.copy(
@@ -96,14 +83,6 @@ class AlertViewModel @Inject constructor(
                 )
                 state.asObservable()
             }
-            state.stopLoading -> {
-                Timber.d("AlertView.RenderEvent.StopShimmerEffect: state.stopLoading = ${state.stopLoading}")
-                state = state.copy(
-                    renderEvent = AlertView.RenderEvent.StopShimmerEffect,
-                    stopLoading = false
-                )
-                state.asObservable()
-            }
             state.stopRefreshing -> {
                 Timber.d("AlertView.RenderEvent.StopProgressBarEffect: state.stopRefreshing = ${state.stopRefreshing}")
                 state = state.copy(
@@ -124,8 +103,6 @@ class AlertViewModel @Inject constructor(
             state = state.copy(
                 forceNet = forceNet,
                 wasRestoredFromStateParcel = true,
-                startLoading = startLoading,
-                stopLoading = stopLoading,
                 startRefreshing = startRefreshing,
                 stopRefreshing = stopRefreshing,
                 timeStamp = timeStamp
@@ -139,8 +116,6 @@ class AlertViewModel @Inject constructor(
             renderEvent = AlertView.RenderEvent.UpdateStateParcel,
             startRefreshing = false,
             stopRefreshing = false,
-            startLoading = false,
-            stopLoading = false,
             forceNet = false
         )
         return state.asObservable()
@@ -149,8 +124,7 @@ class AlertViewModel @Inject constructor(
     private fun updateStateToLoadingAndRefreshing(): Observable<AlertView.State> {
         Timber.d("updateStateToLoadingAndRefreshing")
         state = state.copy(
-            startRefreshing = state.wasRestoredFromStateParcel.not(),
-            startLoading = state.wasRestoredFromStateParcel.not()
+            startRefreshing = state.wasRestoredFromStateParcel.not()
         )
         return state.asObservable()
     }
@@ -158,17 +132,7 @@ class AlertViewModel @Inject constructor(
     private fun updateStateToRefreshing(): Observable<AlertView.State> {
         Timber.d("updateStateToRefreshing")
         state = state.copy(
-            startRefreshing = true,
-            startLoading = false
-        )
-        return state.asObservable()
-    }
-
-    private fun updateStateToLoading(): Observable<AlertView.State> {
-        Timber.d("updateStateToLoading")
-        state = state.copy(
-            startRefreshing = false,
-            startLoading = true
+            startRefreshing = true
         )
         return state.asObservable()
     }
@@ -204,14 +168,6 @@ class AlertViewModel @Inject constructor(
 
     private fun onFailureHandledEvent(): Observable<AlertView.State> {
         Timber.d("Failure handled?")
-        return endLoadingAlert()
-    }
-
-    private fun onShimmerEffectStartedEvent(): Observable<AlertView.State> {
-        return preLoadingAlert()
-    }
-
-    private fun onShimmerEffectStoppedEvent(): Observable<AlertView.State> {
         return endLoadingAlert()
     }
 

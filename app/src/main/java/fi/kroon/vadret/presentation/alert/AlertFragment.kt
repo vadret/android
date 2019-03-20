@@ -7,7 +7,7 @@ import com.jakewharton.rxbinding3.swiperefreshlayout.refreshes
 import fi.kroon.vadret.R
 import fi.kroon.vadret.presentation.BaseFragment
 import fi.kroon.vadret.presentation.alert.di.AlertComponent
-import fi.kroon.vadret.utils.Schedulers
+import fi.kroon.vadret.presentation.alert.di.AlertFeatureScope
 import fi.kroon.vadret.utils.extensions.appComponent
 import fi.kroon.vadret.utils.extensions.snack
 import fi.kroon.vadret.utils.extensions.toGone
@@ -21,14 +21,14 @@ import kotlinx.android.synthetic.main.alert_fragment.*
 import timber.log.Timber
 import javax.inject.Inject
 
+@AlertFeatureScope
 class AlertFragment : BaseFragment() {
 
     companion object {
         const val STATE_PARCEL_KEY: String = "STATE_PARCEL_KEY"
-        const val RESTORABLE_SCROLL_POSITION_KEY: String = "RESTORABLE_SCROLL_POSITION_KEY"
+        const val SCROLL_POSITION_KEY: String = "SCROLL_POSITION_KEY"
     }
 
-    private var isConfigChangeOrProcessDeath = false
     private var stateParcel: AlertView.StateParcel? = null
     private var bundle: Bundle? = null
 
@@ -43,12 +43,6 @@ class AlertFragment : BaseFragment() {
 
     @Inject
     lateinit var onViewInitialisedSubject: PublishSubject<AlertView.Event.OnViewInitialised>
-
-    @Inject
-    lateinit var onStartShimmerEffectSubject: PublishSubject<AlertView.Event.OnShimmerEffectStarted>
-
-    @Inject
-    lateinit var onShimmerEffectStoppedSubject: PublishSubject<AlertView.Event.OnShimmerEffectStopped>
 
     @Inject
     lateinit var onProgressBarEffectStartedSubject: PublishSubject<AlertView.Event.OnProgressBarEffectStarted>
@@ -73,9 +67,6 @@ class AlertFragment : BaseFragment() {
 
     @Inject
     lateinit var alertAdapter: AlertAdapter
-
-    @Inject
-    lateinit var schedulers: Schedulers
 
     @Inject
     lateinit var subscriptions: CompositeDisposable
@@ -120,10 +111,6 @@ class AlertFragment : BaseFragment() {
         super.onSaveInstanceState(outState)
         Timber.d("ON SAVEINSTANCESTATE")
         outState.apply {
-            /*putParcelable(RESTORABLE_SCROLL_POSITION_KEY,
-                (alertRecyclerView.layoutManager as LinearLayoutManager)
-                    .onSaveInstanceState()
-            )*/
             Timber.d("Saving instance: $stateParcel")
             Timber.d("-----END-----")
             putParcelable(STATE_PARCEL_KEY, stateParcel)
@@ -134,7 +121,7 @@ class AlertFragment : BaseFragment() {
         super.onStop()
         Timber.d("ON STOP")
         bundle?.apply {
-            putParcelable(RESTORABLE_SCROLL_POSITION_KEY,
+            putParcelable(SCROLL_POSITION_KEY,
                 (alertRecyclerView.layoutManager as LinearLayoutManager)
                     .onSaveInstanceState()
             )
@@ -177,10 +164,6 @@ class AlertFragment : BaseFragment() {
         if (subscriptions.size() == 0) {
             Observable.mergeArray(
                 onViewInitialisedSubject
-                    .toObservable(),
-                onStartShimmerEffectSubject
-                    .toObservable(),
-                onShimmerEffectStoppedSubject
                     .toObservable(),
                 onProgressBarEffectStartedSubject
                     .toObservable(),
@@ -230,29 +213,13 @@ class AlertFragment : BaseFragment() {
     private fun render(viewState: AlertView.State) =
         when (viewState.renderEvent) {
             AlertView.RenderEvent.None -> Unit
-            AlertView.RenderEvent.StartShimmerEffect -> startShimmerEffect()
             AlertView.RenderEvent.StartProgressBarEffect -> startProgressBarEffect()
-            AlertView.RenderEvent.StopShimmerEffect -> stopShimmerEffect()
             AlertView.RenderEvent.StopProgressBarEffect -> stopProgressBarEffect()
             AlertView.RenderEvent.UpdateStateParcel -> updateStateParcel(viewState)
             AlertView.RenderEvent.RestoreScrollPosition -> restoreScrollPosition()
             is AlertView.RenderEvent.DisplayAlert -> displayAlertList(viewState.renderEvent)
             is AlertView.RenderEvent.DisplayError -> renderError(viewState.renderEvent.errorCode)
         }
-
-    private fun startShimmerEffect() {
-        Timber.d("startShimmerEffect")
-        alertShimmerEffect.apply {
-            startShimmer()
-            toVisible()
-        }
-
-        onStartShimmerEffectSubject.onNext(
-            AlertView
-                .Event
-                .OnShimmerEffectStarted
-        )
-    }
 
     private fun startProgressBarEffect() {
         Timber.d("startProgressBarEffect")
@@ -264,20 +231,6 @@ class AlertFragment : BaseFragment() {
             AlertView
                 .Event
                 .OnProgressBarEffectStarted
-        )
-    }
-
-    private fun stopShimmerEffect() {
-        Timber.d("stopShimmerEffect")
-        alertShimmerEffect.apply {
-            stopShimmer()
-            toGone()
-        }
-
-        onShimmerEffectStoppedSubject.onNext(
-            AlertView
-                .Event
-                .OnShimmerEffectStopped
         )
     }
 
@@ -302,9 +255,7 @@ class AlertFragment : BaseFragment() {
     private fun updateStateParcel(state: AlertView.State) {
         stateParcel = AlertView.StateParcel(
             forceNet = state.forceNet,
-            startLoading = state.startLoading,
             startRefreshing = state.startRefreshing,
-            stopLoading = state.stopLoading,
             stopRefreshing = state.stopRefreshing,
             timeStamp = state.timeStamp
         )
@@ -321,7 +272,7 @@ class AlertFragment : BaseFragment() {
         bundle?.run {
             (alertRecyclerView.layoutManager as LinearLayoutManager)
                 .onRestoreInstanceState(
-                    getParcelable(RESTORABLE_SCROLL_POSITION_KEY)
+                    getParcelable(SCROLL_POSITION_KEY)
                 )
         }
 

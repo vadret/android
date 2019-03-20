@@ -2,7 +2,8 @@ package fi.kroon.vadret.core.di.modules
 
 import dagger.Module
 import dagger.Provides
-import fi.kroon.vadret.core.di.scope.VadretApplicationScope
+import fi.kroon.vadret.BuildConfig
+import fi.kroon.vadret.core.di.scope.CoreApplicationScope
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import java.util.concurrent.TimeUnit
@@ -18,14 +19,23 @@ object NetworkModule {
     private const val READ_CONNECTION_TIMEOUT = 10000L
     private const val WRITE_CONNECTION_TIMEOUT = 10000L
 
-    @Provides
-    @JvmStatic
-    @VadretApplicationScope
-    fun provideHttpLoggingInterceptor(): HttpLoggingInterceptor = HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)
+    private val getLogLevel: HttpLoggingInterceptor.Level =
+        if (BuildConfig.DEBUG) {
+            HttpLoggingInterceptor.Level.BODY
+        } else {
+            HttpLoggingInterceptor.Level.NONE
+        }
 
     @Provides
     @JvmStatic
-    @VadretApplicationScope
+    @CoreApplicationScope
+    fun provideHttpLoggingInterceptor(): HttpLoggingInterceptor =
+        HttpLoggingInterceptor()
+            .setLevel(getLogLevel)
+
+    @Provides
+    @JvmStatic
+    @CoreApplicationScope
     fun provideOkHttpClient(
         httpLoggingInterceptor: HttpLoggingInterceptor
     ): OkHttpClient = OkHttpClient.Builder()

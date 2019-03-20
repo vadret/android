@@ -78,7 +78,9 @@ class AlertAdapter @Inject constructor() : RecyclerView.Adapter<RecyclerView.Vie
                         false
                     )
             )
-            // FIXME for later support for multiple view types
+            /**
+             *  Allows support for additional [ItemViewType]'s.
+             */
             else -> AlertViewHolder(
                 LayoutInflater
                     .from(parent.context)
@@ -90,13 +92,11 @@ class AlertAdapter @Inject constructor() : RecyclerView.Adapter<RecyclerView.Vie
             )
         }
 
-    override fun getItemViewType(position: Int): Int {
-        return when (list[position]) {
-            // FIXME for later support for multiple view types
+    override fun getItemViewType(position: Int): Int =
+        when (list[position]) {
             is WarningItemItemModel -> AlertAdapter.VIEW_TYPE_ALERT
             else -> AlertAdapter.VIEW_TYPE_ALERT
         }
-    }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder.itemViewType) {

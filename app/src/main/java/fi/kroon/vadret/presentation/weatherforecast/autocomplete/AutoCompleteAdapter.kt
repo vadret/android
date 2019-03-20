@@ -6,12 +6,12 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import fi.kroon.vadret.R
 import fi.kroon.vadret.data.autocomplete.model.AutoCompleteItem
-import fi.kroon.vadret.presentation.weatherforecast.di.WeatherForecastScope
+import fi.kroon.vadret.presentation.weatherforecast.di.WeatherForecastFeatureScope
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.weather_forecast_auto_complete_item.view.*
 import javax.inject.Inject
 
-@WeatherForecastScope
+@WeatherForecastFeatureScope
 class AutoCompleteAdapter @Inject constructor(
     private val onAutoCompleteItemItemClickedSubject: PublishSubject<AutoCompleteItem>
 ) : RecyclerView.Adapter<AutoCompleteAdapter.ViewHolder>() {

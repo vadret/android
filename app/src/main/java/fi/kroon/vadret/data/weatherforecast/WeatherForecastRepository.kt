@@ -1,10 +1,9 @@
 package fi.kroon.vadret.data.weatherforecast
 
-import fi.kroon.vadret.core.di.scope.VadretApplicationScope
+import fi.kroon.vadret.core.di.scope.CoreApplicationScope
 import fi.kroon.vadret.data.exception.Failure
 import fi.kroon.vadret.data.functional.Either
 import fi.kroon.vadret.data.weatherforecast.exception.WeatherForecastFailure
-import fi.kroon.vadret.data.weatherforecast.local.WeatherForecastLocalKeyValueDataSource
 import fi.kroon.vadret.data.weatherforecast.model.Weather
 import fi.kroon.vadret.data.weatherforecast.model.WeatherOut
 import fi.kroon.vadret.data.weatherforecast.net.WeatherForecastNetDataSource
@@ -20,15 +19,13 @@ import fi.kroon.vadret.utils.NetworkHandler
 import fi.kroon.vadret.utils.extensions.asLeft
 import fi.kroon.vadret.utils.extensions.asSingle
 import fi.kroon.vadret.utils.extensions.toCoordinate
-import io.reactivex.Observable
 import io.reactivex.Single
 import timber.log.Timber
 import javax.inject.Inject
 
-@VadretApplicationScope
+@CoreApplicationScope
 class WeatherForecastRepository @Inject constructor(
     private val weatherForecastNetDataSource: WeatherForecastNetDataSource,
-    private val weatherForecastLocalKeyValueDataSource: WeatherForecastLocalKeyValueDataSource,
     private val networkHandler: NetworkHandler
 ) {
 
@@ -65,10 +62,4 @@ class WeatherForecastRepository @Inject constructor(
                     .asSingle()
             }
         }
-
-    fun observeString(key: String): Observable<Either<Failure, String>> = weatherForecastLocalKeyValueDataSource
-        .observeString(key)
-
-    fun observeBoolean(key: String): Observable<Either<Failure, Boolean>> = weatherForecastLocalKeyValueDataSource
-        .observeBoolean(key)
 }

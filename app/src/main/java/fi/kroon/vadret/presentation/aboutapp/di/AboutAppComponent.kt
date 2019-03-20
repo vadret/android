@@ -16,7 +16,7 @@ import fi.kroon.vadret.presentation.aboutapp.library.AboutAppLibraryModule
         AboutAppLibraryModule::class
     ]
 )
-@AboutAppScope
+@AboutAppFeatureScope
 interface AboutAppComponent {
 
     fun inject(aboutAppFragment: AboutAppFragment)

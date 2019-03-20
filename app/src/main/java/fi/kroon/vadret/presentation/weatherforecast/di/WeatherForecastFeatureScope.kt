@@ -4,4 +4,4 @@ import javax.inject.Scope
 
 @Scope
 @Retention
-annotation class WeatherForecastScope
+annotation class WeatherForecastFeatureScope

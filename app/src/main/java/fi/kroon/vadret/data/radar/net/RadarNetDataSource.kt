@@ -7,7 +7,7 @@ import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
 
-interface RadarApi {
+interface RadarNetDataSource {
 
     @GET("/api/version/latest/area/sweden/product/comp/{year}/{month}/{date}")
     fun get(

@@ -1,63 +1,30 @@
 package fi.kroon.vadret.data.alert.cache
 
 import fi.kroon.vadret.data.alert.model.Alert
+import fi.kroon.vadret.data.common.BaseCacheImpl
 import fi.kroon.vadret.data.exception.Failure
 import fi.kroon.vadret.data.functional.Either
-import fi.kroon.vadret.presentation.alert.di.AlertScope
+import fi.kroon.vadret.presentation.alert.di.AlertFeatureScope
 import fi.kroon.vadret.utils.extensions.asLeft
 import fi.kroon.vadret.utils.extensions.asRight
 import io.reactivex.Single
 import okhttp3.internal.cache.DiskLruCache
 import okio.buffer
 import timber.log.Timber
-import java.io.ByteArrayInputStream
-import java.io.ByteArrayOutputStream
-import java.io.ObjectInputStream
-import java.io.ObjectOutputStream
 import javax.inject.Inject
 
-@AlertScope
-class AlertDiskCache @Inject constructor(
+@AlertFeatureScope
+class AlertDiskCacheImpl @Inject constructor(
     private val cache: DiskLruCache
-) {
+) : BaseCacheImpl() {
 
     init {
         cache.initialize()
     }
 
     private companion object {
-
-        const val KEY = "weatherforecast"
+        const val KEY = "alert"
         const val INDEX = 0
-
-        inline fun <reified T> deserializeBytes(bytes: ByteArray): T {
-            val byteArrayInputStream = ByteArrayInputStream(bytes)
-
-            val objectInputStream = ObjectInputStream(byteArrayInputStream)
-            val objects: T = objectInputStream.readObject() as T
-
-            objectInputStream.close()
-            byteArrayInputStream.close()
-
-            return objects
-        }
-
-        fun serializerObject(`object`: Any): ByteArray {
-            val byteArrayOutputStream: ByteArrayOutputStream = ByteArrayOutputStream()
-
-            val objectOutputStream: ObjectOutputStream = ObjectOutputStream(byteArrayOutputStream).apply {
-                writeObject(`object`)
-                flush()
-            }
-
-            val byteArray: ByteArray?
-            byteArray = byteArrayOutputStream.toByteArray()
-            byteArrayOutputStream.close()
-
-            objectOutputStream.close()
-
-            return byteArray
-        }
     }
 
     fun put(alert: Alert): Single<Either<Failure, Alert>> =

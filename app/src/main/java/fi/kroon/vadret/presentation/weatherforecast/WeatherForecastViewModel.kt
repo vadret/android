@@ -10,8 +10,8 @@ import fi.kroon.vadret.domain.weatherforecast.SetDefaultLocationInformationTask
 import fi.kroon.vadret.domain.weatherforecast.SetLocationInformationTask
 import fi.kroon.vadret.domain.weatherforecast.SetLocationModeTask
 import fi.kroon.vadret.presentation.BaseViewModel
-import fi.kroon.vadret.presentation.weatherforecast.di.WeatherForecastScope
-import fi.kroon.vadret.utils.DEFAULT_DEBOUNCE_MILLIS
+import fi.kroon.vadret.presentation.weatherforecast.di.WeatherForecastFeatureScope
+import fi.kroon.vadret.utils.AUTOCOMPLETE_DEBOUNCE_MILLIS
 import fi.kroon.vadret.utils.extensions.asObservable
 import fi.kroon.vadret.utils.extensions.empty
 import io.reactivex.Observable
@@ -20,7 +20,7 @@ import timber.log.Timber
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
-@WeatherForecastScope
+@WeatherForecastFeatureScope
 class WeatherForecastViewModel @Inject constructor(
     private var state: WeatherForecastView.State,
     private val setDefaultLocationInformationTask: SetDefaultLocationInformationTask,
@@ -47,8 +47,6 @@ class WeatherForecastViewModel @Inject constructor(
                 shared.ofType(WeatherForecastView.Event.OnSearchViewDismissed::class.java),
                 shared.ofType(WeatherForecastView.Event.OnAutoCompleteItemClicked::class.java),
                 shared.ofType(WeatherForecastView.Event.OnStateParcelUpdated::class.java),
-                shared.ofType(WeatherForecastView.Event.OnShimmerEffectStarted::class.java),
-                shared.ofType(WeatherForecastView.Event.OnShimmerEffectStopped::class.java),
                 shared.ofType(WeatherForecastView.Event.OnProgressBarEffectStarted::class.java),
                 shared.ofType(WeatherForecastView.Event.OnProgressBarEffectStopped::class.java),
                 shared.ofType(WeatherForecastView.Event.OnScrollPositionRestored::class.java),
@@ -67,7 +65,7 @@ class WeatherForecastViewModel @Inject constructor(
         ObservableTransformer<WeatherForecastView.Event.OnSearchTextChanged,
             WeatherForecastView.Event> { upstream ->
             upstream
-                .debounce(DEFAULT_DEBOUNCE_MILLIS, TimeUnit.MILLISECONDS)
+                .debounce(AUTOCOMPLETE_DEBOUNCE_MILLIS, TimeUnit.MILLISECONDS)
                 .map { event ->
                     event.copy(text = event.text.trim())
                 }
@@ -92,10 +90,8 @@ class WeatherForecastViewModel @Inject constructor(
                 is WeatherForecastView.Event.OnAutoCompleteItemClicked -> onAutoCompleteItemClickedEvent(event)
                 WeatherForecastView.Event.OnFailureHandled -> onFailureHandled()
                 is WeatherForecastView.Event.OnSearchTextChanged -> onSearchTextChanged(event)
-                WeatherForecastView.Event.OnShimmerEffectStarted -> onShimmerEffectStartedEvent()
-                WeatherForecastView.Event.OnShimmerEffectStopped -> onProgressBarEffectStoppedEvent()
                 WeatherForecastView.Event.OnProgressBarEffectStarted -> onProgressBarEffectStartedEvent()
-                WeatherForecastView.Event.OnProgressBarEffectStopped -> onShimmerEffectStoppedEvent()
+                WeatherForecastView.Event.OnProgressBarEffectStopped -> onProgressBarEffectStoppedEvent()
                 WeatherForecastView.Event.OnScrollPositionRestored -> onScrollPositionRestored()
                 WeatherForecastView.Event.OnWeatherListDisplayed -> onWeatherListDisplayed()
                 WeatherForecastView.Event.OnStateParcelUpdated -> onStateParcelUpdatedEvent()
@@ -137,8 +133,6 @@ class WeatherForecastViewModel @Inject constructor(
                 searchText = searchText,
                 isSearchToggled = isSearchToggled,
                 wasRestoredFromStateParcel = true,
-                startLoading = startLoading,
-                stopLoading = stopLoading,
                 startRefreshing = startRefreshing,
                 stopRefreshing = stopRefreshing,
                 timeStamp = timeStamp
@@ -154,14 +148,8 @@ class WeatherForecastViewModel @Inject constructor(
     private fun onWeatherListDisplayed(): Observable<WeatherForecastView.State> =
         endLoadingWeatherForecast()
 
-    private fun onShimmerEffectStartedEvent(): Observable<WeatherForecastView.State> =
-        preLoadingWeatherForecast()
-
     private fun onProgressBarEffectStartedEvent(): Observable<WeatherForecastView.State> =
         preLoadingWeatherForecast()
-
-    private fun onShimmerEffectStoppedEvent(): Observable<WeatherForecastView.State> =
-        endLoadingWeatherForecast()
 
     private fun onProgressBarEffectStoppedEvent(): Observable<WeatherForecastView.State> =
         endLoadingWeatherForecast()
@@ -180,14 +168,6 @@ class WeatherForecastViewModel @Inject constructor(
                     renderEvent = renderEvent,
                     searchText = String.empty(),
                     isSearchToggled = false
-                )
-                state.asObservable()
-            }
-            state.startLoading -> {
-                state = state.copy(
-                    renderEvent = WeatherForecastView.RenderEvent.StartShimmerEffect,
-                    startLoading = false,
-                    stopLoading = true
                 )
                 state.asObservable()
             }
@@ -224,13 +204,6 @@ class WeatherForecastViewModel @Inject constructor(
                 state = state.copy(
                     renderEvent = WeatherForecastView.RenderEvent.RestoreScrollPosition,
                     wasRestoredFromStateParcel = false
-                )
-                state.asObservable()
-            }
-            state.stopLoading -> {
-                state = state.copy(
-                    renderEvent = WeatherForecastView.RenderEvent.StopShimmerEffect,
-                    stopLoading = false
                 )
                 state.asObservable()
             }
@@ -273,8 +246,6 @@ class WeatherForecastViewModel @Inject constructor(
             renderEvent = WeatherForecastView.RenderEvent.UpdateStateParcel,
             startRefreshing = false,
             stopRefreshing = false,
-            startLoading = false,
-            stopLoading = false,
             forceNet = false
         )
         return state.asObservable()
@@ -412,8 +383,7 @@ class WeatherForecastViewModel @Inject constructor(
     private fun updateStateToLoadingAndRefreshing(): Observable<WeatherForecastView.State> {
         Timber.d("updateStateToLoadingAndRefreshing")
         state = state.copy(
-            startRefreshing = state.wasRestoredFromStateParcel.not(),
-            startLoading = state.wasRestoredFromStateParcel.not()
+            startRefreshing = state.wasRestoredFromStateParcel.not()
         )
         return state.asObservable()
     }
@@ -421,17 +391,7 @@ class WeatherForecastViewModel @Inject constructor(
     private fun updateStateToRefreshing(): Observable<WeatherForecastView.State> {
         Timber.d("updateStateToRefreshing")
         state = state.copy(
-            startRefreshing = true,
-            startLoading = false
-        )
-        return state.asObservable()
-    }
-
-    private fun updateStateToLoading(): Observable<WeatherForecastView.State> {
-        Timber.d("updateStateToLoading")
-        state = state.copy(
-            startRefreshing = false,
-            startLoading = true
+            startRefreshing = true
         )
         return state.asObservable()
     }

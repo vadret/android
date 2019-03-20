@@ -3,11 +3,11 @@ package fi.kroon.vadret.data.library.local
 import fi.kroon.vadret.data.functional.Either
 import fi.kroon.vadret.data.exception.Failure
 import fi.kroon.vadret.data.library.model.Library
-import fi.kroon.vadret.core.di.scope.VadretApplicationScope
+import fi.kroon.vadret.core.di.scope.CoreApplicationScope
 import io.reactivex.Single
 import javax.inject.Inject
 
-@VadretApplicationScope
+@CoreApplicationScope
 class LibraryLocalDataSource @Inject constructor() {
 
     private val bsdLicense = "BSD License"
@@ -16,19 +16,38 @@ class LibraryLocalDataSource @Inject constructor() {
     private val creativeCommonsV4License = "CC BY 4.0"
     private val ODbLicense = "Open Data Commons Open Database License"
     private val bsd3ClauseLicense = "BSD 3-Clause License"
+    private val mitLicense = "MIT License"
 
     operator fun invoke(): Single<Either<Failure, List<Library>>> = Single.fromCallable {
 
         Either.Right(
             listOf(
                 Library(
-                    author = "Facebook Inc.",
-                    title = "Shimmer",
-                    description = "Shimmer effect for Android",
-                    projectUrl = "http://facebook.github.io/shimmer-android/",
-                    sourceUrl = "https://github.com/facebook/shimmer-android",
-                    licenseUrl = "https://github.com/facebook/shimmer-android/blob/master/LICENSE",
-                    license = bsdLicense
+                    author = "Pinterest",
+                    title = "Ktlint",
+                    description = "An anti-bikeshedding Kotlin linter with built-in formatter",
+                    projectUrl = "https://ktlint.github.io/",
+                    sourceUrl = "https://github.com/pinterest/ktlint",
+                    licenseUrl = "https://github.com/pinterest/ktlint/blob/master/LICENSE",
+                    license = mitLicense
+                ),
+                Library(
+                    author = "Apache Commons™",
+                    title = "Apache Commons CSV",
+                    description = "Android is an open source operating system for mobile devices and a corresponding open source project led by Google.",
+                    projectUrl = "https://commons.apache.org/proper/commons-csv/",
+                    sourceUrl = "https://git-wip-us.apache.org/repos/asf?p=commons-csv.git",
+                    licenseUrl = "http://www.apache.org/licenses/",
+                    license = apache2License
+                ),
+                Library(
+                    author = "Square Inc.",
+                    title = "OkHttp",
+                    description = "An HTTP+HTTP/2 client for Android and Java applications.",
+                    projectUrl = " http://square.github.io/okhttp/",
+                    sourceUrl = "https://github.com/square/okhttp",
+                    licenseUrl = "https://github.com/square/okhttp/blob/master/LICENSE.txt",
+                    license = apache2License
                 ),
                 Library(
                     author = "Google Inc.",
@@ -87,7 +106,7 @@ class LibraryLocalDataSource @Inject constructor() {
                 Library(
                     author = "© OpenStreetMap contributors",
                     title = "OpenStreetMap Nominatim",
-                    description = "Nominatim (from the Latin, 'by localityName') is a tool to search OSM data by localityName and address and to generate synthetic addresses of OSM points (reverse geocoding). It can be found at nominatim.openstreetmap.org. ",
+                    description = "Nominatim (from the Latin, 'by name') is a tool to search OSM data by name and address and to generate synthetic addresses of OSM points (reverse geocoding). It can be found at nominatim.openstreetmap.org. ",
                     projectUrl = "http://nominatim.openstreetmap.org/",
                     sourceUrl = "https://github.com/openstreetmap/Nominatim",
                     licenseUrl = "https://www.openstreetmap.org/copyright",
@@ -114,7 +133,7 @@ class LibraryLocalDataSource @Inject constructor() {
                 Library(
                     author = "Osmdroid",
                     title = "Osmdroid",
-                    description = "osmdroid is a (almost) full/free replacement for Android's MapView (v1 API) class.",
+                    description = "Osmdroid is a (almost) full/free replacement for Android's MapView (v1 API) class.",
                     projectUrl = "http://osmdroid.github.io/osmdroid/",
                     sourceUrl = "https://github.com/osmdroid/osmdroid",
                     licenseUrl = "https://github.com/osmdroid/osmdroid/blob/master/LICENSE",

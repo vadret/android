@@ -2,7 +2,6 @@ package fi.kroon.vadret.presentation
 
 import android.os.Bundle
 import android.preference.PreferenceManager
-import android.view.Menu
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LiveData
@@ -12,7 +11,7 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import fi.kroon.vadret.R
 import fi.kroon.vadret.data.nominatim.model.Locality
-import fi.kroon.vadret.utils.DEFAULT_PREFERENCES
+import fi.kroon.vadret.utils.DEFAULT_SETTINGS
 import fi.kroon.vadret.utils.extensions.appComponent
 import fi.kroon.vadret.utils.extensions.setupWithNavController
 import fi.kroon.vadret.utils.extensions.toGone
@@ -24,9 +23,16 @@ class MainActivity : AppCompatActivity() {
 
     private var navController: LiveData<NavController>? = null
 
+    /**
+     *  Currently the [MainActivity] is a bit cluttered
+     *  because Android Architecture Navigation component
+     *  lacks native support for multistack navigation.
+     *  Google is currently working on a solution and
+     *  the issue is being tracked here: https://issuetracker.google.com/issues/80029773#comment25
+     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        Timber.d("ON CREATE")
         appComponent()
             .inject(this)
 
@@ -34,11 +40,16 @@ class MainActivity : AppCompatActivity() {
         setupSupportActionBar()
 
         if (savedInstanceState == null) {
-            Timber.d("savedInstanceState was null")
             setupBottomNavigationBar()
         }
 
-        PreferenceManager.setDefaultValues(this, DEFAULT_PREFERENCES, MODE_PRIVATE, R.xml.preferences, false)
+        PreferenceManager.setDefaultValues(
+            this,
+            DEFAULT_SETTINGS,
+            MODE_PRIVATE,
+            R.xml.about_app_preferences,
+            false
+        )
     }
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle?) {
@@ -46,7 +57,7 @@ class MainActivity : AppCompatActivity() {
         // Now that BottomNavigationBar has restored its instance state
         // and its selectedItemId, we can proceed with setting up the
         // BottomNavigationBar with Navigation
-        Timber.d("onRestoreInstanceState")
+        Timber.d("ON RESTORE INSTANCE STATE")
         setupBottomNavigationBar()
     }
 
@@ -54,7 +65,12 @@ class MainActivity : AppCompatActivity() {
         Timber.d("setupBottomNavigationBar")
 
         val bottomNavigationView: BottomNavigationView = findViewById(R.id.bottomNavigationView)
-        val navGraphIds: List<Int> = listOf(R.navigation.weather, R.navigation.alert)
+        val navGraphIds: List<Int> = listOf(
+            R.navigation.weather,
+            R.navigation.alert,
+            R.navigation.radar,
+            R.navigation.settings
+        )
         // Setup the bottom navigation view with a list of navigation graphs
         val controller: LiveData<NavController> = bottomNavigationView.setupWithNavController(
             navGraphIds = navGraphIds,
@@ -71,11 +87,6 @@ class MainActivity : AppCompatActivity() {
             }
         )
         navController = controller
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.side_menu, menu)
-        return true
     }
 
     override fun onSupportNavigateUp(): Boolean {
@@ -95,20 +106,17 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(toolBar)
     }
 
-    fun disableLocalityActionBar() = currentLocationName.toGone()
+    fun hideLocalityActionBar() = currentLocationName.toGone()
 
-    fun displayLocalityActionBar(locality: Locality) {
+    fun setLocalityActionBar(locality: Locality) {
         locality.name?.let {
             currentLocationName.text = locality.name
         } ?: currentLocationName.setText(R.string.unknown_area)
         currentLocationName.toVisible()
     }
 
-    @Suppress("UNCHECKED_CAST")
-    fun <T : Fragment> getFragmentByClassName(className: String): T {
-
-        val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_container)
-
+    inline fun <reified T : Fragment> getFragmentByClassName(className: String): T {
+        val navHostFragment: Fragment? = supportFragmentManager.findFragmentById(R.id.nav_host_container)
         return navHostFragment?.childFragmentManager?.fragments?.filterNotNull()?.find {
             it.javaClass.name == className
         }!! as T

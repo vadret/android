@@ -1,6 +1,7 @@
 package fi.kroon.vadret.data.radar.model
 
 import com.squareup.moshi.Json
+import java.io.Serializable
 
 data class Download(
 
@@ -12,4 +13,4 @@ data class Download(
 
     @Json(name = "link")
     val link: String
-)
+) : Serializable

@@ -11,17 +11,17 @@ object AboutAppModule {
 
     @Provides
     @JvmStatic
-    @AboutAppScope
+    @AboutAppFeatureScope
     fun provideViewState(): AboutAppView.State = AboutAppView.State()
 
     @Provides
     @JvmStatic
-    @AboutAppScope
+    @AboutAppFeatureScope
     fun provideOnInitEventSubject(): PublishSubject<AboutAppView.Event.OnInit> =
         PublishSubject.create()
 
     @Provides
     @JvmStatic
-    @AboutAppScope
+    @AboutAppFeatureScope
     fun provideCompositeDisposable(): CompositeDisposable = CompositeDisposable()
 }

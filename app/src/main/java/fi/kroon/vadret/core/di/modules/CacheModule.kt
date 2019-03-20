@@ -5,8 +5,9 @@ import androidx.collection.LruCache
 import dagger.Module
 import dagger.Provides
 import fi.kroon.vadret.data.weatherforecast.model.Weather
-import fi.kroon.vadret.core.di.scope.VadretApplicationScope
+import fi.kroon.vadret.core.di.scope.CoreApplicationScope
 import fi.kroon.vadret.data.alert.model.Alert
+import fi.kroon.vadret.data.radar.model.Radar
 import fi.kroon.vadret.utils.DISK_CACHE_SIZE
 import fi.kroon.vadret.utils.MEMORY_CACHE_SIZE
 import okhttp3.internal.cache.DiskLruCache
@@ -17,7 +18,7 @@ object CacheModule {
 
     @Provides
     @JvmStatic
-    @VadretApplicationScope
+    @CoreApplicationScope
     fun provideDiskLruCache(context: Context): DiskLruCache =
         DiskLruCache.create(
             FileSystem.SYSTEM,
@@ -29,11 +30,16 @@ object CacheModule {
 
     @Provides
     @JvmStatic
-    @VadretApplicationScope
+    @CoreApplicationScope
     fun provideWeatherLruCache(): LruCache<Long, Weather> = LruCache(MEMORY_CACHE_SIZE)
 
     @Provides
     @JvmStatic
-    @VadretApplicationScope
+    @CoreApplicationScope
     fun provideAlertLruCache(): LruCache<Long, Alert> = LruCache(MEMORY_CACHE_SIZE)
+
+    @Provides
+    @JvmStatic
+    @CoreApplicationScope
+    fun provideRadarLruCache(): LruCache<Long, Radar> = LruCache(MEMORY_CACHE_SIZE)
 }

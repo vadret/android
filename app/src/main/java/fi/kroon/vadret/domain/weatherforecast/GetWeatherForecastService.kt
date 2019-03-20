@@ -10,8 +10,8 @@ import fi.kroon.vadret.data.nominatim.model.NominatimReverseOut
 import fi.kroon.vadret.data.weatherforecast.model.Weather
 import fi.kroon.vadret.data.weatherforecast.model.WeatherOut
 import fi.kroon.vadret.domain.BaseService
-import fi.kroon.vadret.presentation.weatherforecast.model.BaseWeatherForecastModel
 import fi.kroon.vadret.presentation.weatherforecast.WeatherForecastMapper
+import fi.kroon.vadret.presentation.weatherforecast.model.BaseWeatherForecastModel
 import fi.kroon.vadret.utils.FIVE_MINUTES_IN_MILLIS
 import fi.kroon.vadret.utils.extensions.asSingle
 import io.reactivex.Single
@@ -124,7 +124,7 @@ class GetWeatherForecastService @Inject constructor(
         }
 
     private fun doReverseNominatimLookup(either: Either<Failure, Data>): Single<Either<Failure, Data>> =
-        either.flatMapSingle { data ->
+        either.flatMapSingle { data: Data ->
             val nominatimReverseOut = NominatimReverseOut(
                 latitude = data.weatherOut!!.latitude,
                 longitude = data.weatherOut.longitude
@@ -165,7 +165,8 @@ class GetWeatherForecastService @Inject constructor(
                                     data.copy(weather = weather)
                                 }
                             }
-                    ).filter { result -> result.either(
+                    ).filter { result ->
+                        result.either(
                             {
                                 false
                             },

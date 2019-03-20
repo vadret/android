@@ -1,7 +1,7 @@
 package fi.kroon.vadret.data.aboutinfo.local
 
 import fi.kroon.vadret.R
-import fi.kroon.vadret.core.di.scope.VadretApplicationScope
+import fi.kroon.vadret.core.di.scope.CoreApplicationScope
 import fi.kroon.vadret.data.aboutinfo.model.AboutInfo
 import fi.kroon.vadret.data.exception.Failure
 import fi.kroon.vadret.data.functional.Either
@@ -10,7 +10,7 @@ import io.reactivex.Single
 import timber.log.Timber
 import javax.inject.Inject
 
-@VadretApplicationScope
+@CoreApplicationScope
 class AboutInfoLocalDataSource @Inject constructor() {
 
     operator fun invoke(): Single<Either<Failure, List<AboutInfo>>> = Single.fromCallable {

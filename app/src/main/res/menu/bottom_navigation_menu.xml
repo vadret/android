@@ -17,4 +17,9 @@
         android:icon="@drawable/wsymb2_radar"
         android:title="@string/radar" />
 
+    <item
+        android:id="@+id/settings"
+        android:icon="@drawable/wsymb2_settings"
+        android:title="@string/settings" />
+
 </menu>

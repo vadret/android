@@ -5,7 +5,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [1.0.0] -- 2019-03-31
+## [1.0.0] -- 2019-03-29
 
 ### Added
 - New app icon
@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Survive device rotation/process death
+- Landscape/Portrait mode
 
 ### Changed
 - App completely rewritten

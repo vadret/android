@@ -5,19 +5,19 @@ import android.location.LocationManager
 import dagger.Module
 import dagger.Provides
 import fi.kroon.vadret.data.location.local.LocationLocalDataSource
-import fi.kroon.vadret.core.di.scope.VadretApplicationScope
+import fi.kroon.vadret.core.di.scope.CoreApplicationScope
 
 @Module
 object LocationServiceModule {
 
     @Provides
     @JvmStatic
-    @VadretApplicationScope
+    @CoreApplicationScope
     fun provideLocationManager(context: Context): LocationManager =
         context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
 
     @Provides
     @JvmStatic
-    @VadretApplicationScope
+    @CoreApplicationScope
     fun provideLocationProvider(locationManager: LocationManager): LocationLocalDataSource = LocationLocalDataSource(locationManager)
 }

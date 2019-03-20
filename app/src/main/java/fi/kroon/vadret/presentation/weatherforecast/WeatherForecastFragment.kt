@@ -15,8 +15,7 @@ import fi.kroon.vadret.data.autocomplete.model.AutoCompleteItem
 import fi.kroon.vadret.presentation.BaseFragment
 import fi.kroon.vadret.presentation.weatherforecast.autocomplete.AutoCompleteAdapter
 import fi.kroon.vadret.presentation.weatherforecast.di.WeatherForecastComponent
-import fi.kroon.vadret.presentation.weatherforecast.di.WeatherForecastScope
-import fi.kroon.vadret.utils.Schedulers
+import fi.kroon.vadret.presentation.weatherforecast.di.WeatherForecastFeatureScope
 import fi.kroon.vadret.utils.extensions.appComponent
 import fi.kroon.vadret.utils.extensions.snack
 import fi.kroon.vadret.utils.extensions.toGone
@@ -36,15 +35,13 @@ import timber.log.Timber
 import javax.inject.Inject
 
 @RuntimePermissions
-@WeatherForecastScope
+@WeatherForecastFeatureScope
 class WeatherForecastFragment : BaseFragment() {
 
     companion object {
         const val STATE_PARCEL_KEY: String = "STATE_PARCEL_KEY"
-        const val RESTORABLE_SCROLL_POSITION_KEY: String = "RESTORABLE_SCROLL_POSITION_KEY"
+        const val SCROLL_POSITION_KEY: String = "SCROLL_POSITION_KEY"
     }
-
-    override fun layoutId(): Int = R.layout.weather_forecast_fragment
 
     @Inject
     lateinit var viewModel: WeatherForecastViewModel
@@ -60,12 +57,6 @@ class WeatherForecastFragment : BaseFragment() {
 
     @Inject
     lateinit var onLocationPermissionGrantedSubject: PublishSubject<WeatherForecastView.Event.OnLocationPermissionGranted>
-
-    @Inject
-    lateinit var onStartShimmerEffectSubject: PublishSubject<WeatherForecastView.Event.OnShimmerEffectStarted>
-
-    @Inject
-    lateinit var onShimmerEffectStoppedSubject: PublishSubject<WeatherForecastView.Event.OnShimmerEffectStopped>
 
     @Inject
     lateinit var onProgressBarEffectStartedSubject: PublishSubject<WeatherForecastView.Event.OnProgressBarEffectStarted>
@@ -98,12 +89,8 @@ class WeatherForecastFragment : BaseFragment() {
     lateinit var autoCompleteAdapter: AutoCompleteAdapter
 
     @Inject
-    lateinit var schedulers: Schedulers
-
-    @Inject
     lateinit var subscriptions: CompositeDisposable
 
-    private var isConfigChangeOrProcessDeath = false
     private var stateParcel: WeatherForecastView.StateParcel? = null
     private var bundle: Bundle? = null
     private var recyclerViewParcelable: Parcelable? = null
@@ -115,6 +102,8 @@ class WeatherForecastFragment : BaseFragment() {
     }
 
     // ---------------------------------------------------------------------------------------------
+
+    override fun layoutId(): Int = R.layout.weather_forecast_fragment
 
     override fun onAttach(context: Context) {
         Timber.d("-----BEGIN-----")
@@ -182,7 +171,7 @@ class WeatherForecastFragment : BaseFragment() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        Timber.d("ON SAVEINSTANCESTATE")
+        Timber.d("ON SAVE INSTANCE STATE")
         outState.apply {
             Timber.d("Saving instance: $stateParcel")
             Timber.d("-----END-----")
@@ -197,10 +186,10 @@ class WeatherForecastFragment : BaseFragment() {
              *
              */
             recyclerViewParcelable?.run {
-                putParcelable(RESTORABLE_SCROLL_POSITION_KEY, this)
+                putParcelable(SCROLL_POSITION_KEY, this)
             } ?: weatherForecastRecyclerView?.layoutManager?.run {
                 putParcelable(
-                    RESTORABLE_SCROLL_POSITION_KEY,
+                    SCROLL_POSITION_KEY,
                     (this as LinearLayoutManager)
                         .onSaveInstanceState()
                 )
@@ -243,6 +232,7 @@ class WeatherForecastFragment : BaseFragment() {
                     )
                     true
                 }
+
             Observable.mergeArray(
                 onViewInitialisedEventSubject
                     .toObservable(),
@@ -259,10 +249,6 @@ class WeatherForecastFragment : BaseFragment() {
                 onScrollPositionRestoredSubject
                     .toObservable(),
                 onFailureHandledSubject
-                    .toObservable(),
-                onStartShimmerEffectSubject
-                    .toObservable(),
-                onShimmerEffectStoppedSubject
                     .toObservable(),
                 onProgressBarEffectStartedSubject
                     .toObservable(),
@@ -335,9 +321,7 @@ class WeatherForecastFragment : BaseFragment() {
         when (viewState.renderEvent) {
             WeatherForecastView.RenderEvent.None -> Unit
             WeatherForecastView.RenderEvent.RequestLocationPermission -> onRequestLocationPermission()
-            WeatherForecastView.RenderEvent.StartShimmerEffect -> startShimmerEffect()
             WeatherForecastView.RenderEvent.StartProgressBarEffect -> startProgressBarEffect()
-            WeatherForecastView.RenderEvent.StopShimmerEffect -> stopShimmerEffect()
             WeatherForecastView.RenderEvent.StopProgressBarEffect -> stopProgressBarEffect()
             WeatherForecastView.RenderEvent.EnableSearchView -> enableSearchView()
             WeatherForecastView.RenderEvent.RestoreScrollPosition -> restoreScrollPosition()
@@ -347,21 +331,6 @@ class WeatherForecastFragment : BaseFragment() {
             is WeatherForecastView.RenderEvent.DisplayError -> renderError(viewState.renderEvent.errorCode)
             WeatherForecastView.RenderEvent.UpdateStateParcel -> updateStateParcel(viewState)
         }
-
-    private fun startShimmerEffect() {
-        Timber.d("startShimmerEffect")
-
-        weatherForecastShimmerEffect.apply {
-            startShimmer()
-            toVisible()
-        }
-
-        onStartShimmerEffectSubject.onNext(
-            WeatherForecastView
-                .Event
-                .OnShimmerEffectStarted
-        )
-    }
 
     private fun startProgressBarEffect() {
         Timber.d("startProgressBarEffect")
@@ -374,21 +343,6 @@ class WeatherForecastFragment : BaseFragment() {
             WeatherForecastView
                 .Event
                 .OnProgressBarEffectStarted
-        )
-    }
-
-    private fun stopShimmerEffect() {
-        Timber.d("stopShimmerEffect")
-
-        weatherForecastShimmerEffect.apply {
-            stopShimmer()
-            toGone()
-        }
-
-        onShimmerEffectStoppedSubject.onNext(
-            WeatherForecastView
-                .Event
-                .OnShimmerEffectStopped
         )
     }
 
@@ -422,7 +376,7 @@ class WeatherForecastFragment : BaseFragment() {
         bundle?.run {
             (weatherForecastRecyclerView.layoutManager as LinearLayoutManager)
                 .onRestoreInstanceState(
-                    getParcelable(RESTORABLE_SCROLL_POSITION_KEY)
+                    getParcelable(SCROLL_POSITION_KEY)
                 )
         }
 
@@ -438,9 +392,7 @@ class WeatherForecastFragment : BaseFragment() {
             searchText = state.searchText,
             isSearchToggled = state.isSearchToggled,
             forceNet = state.forceNet,
-            startLoading = state.startLoading,
             startRefreshing = state.startRefreshing,
-            stopLoading = state.stopLoading,
             stopRefreshing = state.stopRefreshing,
             timeStamp = state.timeStamp
         )
@@ -477,11 +429,6 @@ class WeatherForecastFragment : BaseFragment() {
         )
     }
 
-    /**
-     *  FIXME
-     *  should only do one thing here
-     *  it should be 2 events Roman Shuldby
-     */
     private fun enableSearchView() {
         autoCompleteAdapter.clearList()
 
@@ -508,7 +455,7 @@ class WeatherForecastFragment : BaseFragment() {
     private fun displayWeatherForecast(renderEvent: WeatherForecastView.RenderEvent.DisplayWeatherForecast) {
         Timber.d("Rendering weather forecast data")
         weatherForecastAdapter.updateList(renderEvent.list)
-        displayActionBarLocalityName(renderEvent.locality)
+        setActionBarLocalityName(renderEvent.locality)
 
         onWeatherListDisplayedSubject.onNext(
             WeatherForecastView

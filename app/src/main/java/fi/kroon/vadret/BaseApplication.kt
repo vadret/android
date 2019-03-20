@@ -4,8 +4,8 @@ import android.app.Application
 import android.content.Context
 import com.jakewharton.threetenabp.AndroidThreeTen
 import com.squareup.leakcanary.LeakCanary
-import fi.kroon.vadret.core.di.component.DaggerVadretApplicationComponent
-import fi.kroon.vadret.core.di.component.VadretApplicationComponent
+import fi.kroon.vadret.core.di.component.DaggerCoreApplicationComponent
+import fi.kroon.vadret.core.di.component.CoreApplicationComponent
 import fi.kroon.vadret.core.di.modules.ContextModule
 import timber.log.Timber
 
@@ -13,12 +13,12 @@ abstract class BaseApplication : Application() {
 
     companion object {
         @JvmStatic
-        fun appComponent(context: Context) =
+        fun appComponent(context: Context): CoreApplicationComponent =
             (context.applicationContext as BaseApplication).cmp
     }
 
-    val cmp: VadretApplicationComponent by lazy(LazyThreadSafetyMode.NONE) {
-        DaggerVadretApplicationComponent
+    val cmp: CoreApplicationComponent by lazy(LazyThreadSafetyMode.NONE) {
+        DaggerCoreApplicationComponent
             .builder()
             .contextModule(ContextModule(this))
             .build()

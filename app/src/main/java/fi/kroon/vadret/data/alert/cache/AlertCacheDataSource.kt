@@ -4,7 +4,7 @@ import androidx.collection.LruCache
 import fi.kroon.vadret.data.alert.model.Alert
 import fi.kroon.vadret.data.exception.Failure
 import fi.kroon.vadret.data.functional.Either
-import fi.kroon.vadret.utils.DEFAULT_ALERT_CACHE_KEY
+import fi.kroon.vadret.utils.ALERT_CACHE_KEY
 import fi.kroon.vadret.utils.extensions.asLeft
 import fi.kroon.vadret.utils.extensions.asRight
 import io.reactivex.Single
@@ -12,7 +12,7 @@ import timber.log.Timber
 import javax.inject.Inject
 
 class AlertCacheDataSource @Inject constructor(
-    private val diskCache: AlertDiskCache,
+    private val diskCache: AlertDiskCacheImpl,
     private val memoryCache: LruCache<Long, Alert>
 ) {
 
@@ -20,7 +20,7 @@ class AlertCacheDataSource @Inject constructor(
         Single.fromCallable {
             memoryCache
                 .snapshot()
-                .getValue(DEFAULT_ALERT_CACHE_KEY)
+                .getValue(ALERT_CACHE_KEY)
                 .asRight() as Either<Failure, Alert>
         }.onErrorReturn {
             Failure
@@ -33,7 +33,7 @@ class AlertCacheDataSource @Inject constructor(
             .read()
 
     fun updateMemoryCache(alert: Alert): Single<Either<Failure, Alert>> {
-        memoryCache.put(DEFAULT_ALERT_CACHE_KEY, alert)
+        memoryCache.put(ALERT_CACHE_KEY, alert)
         return Single.just(
             alert.asRight() as Either<Failure, Alert>
         ).onErrorReturn {

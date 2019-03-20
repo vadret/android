@@ -12,101 +12,89 @@ object WeatherForecastModule {
 
     @Provides
     @JvmStatic
-    @WeatherForecastScope
+    @WeatherForecastFeatureScope
     fun provideOnStateParcelUpdated(): PublishSubject<WeatherForecastView.Event.OnStateParcelUpdated> =
         PublishSubject.create()
 
     @Provides
     @JvmStatic
-    @WeatherForecastScope
+    @WeatherForecastFeatureScope
     fun provideOnScrollPositionRestoredSubject(): PublishSubject<WeatherForecastView.Event.OnScrollPositionRestored> =
         PublishSubject.create()
 
     @Provides
     @JvmStatic
-    @WeatherForecastScope
+    @WeatherForecastFeatureScope
     fun provideOnWeatherListVisibleSubject(): PublishSubject<WeatherForecastView.Event.OnWeatherListDisplayed> =
         PublishSubject.create()
 
     @Provides
     @JvmStatic
-    @WeatherForecastScope
-    fun provideOnPreLoadWeatherForecastSubject(): PublishSubject<WeatherForecastView.Event.OnShimmerEffectStarted> =
-        PublishSubject.create()
-
-    @Provides
-    @JvmStatic
-    @WeatherForecastScope
+    @WeatherForecastFeatureScope
     fun provideOnPostLoadWeatherForecastSubject(): PublishSubject<WeatherForecastView.Event.OnProgressBarEffectStarted> =
         PublishSubject.create()
 
     @Provides
     @JvmStatic
-    @WeatherForecastScope
-    fun provideOnStopShimmerEffectSubject(): PublishSubject<WeatherForecastView.Event.OnShimmerEffectStopped> =
-        PublishSubject.create()
-
-    @Provides
-    @JvmStatic
-    @WeatherForecastScope
+    @WeatherForecastFeatureScope
     fun provideOnStopProgressBarEffectSubject(): PublishSubject<WeatherForecastView.Event.OnProgressBarEffectStopped> =
         PublishSubject.create()
 
     @Provides
     @JvmStatic
-    @WeatherForecastScope
+    @WeatherForecastFeatureScope
     fun provideOnFailurePropagatedSubject(): PublishSubject<WeatherForecastView.Event.OnFailureHandled> =
         PublishSubject.create()
 
     @Provides
     @JvmStatic
-    @WeatherForecastScope
+    @WeatherForecastFeatureScope
     fun onLocationPermissionDeniedNeverAskAgainSubject(): PublishSubject<WeatherForecastView.Event.OnLocationPermissionDeniedNeverAskAgain> =
         PublishSubject.create()
 
     @Provides
     @JvmStatic
-    @WeatherForecastScope
+    @WeatherForecastFeatureScope
     fun provideOnSearchViewDismissedSubject(): PublishSubject<WeatherForecastView.Event.OnSearchViewDismissed> =
         PublishSubject.create()
 
     @Provides
     @JvmStatic
-    @WeatherForecastScope
+    @WeatherForecastFeatureScope
     fun provideAutoCompleteClickSubject(): PublishSubject<AutoCompleteItem> =
         PublishSubject.create()
 
     @Provides
     @JvmStatic
-    @WeatherForecastScope
+    @WeatherForecastFeatureScope
     fun provideViewState(): WeatherForecastView.State = WeatherForecastView.State()
 
     @Provides
     @JvmStatic
-    @WeatherForecastScope
+    @WeatherForecastFeatureScope
     fun provideOnAutoCompleteItemClickedSubject(): PublishSubject<WeatherForecastView.Event.OnAutoCompleteItemClicked> =
         PublishSubject.create()
 
     @Provides
     @JvmStatic
-    @WeatherForecastScope
+    @WeatherForecastFeatureScope
     fun provideOnInitEventSubject(): PublishSubject<WeatherForecastView.Event.OnViewInitialised> =
         PublishSubject.create()
 
     @Provides
     @JvmStatic
-    @WeatherForecastScope
+    @WeatherForecastFeatureScope
     fun provideOnLocationPermissionDeniedEventSubject(): PublishSubject<WeatherForecastView.Event.OnLocationPermissionDenied> =
         PublishSubject.create()
 
     @Provides
     @JvmStatic
-    @WeatherForecastScope
+    @WeatherForecastFeatureScope
     fun provideOnLocationPermissionGrantedEventSubject(): PublishSubject<WeatherForecastView.Event.OnLocationPermissionGranted> =
         PublishSubject.create()
 
     @Provides
     @JvmStatic
-    @WeatherForecastScope
+    @WeatherForecastFeatureScope
     fun provideCompositeDisposable(): CompositeDisposable = CompositeDisposable()
 }

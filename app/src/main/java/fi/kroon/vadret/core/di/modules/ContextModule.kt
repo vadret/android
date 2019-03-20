@@ -4,12 +4,12 @@ import android.app.Application
 import android.content.Context
 import dagger.Module
 import dagger.Provides
-import fi.kroon.vadret.core.di.scope.VadretApplicationScope
+import fi.kroon.vadret.core.di.scope.CoreApplicationScope
 
 @Module
 class ContextModule(private val application: Application) {
 
     @Provides
-    @VadretApplicationScope
+    @CoreApplicationScope
     fun provideContext(): Context = application
 }

@@ -10,8 +10,6 @@ object AlertView {
     sealed class Event {
         class OnViewInitialised(val stateParcel: StateParcel?) : Event()
         object OnFailureHandled : Event()
-        object OnShimmerEffectStarted : Event()
-        object OnShimmerEffectStopped : Event()
         object OnProgressBarEffectStarted : Event()
         object OnProgressBarEffectStopped : Event()
         object OnSwipedToRefresh : Event()
@@ -24,9 +22,7 @@ object AlertView {
         val forceNet: Boolean = false,
         val isInitialised: Boolean = false,
         val renderEvent: RenderEvent = RenderEvent.None,
-        val startLoading: Boolean = false,
         val startRefreshing: Boolean = false,
-        val stopLoading: Boolean = false,
         val stopRefreshing: Boolean = false,
         val timeStamp: Long? = null,
         val wasRestoredFromStateParcel: Boolean = false
@@ -34,9 +30,7 @@ object AlertView {
 
     sealed class RenderEvent {
         object None : RenderEvent()
-        object StartShimmerEffect : RenderEvent()
         object StartProgressBarEffect : RenderEvent()
-        object StopShimmerEffect : RenderEvent()
         object StopProgressBarEffect : RenderEvent()
         object UpdateStateParcel : RenderEvent()
         object RestoreScrollPosition : RenderEvent()
@@ -47,9 +41,7 @@ object AlertView {
     @Parcelize
     data class StateParcel(
         val forceNet: Boolean,
-        val startLoading: Boolean,
         val startRefreshing: Boolean,
-        val stopLoading: Boolean,
         val stopRefreshing: Boolean,
         val timeStamp: Long? = null
     ) : Parcelable

@@ -27,61 +27,6 @@
             android:visibility="gone" />
     </FrameLayout>
 
-    <com.facebook.shimmer.ShimmerFrameLayout
-        android:id="@+id/weatherForecastShimmerEffect"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="28dp"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:shimmer_auto_start="false">
-
-        <!-- This is placeholder data -->
-        <androidx.appcompat.widget.LinearLayoutCompat
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <!-- TODO -->
-            <!-- <include layout="splash-item-layout">-->
-
-            <include layout="@layout/weather_forecast_date_placeholder_item" />
-
-            <include layout="@layout/weather_forecast_placeholder_item" />
-
-            <include layout="@layout/weather_forecast_placeholder_item" />
-
-            <include layout="@layout/weather_forecast_placeholder_item" />
-
-            <include layout="@layout/weather_forecast_placeholder_item" />
-
-            <include layout="@layout/weather_forecast_placeholder_item" />
-
-            <include layout="@layout/weather_forecast_placeholder_item" />
-
-            <include layout="@layout/weather_forecast_placeholder_item" />
-
-            <include layout="@layout/weather_forecast_placeholder_item" />
-
-            <include layout="@layout/weather_forecast_placeholder_item" />
-
-            <include layout="@layout/weather_forecast_placeholder_item" />
-
-            <include layout="@layout/weather_forecast_placeholder_item" />
-
-            <include layout="@layout/weather_forecast_placeholder_item" />
-
-            <include layout="@layout/weather_forecast_placeholder_item" />
-
-            <include layout="@layout/weather_forecast_placeholder_item" />
-
-            <include layout="@layout/weather_forecast_placeholder_item" />
-        </androidx.appcompat.widget.LinearLayoutCompat>
-    </com.facebook.shimmer.ShimmerFrameLayout>
-
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/weatherForecastRefresh"
         android:layout_width="match_parent"

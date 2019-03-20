@@ -1,18 +1,15 @@
 package fi.kroon.vadret.presentation.aboutapp.library
 
-import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import fi.kroon.vadret.R
 import fi.kroon.vadret.data.library.model.Library
+import fi.kroon.vadret.presentation.BaseFragment
 import fi.kroon.vadret.presentation.MainActivity
 import fi.kroon.vadret.presentation.aboutapp.AboutAppFragment
+import fi.kroon.vadret.presentation.aboutapp.di.AboutAppFeatureScope
 import fi.kroon.vadret.utils.extensions.toObservable
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
@@ -23,7 +20,12 @@ import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Named
 
-class AboutAppLibraryFragment : Fragment() {
+@AboutAppFeatureScope
+class AboutAppLibraryFragment : BaseFragment() {
+
+    companion object {
+        fun newInstance(): AboutAppLibraryFragment = AboutAppLibraryFragment()
+    }
 
     @Inject
     lateinit var onInitEventSubject: PublishSubject<AboutAppLibraryView.Event.OnInit>
@@ -46,35 +48,30 @@ class AboutAppLibraryFragment : Fragment() {
     @Inject
     lateinit var libraryAdapter: AboutAppLibraryAdapter
 
-    @Inject
-    lateinit var subscriptions: CompositeDisposable
+    /**
+     *  [subscriptions] field is manually instantiated because it breaks
+     *  the scope otherwise due to the navigation workaround mentioned
+     *  in [MainActivity].
+     */
+    private val subscriptions: CompositeDisposable = CompositeDisposable()
 
-    companion object {
-        fun newInstance(): AboutAppLibraryFragment = AboutAppLibraryFragment()
-    }
-
-    override fun onAttach(context: Context) {
-        (requireActivity() as MainActivity)
-            .getFragmentByClassName<AboutAppFragment>(AboutAppFragment::class.java.name)
-            .component
-            .inject(this)
-
-        super.onAttach(context)
-    }
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? = inflater.inflate(R.layout.about_app_library_fragment, container, false)
+    override fun layoutId(): Int = R.layout.about_app_library_fragment
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+        (requireActivity() as MainActivity)
+            .getFragmentByClassName<AboutAppFragment>(AboutAppFragment::class.java.name)
+            .cmp
+            .inject(this)
         setup()
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onDestroyView() {
+        super.onDestroyView()
+        Timber.d("ON DESTROY VIEW")
+        aboutAppLibraryRecyclerView.apply {
+            adapter = null
+        }
         subscriptions.clear()
     }
 
@@ -97,31 +94,41 @@ class AboutAppLibraryFragment : Fragment() {
             onOnProjectUrlClickSubject
                 .toObservable()
                 .map { entity: Library ->
-                    AboutAppLibraryView.Event
+                    AboutAppLibraryView
+                        .Event
                         .OnProjectUrlClick(entity)
                 },
             onSourceUrlClickSubject
                 .toObservable()
                 .map { entity: Library ->
-                    AboutAppLibraryView.Event
+                    AboutAppLibraryView
+                        .Event
                         .OnSourceUrlClick(entity)
                 },
             onLicenseUrlClickSubject
                 .toObservable()
                 .map { entity: Library ->
-                    AboutAppLibraryView.Event
+                    AboutAppLibraryView
+                        .Event
                         .OnLicenseUrlClick(entity)
                 }
+        ).observeOn(
+            schedulers.io()
         ).compose(
             viewModel()
+        ).observeOn(
+            schedulers.ui()
         ).subscribe(
             ::render
         ).addTo(
             subscriptions
         )
+
         onInitEventSubject
             .onNext(
-                AboutAppLibraryView.Event.OnInit
+                AboutAppLibraryView
+                    .Event
+                    .OnInit
             )
     }
 
@@ -145,4 +152,6 @@ class AboutAppLibraryFragment : Fragment() {
         val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
         requireActivity().startActivity(browserIntent)
     }
+
+    override fun renderError(errorCode: Int) {}
 }

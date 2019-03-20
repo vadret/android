@@ -4,7 +4,6 @@ import fi.kroon.vadret.BaseUnitTest
 import fi.kroon.vadret.data.functional.Either
 import fi.kroon.vadret.data.exception.Failure
 import fi.kroon.vadret.data.weatherforecast.exception.WeatherForecastFailure
-import fi.kroon.vadret.data.weatherforecast.local.WeatherForecastLocalKeyValueDataSource
 import fi.kroon.vadret.data.weatherforecast.net.WeatherForecastNetDataSource
 import fi.kroon.vadret.data.weatherforecast.model.Weather
 import fi.kroon.vadret.data.weatherforecast.model.WeatherOut
@@ -35,9 +34,6 @@ class WeatherForecastRepositoryTest : BaseUnitTest() {
     private lateinit var mockWeatherForecastNetDataSource: WeatherForecastNetDataSource
 
     @Mock
-    private lateinit var mockWeatherForecastLocalKeyValueDataSource: WeatherForecastLocalKeyValueDataSource
-
-    @Mock
     private lateinit var mockNetworkHandler: NetworkHandler
 
     @Mock
@@ -57,7 +53,6 @@ class WeatherForecastRepositoryTest : BaseUnitTest() {
     fun setup() {
         testWeatherForecastRepository = WeatherForecastRepository(
             mockWeatherForecastNetDataSource,
-            mockWeatherForecastLocalKeyValueDataSource,
             mockNetworkHandler
         )
     }

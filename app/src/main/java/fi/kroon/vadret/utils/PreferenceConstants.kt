@@ -1,8 +1,0 @@
-package fi.kroon.vadret.utils
-
-const val AUTOMATIC_LOCATION_MODE_KEY = "AUTOMATIC_LOCATION_MODE"
-const val COUNTY_KEY = "COUNTY"
-const val MUNICIPALITY_KEY = "MUNICIPALITY"
-const val LOCALITY_KEY = "LOCALITY"
-const val LATITUDE_KEY = "LATITUDE"
-const val LONGITUDE_KEY = "LONGITUDE"

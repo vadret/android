@@ -8,7 +8,7 @@ import fi.kroon.vadret.presentation.alert.AlertFragment
         AlertModule::class
     ]
 )
-@AlertScope
+@AlertFeatureScope
 interface AlertComponent {
 
     fun inject(alertFragment: AlertFragment)

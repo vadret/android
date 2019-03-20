@@ -8,7 +8,7 @@ import fi.kroon.vadret.presentation.weatherforecast.WeatherForecastFragment
         WeatherForecastModule::class
     ]
 )
-@WeatherForecastScope
+@WeatherForecastFeatureScope
 interface WeatherForecastComponent {
 
     fun inject(weatherForecastFragment: WeatherForecastFragment)

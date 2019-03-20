@@ -159,13 +159,13 @@ dependencies {
     def OSMDROID_VERSION = "6.0.3"
     def PERMISSIONS_DISPATCHER_VERSION = "4.1.0"
     def PICASSO_VERSION = "2.71828"
+    def PREFERENCE_VERSION = "1.1.0-alpha04"
     def RETROFIT_VERSION = "2.5.0"
     def RXANDROID_VERSION = "2.1.0"
     def RXBINDING_VERSION = "3.0.0-alpha2"
     def RXJAVA_VERSION = "2.2.6"
     def RXKOTLIN_VERSION = "2.3.0"
-    def RXKPREFS_VERSION = "1.2.2"
-    def SHIMMER_VERSION = "0.4.0"
+    def RXK_PREFS_VERSION = "1.2.2"
     def THREETEN_ABP_VERSION = "1.1.1"
     def THREETEN_BP_VERSION = "1.3.8"
     def TIMBER_VERSION = "4.7.1"
@@ -181,7 +181,7 @@ dependencies {
     implementation "androidx.legacy:legacy-support-v4:${KTX_VERSION}"
     implementation "androidx.navigation:navigation-fragment-ktx:${NAVIGATION_VERSION}"
     implementation "androidx.navigation:navigation-ui-ktx:${NAVIGATION_VERSION}"
-    implementation "androidx.preference:preference:${KTX_VERSION}"
+    implementation "androidx.preference:preference:${PREFERENCE_VERSION}"
     implementation "com.google.android.material:material:${MATERIAL_VERSION}"
 
     // Reactive
@@ -213,8 +213,7 @@ dependencies {
     kapt "com.google.dagger:dagger-compiler:${DAGGER_VERSION}"
 
     // Miscellaneous
-    implementation "com.afollestad:rxkprefs:${RXKPREFS_VERSION}"
-    implementation "com.facebook.shimmer:shimmer:${SHIMMER_VERSION}"
+    implementation "com.afollestad:rxkprefs:${RXK_PREFS_VERSION}"
     implementation "com.github.hotchemi:permissionsdispatcher:${PERMISSIONS_DISPATCHER_VERSION}"
     implementation "com.squareup.picasso:picasso:${PICASSO_VERSION}"
     implementation "org.apache.commons:commons-csv:${COMMONS_CSV_VERSION}"

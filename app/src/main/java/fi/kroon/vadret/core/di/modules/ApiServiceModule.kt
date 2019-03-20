@@ -6,12 +6,12 @@ import dagger.Provides
 import fi.kroon.vadret.data.alert.net.AlertNetDataSource
 import fi.kroon.vadret.data.common.SingleToArrayAdapter
 import fi.kroon.vadret.data.nominatim.net.NominatimNetDataSource
-import fi.kroon.vadret.data.radar.net.RadarApi
+import fi.kroon.vadret.data.radar.net.RadarNetDataSource
 import fi.kroon.vadret.data.weatherforecast.net.WeatherForecastNetDataSource
 import fi.kroon.vadret.core.di.qualifiers.Nominatim
 import fi.kroon.vadret.core.di.qualifiers.Radar
 import fi.kroon.vadret.core.di.qualifiers.Weather
-import fi.kroon.vadret.core.di.scope.VadretApplicationScope
+import fi.kroon.vadret.core.di.scope.CoreApplicationScope
 import fi.kroon.vadret.utils.NOMINATIM_BASE_API_URL
 import fi.kroon.vadret.utils.SMHI_API_FORECAST_URL
 import fi.kroon.vadret.utils.SMHI_API_RADAR_URL
@@ -25,27 +25,31 @@ object ApiServiceModule {
 
     @Provides
     @JvmStatic
-    @VadretApplicationScope
-    fun provideWeatherApi(@Weather retrofit: Retrofit) = retrofit.create(WeatherForecastNetDataSource::class.java)
+    @CoreApplicationScope
+    fun provideWeatherApi(@Weather retrofit: Retrofit): WeatherForecastNetDataSource =
+        retrofit.create(WeatherForecastNetDataSource::class.java)
 
     @Provides
     @JvmStatic
-    @VadretApplicationScope
-    fun provideRadarApi(@Radar retrofit: Retrofit) = retrofit.create(RadarApi::class.java)
+    @CoreApplicationScope
+    fun provideRadarApi(@Radar retrofit: Retrofit): RadarNetDataSource =
+        retrofit.create(RadarNetDataSource::class.java)
 
     @Provides
     @JvmStatic
-    @VadretApplicationScope
-    fun provideAlertApi(@Weather retrofit: Retrofit) = retrofit.create(AlertNetDataSource::class.java)
+    @CoreApplicationScope
+    fun provideAlertApi(@Weather retrofit: Retrofit): AlertNetDataSource =
+        retrofit.create(AlertNetDataSource::class.java)
 
     @Provides
     @JvmStatic
-    @VadretApplicationScope
-    fun provideNominatimApi(@Nominatim retrofit: Retrofit) = retrofit.create(NominatimNetDataSource::class.java)
+    @CoreApplicationScope
+    fun provideNominatimApi(@Nominatim retrofit: Retrofit): NominatimNetDataSource =
+        retrofit.create(NominatimNetDataSource::class.java)
 
     @Provides
     @JvmStatic
-    @VadretApplicationScope
+    @CoreApplicationScope
     fun provideMoshi(): Moshi = Moshi
         .Builder()
         .add(SingleToArrayAdapter.INSTANCE)
@@ -54,7 +58,7 @@ object ApiServiceModule {
     @Nominatim
     @Provides
     @JvmStatic
-    @VadretApplicationScope
+    @CoreApplicationScope
     fun provideRetrofitNominatim(okHttpClient: OkHttpClient, moshi: Moshi): Retrofit {
         return Retrofit.Builder()
             .baseUrl(NOMINATIM_BASE_API_URL)
@@ -67,7 +71,7 @@ object ApiServiceModule {
     @Weather
     @Provides
     @JvmStatic
-    @VadretApplicationScope
+    @CoreApplicationScope
     fun provideRetrofitWeather(okHttpClient: OkHttpClient, moshi: Moshi): Retrofit {
         return Retrofit.Builder()
             .baseUrl(SMHI_API_FORECAST_URL)
@@ -80,7 +84,7 @@ object ApiServiceModule {
     @Radar
     @Provides
     @JvmStatic
-    @VadretApplicationScope
+    @CoreApplicationScope
     fun provideRetrofitRadar(okHttpClient: OkHttpClient, moshi: Moshi): Retrofit {
         return Retrofit.Builder()
             .baseUrl(SMHI_API_RADAR_URL)

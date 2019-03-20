@@ -1,6 +1,7 @@
 package fi.kroon.vadret.data.radar.model
 
 import com.squareup.moshi.Json
+import java.io.Serializable
 
 data class Radar(
 
@@ -18,4 +19,4 @@ data class Radar(
 
     @Json(name = "files")
     val files: List<File>
-)
+) : Serializable

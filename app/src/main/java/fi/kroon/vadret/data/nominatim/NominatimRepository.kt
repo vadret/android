@@ -1,6 +1,6 @@
 package fi.kroon.vadret.data.nominatim
 
-import fi.kroon.vadret.core.di.scope.VadretApplicationScope
+import fi.kroon.vadret.core.di.scope.CoreApplicationScope
 import fi.kroon.vadret.data.exception.Failure
 import fi.kroon.vadret.data.functional.Either
 import fi.kroon.vadret.data.nominatim.exception.NominatimFailure
@@ -17,7 +17,7 @@ import retrofit2.Response
 import timber.log.Timber
 import javax.inject.Inject
 
-@VadretApplicationScope
+@CoreApplicationScope
 class NominatimRepository @Inject constructor(
     private val nominatimNetDataSource: NominatimNetDataSource,
     private val networkHandler: NetworkHandler

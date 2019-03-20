@@ -1,29 +1,27 @@
 package fi.kroon.vadret.presentation.aboutapp.about
 
-import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import fi.kroon.vadret.R
 import fi.kroon.vadret.data.aboutinfo.model.AboutInfo
+import fi.kroon.vadret.presentation.BaseFragment
 import fi.kroon.vadret.presentation.MainActivity
 import fi.kroon.vadret.presentation.aboutapp.AboutAppFragment
+import fi.kroon.vadret.presentation.aboutapp.di.AboutAppFeatureScope
+import fi.kroon.vadret.utils.extensions.snack
 import fi.kroon.vadret.utils.extensions.toObservable
 import io.reactivex.Observable
-import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
-import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.about_app_about_fragment.*
+import timber.log.Timber
 import javax.inject.Inject
 
-class AboutAppAboutFragment : Fragment() {
+@AboutAppFeatureScope
+class AboutAppAboutFragment : BaseFragment() {
 
     @Inject
     lateinit var onInitEventSubject: PublishSubject<AboutAppAboutView.Event.OnInit>
@@ -44,29 +42,28 @@ class AboutAppAboutFragment : Fragment() {
         fun newInstance(): AboutAppAboutFragment = AboutAppAboutFragment()
     }
 
-    override fun onAttach(context: Context) {
-        (requireActivity() as MainActivity)
-            .getFragmentByClassName<AboutAppFragment>(AboutAppFragment::class.java.name)
-            .component
-            .inject(this)
+    override fun layoutId(): Int = R.layout.about_app_about_fragment
 
-        super.onAttach(context)
+    override fun renderError(errorCode: Int) {
+        Timber.e("Rendering error code: ${getString(errorCode)}")
+        snack(errorCode)
     }
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? = inflater
-        .inflate(R.layout.about_app_about_fragment, container, false)
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+        (requireActivity() as MainActivity)
+            .getFragmentByClassName<AboutAppFragment>(AboutAppFragment::class.java.name)
+            .cmp
+            .inject(this)
         setup()
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onDestroyView() {
+        super.onDestroyView()
+        Timber.d("ON DESTROY VIEW")
+        aboutAppAboutInfoTextRecyclerView.apply {
+            adapter = null
+        }
         subscriptions.clear()
     }
 
@@ -93,13 +90,15 @@ class AboutAppAboutFragment : Fragment() {
                         .Event
                         .OnItemClick(entity)
                 }
-        ).observeOn(Schedulers.io())
-            .compose(
-                viewModel()
-            ).observeOn(AndroidSchedulers.mainThread())
-            .subscribe(
-                ::render
-            ).addTo(subscriptions)
+        ).observeOn(
+            schedulers.io()
+        ).compose(
+            viewModel()
+        ).observeOn(
+            schedulers.ui()
+        ).subscribe(
+            ::render
+        ).addTo(subscriptions)
 
         onInitEventSubject
             .onNext(

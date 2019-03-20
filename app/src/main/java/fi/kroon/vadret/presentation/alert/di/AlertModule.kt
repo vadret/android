@@ -11,73 +11,61 @@ object AlertModule {
 
     @Provides
     @JvmStatic
-    @AlertScope
+    @AlertFeatureScope
     fun provideOnViewInitialised(): PublishSubject<AlertView.Event.OnViewInitialised> =
         PublishSubject.create()
 
     @Provides
     @JvmStatic
-    @AlertScope
+    @AlertFeatureScope
     fun provideOnFailureHandled(): PublishSubject<AlertView.Event.OnFailureHandled> =
         PublishSubject.create()
 
     @Provides
     @JvmStatic
-    @AlertScope
-    fun provideOnShimmerEffectStarted(): PublishSubject<AlertView.Event.OnShimmerEffectStarted> =
-        PublishSubject.create()
-
-    @Provides
-    @JvmStatic
-    @AlertScope
-    fun provideOnShimmerEffectStopped(): PublishSubject<AlertView.Event.OnShimmerEffectStopped> =
-        PublishSubject.create()
-
-    @Provides
-    @JvmStatic
-    @AlertScope
+    @AlertFeatureScope
     fun provideOnProgressBarEffectStarted(): PublishSubject<AlertView.Event.OnProgressBarEffectStarted> =
         PublishSubject.create()
 
     @Provides
     @JvmStatic
-    @AlertScope
+    @AlertFeatureScope
     fun provideOnProgressBarEffectStopped(): PublishSubject<AlertView.Event.OnProgressBarEffectStopped> =
         PublishSubject.create()
 
     @Provides
     @JvmStatic
-    @AlertScope
+    @AlertFeatureScope
     fun provideOnSwipedToRefresh(): PublishSubject<AlertView.Event.OnSwipedToRefresh> =
         PublishSubject.create()
 
     @Provides
     @JvmStatic
-    @AlertScope
+    @AlertFeatureScope
     fun provideOnAlertListDisplayed(): PublishSubject<AlertView.Event.OnAlertListDisplayed> =
         PublishSubject.create()
 
     @Provides
     @JvmStatic
-    @AlertScope
+    @AlertFeatureScope
     fun provideOnScrollPositionRestored(): PublishSubject<AlertView.Event.OnScrollPositionRestored> =
         PublishSubject.create()
 
     @Provides
     @JvmStatic
-    @AlertScope
+    @AlertFeatureScope
     fun provideOnStateParcelUpdated(): PublishSubject<AlertView.Event.OnStateParcelUpdated> =
         PublishSubject.create()
 
     @Provides
     @JvmStatic
-    @AlertScope
+    @AlertFeatureScope
     fun provideViewState(): AlertView.State =
         AlertView.State()
 
     @Provides
     @JvmStatic
-    @AlertScope
+    @AlertFeatureScope
     fun provideCompositeDisposable(): CompositeDisposable =
         CompositeDisposable()
 }
