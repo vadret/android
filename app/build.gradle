@@ -162,7 +162,7 @@ dependencies {
     def RETROFIT_VERSION = "2.5.0"
     def RXANDROID_VERSION = "2.1.1"
     def RXBINDING_VERSION = "3.0.0-alpha2"
-    def RXJAVA_VERSION = "2.2.6"
+    def RXJAVA_VERSION = "2.2.8"
     def RXKOTLIN_VERSION = "2.3.0"
     def RXK_PREFS_VERSION = "1.2.5"
     def THREETEN_ABP_VERSION = "1.2.0"
