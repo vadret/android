@@ -42,6 +42,7 @@ import org.osmdroid.config.IConfigurationProvider
 import org.osmdroid.tileprovider.tilesource.XYTileSource
 import org.osmdroid.util.BoundingBox
 import org.osmdroid.util.GeoPoint
+import org.osmdroid.views.CustomZoomButtonsController
 import org.osmdroid.views.overlay.GroundOverlay2
 import org.threeten.bp.OffsetDateTime
 import org.threeten.bp.format.DateTimeFormatter
@@ -213,7 +214,7 @@ class RadarFragment : BaseFragment() {
             setTileSource(defaultTileSource)
             isTilesScaledToDpi = true
             setMultiTouchControls(true)
-            setBuiltInZoomControls(false)
+            zoomController.setVisibility(CustomZoomButtonsController.Visibility.NEVER)
             maxZoomLevel = MAXIMUM_ZOOM_LEVEL
             minZoomLevel = MINIMUM_ZOOM_LEVEL
             controller.setCenter(

@@ -155,7 +155,7 @@ dependencies {
     def NAVIGATION_VERSION = "2.0.0"
     def OKHTTP_VERSION = "3.14.0"
     def OKIO_VERSION = "2.2.2"
-    def OSMDROID_VERSION = "6.0.3"
+    def OSMDROID_VERSION = "6.1.0"
     def PERMISSIONS_DISPATCHER_VERSION = "4.1.0"
     def PICASSO_VERSION = "2.71828"
     def PREFERENCE_VERSION = "1.1.0-alpha04"
