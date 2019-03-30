@@ -162,6 +162,8 @@ class WeatherForecastFragment : BaseFragment() {
         autoCompleteRecyclerView.apply {
             adapter = null
         }
+
+        hideActionBarLocalityName()
     }
 
     override fun onDestroy() {
