@@ -44,7 +44,7 @@ class LibraryLocalDataSource @Inject constructor() {
                     author = "Square Inc.",
                     title = "OkHttp",
                     description = "An HTTP+HTTP/2 client for Android and Java applications.",
-                    projectUrl = " http://square.github.io/okhttp/",
+                    projectUrl = "http://square.github.io/okhttp/",
                     sourceUrl = "https://github.com/square/okhttp",
                     licenseUrl = "https://github.com/square/okhttp/blob/master/LICENSE.txt",
                     license = apache2License
@@ -99,7 +99,6 @@ class LibraryLocalDataSource @Inject constructor() {
                     title = "SMHI Open Data API",
                     description = "SMHI Open Data Meteorological Forecasts, PMP, contains forecast data for the following 10 days. It is based on a number of forecast models statistical adjustments and manual edits.",
                     projectUrl = "https://opendata.smhi.se/apidocs/metfcst/index.html#about",
-                    sourceUrl = "",
                     licenseUrl = "http://www.smhi.se/klimatdata/oppna-data/information-om-oppna-data/villkor-for-anvandning-1.30622",
                     license = creativeCommonsV4License
                 ),
@@ -117,7 +116,6 @@ class LibraryLocalDataSource @Inject constructor() {
                     title = "Wikimedia Maps",
                     description = "The Wikimedia Maps service is provided openly to the public free of charge.",
                     projectUrl = "https://maps.wikimedia.org/",
-                    sourceUrl = "",
                     licenseUrl = "https://www.openstreetmap.org/copyright",
                     license = ODbLicense
                 ),
@@ -125,7 +123,6 @@ class LibraryLocalDataSource @Inject constructor() {
                     author = "© OpenStreetMap contributors",
                     title = "OpenStreetMap",
                     projectUrl = "https://www.openstreetmap.org/",
-                    sourceUrl = "",
                     description = "OpenStreetMap is built by a community of mappers that contribute and maintain data about roads, trails, cafés, railway stations, and much more, all over the world.",
                     licenseUrl = "https://www.openstreetmap.org/copyright",
                     license = ODbLicense

@@ -3,6 +3,7 @@ package fi.kroon.vadret.presentation.aboutapp.library
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import fi.kroon.vadret.R
 import fi.kroon.vadret.data.library.model.Library
@@ -147,10 +148,14 @@ class AboutAppLibraryFragment : BaseFragment() {
             is AboutAppLibraryView.RenderEvent.Error -> Unit
         }
 
-    private fun openUrlInBrowser(url: String) {
+    private fun openUrlInBrowser(url: String?) {
         Timber.d("Open in browser: $url")
-        val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-        requireActivity().startActivity(browserIntent)
+        url?.let {
+            val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+            requireActivity().startActivity(browserIntent)
+        } ?: Toast
+            .makeText(context, R.string.no_url_available, Toast.LENGTH_SHORT)
+            .show()
     }
 
     override fun renderError(errorCode: Int) {}

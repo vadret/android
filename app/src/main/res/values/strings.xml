@@ -55,7 +55,7 @@
     <string name="north_north_west">North, North west</string>
     <string name="empty_wind_direction" translatable="false"></string>
 
-
+    <string name="no_url_available">No URL available</string>
     <string name="prsort_no_precipitation">No precipitation</string>
     <string name="prsort_snow">Snow</string>
     <string name="prsort_snow_and_rain">Snow and rain</string>

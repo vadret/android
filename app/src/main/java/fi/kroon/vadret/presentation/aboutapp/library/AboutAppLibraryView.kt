@@ -21,7 +21,7 @@ object AboutAppLibraryView {
         object Init : RenderEvent()
         object None : RenderEvent()
         class DisplayLibrary(val list: List<Library>) : RenderEvent()
-        class OpenUrl(val url: String) : RenderEvent()
+        class OpenUrl(val url: String?) : RenderEvent()
         class Error(val message: String) : RenderEvent()
     }
 

@@ -10,7 +10,7 @@ data class Library(
     val author: String,
     val title: String,
     val projectUrl: String,
-    val sourceUrl: String,
+    val sourceUrl: String? = null,
     val licenseUrl: String,
     val license: String,
     val description: String
