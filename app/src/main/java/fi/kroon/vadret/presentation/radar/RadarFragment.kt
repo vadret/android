@@ -418,8 +418,10 @@ class RadarFragment : BaseFragment() {
                     .formats
                     .first()
                     .link
-            )
-            .into(
+            )/*.transform(
+                todo
+                add transformations here later
+            )*/.into(
                 object : Target {
                     override fun onPrepareLoad(placeHolderDrawable: Drawable?) {}
                     override fun onBitmapFailed(e: Exception?, errorDrawable: Drawable?) {

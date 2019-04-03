@@ -27,6 +27,8 @@ const val DEFAULT_BOUNDINGBOX_LONGITUDE_MIN = 9.319164
 const val DEFAULT_RADAR_ZOOM_LEVEL = 6.0
 const val DEFAULT_RADAR_FILE_EXTENSION = ".png"
 const val DEFAULT_RADAR_FILE_FORMAT = "png"
+const val EXPERIMENTAL_FILE_FORMAT = "tif"
+const val EXPERIMENTAL_FILE_EXTENSION = ".tif"
 
 // SETTINGS
 const val DEFAULT_SETTINGS = "fi.kroon.vadret.settings"
