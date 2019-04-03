@@ -150,12 +150,20 @@ class AboutAppLibraryFragment : BaseFragment() {
 
     private fun openUrlInBrowser(url: String?) {
         Timber.d("Open in browser: $url")
-        url?.let {
+        if (isNotNullOrEmpty(url)) {
             val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
             requireActivity().startActivity(browserIntent)
-        } ?: Toast
-            .makeText(context, R.string.no_url_available, Toast.LENGTH_SHORT)
-            .show()
+        } else {
+            Toast
+                .makeText(context, R.string.no_url_available, Toast.LENGTH_SHORT)
+                .show()
+        }
+    }
+
+    private fun isNotNullOrEmpty(str: String?): Boolean {
+        if (str != null && !str.isEmpty())
+            return true
+        return false
     }
 
     override fun renderError(errorCode: Int) {}

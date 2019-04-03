@@ -1,9 +1,9 @@
 package fi.kroon.vadret.data.library.local
 
-import fi.kroon.vadret.data.functional.Either
-import fi.kroon.vadret.data.exception.Failure
-import fi.kroon.vadret.data.library.model.Library
 import fi.kroon.vadret.core.di.scope.CoreApplicationScope
+import fi.kroon.vadret.data.exception.Failure
+import fi.kroon.vadret.data.functional.Either
+import fi.kroon.vadret.data.library.model.Library
 import io.reactivex.Single
 import javax.inject.Inject
 
@@ -217,7 +217,13 @@ class LibraryLocalDataSource @Inject constructor() {
                     licenseUrl = "https://github.com/JakeWharton/timber/blob/master/LICENSE.txt",
                     license = apache2License
                 )
-            )
+            ).map { library: Library ->
+                library.copy(
+                    sourceUrl = library.sourceUrl?.trim(),
+                    projectUrl = library.projectUrl.trim(),
+                    licenseUrl = library.licenseUrl.trim()
+                )
+            }
         )
     }
 }
