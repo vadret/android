@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="?attr/selectableItemBackground"
+    android:background="@drawable/weather_forecast_item_color"
     android:orientation="vertical">
 
     <ImageView
@@ -13,6 +13,7 @@
         android:layout_height="@dimen/base_icon_height"
         android:layout_marginStart="8dp"
         android:scaleType="center"
+        android:tint="?attr/iconBackground"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -20,11 +21,13 @@
 
     <TextView
         android:id="@+id/aboutAppLibraryItemTitleTextView"
-        style="@style/BaseRowTitleText"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
+        android:textColor="?attr/titleText"
+        android:textSize="14sp"
+        android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/aboutAppAboutInfoItemHintTextView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/aboutAppAboutInfoItemIconImageView"
@@ -34,11 +37,12 @@
 
     <TextView
         android:id="@+id/aboutAppAboutInfoItemHintTextView"
-        style="@style/BaseRowHintText"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
+        android:textColor="?attr/titleTextHint"
+        android:textStyle="italic"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/aboutAppAboutInfoItemIconImageView"

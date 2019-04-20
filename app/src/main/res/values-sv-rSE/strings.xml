@@ -65,6 +65,7 @@
     <string name="warnings">Varningar</string>
     <string name="county">län</string>
     <string name="select">Välj</string>
+    <string name="theme">Tema</string>
     <string name="setting_county">Län</string>
     <string name="setting_city">Ort</string>
     <string name="setting_longitude">Longitud</string>

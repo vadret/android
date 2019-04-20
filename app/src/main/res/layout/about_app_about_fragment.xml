@@ -3,17 +3,17 @@
 <androidx.core.widget.NestedScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <androidx.constraintlayout.widget.ConstraintLayout xmlns:tools="http://schemas.android.com/tools"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/aboutAppAboutLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/fragment_background">
+        android:background="?attr/themeBackground">
 
         <!-- ABOUT APP - FIRST TAB -->
-
         <androidx.cardview.widget.CardView
             android:id="@+id/aboutAppAboutTitleCardView"
             android:layout_width="match_parent"
@@ -23,6 +23,7 @@
             android:layout_marginEnd="16dp"
             android:clipToPadding="false"
             android:elevation="16dp"
+            app:cardBackgroundColor="?attr/colorPrimary"
             app:cardCornerRadius="@dimen/default_corner_radius"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -48,13 +49,15 @@
 
                 <TextView
                     android:id="@+id/aboutAppAboutTitleTextView"
-                    style="@style/TitleText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="12dp"
                     android:layout_marginTop="8dp"
                     android:layout_marginEnd="8dp"
                     android:text="@string/app_name"
+                    android:textColor="?attr/titleText"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
                     app:layout_constraintBottom_toTopOf="@+id/aboutAppAboutDescriptionTextView"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.0"
@@ -64,13 +67,14 @@
 
                 <TextView
                     android:id="@+id/aboutAppAboutDescriptionTextView"
-                    style="@style/TitleHintText"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="12dp"
                     android:layout_marginEnd="8dp"
                     android:layout_marginBottom="8dp"
                     android:text="@string/about_app_description"
+                    android:textColor="?attr/titleTextHint"
+                    android:textStyle="italic"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/aboutAppAboutIconImageView"
@@ -87,6 +91,7 @@
             android:layout_marginEnd="16dp"
             android:layout_marginBottom="16dp"
             android:clipToPadding="false"
+            app:cardBackgroundColor="?attr/colorPrimary"
             app:cardCornerRadius="@dimen/default_corner_radius"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

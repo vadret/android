@@ -1,13 +1,94 @@
 <resources>
 
-    <!-- Base application theme. -->
-    <style name="BaseAppTheme" parent="Theme.MaterialComponents.Light">
-        <item name="colorPrimary">@color/light</item>
-        <item name="colorPrimaryDark">@color/light_smoke</item>
-        <item name="colorAccent">@color/blue_faience</item>
+    <!-- Base application theme -->
+    <style name="BaseAppTheme" parent="Theme.MaterialComponents.Light.DarkActionBar">
+        <item name="colorPrimary">@color/item_background_light</item>
+        <item name="colorPrimaryDark">@color/theme_primary_item_background_dark</item>
+        <item name="colorAccent">@color/default_search_button_background</item>
     </style>
 
-    <style name="AppTheme" parent="BaseAppTheme"/>
+    <style name="AppTheme" parent="BaseAppTheme">
+        <item name="searchButtonBackground">@color/search_button_background_light</item>
+        <item name="themeBackground">@color/fragment_background_light</item>
+        <item name="cardViewBackground">@color/cardview_background_light</item>
+        <item name="themePrimaryItemBackground">@color/item_background_light</item>
+        <item name="itemDivider">@color/divider_color_light</item>
+        <item name="searchResultBackground">@color/search_result_background_light</item>
+        <item name="bottomNavigationStyle">@style/BottomNavLightStyle</item>
+        <item name="titleText">@color/text_color_light</item>
+        <item name="titleTextHint">@color/text_color_hint_light</item>
+        <item name="iconBackground">@color/icon_color_background_light</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="android:statusBarColor">?attr/colorPrimaryDark</item>
+    </style>
+
+    <!-- LIGHT_THEME -->
+    <!-- Mainly for convenience and readability -->
+    <!-- Default color schema is light colors defined in [AppTheme] -->
+    <style name="LIGHT" parent="AppTheme" />
+
+    <!-- DARK_THEME -->
+    <style name="DARK" parent="AppTheme">
+        <item name="colorPrimary">@color/theme_primary_item_background_dark</item>
+        <item name="colorPrimaryDark">@color/theme_primary_item_background_dark</item>
+        <item name="colorAccent">@color/search_button_background_dark</item>
+        <item name="titleText">@color/text_color_dark</item>
+        <item name="titleTextHint">@color/text_color_hint_dark</item>
+        <item name="iconBackground">@color/text_color_dark</item>
+        <item name="searchButtonBackground">@color/search_button_background_dark</item>
+        <item name="themeBackground">@color/fragment_background_dark</item>
+        <item name="cardViewBackground">@color/cardview_background_dark</item>
+        <item name="themePrimaryItemBackground">@color/theme_primary_item_background_dark</item>
+        <item name="titleTextPrimaryDisabled">@color/text_color_dark_disabled</item>
+        <item name="titleTextSecondaryDisabled">@color/text_color_dark_disabled</item>
+        <item name="toolBarTheme">@style/ThemeOverlay.AppCompat.Dark.ActionBar</item>
+        <item name="itemDivider">@color/divider_color_dark</item>
+        <item name="searchResultBackground">@color/search_result_background_dark</item>
+        <item name="bottomNavigationStyle">@style/BottomNavDarkStyle</item>
+        <item name="android:textColorPrimary">@color/primary_text_color_selector</item>
+        <item name="android:textColorSecondary">@color/secondary_text_color_selector</item>
+        <item name="android:textColorHint">@color/text_color_dark</item>
+        <item name="alertDialogTheme">@style/dialogAlertDarkTheme</item>
+    </style>
+
+    <!-- AMOLED_THEME -->
+    <style name="AMOLED" parent="AppTheme">
+        <item name="colorPrimary">@color/theme_primary_item_background_amoled</item>
+        <item name="colorPrimaryDark">@color/theme_primary_item_background_amoled</item>
+        <item name="colorAccent">@color/search_button_background_amoled</item>
+        <item name="titleText">@color/text_color_amoled</item>
+        <item name="titleTextHint">@color/text_color_hint_amoled</item>
+        <item name="iconBackground">@color/text_color_amoled</item>
+        <item name="searchButtonBackground">@color/search_button_background_amoled</item>
+        <item name="themeBackground">@color/fragment_background_amoled</item>
+        <item name="cardViewBackground">@color/cardview_background_amoled</item>
+        <item name="themePrimaryItemBackground">@color/theme_primary_item_background_amoled</item>
+        <item name="titleTextPrimaryDisabled">@color/text_color_amoled_disabled</item>
+        <item name="titleTextSecondaryDisabled">@color/text_color_amoled_disabled</item>
+        <item name="toolBarTheme">@style/ThemeOverlay.AppCompat.Dark.ActionBar</item>
+        <item name="itemDivider">@color/divider_color_amoled</item>
+        <item name="searchResultBackground">@color/search_result_background_amoled</item>
+        <item name="bottomNavigationStyle">@style/BottomNavAmoledStyle</item>
+        <item name="android:textColorPrimary">@color/primary_text_color_selector</item>
+        <item name="android:textColorSecondary">@color/secondary_text_color_selector</item>
+        <item name="android:textColorHint">@color/text_color_amoled</item>
+        <item name="alertDialogTheme">@style/dialogAlertAmoledTheme</item>
+    </style>
+
+    <style name="dialogAlertDarkTheme" parent="@style/Theme.AppCompat.Dialog.Alert">
+        <item name="colorPrimary">@color/theme_primary_item_background_dark</item>
+        <item name="colorPrimaryDark">@color/theme_primary_item_background_dark</item>
+        <item name="colorAccent">@color/default_search_button_background</item>
+        <item name="android:windowBackground">@color/theme_primary_item_background_dark</item>
+    </style>
+
+    <style name="dialogAlertAmoledTheme" parent="@style/Theme.AppCompat.Dialog.Alert">
+        <item name="colorPrimary">@color/theme_primary_item_background_amoled</item>
+        <item name="colorPrimaryDark">@color/theme_primary_item_background_amoled</item>
+        <item name="colorAccent">@color/default_search_button_background</item>
+        <item name="android:windowBackground">@color/theme_primary_item_background_amoled</item>
+    </style>
 
     <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
@@ -15,48 +96,34 @@
     </style>
 
     <style name="LinearProgress" parent="Theme.AppCompat.Light">
-        <item name="colorAccent">@color/blue_faience</item>
-        <item name="android:progressBackgroundTint">@color/shaded_white</item>
+        <item name="colorAccent">@color/default_search_button_background</item>
+        <item name="android:progressBackgroundTint">@color/progressbar_background_tint</item>
     </style>
 
-    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.MaterialComponents.Dark.ActionBar"/>
-    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.MaterialComponents.Light"/>
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.MaterialComponents.Dark.ActionBar" />
 
-    <style name="BaseTextLight">
-        <item name="android:textColor">@color/light</item>
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.MaterialComponents.Light" />
+
+    <style name="BottomNavDarkStyle">
+        <item name="android:background">@color/bottom_navigation_background_dark</item>
+        <item name="itemBackground">@drawable/bottom_nav_background</item>
+        <item name="itemIconTint">@drawable/bottom_nav_selector</item>
+        <item name="itemTextColor">@drawable/bottom_nav_selector</item>
+        <item name="paddingStart">@dimen/base_row_hint_text_size</item>
+        <item name="paddingEnd">@dimen/base_row_hint_text_size</item>
     </style>
 
-    <style name="BaseTextDark">
-        <item name="android:textColor">@color/dark</item>
+    <style name="BottomNavLightStyle">
+        <item name="android:background">@color/bottom_navigation_background_light</item>
+        <item name="itemBackground">@drawable/bottom_nav_background</item>
+        <item name="itemIconTint">@drawable/bottom_nav_selector</item>
+        <item name="itemTextColor">@drawable/bottom_nav_selector</item>
+        <item name="paddingStart">@dimen/base_row_hint_text_size</item>
+        <item name="paddingEnd">@dimen/base_row_hint_text_size</item>
     </style>
 
-    <style name="BaseTextDarkShaded">
-        <item name="android:textColor">@color/dark_gray</item>
-    </style>
-
-    <style name="TitleText">
-        <item name="android:textStyle">bold</item>
-        <item name="android:textSize">@dimen/title_text_size</item>
-    </style>
-
-    <style name="TitleHintText">
-        <item name="android:textStyle">italic</item>
-        <item name="android:textSize">@dimen/title_hint_text_size</item>
-    </style>
-
-    <style name="BaseRowTitleText">
-        <item name="android:textStyle">bold</item>
-        <item name="android:textSize">@dimen/base_row_title_text_size</item>
-
-    </style>
-
-    <style name="BaseRowHintText">
-        <item name="android:textStyle">italic</item>
-        <item name="android:textSize">@dimen/base_row_hint_text_size</item>
-    </style>
-
-    <style name="CustomBottomNavigationStyle">
-        <item name="android:background">@color/light</item>
+    <style name="BottomNavAmoledStyle">
+        <item name="android:background">@color/bottom_navigation_background_amoled</item>
         <item name="itemBackground">@drawable/bottom_nav_background</item>
         <item name="itemIconTint">@drawable/bottom_nav_selector</item>
         <item name="itemTextColor">@drawable/bottom_nav_selector</item>

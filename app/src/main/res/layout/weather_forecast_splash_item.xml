@@ -5,8 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="5dp"
-    android:background="@drawable/weather_forecast_item_rounded"
-    android:elevation="4dp"
+    android:background="@drawable/weather_forecast_item_color"
+    android:elevation="2dp"
     android:orientation="vertical"
     android:paddingTop="20dp"
     android:paddingBottom="20dp">
@@ -18,7 +18,7 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
-        android:tint="@color/dark_gray"
+        android:tint="?attr/iconBackground"
         app:layout_constraintEnd_toStartOf="@+id/verticalGuidelineFirst"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -29,6 +29,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/sunrise"
+        android:textColor="?attr/titleText"
         android:textSize="12sp"
         app:layout_constraintEnd_toEndOf="@+id/sunriseIcon"
         app:layout_constraintStart_toStartOf="@+id/sunriseIcon"
@@ -40,6 +41,7 @@
         android:layout_height="wrap_content"
         android:text="05:31"
         android:textSize="12sp"
+        android:textColor="?attr/titleText"
         app:layout_constraintEnd_toEndOf="@+id/sunriseTitle"
         app:layout_constraintStart_toStartOf="@+id/sunriseTitle"
         app:layout_constraintTop_toBottomOf="@+id/sunriseTitle" />
@@ -51,7 +53,7 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
-        android:tint="@color/dark_gray"
+        android:tint="?attr/iconBackground"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@+id/verticalGuidelineSecond"
         app:layout_constraintTop_toTopOf="parent"
@@ -63,6 +65,7 @@
         android:layout_height="wrap_content"
         android:text="@string/sunset"
         android:textSize="12sp"
+        android:textColor="?attr/titleText"
         app:layout_constraintEnd_toEndOf="@+id/sunsetIcon"
         app:layout_constraintStart_toStartOf="@+id/sunsetIcon"
         app:layout_constraintTop_toBottomOf="@+id/sunsetIcon" />
@@ -73,6 +76,7 @@
         android:layout_height="wrap_content"
         android:text="16:23"
         android:textSize="12sp"
+        android:textColor="?attr/titleText"
         app:layout_constraintEnd_toEndOf="@+id/sunsetTitle"
         app:layout_constraintStart_toStartOf="@+id/sunsetTitle"
         app:layout_constraintTop_toBottomOf="@+id/sunsetTitle" />
@@ -83,6 +87,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
         android:text="53"
+        android:textColor="?attr/titleText"
         app:layout_constraintEnd_toEndOf="@+id/humidityPercentIcon"
         app:layout_constraintStart_toStartOf="@+id/humidityPercentIcon"
         app:layout_constraintTop_toBottomOf="@+id/humidityPercentIcon" />
@@ -93,6 +98,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
         android:text="9m/s"
+        android:textColor="?attr/titleText"
         app:layout_constraintEnd_toEndOf="@+id/windSpeedIcon"
         app:layout_constraintStart_toStartOf="@+id/windSpeedIcon"
         app:layout_constraintTop_toBottomOf="@+id/windSpeedIcon" />
@@ -104,7 +110,7 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="8dp"
-        android:tint="@color/dark_gray"
+        android:tint="?attr/iconBackground"
         app:layout_constraintEnd_toStartOf="@+id/verticalGuidelineFirst"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/horizontalGuideline"
@@ -117,7 +123,7 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="8dp"
-        android:tint="@color/dark_gray"
+        android:tint="?attr/iconBackground"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@+id/verticalGuidelineSecond"
         app:layout_constraintTop_toTopOf="@+id/horizontalGuideline"
@@ -130,7 +136,7 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="8dp"
-        android:tint="@color/dark_gray"
+        android:tint="?attr/iconBackground"
         app:layout_constraintEnd_toStartOf="@+id/verticalGuidelineSecond"
         app:layout_constraintStart_toStartOf="@+id/verticalGuidelineFirst"
         app:layout_constraintTop_toTopOf="@+id/horizontalGuideline"
@@ -143,6 +149,7 @@
         android:layout_marginTop="4dp"
         android:layout_marginEnd="4dp"
         android:text="20°"
+        android:textColor="?attr/titleText"
         app:layout_constraintEnd_toStartOf="@+id/centerHorizontalGuideline"
         app:layout_constraintTop_toBottomOf="@+id/temperatureIconSplash" />
 
@@ -156,6 +163,7 @@
         android:gravity="center"
         android:text="@string/wsymb2_heavy_sleet"
         android:textSize="12sp"
+        android:textColor="?attr/titleText"
         app:layout_constraintEnd_toStartOf="@+id/verticalGuidelineSecond"
         app:layout_constraintStart_toStartOf="@+id/verticalGuidelineFirst"
         app:layout_constraintTop_toBottomOf="@+id/currentTemperature" />
@@ -169,6 +177,7 @@
         android:layout_marginEnd="8dp"
         android:text="16.1"
         android:textSize="24sp"
+        android:textColor="?attr/titleText"
         app:layout_constraintEnd_toStartOf="@+id/verticalGuidelineSecond"
         app:layout_constraintStart_toStartOf="@+id/verticalGuidelineFirst"
         app:layout_constraintTop_toTopOf="parent" />
@@ -200,7 +209,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
         android:text="@string/south_east"
-        android:textColor="@color/light_smoke"
+        android:textColor="?attr/titleTextHint"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/windSpeed"
         app:layout_constraintStart_toStartOf="@+id/windSpeed"
@@ -213,7 +222,7 @@
         android:layout_marginStart="4dp"
         android:layout_marginTop="4dp"
         android:text="17°"
-        android:textColor="@color/light_smoke"
+        android:textColor="?attr/titleTextHint"
         app:layout_constraintStart_toStartOf="@+id/centerHorizontalGuideline"
         app:layout_constraintTop_toBottomOf="@+id/temperatureIconSplash" />
 
@@ -222,7 +231,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.50121653" />
+        app:layout_constraintGuide_percent="0.50" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -8,6 +8,7 @@
 -keep class fi.kroon.vadret.data.location.model.** { *; }
 -keep class fi.kroon.vadret.data.nominatim.model.** { *; }
 -keep class fi.kroon.vadret.data.radar.model.** { *; }
+-keep class fi.kroon.vadret.data.theme.model.** { *; }
 
 # Okhttp
 # JSR 305 annotations are for embedding nullability information.

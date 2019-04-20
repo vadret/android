@@ -10,9 +10,9 @@ import fi.kroon.vadret.core.di.modules.NetworkModule
 import fi.kroon.vadret.core.di.modules.RxkPrefsModule
 import fi.kroon.vadret.core.di.modules.SchedulerModule
 import fi.kroon.vadret.core.di.scope.CoreApplicationScope
-import fi.kroon.vadret.presentation.MainActivity
 import fi.kroon.vadret.presentation.aboutapp.di.AboutAppComponent
 import fi.kroon.vadret.presentation.alert.di.AlertComponent
+import fi.kroon.vadret.presentation.main.di.MainActivityComponent
 import fi.kroon.vadret.presentation.radar.di.RadarComponent
 import fi.kroon.vadret.presentation.weatherforecast.di.WeatherForecastComponent
 
@@ -29,11 +29,11 @@ import fi.kroon.vadret.presentation.weatherforecast.di.WeatherForecastComponent
 )
 interface CoreApplicationComponent {
 
-    fun inject(mainActivity: MainActivity)
     fun inject(application: Application)
 
     fun rxkPrefs(rxkPrefs: RxkPrefs)
 
+    fun mainActivityComponentBuilder(): MainActivityComponent.Builder
     fun radarComponentBuilder(): RadarComponent.Builder
     fun appAboutComponentBuilder(): AboutAppComponent.Builder
     fun alertComponentBuilder(): AlertComponent.Builder

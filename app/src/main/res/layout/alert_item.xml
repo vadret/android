@@ -5,10 +5,9 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginTop="8dp"
-    android:background="@drawable/weather_forecast_item_rounded"
+    android:background="@drawable/weather_forecast_item_color"
     android:elevation="4dp"
-    android:orientation="vertical"
-    android:theme="@style/AppTheme">
+    android:orientation="vertical">
 
     <View
         android:id="@+id/alertStartColorBar"
@@ -30,6 +29,7 @@
         android:textAllCaps="false"
         android:textSize="18sp"
         android:textStyle="bold"
+        android:textColor="?attr/titleText"
         app:layout_constraintStart_toEndOf="@+id/alertStartColorBar"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -39,6 +39,7 @@
         android:layout_height="20dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="4dp"
+        android:tint="?attr/iconBackground"
         app:layout_constraintStart_toEndOf="@+id/alertStartColorBar"
         app:layout_constraintTop_toBottomOf="@+id/alertTitle"
         app:srcCompat="@drawable/ic_error_outline_black_24dp" />
@@ -51,10 +52,12 @@
         android:layout_marginTop="4dp"
         android:layout_marginEnd="16dp"
         android:text="@string/place_holder_string"
+        android:textColor="?attr/titleText"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/alertStartColorBar"
         app:layout_constraintTop_toBottomOf="@+id/warningIcon" />
 
+    <!-- Individual chips are colorized in AlertAdapter -->
     <com.google.android.material.chip.ChipGroup
         android:id="@+id/chipGroup"
         android:layout_width="0dp"
@@ -76,7 +79,7 @@
         android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="8dp"
-        android:textColor="@android:color/darker_gray"
+        android:textColor="?attr/titleText"
         android:textSize="14sp"
         app:layout_constraintBottom_toTopOf="@+id/alertDescription"
         app:layout_constraintEnd_toEndOf="parent"

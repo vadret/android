@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <attr name="searchButtonBackground" format="reference" />
+    <attr name="themeBackground" format="reference" />
+    <attr name="cardViewBackground" format="reference" />
+    <attr name="themePrimaryItemBackground" format="reference" />
+    <attr name="titleText" format="reference" />
+    <attr name="titleTextHint" format="reference" />
+    <attr name="titleTextPrimaryDisabled" format="reference" />
+    <attr name="titleTextSecondaryDisabled" format="reference" />
+    <attr name="iconBackground" format="reference" />
+    <attr name="toolBarTheme" format="reference" />
+    <attr name="alertDialogTheme" format="reference" />
+    <attr name="itemDivider" format="reference" />
+    <attr name="searchResultBackground" format="reference" />
+    <attr name="bottomNavigationStyle" format="reference" />
+</resources>

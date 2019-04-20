@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import fi.kroon.vadret.R
 import fi.kroon.vadret.data.library.model.Library
 import fi.kroon.vadret.presentation.BaseFragment
-import fi.kroon.vadret.presentation.MainActivity
+import fi.kroon.vadret.presentation.main.MainActivity
 import fi.kroon.vadret.presentation.aboutapp.AboutAppFragment
 import fi.kroon.vadret.presentation.aboutapp.di.AboutAppFeatureScope
 import fi.kroon.vadret.utils.extensions.toObservable

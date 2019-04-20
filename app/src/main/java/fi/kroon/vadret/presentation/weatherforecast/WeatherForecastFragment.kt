@@ -2,6 +2,7 @@ package fi.kroon.vadret.presentation.weatherforecast
 
 import android.Manifest
 import android.content.Context
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.os.Parcelable
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -444,7 +445,16 @@ class WeatherForecastFragment : BaseFragment() {
         autoCompleteRecyclerView.apply {
             adapter = autoCompleteAdapter
             layoutManager = LinearLayoutManager(this.context, RecyclerView.VERTICAL, false)
-            addItemDecoration(DividerItemDecoration(this.context, RecyclerView.VERTICAL))
+
+            val itemDecoration: DividerItemDecoration = DividerItemDecoration(this.context, RecyclerView.VERTICAL)
+            val drawable: Drawable? = context.getDrawable(R.drawable.search_item_divider)
+
+            drawable?.let { res: Drawable ->
+                itemDecoration
+                    .setDrawable(res)
+            }
+
+            addItemDecoration(itemDecoration)
             hasFixedSize()
             toVisible()
         }

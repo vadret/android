@@ -1,23 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
     <PreferenceCategory android:title="@string/setting_location_title">
         <SwitchPreference
+            android:disableDependentsState="true"
             android:key="AUTOMATIC_LOCATION_MODE"
             android:persistent="true"
             android:summaryOff="@string/gps_is_not_being_used"
             android:summaryOn="@string/gps_is_being_used"
-            android:disableDependentsState="true"
             android:title="@string/use_gps_by_default" />
     </PreferenceCategory>
 
+    <PreferenceCategory android:title="@string/display">
+        <ListPreference
+            android:defaultValue="@string/light_key"
+            android:entries="@array/themes"
+            android:entryValues="@array/themes"
+            android:key="APP_THEME_MODE"
+            android:summary="%s"
+            android:title="@string/select_a_theme" />
+    </PreferenceCategory>
+
     <PreferenceCategory
-        android:title="@string/setting_current_location"
-        android:dependency="AUTOMATIC_LOCATION_MODE">
+        android:dependency="AUTOMATIC_LOCATION_MODE"
+        android:title="@string/setting_current_location">
+
         <Preference
             android:key="LOCALITY"
             android:persistent="true"
             android:selectable="false"
             android:title="@string/setting_city" />
+
+        <Preference
+            android:key="MUNICIPALITY"
+            android:persistent="true"
+            android:selectable="false"
+            android:title="@string/setting_municipality" />
 
         <Preference
             android:key="COUNTY"
@@ -32,15 +50,10 @@
             android:title="@string/setting_latitude" />
 
         <Preference
-            android:key="MUNICIPALITY"
-            android:persistent="true"
-            android:selectable="false"
-            android:title="@string/setting_municipality" />
-
-        <Preference
             android:key="LONGITUDE"
             android:persistent="true"
             android:selectable="false"
             android:title="@string/setting_longitude" />
+
     </PreferenceCategory>
 </PreferenceScreen>

@@ -274,7 +274,7 @@ class WeatherForecastAdapter @Inject constructor() : RecyclerView.Adapter<Recycl
         fun bind(item: WeatherForecastItemModel) {
             itemView.time.text = item.time
             itemView.temperature.text = item.temperature.toString()
-            itemView.wsymb2.setText(handleWsymb2Description(item.weatherDescription))
+            itemView.wsymb2Description.setText(handleWsymb2Description(item.weatherDescription))
             itemView.wsymb2Icon.setImageResource(handleWsymb2Icon(item.weatherIcon))
 
             handleIndicatorFlair(item.temperature)

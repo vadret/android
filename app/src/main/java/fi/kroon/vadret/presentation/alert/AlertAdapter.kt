@@ -24,6 +24,7 @@ class AlertAdapter @Inject constructor() : RecyclerView.Adapter<RecyclerView.Vie
     private val list: MutableList<BaseWarningItemModel> = mutableListOf()
 
     inner class AlertViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+
         fun bind(warningItemItemModel: WarningItemItemModel): Unit =
             with(warningItemItemModel) {
                 itemView.issued.text = setTimeToMoments(
@@ -32,6 +33,7 @@ class AlertAdapter @Inject constructor() : RecyclerView.Adapter<RecyclerView.Vie
                 )
                 itemView.alertTitle.text = eventLevelTitle
                 itemView.alertDescription.text = description
+
                 itemView.alertStartColorBar.setBackgroundResource(backgroundColorResource)
                 headlineItems.let { list: List<String> ->
                     itemView.chipGroup.removeAllViews()
@@ -62,7 +64,6 @@ class AlertAdapter @Inject constructor() : RecyclerView.Adapter<RecyclerView.Vie
             chip.text = string
             chip.isCheckable = false
             chip.isClickable = false
-            chip.setChipBackgroundColorResource(R.color.light_purple_shade)
             itemView.chipGroup.addView(chip)
         }
     }
@@ -94,8 +95,8 @@ class AlertAdapter @Inject constructor() : RecyclerView.Adapter<RecyclerView.Vie
 
     override fun getItemViewType(position: Int): Int =
         when (list[position]) {
-            is WarningItemItemModel -> AlertAdapter.VIEW_TYPE_ALERT
-            else -> AlertAdapter.VIEW_TYPE_ALERT
+            is WarningItemItemModel -> VIEW_TYPE_ALERT
+            else -> VIEW_TYPE_ALERT
         }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {

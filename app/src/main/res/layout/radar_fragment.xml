@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -34,8 +33,8 @@
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="36dp"
-        android:thumbTint="@color/blue_faience"
-        android:progressTint="@color/blue_faience"
+        android:thumbTint="@color/default_search_button_background"
+        android:progressTint="@color/default_search_button_background"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -50,8 +49,8 @@
         android:clickable="true"
         android:focusable="true"
         android:src="@android:drawable/ic_media_play"
-        android:backgroundTint="@color/blue_faience"
-        android:thumb="@color/blue_faience"
+        android:backgroundTint="@color/default_search_button_background"
+        android:thumb="@color/default_search_button_background"
         app:borderWidth="0dp"
         app:elevation="6dp"
         app:layout_constraintBottom_toBottomOf="parent"

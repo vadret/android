@@ -51,6 +51,11 @@ const val DEFAULT_AUTOCOMPLETE_LIMIT = 3
 const val AUTOCOMPLETE_DEBOUNCE_MILLIS = 70L
 const val RADAR_DEBOUNCE_MILLIS = 300L
 
+// THEME
+const val LIGHT_THEME = "Light"
+const val DARK_THEME = "Dark"
+const val AMOLED_THEME = "AMOLED"
+
 // COUNTRY SHORT CODES
 const val POLAND = "pl"
 const val SWEDEN = "se"

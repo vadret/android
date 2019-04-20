@@ -1,9 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <color name="colorPrimary">#252f4e</color>
-    <color name="colorAccent">#D81B60</color>
-    <color name="fragment_background">#52F0F8FF</color>
+    <color name="default_search_button_background">#6779CA</color>
+    <color name="progressbar_background_tint">#B4FFFFFF</color>
+
+    <!-- BEGIN LIGHT THEME -->
+    <color name="theme_primary_item_background_light">#FDFDFD</color>
+    <color name="bottom_navigation_background_light">#ffffff</color>
+    <color name="cardview_background_light">#ffffff</color>
+    <color name="divider_color_light">#FDFDFD</color>
+    <color name="fragment_background_light">#52F0F8FF</color>
+    <color name="icon_color_background_light">@color/text_color_light</color>
+    <color name="item_background_light">#FDFDFD</color>
+    <color name="search_button_background_light">@color/default_search_button_background</color>
+    <color name="search_result_background_light">#ffffff</color>
+    <color name="text_color_hint_light">#979797</color>
+    <color name="text_color_light">#727272</color>
+    <!-- END LIGHT THEME -->
+
+    <!-- BEGIN DARK THEME -->
+    <color name="bottom_navigation_background_dark">#373737</color>
+    <color name="cardview_background_dark">#585858</color>
+    <color name="divider_color_dark">#474747</color>
+    <color name="fragment_background_dark">#373737</color>
+    <color name="search_button_background_dark">@color/default_search_button_background</color>
+    <color name="search_result_background_dark">#474747</color>
+    <color name="text_color_dark">#E6E6E6</color>
+    <color name="text_color_dark_disabled">#727272</color>
+    <color name="text_color_hint_dark">#CECECE</color>
+    <color name="theme_primary_item_background_dark">#3D3D3D</color>
+    <!-- END DARK THEME -->
+
+    <!-- BEGIN AMOLED THEME -->
+    <color name="bottom_navigation_background_amoled">#000000</color>
+    <color name="cardview_background_amoled">#000000</color>
+    <color name="divider_color_amoled">#000000</color>
+    <color name="fragment_background_amoled">#000000</color>
+    <color name="search_button_background_amoled">@color/default_search_button_background</color>
+    <color name="search_result_background_amoled">#000000</color>
+    <color name="text_color_amoled">#E6E6E6</color>
+    <color name="text_color_amoled_disabled">#727272</color>
+    <color name="text_color_hint_amoled">#CECECE</color>
+    <color name="theme_primary_item_background_amoled">#000000</color>
+    <!-- END AMOLED THEME -->
 
     <!-- SMHI WARNING COLOR CODES -->
     <color name="warning_class_1">#73FFAD1F</color>
@@ -33,17 +72,4 @@
     <color name="color_gradient_15">#E9704E</color>
     <color name="color_gradient_16">#F5704B</color>
 
-    <color name="blue_faience">#6779CA</color>
-    <color name="shaded_white">#B4FFFFFF</color>
-
-    <!-- Smoke -->
-    <color name="inactive_menu_items">#E0E0E0</color>
-    <color name="light">#FDFDFD</color>
-    <color name="light_smoke">#BDBDBD</color>
-    <color name="dark">#343434</color>
-    <color name="dark_gray">#606264</color>
-    <color name="dark_gray_light">#D6D6D6</color>
-    <!-- Eigengrau -->
-    <color name="eigen_grau">#16161d</color>
-    <color name="fadedgray">#ccffffff</color>
 </resources>
