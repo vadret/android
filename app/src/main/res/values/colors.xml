@@ -45,13 +45,13 @@
     <!-- END AMOLED THEME -->
 
     <!-- SMHI WARNING COLOR CODES -->
-    <color name="warning_class_1">#73FFAD1F</color>
-    <color name="warning_class_2">#a1E97D1F</color>
-    <color name="warning_class_3">#a1D12A2A</color>
-    <color name="message_high_temperature">#a1b5e5af</color>
-    <color name="risk_for_very_difficult_weather">#a175d5ff</color>
-    <color name="risk_for_fire">#a17B4AC2</color>
-    <color name="light_purple_shade">#1A7B4AC2</color>
+    <color name="warning_class_1">#F3C77A</color>
+    <color name="warning_class_2">#FFB46E</color>
+    <color name="warning_class_3">#D67373</color>
+    <color name="message_high_temperature">#BCEBB6</color>
+    <color name="risk_for_very_difficult_weather">#9CD7F1</color>
+    <color name="risk_for_fire">#9D8AC7</color>
+    <color name="light_purple_shade">#D0C6DF</color>
 
     <!-- Temperature Color Gradient -->
     <color name="color_gradient_0">#4A4394</color>
