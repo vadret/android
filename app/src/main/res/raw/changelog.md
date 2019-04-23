@@ -5,7 +5,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [1.0.1] -- TBD
+## [1.1.0] -- 2019-04-*
+
+### Added
+- Dark/AMOLED themes
 
 ### Fixed
 - Always trim whitespace on library urls
@@ -104,8 +107,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Radar imagery
 - 10 day weather forecast
 
-[Unreleased]: https://github.com/vadret/android/compare/1.0.0...HEAD
-[1.0.1]: https://github.com/vadret/android/compare/1.0.0...1.0.1
+[Unreleased]: https://github.com/vadret/android/compare/1.1.0...HEAD
+[1.1.0]: https://github.com/vadret/android/compare/1.0.0...1.1.0
 [1.0.0]: https://github.com/vadret/android/compare/0.1.8...1.0.0
 [0.1.8]: https://github.com/vadret/android/compare/0.1.7...0.1.8
 [0.1.7]: https://github.com/vadret/android/compare/0.1.6...0.1.7
