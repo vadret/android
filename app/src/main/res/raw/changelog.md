@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Dark/AMOLED themes
+- Weather summary in text
 
 ### Fixed
 - Always trim whitespace on library urls

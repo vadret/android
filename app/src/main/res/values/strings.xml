@@ -36,23 +36,38 @@
     <string name="wsymb2_moderate_snowfall">Moderate snowfall</string>
     <string name="wsymb2_heavy_snowfall">Heavy snowfall</string>
 
+    <!-- Mulet | med | syd, sydvästliga | stormvindar -->
+    <string name="ws_with">with</string>
+    <string name="ws_mostly">mostly</string>
+    <string name="ws_today">Today</string>
+    <string name="ws_winds">winds</string>
+    <string name="ws_wind">wind</string>
+
+    <string name="ws_calm">calm</string>
+    <string name="ws_weak">weak</string>
+    <string name="ws_moderate">moderate</string>
+    <string name="ws_fresh">fresh</string>
+    <string name="ws_strong">strong</string>
+    <string name="ws_windstorms">storm</string>
+    <string name="ws_hurricanes">hurricane</string>
+
     <!-- Wind direction -->
-    <string name="north">North</string>
-    <string name="north_north_east">North, North east</string>
-    <string name="north_east">North east</string>
-    <string name="east_north_east">East, North east</string>
-    <string name="east">East</string>
-    <string name="east_south_east">East, South east</string>
-    <string name="south_east">South east</string>
-    <string name="south_south_east">South, South east</string>
-    <string name="south">South</string>
-    <string name="south_south_west">South, South west</string>
-    <string name="south_west">South west </string>
-    <string name="west_south_west">West, South west</string>
-    <string name="west">West</string>
-    <string name="west_north_west">West, North west</string>
-    <string name="north_west">North west</string>
-    <string name="north_north_west">North, North west</string>
+    <string name="north">northern</string>
+    <string name="north_north_east">north to northeastern</string>
+    <string name="north_east">northeastern</string>
+    <string name="east_north_east">east to northeastern</string>
+    <string name="east">eastern</string>
+    <string name="east_south_east">east to southeastern</string>
+    <string name="south_east">southeastern</string>
+    <string name="south_south_east">south to southeastern</string>
+    <string name="south">south</string>
+    <string name="south_south_west">south to southwestern</string>
+    <string name="south_west">southwestern</string>
+    <string name="west_south_west">west to southwestern</string>
+    <string name="west">west</string>
+    <string name="west_north_west">west to northwestern</string>
+    <string name="north_west">northwestern</string>
+    <string name="north_north_west">north to northwestern</string>
     <string name="empty_wind_direction" translatable="false"></string>
 
     <string name="no_url_available">No URL available</string>

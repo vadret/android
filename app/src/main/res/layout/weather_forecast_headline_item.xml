@@ -1,34 +1,40 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:layout_marginTop="10dp"
+    android:layout_marginBottom="10dp"
+    android:background="@drawable/weather_forecast_item_color"
+    android:elevation="2dp"
+    android:orientation="vertical">
+
+    <ImageView
+        android:id="@+id/windDirectionIcon"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:layout_marginTop="@dimen/weather_desc_margin"
+        android:layout_marginEnd="@dimen/weather_desc_margin"
+        android:layout_marginBottom="16dp"
+        android:tint="?attr/iconBackground"
+        app:layout_constraintBottom_toBottomOf="@+id/weatherDescription"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/weatherDescription"
+        app:srcCompat="@drawable/wsymb2_wind_direction_arrow" />
 
     <TextView
-        android:id="@+id/weatherHeadline"
-        android:layout_width="wrap_content"
+        android:id="@+id/weatherDescription"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="16dp"
-        android:textSize="22sp"
+        android:layout_marginStart="@dimen/weather_desc_margin"
+        android:layout_marginTop="@dimen/weather_desc_margin"
+        android:layout_marginEnd="@dimen/weather_desc_margin"
+        android:layout_marginBottom="@dimen/weather_desc_margin"
+        android:text="lorum ipsum"
         android:textColor="?attr/titleText"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/windDirectionIcon"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:text="Halvklart" />
-
-    <View
-        android:id="@+id/horizontalHeadlineDivider"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:background="?android:attr/listDivider"
-        android:visibility="invisible"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/weatherHeadline" />
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

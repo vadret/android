@@ -11,6 +11,13 @@ import fi.kroon.vadret.presentation.weatherforecast.model.WeatherForecastDateIte
 import fi.kroon.vadret.presentation.weatherforecast.model.WeatherForecastHeadlineModel
 import fi.kroon.vadret.presentation.weatherforecast.model.WeatherForecastItemModel
 import fi.kroon.vadret.presentation.weatherforecast.model.WeatherForecastSplashItemModel
+import fi.kroon.vadret.utils.common.WeatherForecastUtil.handleIndicatorFlair
+import fi.kroon.vadret.utils.common.WeatherForecastUtil.handlePrSort
+import fi.kroon.vadret.utils.common.WeatherForecastUtil.handleWindDirection
+import fi.kroon.vadret.utils.common.WeatherForecastUtil.handleWsymb2Description
+import fi.kroon.vadret.utils.common.WeatherForecastUtil.handleWsymb2Icon
+import fi.kroon.vadret.utils.common.WeatherForecastUtil.windSpeedToName
+import fi.kroon.vadret.utils.extensions.empty
 import fi.kroon.vadret.utils.extensions.toGone
 import fi.kroon.vadret.utils.extensions.toInvisible
 import fi.kroon.vadret.utils.extensions.toVisible
@@ -38,14 +45,42 @@ class WeatherForecastAdapter @Inject constructor() : RecyclerView.Adapter<Recycl
         const val TYPE_WEATHER_FORECAST = 1
         const val TYPE_WEATHER_SPLASH = 2
         const val TYPE_WEATHER_HEADER = 3
+        const val ROTATION_DEGREE_OFFSET = 90
     }
 
     inner class HeadlineViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         fun bind(item: WeatherForecastHeadlineModel) {
             item.headline?.let { headlineInt ->
-                itemView.weatherHeadline.setText(
-                    handleWsymb2Description(headlineInt)
-                )
+
+                val weatherDescription: String = itemView
+                    .context
+                    .getString(
+                        handleWsymb2Description(
+                            headlineInt
+                        )
+                    )
+
+                val withString: String = itemView.context.getString(R.string.ws_with)
+                val mostlyString: String = itemView.context.getString(R.string.ws_mostly)
+                val windDirection: String? = item.windDirection?.let {
+                    itemView.context.getString(handleWindDirection(it))
+                } ?: String.empty()
+
+                val windString: String = itemView.context.getString(R.string.ws_wind)
+                val windSeverity: String = if (item.windSpeed != null) itemView.context.getString(windSpeedToName(item.windSpeed)) else String.empty()
+                val weatherForecastHeadline = "$weatherDescription $withString $mostlyString $windSeverity $windDirection $windString."
+
+                itemView.weatherDescription.text = weatherForecastHeadline
+
+                val drawable = itemView.context.getDrawable(R.drawable.wsymb2_wind_direction_arrow)
+
+                item.windDirection?.let {
+                    itemView.windDirectionIcon.setImageDrawable(drawable)
+                    itemView.windDirectionIcon.rotation = item.windDirection.toFloat() - ROTATION_DEGREE_OFFSET
+                } ?: run {
+                    itemView.windDirectionIcon.toInvisible()
+                }
+                itemView.toVisible()
             }
         }
     }
@@ -90,12 +125,6 @@ class WeatherForecastAdapter @Inject constructor() : RecyclerView.Adapter<Recycl
                 itemView.temperatureRight.toGone()
             }
 
-            itemView.windSpeed.text = item.windSpeed.toString()
-
-            item.windDirection?.let { windDirectionDegree: Double ->
-                val directionString: String = itemView.context.getString(handleWindDirection(windDirectionDegree))
-                itemView.windDirection.text = directionString
-            }
             val windSpeedString = "${item.windSpeed}$meterPerSecond"
             itemView.windSpeed.text = windSpeedString
 
@@ -123,146 +152,6 @@ class WeatherForecastAdapter @Inject constructor() : RecyclerView.Adapter<Recycl
         }
     }
 
-    private fun handleWsymb2Icon(index: Int): Int =
-        when (index) {
-            1 -> R.drawable.wsymb2_clear_sky
-            2 -> R.drawable.wsymb2_nearly_clear_sky
-            3 -> R.drawable.wsymb2_variable_cloudiness
-            4 -> R.drawable.wsymb2_halfclear_sky
-            5 -> R.drawable.wsymb2_cloudy_sky
-            6 -> R.drawable.wsymb2_overcast
-            7 -> R.drawable.wsymb2_fog
-            8 -> R.drawable.wsymb2_light_rain_showers
-            9 -> R.drawable.wsymb2_moderate_rain_showers
-            10 -> R.drawable.wsymb2_heavy_rain_showers
-            11 -> R.drawable.wsymb2_thunderstorm
-            12 -> R.drawable.wsymb2_light_sleet_showers
-            13 -> R.drawable.wsymb2_moderate_sleet_showers
-            14 -> R.drawable.wsymb2_heavy_sleet_showers
-            15 -> R.drawable.wsymb2_light_snow_showers
-            16 -> R.drawable.wsymb2_moderate_snow_showers
-            17 -> R.drawable.wsymb2_heavy_snow_showers
-            18 -> R.drawable.wsymb2_light_rain
-            19 -> R.drawable.wsymb2_moderate_rain
-            20 -> R.drawable.wsymb2_heavy_rain
-            21 -> R.drawable.wsymb2_thunder
-            22 -> R.drawable.wsymb2_light_sleet
-            23 -> R.drawable.wsymb2_moderate_sleet
-            24 -> R.drawable.wsymb2_heavy_sleet
-            25 -> R.drawable.wsymb2_light_snowfall
-            26 -> R.drawable.wsymb2_moderate_snowfall
-            27 -> R.drawable.wsymb2_heavy_snowfall
-            else -> {
-                R.drawable.wsymb2_clear_sky
-            }
-        }
-
-    private fun handleWsymb2Description(index: Int): Int =
-        when (index) {
-            1 -> R.string.wsymb2_clear_sky
-            2 -> R.string.wsymb2_nearly_clear_sky
-            3 -> R.string.wsymb2_variable_cloudiness
-            4 -> R.string.wsymb2_halfclear_sky
-            5 -> R.string.wsymb2_cloudy_sky
-            6 -> R.string.wsymb2_overcast
-            7 -> R.string.wsymb2_fog
-            8 -> R.string.wsymb2_light_rain_showers
-            9 -> R.string.wsymb2_moderate_rain_showers
-            10 -> R.string.wsymb2_heavy_rain_showers
-            11 -> R.string.wsymb2_thunderstorm
-            12 -> R.string.wsymb2_light_sleet_showers
-            13 -> R.string.wsymb2_moderate_sleet_showers
-            14 -> R.string.wsymb2_heavy_sleet_showers
-            15 -> R.string.wsymb2_light_snow_showers
-            16 -> R.string.wsymb2_moderate_snow_showers
-            17 -> R.string.wsymb2_heavy_snow_showers
-            18 -> R.string.wsymb2_light_rain
-            19 -> R.string.wsymb2_moderate_rain
-            20 -> R.string.wsymb2_heavy_rain
-            21 -> R.string.wsymb2_thunder
-            22 -> R.string.wsymb2_light_sleet
-            23 -> R.string.wsymb2_moderate_sleet
-            24 -> R.string.wsymb2_heavy_sleet
-            25 -> R.string.wsymb2_light_snowfall
-            26 -> R.string.wsymb2_moderate_snowfall
-            27 -> R.string.wsymb2_heavy_snowfall
-            else -> {
-                R.string.wsymb2_clear_sky
-            }
-        }
-
-    private fun handlePrSort(prSort: Int): Int =
-        when (prSort) {
-            0 -> R.string.prsort_no_precipitation
-            1 -> R.string.prsort_snow
-            2 -> R.string.prsort_snow_and_rain
-            3 -> R.string.prsort_rain
-            4 -> R.string.prsort_drizzle
-            5 -> R.string.prsort_freezing_rain
-            6 -> R.string.prsort_freezing_drizzle
-            else -> R.string.prsort_no_precipitation
-        }
-
-    private fun handleWindDirection(degree: Double): Int =
-        when {
-
-            // North: 0.0 - 11.24
-            (degree <= 11.25 && 0.0 <= degree) -> R.string.north
-
-            // North, North East: 11.25 - 33.74
-            (degree <= 33.75 && 11.25 < degree) -> R.string.north_north_east
-
-            // North East:  33.75 - 56.24
-            (degree <= 56.25 && 33.75 < degree) -> R.string.north_east
-
-            // East, North East:
-            (degree <= 78.75 && 56.25 < degree) -> R.string.east_north_east
-
-            // East:
-            (degree <= 101.25 && 78.75 < degree) -> R.string.east
-
-            // East, South East:
-            (degree <= 123.75 && 101.25 < degree) -> R.string.east_south_east
-
-            // South East
-            (degree <= 146.25 && 123.75 < degree) -> R.string.south_east
-
-            // South, South East
-            (degree <= 168.75 && 146.25 < degree) -> R.string.south_south_east
-
-            // South
-            (degree <= 191.25 && 168.75 < degree) -> R.string.south
-
-            // South, South West
-            (degree <= 213.75 && 191.25 < degree) -> R.string.south_south_west
-
-            // South West
-            (degree <= 236.25 && 213.75 < degree) -> R.string.south_west
-
-            // West, South West
-            (degree <= 258.75 && 236.25 < degree) -> R.string.west_south_west
-
-            // West
-            (degree <= 281.25 && 258.75 < degree) -> R.string.west
-
-            // West, North West
-            (degree <= 303.75 && 281.25 < degree) -> R.string.west_north_west
-
-            // North West
-            (degree <= 326.25 && 303.75 < degree) -> R.string.north_west
-
-            // North, North West
-            (degree <= 348.75 && 326.25 < degree) -> R.string.north_north_west
-
-            // North: 348.75 - 360.0
-            (degree <= 360 && 348.75 < degree) -> R.string.north
-
-            else -> {
-                Timber.e("DisplayError: Wind direction is outside of range: $degree")
-                R.string.empty_wind_direction
-            }
-        }
-
     inner class ForecastViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
         init {
@@ -276,8 +165,7 @@ class WeatherForecastAdapter @Inject constructor() : RecyclerView.Adapter<Recycl
             itemView.temperature.text = item.temperature.toString()
             itemView.wsymb2Description.setText(handleWsymb2Description(item.weatherDescription))
             itemView.wsymb2Icon.setImageResource(handleWsymb2Icon(item.weatherIcon))
-
-            handleIndicatorFlair(item.temperature)
+            itemView.temperature_indicator_flair.setBackgroundResource(handleIndicatorFlair(item.temperature))
 
             item.feelsLikeTemperature?.let {
                 itemView.feelsLikeTemperature.text = item.feelsLikeTemperature
@@ -290,70 +178,14 @@ class WeatherForecastAdapter @Inject constructor() : RecyclerView.Adapter<Recycl
                 itemView.feelsLikeTempUnit.toInvisible()
             }
         }
-
-        private fun handleIndicatorFlair(temperature: Double) {
-            when {
-
-                // Range: < -10.0  -- Example: -22.0
-                (-10.0 >= temperature) -> itemView.temperature_indicator_flair.setBackgroundResource(R.color.color_gradient_0)
-
-                // Range: -5.0 - -10.0  -- Example: -7.5
-                (-5.0 >= temperature && temperature > -10.0) -> itemView.temperature_indicator_flair.setBackgroundResource(R.color.color_gradient_1)
-
-                // Range: -2.5 - -5.0   -- Example: -3.67
-                (-2.5 >= temperature && temperature > -5.0) -> itemView.temperature_indicator_flair.setBackgroundResource(R.color.color_gradient_2)
-
-                // Range: -0.5 -> -2.5   -- Example: -1.75 || -0.5
-                (-0.5 >= temperature && temperature > -2.5) -> itemView.temperature_indicator_flair.setBackgroundResource(R.color.color_gradient_3)
-
-                // Range: 0.0 -> -0.5    -- Example: -0.25 || 0.0
-                (temperature <= 0.0 && -0.5 < temperature) -> itemView.temperature_indicator_flair.setBackgroundResource(R.color.color_gradient_4)
-
-                // Range: 0.0 -> 1.0     -- Example: 0.5 || 1.0
-                (temperature <= 1.0 && 0.0 < temperature) -> itemView.temperature_indicator_flair.setBackgroundResource(R.color.color_gradient_5)
-
-                // Range: 1.0 -> 2.0     -- Example: 1.5 || 2.0
-                (temperature <= 2.0 && 1.0 < temperature) -> itemView.temperature_indicator_flair.setBackgroundResource(R.color.color_gradient_6)
-
-                // Range: 2.0 -> 3.0     -- Example: 2.5 || 3.0
-                (temperature <= 3.0 && 2.0 < temperature) -> itemView.temperature_indicator_flair.setBackgroundResource(R.color.color_gradient_7)
-
-                // Range: 3.0 -> 4.0     -- Example: 3.9 || 4.0
-                (temperature <= 4.0 && 3.0 < temperature) -> itemView.temperature_indicator_flair.setBackgroundResource(R.color.color_gradient_8)
-
-                // Range: 4.0 -> 5.0     -- Example: 4.0 || 5.0
-                (temperature <= 5.0 && 4.0 < temperature) -> itemView.temperature_indicator_flair.setBackgroundResource(R.color.color_gradient_9)
-
-                // Range: 5.0 -> 10.0    -- Example: 7.5 || 10.0
-                (temperature <= 10.0 && 5.0 < temperature) -> itemView.temperature_indicator_flair.setBackgroundResource(R.color.color_gradient_10)
-
-                // Range: 10.0 -> 15.0   -- Example: 12.5 || 15.0
-                (temperature <= 15.0 && 10.0 < temperature) -> itemView.temperature_indicator_flair.setBackgroundResource(R.color.color_gradient_11)
-
-                // Range: 15.0 -> 20.0   -- Example: 17.5 || 20.0
-                (temperature <= 20.0 && 15.0 < temperature) -> itemView.temperature_indicator_flair.setBackgroundResource(R.color.color_gradient_12)
-
-                // Range: 20.0 -> 22.5   -- Example: 21.1 || 22.5
-                (temperature <= 22.5 && 20.0 < temperature) -> itemView.temperature_indicator_flair.setBackgroundResource(R.color.color_gradient_13)
-
-                // Range: 22.5 -> 25.0   -- Example: 24.0 || 25.0
-                (temperature <= 25.0 && 22.5 < temperature) -> itemView.temperature_indicator_flair.setBackgroundResource(R.color.color_gradient_14)
-
-                // Range: 25.0 - 30.0    -- Example: 27.0 ||  30.0
-                (temperature <= 30.0 && 25.0 < temperature) -> itemView.temperature_indicator_flair.setBackgroundResource(R.color.color_gradient_15)
-
-                // Range: > 30.0         -- Example: 31.0 | 50.0
-                (temperature > 30.0) -> itemView.temperature_indicator_flair.setBackgroundResource(R.color.color_gradient_16)
-            }
-        }
     }
 
     override fun getItemViewType(position: Int): Int {
         return when (list[position]) {
-            is WeatherForecastItemModel -> WeatherForecastAdapter.TYPE_WEATHER_FORECAST
-            is WeatherForecastSplashItemModel -> WeatherForecastAdapter.TYPE_WEATHER_SPLASH
-            is WeatherForecastHeadlineModel -> WeatherForecastAdapter.TYPE_WEATHER_HEADER
-            else -> WeatherForecastAdapter.TYPE_WEATHER_WEEKDAY
+            is WeatherForecastItemModel -> TYPE_WEATHER_FORECAST
+            is WeatherForecastSplashItemModel -> TYPE_WEATHER_SPLASH
+            is WeatherForecastHeadlineModel -> TYPE_WEATHER_HEADER
+            else -> TYPE_WEATHER_WEEKDAY
         }
     }
 

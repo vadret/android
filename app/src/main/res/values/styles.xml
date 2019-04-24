@@ -21,6 +21,7 @@
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
         <item name="android:statusBarColor">?attr/colorPrimaryDark</item>
+        <item name="thunderRiskBackground">@color/thunder_risk_light</item>
     </style>
 
     <!-- LIGHT_THEME -->
@@ -50,6 +51,7 @@
         <item name="android:textColorSecondary">@color/secondary_text_color_selector</item>
         <item name="android:textColorHint">@color/text_color_dark</item>
         <item name="alertDialogTheme">@style/dialogAlertDarkTheme</item>
+        <item name="thunderRiskBackground">@color/thunder_risk_dark</item>
     </style>
 
     <!-- AMOLED_THEME -->
@@ -74,6 +76,7 @@
         <item name="android:textColorSecondary">@color/secondary_text_color_selector</item>
         <item name="android:textColorHint">@color/text_color_amoled</item>
         <item name="alertDialogTheme">@style/dialogAlertAmoledTheme</item>
+        <item name="thunderRiskBackground">@color/thunder_risk_amoled</item>
     </style>
 
     <style name="dialogAlertDarkTheme" parent="@style/Theme.AppCompat.Dialog.Alert">

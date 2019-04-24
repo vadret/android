@@ -43,9 +43,7 @@ object WeatherForecastMapper {
         for (timeSerie: TimeSerie in timeSerieList) {
 
             if (weatherForecastHeadlineModel == null) {
-                weatherForecastHeadlineModel = WeatherForecastHeadlineModel(
-                    headline = getWeatherDescription(timeSerie.parameters)
-                )
+                weatherForecastHeadlineModel = getWeatherForecastHeadlineModel(timeSerie.parameters)
                 baseWeatherForecastModelList.add(weatherForecastHeadlineModel)
             }
 
@@ -84,14 +82,23 @@ object WeatherForecastMapper {
         return baseWeatherForecastModelList.toList()
     }
 
-    private fun getWeatherDescription(parameters: List<Parameter>): Int? {
-        var description: Int? = null
+    private fun getWeatherForecastHeadlineModel(parameters: List<Parameter>): WeatherForecastHeadlineModel {
+        var weatherDescription: Int? = null
+        var windDirection: Double? = null
+        var windSpeed: Double? = null
+
         parameters.forEach { parameter: Parameter ->
             when (parameter.name) {
-                "Wsymb2" -> description = parameter.values.first().toInt()
+                "wd" -> windDirection = parameter.values.first()
+                "ws" -> windSpeed = parameter.values.first()
+                "Wsymb2" -> weatherDescription = parameter.values.first().toInt()
             }
         }
-        return description
+        return WeatherForecastHeadlineModel(
+            headline = weatherDescription,
+            windSpeed = windSpeed,
+            windDirection = windDirection
+        )
     }
 
     private fun getWeatherForecastSplashItemModel(timeSerie: TimeSerie, location: Location): WeatherForecastSplashItemModel {

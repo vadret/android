@@ -16,6 +16,7 @@
     <color name="search_result_background_light">#ffffff</color>
     <color name="text_color_hint_light">#979797</color>
     <color name="text_color_light">#727272</color>
+    <color name="thunder_risk_light">#F1F3FC</color>
     <!-- END LIGHT THEME -->
 
     <!-- BEGIN DARK THEME -->
@@ -29,6 +30,7 @@
     <color name="text_color_dark_disabled">#727272</color>
     <color name="text_color_hint_dark">#CECECE</color>
     <color name="theme_primary_item_background_dark">#3D3D3D</color>
+    <color name="thunder_risk_dark">#474747</color>
     <!-- END DARK THEME -->
 
     <!-- BEGIN AMOLED THEME -->
@@ -42,6 +44,7 @@
     <color name="text_color_amoled_disabled">#727272</color>
     <color name="text_color_hint_amoled">#CECECE</color>
     <color name="theme_primary_item_background_amoled">#000000</color>
+    <color name="thunder_risk_amoled">#0F0F0F</color>
     <!-- END AMOLED THEME -->
 
     <!-- SMHI WARNING COLOR CODES -->
@@ -71,5 +74,6 @@
     <color name="color_gradient_14">#fb815f</color>
     <color name="color_gradient_15">#E9704E</color>
     <color name="color_gradient_16">#F5704B</color>
+    <color name="color_gradient_NA">#D0C6DF</color>
 
 </resources>
