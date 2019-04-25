@@ -40,21 +40,30 @@ const val DEFAULT_LOCALITY = "Stockholm"
 const val DEFAULT_MUNICIPALITY = "Stockholm"
 const val DEFAULT_COUNTY = "Stockholm"
 
+const val DEFAULT_FORECAST_FORMAT = "HOURLY"
+const val DEFAULT_UPDATE_INTERVAL = "1 hour"
+
 // MISCELLANEOUS
+const val DEGREE_SYMBOL = "°"
+const val HUMIDITY_SUFFIX = "%"
+const val MPS_SUFFIX = "m/s"
 const val NIL_INT = 0
-const val WEATHER_CACHE_KEY = 1L
+const val WEATHER_FORECAST_CACHE_KEY = "WEATHER_FORECAST_CACHE"
 const val ALERT_CACHE_KEY = 2L
 const val RADAR_CACHE_KEY = 3L
 const val DISK_CACHE_SIZE = 15000L
-const val MEMORY_CACHE_SIZE = 15000
-const val DEFAULT_AUTOCOMPLETE_LIMIT = 3
+const val MEMORY_CACHE_SIZE = 30000
+
+const val DEFAULT_AUTOCOMPLETE_LIMIT = 10
 const val AUTOCOMPLETE_DEBOUNCE_MILLIS = 70L
 const val RADAR_DEBOUNCE_MILLIS = 300L
 
 // THEME
 const val LIGHT_THEME = "Light"
+const val LIGHT_THEME_NO_BACKGROUND = "Light (No background)"
 const val DARK_THEME = "Dark"
 const val AMOLED_THEME = "AMOLED"
+const val DEFAULT_THEME = LIGHT_THEME
 
 // COUNTRY SHORT CODES
 const val POLAND = "pl"

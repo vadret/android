@@ -6,7 +6,7 @@ import fi.kroon.vadret.data.functional.Either
 import fi.kroon.vadret.data.functional.flatMap
 import fi.kroon.vadret.data.functional.flatMapSingle
 import fi.kroon.vadret.data.functional.map
-import fi.kroon.vadret.domain.BaseService
+import fi.kroon.vadret.domain.IService
 import fi.kroon.vadret.presentation.alert.AlertMapper
 import fi.kroon.vadret.presentation.alert.model.BaseWarningItemModel
 import fi.kroon.vadret.utils.FIVE_MINUTES_IN_MILLIS
@@ -21,7 +21,7 @@ class GetAlertService @Inject constructor(
     private val getAlertMemoryCacheTask: GetAlertMemoryCacheTask,
     private val setAlertDiskCacheTask: SetAlertDiskCacheTask,
     private val setAlertMemoryCacheTask: SetAlertMemoryCacheTask
-) : BaseService() {
+) : IService {
 
     data class Data(
         val baseWarningItemModelList: List<BaseWarningItemModel> = listOf(),

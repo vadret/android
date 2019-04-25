@@ -5,7 +5,7 @@ import android.os.Bundle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.jakewharton.rxbinding3.swiperefreshlayout.refreshes
 import fi.kroon.vadret.R
-import fi.kroon.vadret.presentation.BaseFragment
+import fi.kroon.vadret.presentation.shared.BaseFragment
 import fi.kroon.vadret.presentation.alert.di.AlertComponent
 import fi.kroon.vadret.presentation.alert.di.AlertFeatureScope
 import fi.kroon.vadret.utils.extensions.appComponent

@@ -1,10 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="fi.kroon.vadret">
+
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-feature android:name="android.hardware.location.gps"
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+
+    <uses-feature
+        android:name="android.hardware.location.gps"
         android:required="false" />
 
     <application
@@ -15,14 +19,77 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/LIGHT">
-        <activity android:name="fi.kroon.vadret.presentation.main.MainActivity"
+        <activity
+            android:name="fi.kroon.vadret.presentation.main.MainActivity"
+            android:launchMode="singleTop"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <meta-data android:name="io.fabric.ApiKey" android:value="${FABRIC_API_KEY}" />
-    </application>
 
+        <!-- Weather Forecast Tiny Widget Configuration Activity -->
+        <activity android:name="fi.kroon.vadret.presentation.weatherforecastwidget.tiny.setup.WeatherForecastTinySetup">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
+            </intent-filter>
+        </activity>
+
+        <!-- Weather Forecast Tiny -->
+        <receiver android:name="fi.kroon.vadret.presentation.weatherforecastwidget.tiny.provider.WeatherForecastTinyAppWidgetProvider">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/weather_forecast_widget_provider_tiny" />
+        </receiver>
+
+        <!-- Weather Forecast Small Widget Configuration Activity -->
+        <activity android:name="fi.kroon.vadret.presentation.weatherforecastwidget.small.setup.WeatherForecastSmallSetup">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
+            </intent-filter>
+        </activity>
+
+        <!-- Weather Forecast Small -->
+        <receiver android:name="fi.kroon.vadret.presentation.weatherforecastwidget.small.provider.WeatherForecastSmallAppWidgetProvider">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/weather_forecast_widget_provider_small" />
+        </receiver>
+
+        <!-- Weather Forecast Medium Widget Configuration Activity -->
+        <activity android:name="fi.kroon.vadret.presentation.weatherforecastwidget.medium.setup.WeatherForecastMediumSetup">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
+            </intent-filter>
+        </activity>
+
+        <!-- Weather Forecast Medium -->
+        <receiver android:name="fi.kroon.vadret.presentation.weatherforecastwidget.medium.provider.WeatherForecastMediumAppWidgetProvider">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/weather_forecast_widget_provider_medium" />
+        </receiver>
+
+        <!-- Weather Forecast Medium Service Factory -->
+        <service
+            android:name="fi.kroon.vadret.presentation.weatherforecastwidget.medium.service.WeatherForecastMediumService"
+            android:permission="android.permission.BIND_REMOTEVIEWS"></service>
+
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="${FABRIC_API_KEY}" />
+    </application>
 </manifest>

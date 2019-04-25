@@ -95,6 +95,7 @@ android {
             resValue "string", "app_version", "${defaultConfig.versionName}"
         }
         debug {
+            ext.alwaysUpdateBuildId = false
             ext.enableCrashlytics = false
             testCoverageEnabled = true
             versionNameSuffix "debug"

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="weather_widget_update_intervals">
+        <item>@string/widget_interval_fifteen_min</item>
+        <item>@string/widget_interval_thirty_min</item>
+        <item>@string/widget_interval_one_hour</item>
+        <item>@string/widget_interval_three_hours</item>
+        <item>@string/widget_interval_six_hours</item>
+        <item>@string/widget_interval_twelve_hours</item>
+        <item>@string/widget_interval_twenty_four_hours</item>
+    </string-array>
+</resources>

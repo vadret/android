@@ -8,4 +8,4 @@ data class WeatherForecastItemModel(
     val windSpeed: Double,
     val weatherIcon: Int,
     val weatherDescription: Int
-) : BaseWeatherForecastModel
+) : IWeatherForecastModel

@@ -8,9 +8,10 @@ import fi.kroon.vadret.data.functional.map
 import fi.kroon.vadret.data.radar.model.File
 import fi.kroon.vadret.data.radar.model.Radar
 import fi.kroon.vadret.data.radar.model.RadarRequest
-import fi.kroon.vadret.domain.BaseService
+import fi.kroon.vadret.domain.IService
 import fi.kroon.vadret.utils.FIFTEEN_MINUTES_IN_MILLIS
 import fi.kroon.vadret.utils.OFF_BY_ONE
+import fi.kroon.vadret.utils.extensions.asSingle
 import io.reactivex.Single
 import io.reactivex.rxkotlin.zipWith
 import timber.log.Timber
@@ -22,7 +23,7 @@ class GetRadarImageUrlService @Inject constructor(
     private val getRadarMemoryCacheTask: GetRadarMemoryCacheTask,
     private val setRadarDiskCacheTask: SetRadarDiskCacheTask,
     private val setRadarMemoryCacheTask: SetRadarMemoryCacheTask
-) : BaseService() {
+) : IService {
 
     data class Data(
         val index: Int,
@@ -34,12 +35,11 @@ class GetRadarImageUrlService @Inject constructor(
     )
 
     operator fun invoke(timeStamp: Long?, index: Int): Single<Either<Failure, Data>> =
-        Single.just(
-            Data(
-                timeStamp = timeStamp ?: currentTimeMillis,
-                index = index
-            )
-        ).flatMap(::getRadar)
+        Data(
+            timeStamp = timeStamp ?: currentTimeMillis,
+            index = index
+        ).asSingle()
+            .flatMap(::getRadar)
             .map(::getFileByIndex)
 
     private fun getFileByIndex(either: Either<Failure, Data>): Either<Failure, Data> =

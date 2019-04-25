@@ -10,9 +10,9 @@ import javax.inject.Inject
 class ClearWeatherForecastDiskCacheTask @Inject constructor(
     private val cacheRepo: WeatherForecastCacheDataSource
 ) {
-    operator fun invoke(): Single<Either<Failure, Unit>> =
+    operator fun invoke(cacheKey: String): Single<Either<Failure, Unit>> =
         cacheRepo
-            .clearDiskCache()
+            .clearDiskCache(cacheKey)
             .doOnError {
                 Timber.e("DisplayError clearing disk cache: $it")
             }

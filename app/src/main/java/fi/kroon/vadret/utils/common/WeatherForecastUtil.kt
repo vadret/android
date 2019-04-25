@@ -5,7 +5,23 @@ import timber.log.Timber
 
 object WeatherForecastUtil {
 
-    fun handlePrSort(prSort: Int): Int =
+    const val FIFTEEN_MINUTES = "15 min"
+    const val THIRTY_MINUTES = "30 min"
+    const val ONE_HOUR = "1 hour"
+    const val THREE_HOURS = "3 hours"
+    const val SIX_HOURS = "6 hours"
+    const val TWELVE_HOURS = "12 hours"
+    const val TWENTY_FOUR_HOURS = "24 hours"
+
+    const val FIFTEEN_MINUTES_AS_MILLIS = 900_000L
+    const val THIRTY_MINUTES_AS_MILLIS = 1_800_000L
+    const val ONE_HOUR_AS_MILLIS = 3_600_000L
+    const val THREE_HOURS_AS_MILLIS = 10_800_000L
+    const val SIX_HOURS_AS_MILLIS = 21_600_000L
+    const val TWELVE_HOURS_AS_MILLIS = 43_200_000L
+    const val TWENTY_FOUR_HOURS_AS_MILLIS = 86_400_000L
+
+    fun getPrecipitationResourceId(prSort: Int): Int =
         when (prSort) {
             0 -> R.string.prsort_no_precipitation
             1 -> R.string.prsort_snow
@@ -26,7 +42,7 @@ object WeatherForecastUtil {
      *  Storm winds: 24.5 - 32.6 m/s
      *  Hurricane: > 32.7 m/s
      */
-    fun windSpeedToName(windSpeed: Double): Int = when {
+    fun getWindSpeedClassResourceId(windSpeed: Double): Int = when {
         (windSpeed <= 0.2) -> R.string.ws_calm
         (windSpeed in 0.3..3.3) -> R.string.ws_weak
         (windSpeed in 3.4..7.9) -> R.string.ws_moderate
@@ -36,7 +52,7 @@ object WeatherForecastUtil {
         else -> R.string.ws_hurricanes
     }
 
-    fun handleWsymb2Icon(index: Int): Int =
+    fun getWsymb2IconResourceId(index: Int): Int =
         when (index) {
             1 -> R.drawable.wsymb2_clear_sky
             2 -> R.drawable.wsymb2_nearly_clear_sky
@@ -70,7 +86,7 @@ object WeatherForecastUtil {
             }
         }
 
-    fun handleWsymb2Description(index: Int): Int =
+    fun getWsymb2ResourceId(index: Int): Int =
         when (index) {
             1 -> R.string.wsymb2_clear_sky
             2 -> R.string.wsymb2_nearly_clear_sky
@@ -104,7 +120,7 @@ object WeatherForecastUtil {
             }
         }
 
-    fun handleIndicatorFlair(temperature: Double): Int =
+    fun getTemperatureColorResourceId(temperature: Double): Int =
         when {
 
             // Range: < -10.0  -- Example: -22.0
@@ -218,5 +234,17 @@ object WeatherForecastUtil {
                 Timber.e("DisplayError: Wind direction is outside of range: $degree")
                 R.string.empty_wind_direction
             }
+        }
+
+    fun getUpdateIntervalInMillis(period: String): Long =
+        when (period) {
+            FIFTEEN_MINUTES -> FIFTEEN_MINUTES_AS_MILLIS
+            THIRTY_MINUTES -> THIRTY_MINUTES_AS_MILLIS
+            ONE_HOUR -> ONE_HOUR_AS_MILLIS
+            THREE_HOURS -> THREE_HOURS_AS_MILLIS
+            SIX_HOURS -> SIX_HOURS_AS_MILLIS
+            TWELVE_HOURS -> TWELVE_HOURS_AS_MILLIS
+            TWENTY_FOUR_HOURS -> TWENTY_FOUR_HOURS_AS_MILLIS
+            else -> FIFTEEN_MINUTES_AS_MILLIS
         }
 }

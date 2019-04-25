@@ -3,7 +3,6 @@ package fi.kroon.vadret.presentation.main.di
 import dagger.Subcomponent
 import fi.kroon.vadret.presentation.main.MainActivity
 
-// TODO RM
 @Subcomponent(
     modules = [
         MainActivityModule::class

@@ -1,6 +1,6 @@
 package fi.kroon.vadret.data.library.local
 
-import fi.kroon.vadret.core.di.scope.CoreApplicationScope
+import fi.kroon.vadret.di.scope.CoreApplicationScope
 import fi.kroon.vadret.data.exception.Failure
 import fi.kroon.vadret.data.functional.Either
 import fi.kroon.vadret.data.library.model.Library

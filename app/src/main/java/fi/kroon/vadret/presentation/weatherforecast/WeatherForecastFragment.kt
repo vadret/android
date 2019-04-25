@@ -13,7 +13,7 @@ import com.jakewharton.rxbinding3.swiperefreshlayout.refreshes
 import com.jakewharton.rxbinding3.view.clicks
 import fi.kroon.vadret.R
 import fi.kroon.vadret.data.autocomplete.model.AutoCompleteItem
-import fi.kroon.vadret.presentation.BaseFragment
+import fi.kroon.vadret.presentation.shared.BaseFragment
 import fi.kroon.vadret.presentation.weatherforecast.autocomplete.AutoCompleteAdapter
 import fi.kroon.vadret.presentation.weatherforecast.di.WeatherForecastComponent
 import fi.kroon.vadret.presentation.weatherforecast.di.WeatherForecastFeatureScope
@@ -98,7 +98,7 @@ class WeatherForecastFragment : BaseFragment() {
 
     private val cmp: WeatherForecastComponent by lazy {
         appComponent()
-            .forecastComponentBuilder()
+            .weatherForecastComponentBuilder()
             .build()
     }
 

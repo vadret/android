@@ -5,7 +5,8 @@ import androidx.annotation.StringRes
 import androidx.recyclerview.widget.DiffUtil
 import fi.kroon.vadret.data.autocomplete.model.AutoCompleteItem
 import fi.kroon.vadret.data.nominatim.model.Locality
-import fi.kroon.vadret.presentation.weatherforecast.model.BaseWeatherForecastModel
+import fi.kroon.vadret.presentation.weatherforecast.model.IWeatherForecastModel
+import fi.kroon.vadret.utils.AUTOMATIC_LOCATION_MODE_KEY
 import fi.kroon.vadret.utils.extensions.empty
 import kotlinx.android.parcel.Parcelize
 
@@ -39,6 +40,7 @@ object WeatherForecastView {
         val startRefreshing: Boolean = false,
         val stopRefreshing: Boolean = false,
         val timeStamp: Long? = null,
+        val locationModeKey: String = AUTOMATIC_LOCATION_MODE_KEY,
         val wasRestoredFromStateParcel: Boolean = false
     )
 
@@ -52,7 +54,7 @@ object WeatherForecastView {
         object EnableSearchView : RenderEvent()
         class DisableSearchView(val text: String) : RenderEvent()
         class DisplayAutoComplete(val diffResult: DiffUtil.DiffResult?, val newFilteredList: List<AutoCompleteItem>) : RenderEvent()
-        class DisplayWeatherForecast(val list: List<BaseWeatherForecastModel>, val locality: Locality) : RenderEvent()
+        class DisplayWeatherForecast(val list: List<IWeatherForecastModel>, val locality: Locality) : RenderEvent()
         class DisplayError(@StringRes val errorCode: Int) : RenderEvent()
     }
 

@@ -5,7 +5,7 @@ import fi.kroon.vadret.data.functional.Either
 import fi.kroon.vadret.data.theme.model.Theme
 import fi.kroon.vadret.domain.theme.GetThemeModeTask
 import fi.kroon.vadret.domain.theme.ObserveThemeChangeTask
-import fi.kroon.vadret.presentation.BaseViewModel
+import fi.kroon.vadret.presentation.shared.IViewModel
 import fi.kroon.vadret.presentation.main.di.MainActivityScope
 import fi.kroon.vadret.utils.extensions.asObservable
 import io.reactivex.Observable
@@ -19,7 +19,7 @@ class MainActivityViewModel @Inject constructor(
     private var state: MainActivityView.State,
     private val getThemeModeTask: GetThemeModeTask,
     private val observeThemeChangeTask: ObserveThemeChangeTask
-) : BaseViewModel() {
+) : IViewModel {
 
     operator fun invoke(): ObservableTransformer<MainActivityView.Event, MainActivityView.State> = onEvent
 

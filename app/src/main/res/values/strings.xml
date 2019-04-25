@@ -7,6 +7,7 @@
 
     <string name="feels_like">Feels like</string>
     <string name="unknown_area">Unknown area</string>
+    <string name="risk_for_thunder">Risk for thunder</string>
 
     <string name="wsymb2_clear_sky">Clear sky</string>
     <string name="wsymb2_nearly_clear_sky">Nearly clear sky</string>
@@ -36,7 +37,6 @@
     <string name="wsymb2_moderate_snowfall">Moderate snowfall</string>
     <string name="wsymb2_heavy_snowfall">Heavy snowfall</string>
 
-    <!-- Mulet | med | syd, sydvästliga | stormvindar -->
     <string name="ws_with">with</string>
     <string name="ws_mostly">mostly</string>
     <string name="ws_today">Today</string>
@@ -50,6 +50,33 @@
     <string name="ws_strong">strong</string>
     <string name="ws_windstorms">storm</string>
     <string name="ws_hurricanes">hurricane</string>
+
+    <!-- Test strings -->
+    <string name="test_locality_name" translatable="false">Norrköping Test</string>
+    <string name="test_county_name" translatable="false">Östergötland Test</string>
+    <string name="test_municipality_name" translatable="false">Norrköping Test</string>
+    <string name="test_degree_celcius" translatable="false">-9° Test</string>
+    <string name="test_degree_feels_like_celcius" translatable="false">-13° Test</string>
+    <string name="test_wind_speed" translatable="false">15 m/s Test</string>
+    <string name="test_precipitation_description" translatable="false">Lätta regnskurar Test</string>
+    <string name="test_humidity" translatable="false">78% Test</string>
+    <string name="test_pressure" translatable="false">812 hPa Test</string>
+    <string name="test_risk_thunder" translatable="false">Risk för åska Test</string>
+    <string name="test_time_of_day" translatable="false">15:00</string>
+    <string name="test_name_of_day" translatable="false">Måndag</string>
+
+    <!-- Widget Setup -->
+    <string name="widget_setup_title" translatable="false">Vädret</string>
+    <string name="widget_setup_sub_title">Widget Configuration</string>
+    <string name="widget_setup_theme">Theme</string>
+    <string name="widget_setup_update_interval">Update interval</string>
+    <string name="widget_setup_forecast_format">Forecast format</string>
+    <string name="widget_setup_use_my_phones_position_to_fetch_weather">Use my phones position to fetch weather</string>
+    <string name="widget_setup_cancel">Cancel</string>
+    <string name="widget_setup_setup_canceled">Setup canceled</string>
+    <string name="widget_setup_confirm">Confirm</string>
+    <string name="widget_setup_search">Search</string>
+    <string name="widget_setup_currently_selected">Currently selected</string>
 
     <!-- Wind direction -->
     <string name="north">northern</string>
@@ -87,7 +114,7 @@
     <string name="disk_cache_write" translatable="false">Disk cache write failed</string>
     <string name="disk_cache_read" translatable="false">Disk cache read failed</string>
 
-    <string name="unhandled_error">Unhandled exception</string>
+    <string name="unhandled_error" translatable="false">Unhandled exception</string>
     <string name="no_location_permission">No location permission</string>
     <string name="location_failure">Location not available</string>
     <string name="no_network_available">No network available</string>
@@ -97,8 +124,8 @@
     <string name="data_not_available_at_this_location">No weather data available for this location.</string>
     <string name="preferences_updated_successfully">Preferences updated successfully!</string>
     <string name="permission_missing">Some permissions missing. Functionality will be limited.</string>
-    <string name="permission_granted">Permission allowed!</string>
-    <string name="permission_denied">Permission denied!</string>
+    <string name="permission_granted">Permission granted</string>
+    <string name="permission_denied">Permission denied</string>
 
     <string name="display">Display</string>
     <string name="theme">Theme</string>
@@ -107,6 +134,34 @@
     <string name="light_key" translatable="false">Light</string>
     <string name="dark_key" translatable="false">Dark</string>
     <string name="amoled_key" translatable="false">AMOLED</string>
+    <string name="light_no_background_key" translatable="false">Light (No background)</string>
+
+    <!-- Widgets -->
+    <string name="widget_interval_fifteen_min" translatable="false">15 min</string>
+    <string name="widget_interval_thirty_min" translatable="false">30 min</string>
+    <string name="widget_interval_one_hour" translatable="false">1 hour</string>
+    <string name="widget_interval_three_hours" translatable="false">3 hours</string>
+    <string name="widget_interval_six_hours" translatable="false">6 hours</string>
+    <string name="widget_interval_twelve_hours" translatable="false">12 hours</string>
+    <string name="widget_interval_twenty_four_hours" translatable="false">24 hours</string>
+
+    <!-- 0..5 -->
+    <string name="widget_interval_hourly">Hourly</string>
+    <string name="widget_interval_bihourly">Bi-hourly</string>
+    <string name="widget_interval_every_three_hour">Every 3rd hour</string>
+    <string name="widget_interval_every_six_hour">Every 6th hour</string>
+
+    <string name="widget_select_update_interval">Select update interval</string>
+    <string name="widget_update_interval">Update interval</string>
+
+    <string name="widget_select_widget_theme">Select widget theme</string>
+    <string name="widget_widget_theme">Widget Theme</string>
+
+    <string name="widget_select_location_mode">Select location mode</string>
+    <string name="widget_use_gps_automatically">Use my GPS automatically</string>
+    <string name="widget_use_location_manually">Use a fixed location</string>
+    <string name="widget_will_update_shortly">Widget will update shortly</string>
+    <string name="widget_must_select_a_locality">Must select a locality</string>
 
     <string name="sunset">Sunset</string>
     <string name="sunrise">Sunrise</string>
@@ -210,5 +265,6 @@
 
     <string name="no_alert_available">No alerts available</string>
     <string name="alert">Alert</string>
+    <string name="wind">wind</string>
 
 </resources>

@@ -9,9 +9,9 @@ import fi.kroon.vadret.data.location.model.Location
 import fi.kroon.vadret.data.nominatim.model.NominatimReverseOut
 import fi.kroon.vadret.data.weatherforecast.model.Weather
 import fi.kroon.vadret.data.weatherforecast.model.WeatherOut
-import fi.kroon.vadret.domain.BaseService
+import fi.kroon.vadret.domain.IService
 import fi.kroon.vadret.presentation.weatherforecast.WeatherForecastMapper
-import fi.kroon.vadret.presentation.weatherforecast.model.BaseWeatherForecastModel
+import fi.kroon.vadret.presentation.weatherforecast.model.IWeatherForecastModel
 import fi.kroon.vadret.utils.FIVE_MINUTES_IN_MILLIS
 import fi.kroon.vadret.utils.extensions.asSingle
 import io.reactivex.Single
@@ -20,19 +20,19 @@ import timber.log.Timber
 import javax.inject.Inject
 
 class GetWeatherForecastService @Inject constructor(
-    private val getWeatherTask: GetWeatherTask,
+    private val getWeatherForecastTask: GetWeatherForecastTask,
     private val getLocationAutomaticTask: GetLocationAutomaticTask,
     private val getReverseLocalityNameTask: GetReverseLocalityNameTask,
-    private val getLocationModeTask: GetLocationModeTask,
+    private val getAppLocationModeTask: GetAppLocationModeTask,
     private val getLocationManualTask: GetLocationManualTask,
     private val setWeatherForecastDiskCacheTask: SetWeatherForecastDiskCacheTask,
     private val setWeatherForecastMemoryCacheTask: SetWeatherForecastMemoryCacheTask,
     private val getWeatherForecastMemoryCacheTask: GetWeatherForecastMemoryCacheTask,
     private val getWeatherForecastDiskCacheTask: GetWeatherForecastDiskCacheTask
-) : BaseService() {
+) : IService {
 
     data class Data(
-        val baseWeatherForecastModelList: List<BaseWeatherForecastModel> = listOf(),
+        val weatherForecastModelList: List<IWeatherForecastModel> = listOf(),
         val localityName: String? = null,
         val forceNet: Boolean = false,
         val weather: Weather? = null,
@@ -42,19 +42,31 @@ class GetWeatherForecastService @Inject constructor(
         val location: Location? = null
     )
 
+    /**
+     *  [cacheKey] Must conform to regex [a-z0-9_-]{1,120}
+     */
+    private companion object {
+        const val cacheKey: String = "weather_forecast_app_cache_key_"
+    }
+
+    /**
+     *  [timeStamp]         -- Timestamp issued at time of request, used to control whether cache or network
+     *  should be used.
+     *  [forceNet]          -- Forces a network request regardless of value in timeStamp.
+     */
     operator fun invoke(timeStamp: Long?, forceNet: Boolean): Single<Either<Failure, Data>> =
         Single.just(Data(timeStamp = timeStamp, forceNet = forceNet))
             .flatMap(::getLocationMode)
             .flatMap(::getGpsLocationOrStoredLocation)
             .flatMap(::getWeatherForecastList)
             .flatMap(::doReverseNominatimLookupOrReturn)
-            .map(::mapWeatherToWeatherForecastList)
+            .map(::transform)
 
     /**
-     *  Decides if location should be derived from GPS or local storage.
+     *  Determine if location should be derived from GPS or local storage.
      */
     private fun getLocationMode(data: Data): Single<Either<Failure, Data>> =
-        getLocationModeTask()
+        getAppLocationModeTask()
             .map { either: Either<Failure, Boolean> ->
                 either.map { locationMode ->
                     data.copy(locationMode = locationMode)
@@ -63,7 +75,6 @@ class GetWeatherForecastService @Inject constructor(
 
     private fun getGpsLocationOrStoredLocation(either: Either<Failure, Data>): Single<Either<Failure, Data>> =
         either.flatMapSingle { data: Data ->
-            Timber.d("GetWeatherForecastService invoked with location auto: $data")
             when (data.locationMode) {
                 false -> getLocationManual(data)
                 true -> getLocationAutomatic(data)
@@ -142,7 +153,8 @@ class GetWeatherForecastService @Inject constructor(
         with(data) {
             when {
                 forceNet || (currentTimeMillis > (timeStamp!! + FIVE_MINUTES_IN_MILLIS)) -> {
-                    getWeatherTask(data.weatherOut!!)
+                    Timber.d("DATA: $data")
+                    getWeatherForecastTask(data.weatherOut!!)
                         .map { either: Either<Failure, Weather> ->
                             either.map { weather: Weather ->
                                 data.copy(weather = weather)
@@ -153,13 +165,13 @@ class GetWeatherForecastService @Inject constructor(
                 }
                 else -> {
                     Single.merge(
-                        getWeatherForecastMemoryCacheTask()
+                        getWeatherForecastMemoryCacheTask(cacheKey)
                             .map { either: Either<Failure, Weather> ->
                                 either.map { weather ->
                                     data.copy(weather = weather)
                                 }
                             },
-                        getWeatherForecastDiskCacheTask()
+                        getWeatherForecastDiskCacheTask(cacheKey)
                             .map { either: Either<Failure, Weather> ->
                                 either.map { weather ->
                                     data.copy(weather = weather)
@@ -180,7 +192,7 @@ class GetWeatherForecastService @Inject constructor(
                         )
                     }.take(1)
                         .switchIfEmpty(
-                            getWeatherTask(data.weatherOut!!)
+                            getWeatherForecastTask(data.weatherOut!!)
                                 .map { either: Either<Failure, Weather> ->
                                     Timber.d("Cache was empty, fetching weather from network.")
                                     either.map { weather: Weather ->
@@ -196,8 +208,8 @@ class GetWeatherForecastService @Inject constructor(
 
     private fun updateCache(either: Either<Failure, Data>): Single<Either<Failure, Data>> =
         either.flatMapSingle { data: Data ->
-            setWeatherForecastMemoryCacheTask(data.weather!!)
-                .zipWith(setWeatherForecastDiskCacheTask(data.weather))
+            setWeatherForecastMemoryCacheTask(cacheKey, data.weather!!)
+                .zipWith(setWeatherForecastDiskCacheTask(cacheKey, data.weather))
                 .map { pair: Pair<Either<Failure, Weather>,
                     Either<Failure, Weather>> ->
                     Timber.i("Updating cache")
@@ -211,14 +223,13 @@ class GetWeatherForecastService @Inject constructor(
                 }
         }
 
-    private fun mapWeatherToWeatherForecastList(either: Either<Failure, Data>): Either<Failure, Data> =
+    private fun transform(either: Either<Failure, Data>): Either<Failure, Data> =
         either.map { data: Data ->
             val locationEntity = Location(data.weatherOut!!.latitude, data.weatherOut.longitude)
-            val baseWeatherForecastModelList: List<BaseWeatherForecastModel> = WeatherForecastMapper
-                .toWeatherForecastModel(
-                    data.weather!!.timeSeries!!,
-                    locationEntity
-                )
-            data.copy(baseWeatherForecastModelList = baseWeatherForecastModelList)
+            val baseWeatherForecastModelList: List<IWeatherForecastModel> = WeatherForecastMapper(
+                data.weather!!.timeSeries!!,
+                locationEntity
+            )
+            data.copy(weatherForecastModelList = baseWeatherForecastModelList)
         }
 }

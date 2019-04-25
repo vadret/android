@@ -11,9 +11,9 @@ import javax.inject.Inject
 class SetWeatherForecastDiskCacheTask @Inject constructor(
     private val repo: WeatherForecastCacheDataSource
 ) {
-    operator fun invoke(weather: Weather): Single<Either<Failure, Weather>> =
+    operator fun invoke(cacheKey: String, weather: Weather): Single<Either<Failure, Weather>> =
         repo
-            .updateDiskCache(weather)
+            .updateDiskCache(weather, cacheKey)
             .doOnError {
                 Timber.e("$it")
             }

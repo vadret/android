@@ -4,9 +4,9 @@ import android.app.Application
 import android.content.Context
 import com.jakewharton.threetenabp.AndroidThreeTen
 import com.squareup.leakcanary.LeakCanary
-import fi.kroon.vadret.core.di.component.DaggerCoreApplicationComponent
-import fi.kroon.vadret.core.di.component.CoreApplicationComponent
-import fi.kroon.vadret.core.di.modules.ContextModule
+import fi.kroon.vadret.di.component.CoreApplicationComponent
+import fi.kroon.vadret.di.component.DaggerCoreApplicationComponent
+import fi.kroon.vadret.di.modules.ContextModule
 import timber.log.Timber
 
 abstract class BaseApplication : Application() {

@@ -76,4 +76,8 @@
     <color name="color_gradient_16">#F5704B</color>
     <color name="color_gradient_NA">#D0C6DF</color>
 
+    <!-- Dark/Light Widget Background -->
+    <color name="widget_background_light">#1AFFFFFF</color>
+    <color name="widget_background_dark">#1A000000</color>
+
 </resources>

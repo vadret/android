@@ -5,7 +5,7 @@ import android.os.Bundle
 import com.google.android.material.tabs.TabLayout
 import com.jakewharton.rxbinding3.material.selections
 import fi.kroon.vadret.R
-import fi.kroon.vadret.presentation.BaseFragment
+import fi.kroon.vadret.presentation.shared.BaseFragment
 import fi.kroon.vadret.presentation.aboutapp.di.AboutAppComponent
 import fi.kroon.vadret.presentation.aboutapp.di.AboutAppFeatureScope
 import fi.kroon.vadret.utils.extensions.appComponent

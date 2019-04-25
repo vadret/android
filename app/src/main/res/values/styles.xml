@@ -24,12 +24,12 @@
         <item name="thunderRiskBackground">@color/thunder_risk_light</item>
     </style>
 
-    <!-- LIGHT_THEME -->
+    <!-- LIGHT THEME -->
     <!-- Mainly for convenience and readability -->
     <!-- Default color schema is light colors defined in [AppTheme] -->
     <style name="LIGHT" parent="AppTheme" />
 
-    <!-- DARK_THEME -->
+    <!-- DARK THEME -->
     <style name="DARK" parent="AppTheme">
         <item name="colorPrimary">@color/theme_primary_item_background_dark</item>
         <item name="colorPrimaryDark">@color/theme_primary_item_background_dark</item>
@@ -54,7 +54,7 @@
         <item name="thunderRiskBackground">@color/thunder_risk_dark</item>
     </style>
 
-    <!-- AMOLED_THEME -->
+    <!-- AMOLED THEME -->
     <style name="AMOLED" parent="AppTheme">
         <item name="colorPrimary">@color/theme_primary_item_background_amoled</item>
         <item name="colorPrimaryDark">@color/theme_primary_item_background_amoled</item>

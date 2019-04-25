@@ -17,6 +17,8 @@ import fi.kroon.vadret.utils.LOCALITY_KEY
 import fi.kroon.vadret.utils.LONGITUDE_KEY
 import fi.kroon.vadret.utils.MUNICIPALITY_KEY
 import fi.kroon.vadret.utils.extensions.asLeft
+import fi.kroon.vadret.utils.extensions.asRight
+import fi.kroon.vadret.utils.extensions.asSingle
 import io.reactivex.Observable
 import io.reactivex.Single
 import javax.inject.Inject
@@ -34,79 +36,72 @@ class WeatherForecastLocalKeyValueDataSource @Inject constructor(
 
     fun getBoolean(key: String): Single<Either<Failure, Boolean>> =
         when (key) {
-            AUTOMATIC_LOCATION_MODE_KEY -> Single.just(
-                Either.Right(
-                    automaticLocationMode.get()
-                )
-            )
+            AUTOMATIC_LOCATION_MODE_KEY -> {
+                automaticLocationMode
+                    .get()
+                    .asRight()
+                    .asSingle()
+            }
             else -> {
-                Single.just(
-                    WeatherForecastFailure
+                WeatherForecastFailure
                     .LoadingWeatherSettingFailed
                     .asLeft()
-                )
+                    .asSingle()
             }
         }
 
     fun putBoolean(key: String, value: Boolean): Single<Either<Failure, Unit>> = when (key) {
         AUTOMATIC_LOCATION_MODE_KEY -> {
-            automaticLocationMode.set(value)
-            Single.just(
-                Either.Right(Unit)
-            )
+            automaticLocationMode
+                .set(value)
+            Unit.asRight()
+                .asSingle()
         }
         else -> {
-            Single.just(
-                WeatherForecastFailure
+            WeatherForecastFailure
                 .CachingWeatherForecastDataFailed
                 .asLeft()
-            )
+                .asSingle()
         }
     }
 
     fun getString(key: String): Single<Either<Failure, String>> =
         when (key) {
             COUNTY_KEY -> {
-                Single.just(
-                    Either.Right(
-                        countyName.get()
-                    )
-                )
+                countyName
+                    .get()
+                    .asRight()
+                    .asSingle()
             }
             LOCALITY_KEY -> {
-                Single.just(
-                    Either.Right(
-                        locationName.get()
-                    )
-                )
+                locationName
+                    .get()
+                    .asRight()
+                    .asSingle()
             }
             MUNICIPALITY_KEY -> {
-                Single.just(
-                    Either.Right(
-                        municipalityName.get()
-                    )
-                )
+                municipalityName
+                    .get()
+                    .asRight()
+                    .asSingle()
             }
             LATITUDE_KEY -> {
-                Single.just(
-                    Either.Right(
-                        latitude.get()
-                    )
-                )
+                latitude
+                    .get()
+                    .asRight()
+                    .asSingle()
             }
             LONGITUDE_KEY -> {
-                Single.just(
-                    Either.Right(
-                        longitude.get()
-                    )
-                )
+                longitude
+                    .get()
+                    .asRight()
+                    .asSingle()
             }
             else -> {
-                Single.just(
-                    WeatherForecastFailure
-                        .LoadingWeatherSettingFailed
-                        .asLeft()
-                )
+                WeatherForecastFailure
+                    .LoadingWeatherSettingFailed
+                    .asLeft()
+                    .asSingle()
             }
         }
 
@@ -114,32 +109,34 @@ class WeatherForecastLocalKeyValueDataSource @Inject constructor(
         when (key) {
             COUNTY_KEY -> {
                 countyName.set(value)
-                Single.just(Either.Right(Unit))
+                Unit.asRight()
+                    .asSingle()
             }
             LOCALITY_KEY -> {
                 locationName.set(value)
-                Single.just(Either.Right(Unit))
+                Unit.asRight()
+                    .asSingle()
             }
             LATITUDE_KEY -> {
                 latitude.set(value)
-                Single.just(
-                    Either.Right(Unit) as Either<Failure, Unit>
-                )
+                Unit.asRight()
+                    .asSingle()
             }
             LONGITUDE_KEY -> {
                 longitude.set(value)
-                Single.just(Either.Right(Unit))
+                Unit.asRight()
+                    .asSingle()
             }
             MUNICIPALITY_KEY -> {
                 municipalityName.set(value)
-                Single.just(Either.Right(Unit))
+                Unit.asRight()
+                    .asSingle()
             }
             else -> {
-                Single.just(
-                    WeatherForecastFailure
+                WeatherForecastFailure
                     .CachingWeatherForecastDataFailed
                     .asLeft()
-                )
+                    .asSingle()
             }
         }
 

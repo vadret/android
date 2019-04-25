@@ -1,3 +1,0 @@
-package fi.kroon.vadret.presentation.weatherforecast.model
-
-interface BaseWeatherForecastModel

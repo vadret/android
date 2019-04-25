@@ -63,7 +63,6 @@
     <string name="alert">Warnung</string>
     <string name="weather">Wetter</string>
     <string name="no_warnings_issued">No warnings issued at present</string>
-    <string name="alerts">Alerts</string>
     <string name="alert_severity">Severity</string>
     <string name="alert_description">Beschreibung</string>
     <string name="alert_area_desc">Area Description</string>

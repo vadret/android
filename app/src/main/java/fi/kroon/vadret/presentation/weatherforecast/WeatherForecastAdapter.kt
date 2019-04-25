@@ -6,17 +6,17 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import fi.kroon.vadret.R
 import fi.kroon.vadret.presentation.weatherforecast.di.WeatherForecastFeatureScope
-import fi.kroon.vadret.presentation.weatherforecast.model.BaseWeatherForecastModel
+import fi.kroon.vadret.presentation.weatherforecast.model.IWeatherForecastModel
 import fi.kroon.vadret.presentation.weatherforecast.model.WeatherForecastDateItemModel
 import fi.kroon.vadret.presentation.weatherforecast.model.WeatherForecastHeadlineModel
 import fi.kroon.vadret.presentation.weatherforecast.model.WeatherForecastItemModel
 import fi.kroon.vadret.presentation.weatherforecast.model.WeatherForecastSplashItemModel
-import fi.kroon.vadret.utils.common.WeatherForecastUtil.handleIndicatorFlair
-import fi.kroon.vadret.utils.common.WeatherForecastUtil.handlePrSort
+import fi.kroon.vadret.utils.common.WeatherForecastUtil.getTemperatureColorResourceId
+import fi.kroon.vadret.utils.common.WeatherForecastUtil.getPrecipitationResourceId
 import fi.kroon.vadret.utils.common.WeatherForecastUtil.handleWindDirection
-import fi.kroon.vadret.utils.common.WeatherForecastUtil.handleWsymb2Description
-import fi.kroon.vadret.utils.common.WeatherForecastUtil.handleWsymb2Icon
-import fi.kroon.vadret.utils.common.WeatherForecastUtil.windSpeedToName
+import fi.kroon.vadret.utils.common.WeatherForecastUtil.getWsymb2ResourceId
+import fi.kroon.vadret.utils.common.WeatherForecastUtil.getWsymb2IconResourceId
+import fi.kroon.vadret.utils.common.WeatherForecastUtil.getWindSpeedClassResourceId
 import fi.kroon.vadret.utils.extensions.empty
 import fi.kroon.vadret.utils.extensions.toGone
 import fi.kroon.vadret.utils.extensions.toInvisible
@@ -35,7 +35,7 @@ import javax.inject.Inject
 @WeatherForecastFeatureScope
 class WeatherForecastAdapter @Inject constructor() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    private val list: MutableList<BaseWeatherForecastModel> = mutableListOf()
+    private val list: MutableList<IWeatherForecastModel> = mutableListOf()
     private val formatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG)
 
     override fun getItemCount(): Int = list.size
@@ -55,7 +55,7 @@ class WeatherForecastAdapter @Inject constructor() : RecyclerView.Adapter<Recycl
                 val weatherDescription: String = itemView
                     .context
                     .getString(
-                        handleWsymb2Description(
+                        getWsymb2ResourceId(
                             headlineInt
                         )
                     )
@@ -67,7 +67,7 @@ class WeatherForecastAdapter @Inject constructor() : RecyclerView.Adapter<Recycl
                 } ?: String.empty()
 
                 val windString: String = itemView.context.getString(R.string.ws_wind)
-                val windSeverity: String = if (item.windSpeed != null) itemView.context.getString(windSpeedToName(item.windSpeed)) else String.empty()
+                val windSeverity: String = if (item.windSpeed != null) itemView.context.getString(getWindSpeedClassResourceId(item.windSpeed)) else String.empty()
                 val weatherForecastHeadline = "$weatherDescription $withString $mostlyString $windSeverity $windDirection $windString."
 
                 itemView.weatherDescription.text = weatherForecastHeadline
@@ -132,7 +132,7 @@ class WeatherForecastAdapter @Inject constructor() : RecyclerView.Adapter<Recycl
             itemView.humidityPercent.text = humidityPercentString
 
             item.precipitationCode?.let { precipitationCodeInt: Int ->
-                itemView.precipitationCode.setText(handlePrSort(precipitationCodeInt))
+                itemView.precipitationCode.setText(getPrecipitationResourceId(precipitationCodeInt))
             } ?: itemView.precipitationCode.toGone()
 
             if (item.sunriseDateTime != null && item.sunsetDateTime != null) {
@@ -146,7 +146,7 @@ class WeatherForecastAdapter @Inject constructor() : RecyclerView.Adapter<Recycl
 
             item.precipitationCode?.let { intCode ->
                 if (intCode > 0) {
-                    itemView.precipitationCode.setText(handlePrSort(intCode))
+                    itemView.precipitationCode.setText(getPrecipitationResourceId(intCode))
                 }
             } ?: itemView.precipitationCode.toGone()
         }
@@ -163,9 +163,9 @@ class WeatherForecastAdapter @Inject constructor() : RecyclerView.Adapter<Recycl
         fun bind(item: WeatherForecastItemModel) {
             itemView.time.text = item.time
             itemView.temperature.text = item.temperature.toString()
-            itemView.wsymb2Description.setText(handleWsymb2Description(item.weatherDescription))
-            itemView.wsymb2Icon.setImageResource(handleWsymb2Icon(item.weatherIcon))
-            itemView.temperature_indicator_flair.setBackgroundResource(handleIndicatorFlair(item.temperature))
+            itemView.wsymb2Description.setText(getWsymb2ResourceId(item.weatherDescription))
+            itemView.wsymb2Icon.setImageResource(getWsymb2IconResourceId(item.weatherIcon))
+            itemView.temperature_indicator_flair.setBackgroundResource(getTemperatureColorResourceId(item.temperature))
 
             item.feelsLikeTemperature?.let {
                 itemView.feelsLikeTemperature.text = item.feelsLikeTemperature
@@ -223,7 +223,7 @@ class WeatherForecastAdapter @Inject constructor() : RecyclerView.Adapter<Recycl
         }
     }
 
-    fun updateList(entityList: List<BaseWeatherForecastModel>) {
+    fun updateList(entityList: List<IWeatherForecastModel>) {
         Timber.d("WeatherForecastAdapter> UpdateList: $entityList")
         list.clear()
         list.addAll(entityList)

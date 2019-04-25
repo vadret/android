@@ -6,7 +6,7 @@ class GetWeatherTaskTest : BaseUnitTest() {
     @Mock
     private lateinit var mockWeatherForecastRepository: WeatherForecastRepository
 
-    private lateinit var testGetWeatherTask: GetWeatherTask
+    private lateinit var testGetWeatherTask: GetWeatherForecastTask
 
     @Mock
     private lateinit var mockWeather: Weather
@@ -19,7 +19,7 @@ class GetWeatherTaskTest : BaseUnitTest() {
 
     @Before
     fun setup() {
-        testGetWeatherTask = GetWeatherTask(mockWeatherForecastRepository)
+        testGetWeatherTask = GetWeatherForecastTask(mockWeatherForecastRepository)
     }
 
     @Test

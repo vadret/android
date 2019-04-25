@@ -12,7 +12,7 @@ import com.squareup.picasso.Picasso
 import com.squareup.picasso.Target
 import fi.kroon.vadret.BuildConfig
 import fi.kroon.vadret.R
-import fi.kroon.vadret.presentation.BaseFragment
+import fi.kroon.vadret.presentation.shared.BaseFragment
 import fi.kroon.vadret.presentation.radar.di.RadarComponent
 import fi.kroon.vadret.presentation.radar.di.RadarFeatureScope
 import fi.kroon.vadret.presentation.weatherforecast.WeatherForecastFragment

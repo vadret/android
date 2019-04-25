@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.1.0] -- 2019-06-*
 
 ### Added
+- Configurable widgets are now supported
 - Dark/AMOLED themes
 - Weather summary in text
 

@@ -3,7 +3,7 @@ package fi.kroon.vadret.presentation.alert
 import fi.kroon.vadret.data.exception.Failure
 import fi.kroon.vadret.data.functional.Either
 import fi.kroon.vadret.domain.alert.GetAlertService
-import fi.kroon.vadret.presentation.BaseViewModel
+import fi.kroon.vadret.presentation.shared.IViewModel
 import fi.kroon.vadret.presentation.alert.di.AlertFeatureScope
 import fi.kroon.vadret.utils.extensions.asObservable
 import io.reactivex.Observable
@@ -15,7 +15,7 @@ import javax.inject.Inject
 class AlertViewModel @Inject constructor(
     private var state: AlertView.State,
     private val getAlertService: GetAlertService
-) : BaseViewModel() {
+) : IViewModel {
 
     operator fun invoke(): ObservableTransformer<AlertView.Event, AlertView.State> = onEvent
 

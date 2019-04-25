@@ -3,13 +3,13 @@ package fi.kroon.vadret.presentation.weatherforecast
 import fi.kroon.vadret.data.exception.Failure
 import fi.kroon.vadret.data.functional.Either
 import fi.kroon.vadret.data.nominatim.model.Locality
+import fi.kroon.vadret.domain.weatherforecast.GetAppLocationModeTask
 import fi.kroon.vadret.domain.weatherforecast.GetAutoCompleteService
-import fi.kroon.vadret.domain.weatherforecast.GetLocationModeTask
 import fi.kroon.vadret.domain.weatherforecast.GetWeatherForecastService
 import fi.kroon.vadret.domain.weatherforecast.SetDefaultLocationInformationTask
 import fi.kroon.vadret.domain.weatherforecast.SetLocationInformationTask
 import fi.kroon.vadret.domain.weatherforecast.SetLocationModeTask
-import fi.kroon.vadret.presentation.BaseViewModel
+import fi.kroon.vadret.presentation.shared.IViewModel
 import fi.kroon.vadret.presentation.weatherforecast.di.WeatherForecastFeatureScope
 import fi.kroon.vadret.utils.AUTOCOMPLETE_DEBOUNCE_MILLIS
 import fi.kroon.vadret.utils.extensions.asObservable
@@ -28,8 +28,8 @@ class WeatherForecastViewModel @Inject constructor(
     private val getAutoCompleteService: GetAutoCompleteService,
     private val setLocationInformationTask: SetLocationInformationTask,
     private val enableGpsLocationModeTask: SetLocationModeTask,
-    private val getLocationModeTask: GetLocationModeTask
-) : BaseViewModel() {
+    private val getAppLocationModeTask: GetAppLocationModeTask
+) : IViewModel {
 
     operator fun invoke(): ObservableTransformer<WeatherForecastView.Event,
         WeatherForecastView.State> = onEvent
@@ -100,7 +100,7 @@ class WeatherForecastViewModel @Inject constructor(
     }
 
     private fun onViewInitialisedEvent(event: WeatherForecastView.Event.OnViewInitialised): Observable<WeatherForecastView.State> =
-        getLocationModeTask()
+        getAppLocationModeTask()
             .flatMapObservable { result: Either<Failure, Boolean> ->
                 result.either(
                     { failure: Failure ->
@@ -363,7 +363,7 @@ class WeatherForecastViewModel @Inject constructor(
                     { data: GetWeatherForecastService.Data ->
                         val renderEvent: WeatherForecastView.RenderEvent.DisplayWeatherForecast =
                             WeatherForecastView.RenderEvent.DisplayWeatherForecast(
-                                list = data.baseWeatherForecastModelList,
+                                list = data.weatherForecastModelList,
                                 locality = Locality(name = data.localityName)
                             )
                         state = state.copy(renderEvent = renderEvent, timeStamp = data.timeStamp)
@@ -417,7 +417,7 @@ class WeatherForecastViewModel @Inject constructor(
             }
 
     private fun onLocationPermissionDeniedEvent(): Observable<WeatherForecastView.State> =
-        getLocationModeTask()
+        getAppLocationModeTask()
             .flatMapObservable { result: Either<Failure, Boolean> ->
                 result.either(
                     { failure: Failure ->

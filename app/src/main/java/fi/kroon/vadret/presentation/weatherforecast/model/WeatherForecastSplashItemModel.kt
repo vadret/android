@@ -14,4 +14,4 @@ data class WeatherForecastSplashItemModel(
     val weatherDescription: Int,
     val precipitationCode: Int? = null,
     val thunderRisk: Int
-) : BaseWeatherForecastModel
+) : IWeatherForecastModel

@@ -4,7 +4,6 @@ import androidx.collection.LruCache
 import fi.kroon.vadret.data.exception.Failure
 import fi.kroon.vadret.data.functional.Either
 import fi.kroon.vadret.data.weatherforecast.model.Weather
-import fi.kroon.vadret.utils.WEATHER_CACHE_KEY
 import fi.kroon.vadret.utils.extensions.asLeft
 import fi.kroon.vadret.utils.extensions.asRight
 import io.reactivex.Single
@@ -13,14 +12,17 @@ import javax.inject.Inject
 
 class WeatherForecastCacheDataSource @Inject constructor(
     private val diskCache: WeatherForecastDiskCacheImpl,
-    private val memoryCache: LruCache<Long, Weather>
+    private val memoryCache: LruCache<String, Weather>
 ) {
 
-    fun getMemoryCache(): Single<Either<Failure, Weather>> =
+    /**
+     *  In-memory Cache
+     */
+    fun getMemoryCache(cacheKey: String): Single<Either<Failure, Weather>> =
         Single.fromCallable {
             memoryCache
                 .snapshot()
-                .getValue(WEATHER_CACHE_KEY)
+                .getValue(cacheKey)
                 .asRight() as Either<Failure, Weather>
         }.onErrorReturn {
             Failure
@@ -28,11 +30,8 @@ class WeatherForecastCacheDataSource @Inject constructor(
                 .asLeft()
         }
 
-    fun getDiskCache(): Single<Either<Failure, Weather>> = diskCache
-        .read()
-
-    fun updateMemoryCache(weather: Weather): Single<Either<Failure, Weather>> {
-        memoryCache.put(WEATHER_CACHE_KEY, weather)
+    fun updateMemoryCache(cacheKey: String, weather: Weather): Single<Either<Failure, Weather>> {
+        memoryCache.put(cacheKey, weather)
         return Single.just(
             weather.asRight() as Either<Failure, Weather>
         ).onErrorReturn {
@@ -41,9 +40,6 @@ class WeatherForecastCacheDataSource @Inject constructor(
                 .asLeft()
         }
     }
-
-    fun updateDiskCache(weather: Weather): Single<Either<Failure, Weather>> =
-        diskCache.put(weather)
 
     fun clearMemoryCache(): Single<Either<Failure, Unit>> = Single.fromCallable {
         memoryCache
@@ -57,8 +53,17 @@ class WeatherForecastCacheDataSource @Inject constructor(
             .asLeft()
     }
 
-    fun clearDiskCache(): Single<Either<Failure, Unit>> = Single.fromCallable {
-        diskCache.remove()
+    /**
+     *  Disk IO Cache
+     */
+    fun getDiskCache(cacheKey: String): Single<Either<Failure, Weather>> = diskCache
+        .read(cacheKey)
+
+    fun updateDiskCache(weather: Weather, cacheKey: String): Single<Either<Failure, Weather>> =
+        diskCache.put(cacheKey, weather)
+
+    fun clearDiskCache(cacheKey: String): Single<Either<Failure, Unit>> = Single.fromCallable {
+        diskCache.remove(cacheKey)
         Unit.asRight() as Either<Failure, Unit>
     }.doOnError { failure ->
         Timber.e("Disk cache eviction failed: $failure")

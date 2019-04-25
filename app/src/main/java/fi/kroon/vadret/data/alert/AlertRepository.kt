@@ -1,6 +1,6 @@
 package fi.kroon.vadret.data.alert
 
-import fi.kroon.vadret.core.di.scope.CoreApplicationScope
+import fi.kroon.vadret.di.scope.CoreApplicationScope
 import fi.kroon.vadret.data.alert.exception.AlertFailure
 import fi.kroon.vadret.data.alert.model.Alert
 import fi.kroon.vadret.data.alert.net.AlertNetDataSource

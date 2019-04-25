@@ -16,7 +16,7 @@ fun Fragment.hideKeyboard() {
     imm.hideSoftInputFromWindow(view?.windowToken, 0)
 }
 
-fun Context.toToast(message: String, duration: Int = Toast.LENGTH_SHORT) = Toast.makeText(this, message, duration).show()
+fun Context.toast(message: String, duration: Int = Toast.LENGTH_SHORT) = Toast.makeText(this, message, duration).show()
 fun Fragment.appComponent() = BaseApplication.appComponent(requireContext().applicationContext)
 
 inline fun Fragment.snack(@StringRes messageRes: Int, length: Int = Snackbar.LENGTH_LONG, init: Snackbar.() -> Unit = {}) {

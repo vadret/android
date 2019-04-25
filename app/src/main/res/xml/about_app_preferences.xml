@@ -14,8 +14,8 @@
     <PreferenceCategory android:title="@string/display">
         <ListPreference
             android:defaultValue="@string/light_key"
-            android:entries="@array/themes"
-            android:entryValues="@array/themes"
+            android:entries="@array/weather_app_themes"
+            android:entryValues="@array/weather_app_themes"
             android:key="APP_THEME_MODE"
             android:summary="%s"
             android:title="@string/select_a_theme" />

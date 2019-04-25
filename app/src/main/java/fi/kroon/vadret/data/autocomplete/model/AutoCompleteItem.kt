@@ -1,5 +1,9 @@
 package fi.kroon.vadret.data.autocomplete.model
 
+import android.os.Parcelable
+import kotlinx.android.parcel.Parcelize
+
+@Parcelize
 data class AutoCompleteItem(
     val locality: String,
     val municipality: String,
@@ -12,4 +16,4 @@ data class AutoCompleteItem(
      *   it switches to manual mode.
      */
     val locationMode: Boolean = true
-)
+) : Parcelable

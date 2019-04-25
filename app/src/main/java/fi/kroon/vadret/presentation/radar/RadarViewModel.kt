@@ -3,7 +3,7 @@ package fi.kroon.vadret.presentation.radar
 import fi.kroon.vadret.data.exception.Failure
 import fi.kroon.vadret.data.functional.Either
 import fi.kroon.vadret.domain.radar.GetRadarImageUrlService
-import fi.kroon.vadret.presentation.BaseViewModel
+import fi.kroon.vadret.presentation.shared.IViewModel
 import fi.kroon.vadret.presentation.radar.di.RadarFeatureScope
 import fi.kroon.vadret.utils.NIL_INT
 import fi.kroon.vadret.utils.extensions.asObservable
@@ -16,7 +16,7 @@ import javax.inject.Inject
 class RadarViewModel @Inject constructor(
     private var state: RadarView.State,
     private val getRadarImageUrlService: GetRadarImageUrlService
-) : BaseViewModel() {
+) : IViewModel {
 
     operator fun invoke(): ObservableTransformer<RadarView.Event, RadarView.State> = onEvent
 

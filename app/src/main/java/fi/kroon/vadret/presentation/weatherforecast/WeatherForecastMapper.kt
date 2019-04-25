@@ -3,7 +3,7 @@ package fi.kroon.vadret.presentation.weatherforecast
 import fi.kroon.vadret.data.location.model.Location
 import fi.kroon.vadret.data.weatherforecast.model.Parameter
 import fi.kroon.vadret.data.weatherforecast.model.TimeSerie
-import fi.kroon.vadret.presentation.weatherforecast.model.BaseWeatherForecastModel
+import fi.kroon.vadret.presentation.weatherforecast.model.IWeatherForecastModel
 import fi.kroon.vadret.presentation.weatherforecast.model.WeatherForecastDateItemModel
 import fi.kroon.vadret.presentation.weatherforecast.model.WeatherForecastHeadlineModel
 import fi.kroon.vadret.presentation.weatherforecast.model.WeatherForecastItemModel
@@ -20,20 +20,20 @@ import java.util.Calendar
 
 object WeatherForecastMapper {
 
-    fun toWeatherForecastModel(timeSerieList: List<TimeSerie>, location: Location): List<BaseWeatherForecastModel> =
+    operator fun invoke(timeSerieList: List<TimeSerie>, location: Location): List<IWeatherForecastModel> =
         when {
             timeSerieList.isNotEmpty() -> {
-                val baseWeatherForecastList: List<BaseWeatherForecastModel> = mapTimeSerieList(timeSerieList, location)
-                baseWeatherForecastList
+                val iWeatherForecastList: List<IWeatherForecastModel> = mapTimeSerieList(timeSerieList, location)
+                iWeatherForecastList
             }
             else -> {
                 listOf()
             }
         }
 
-    private fun mapTimeSerieList(timeSerieList: List<TimeSerie>, location: Location): List<BaseWeatherForecastModel> {
+    private fun mapTimeSerieList(timeSerieList: List<TimeSerie>, location: Location): List<IWeatherForecastModel> {
 
-        val baseWeatherForecastModelList: MutableList<BaseWeatherForecastModel> = mutableListOf()
+        val weatherForecastModelList: MutableList<IWeatherForecastModel> = mutableListOf()
 
         var weatherForecastHeadlineModel: WeatherForecastHeadlineModel? = null
         var weatherForecastDateItemModel: WeatherForecastDateItemModel? = null
@@ -44,12 +44,12 @@ object WeatherForecastMapper {
 
             if (weatherForecastHeadlineModel == null) {
                 weatherForecastHeadlineModel = getWeatherForecastHeadlineModel(timeSerie.parameters)
-                baseWeatherForecastModelList.add(weatherForecastHeadlineModel)
+                weatherForecastModelList.add(weatherForecastHeadlineModel)
             }
 
             if (weatherForecastSplashItemModel == null) {
                 weatherForecastSplashItemModel = getWeatherForecastSplashItemModel(timeSerie, location)
-                baseWeatherForecastModelList.add(weatherForecastSplashItemModel)
+                weatherForecastModelList.add(weatherForecastSplashItemModel)
             }
 
             if (weatherForecastDateItemModel == null) {
@@ -58,20 +58,20 @@ object WeatherForecastMapper {
                 )
             }
 
-            if (!baseWeatherForecastModelList.contains(weatherForecastDateItemModel)) {
-                baseWeatherForecastModelList.add(weatherForecastDateItemModel)
+            if (!weatherForecastModelList.contains(weatherForecastDateItemModel)) {
+                weatherForecastModelList.add(weatherForecastDateItemModel)
             }
 
             if (temp != null) {
 
                 val weatherForecastItemModel: WeatherForecastItemModel = getWeatherForecastItemModel(temp)
-                baseWeatherForecastModelList.add(weatherForecastItemModel)
+                weatherForecastModelList.add(weatherForecastItemModel)
                 temp = null
             }
 
             if (timeSerie.validTime.parseToLocalDate() == weatherForecastDateItemModel.date) {
                 val weatherForecastItemModel = getWeatherForecastItemModel(timeSerie)
-                baseWeatherForecastModelList.add(weatherForecastItemModel)
+                weatherForecastModelList.add(weatherForecastItemModel)
             } else {
                 temp = timeSerie
                 weatherForecastDateItemModel = WeatherForecastDateItemModel(
@@ -79,7 +79,7 @@ object WeatherForecastMapper {
                 )
             }
         }
-        return baseWeatherForecastModelList.toList()
+        return weatherForecastModelList.toList()
     }
 
     private fun getWeatherForecastHeadlineModel(parameters: List<Parameter>): WeatherForecastHeadlineModel {

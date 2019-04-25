@@ -26,4 +26,79 @@
     <dimen name="weatherIcon">48dp</dimen>
     <dimen name="weekday_placeholder">120dp</dimen>
     <dimen name="date_placeholder">70dp</dimen>
+
+    <!-- Weather Forecast Widget Setup -->
+
+
+    <!-- Cheatsheet for custom cell size: 70 × n − 30 -->
+
+    <!-- Weather Forecast Tiny -->
+    <!-- 2x1 widget cells -->
+    <dimen name="weather_forecast_tiny_min_width">110dp</dimen>
+    <dimen name="weather_forecast_tiny_min_height">40dp</dimen>
+    <dimen name="weather_forecast_tiny_item_spacing">8dp</dimen>
+    <dimen name="weather_forecast_tiny_item_margin">8dp</dimen>
+
+    <!-- Weather Forecast Setup -->
+    <!-- Several layouts exists for setup views but dimens
+    are the same -->
+    <dimen name="weather_forecast_setup_icon_width">36dp</dimen>
+    <dimen name="weather_forecast_setup_icon_height">36dp</dimen>
+    <dimen name="weather_forecast_setup_text_size">16sp</dimen>
+    <dimen name="weather_forecast_setup_header_text_size">20sp</dimen>
+    <dimen name="weather_forecast_setup_margin_end">16dp</dimen>
+    <dimen name="weather_forecast_setup_padding">2dp</dimen>
+    <dimen name="weather_forecast_setup_padding_parent">16dp</dimen>
+    <dimen name="weather_forecast_setup_spinner_height">36dp</dimen>
+    <dimen name="weather_forecast_setup_button_margin">2dp</dimen>
+    <dimen name="weather_forecast_setup_margin_end_item_spacing">10dp</dimen>
+    <dimen name="weather_forecast_setup_spinner_item_margin">5dp</dimen>
+
+    <!-- Weather Forecast Small -->
+    <!-- Default 5x2 widget cells -->
+    <!-- Minimum 4x1 widget cells -->
+
+    <!-- Default -->
+    <dimen name="weather_forecast_small_min_width">320dp</dimen>
+    <dimen name="weather_forecast_small_min_height">110dp</dimen>
+
+    <!-- Minimum Resize -->
+    <dimen name="weather_forecast_small_min_resize_width">250dp</dimen>
+    <dimen name="weather_forecast_small_min_resize_height">40dp</dimen>
+    <dimen name="weather_forecast_small_icon_width">86dp</dimen>
+    <dimen name="weather_forecast_small_icon_height">86dp</dimen>
+    <dimen name="weather_forecast_small_splash_icons_width">14dp</dimen>
+    <dimen name="weather_forecast_small_splash_icons_height">14dp</dimen>
+    <dimen name="weather_forecast_small_icon_margin_end">4dp</dimen>
+    <dimen name="weather_forecast_small_small_text">14sp</dimen>
+    <dimen name="weather_forecast_small_temperature_text_size">14sp</dimen>
+    <dimen name="weather_forecast_small_item_spacing">8dp</dimen>
+    <dimen name="weather_forecast_small_item_divider_width">1dp</dimen>
+    <dimen name="weather_forecast_small_item_divider_height">36dp</dimen>
+
+    <!-- Weather Forecast Medium -->
+    <!-- Default 5x3 widget cells -->
+    <!-- Minimum 4x1 widget cells -->
+    <dimen name="weather_forecast_medium_min_text_size">12sp</dimen>
+    <dimen name="weather_forecast_medium_min_width">320dp</dimen>
+    <dimen name="weather_forecast_medium_min_height">180dp</dimen>
+    <dimen name="weather_forecast_medium_min_resize_width">110dp</dimen>
+    <dimen name="weather_forecast_medium_icon_width">24dp</dimen>
+    <dimen name="weather_forecast_medium_icon_height">24dp</dimen>
+    <dimen name="weather_forecast_medium_layout_margin_start">4dp</dimen>
+    <dimen name="weather_forecast_medium_layout_margin_top">16dp</dimen>
+    <dimen name="weather_forecast_medium_layout_margin_end">4dp</dimen>
+    <dimen name="weather_forecast_medium_layout_margin_bottom">4dp</dimen>
+    <dimen name="weather_forecast_medium_horizontal_spacing">4dp</dimen>
+    <dimen name="weather_forecast_medium_splash_icons_width">14dp</dimen>
+    <dimen name="weather_forecast_medium_splash_icons_height">14dp</dimen>
+    <dimen name="weather_forecast_medium_icon_margin_end">4dp</dimen>
+    <dimen name="weather_forecast_medium_padding">4dp</dimen>
+
+    <!-- Weather Forecast Empty Layout -->
+    <dimen name="weather_forecast_empty_margin_top">4dp</dimen>
+    <dimen name="weather_forecast_empty_text_size">16sp</dimen>
+    <dimen name="weather_forecast_empty_icon_width">32dp</dimen>
+    <dimen name="weather_forecast_empty_icon_height">32dp</dimen>
+
 </resources>
