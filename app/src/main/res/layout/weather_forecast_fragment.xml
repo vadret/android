@@ -43,6 +43,7 @@
             android:paddingStart="8dp"
             android:paddingEnd="8dp"
             android:paddingBottom="8dp"
+            android:scrollbars="none"
             tools:listitem="@layout/weather_forecast_item" />
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
@@ -71,6 +72,7 @@
         android:layout_marginEnd="8dp"
         android:clipToPadding="true"
         android:visibility="gone"
+        android:scrollbars="none"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/weatherForecastSearchView"
