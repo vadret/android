@@ -18,19 +18,22 @@ class SingleToArrayAdapter(
     }
 
     override fun fromJson(reader: JsonReader): Any? =
-        if (reader.peek() != JsonReader.Token.BEGIN_ARRAY) {
-            Collections.singletonList(elementAdapter.fromJson(reader))
-        } else delegateAdapter.fromJson(reader)
+        when {
+            reader.peek() != JsonReader.Token.BEGIN_ARRAY -> {
+                Collections.singletonList(elementAdapter.fromJson(reader))
+            }
+            else -> delegateAdapter.fromJson(reader)
+        }
 
-    override fun toJson(writer: JsonWriter, value: Any?) =
+    override fun toJson(writer: JsonWriter, value: Any?): Nothing =
         throw UnsupportedOperationException("SingleToArrayAdapter is only used to deserialize objects")
 
-    class SingleToArrayAdapterFactory : JsonAdapter.Factory {
+    class SingleToArrayAdapterFactory : Factory {
         override fun create(type: Type, annotations: Set<Annotation>, moshi: Moshi): JsonAdapter<Any>? {
-            val delegateAnnotations: MutableSet<out Annotation>? = Types.nextAnnotations(annotations, SingleToArray::class.java)
-            if (delegateAnnotations == null) return null
+            val delegateAnnotations: MutableSet<out Annotation> = Types.nextAnnotations(annotations, SingleToArray::class.java)
+                ?: return null
             if (Types.getRawType(type) != List::class.java) throw IllegalArgumentException("Only lists may be annotated with @SingleToArray. Found: $type")
-            val elementType = Types.collectionElementType(type, List::class.java)
+            val elementType: Type = Types.collectionElementType(type, List::class.java)
             val delegateAdapter: JsonAdapter<List<Any>> = moshi.adapter(type, delegateAnnotations)
             val elementAdapter: JsonAdapter<Any> = moshi.adapter(elementType)
 
