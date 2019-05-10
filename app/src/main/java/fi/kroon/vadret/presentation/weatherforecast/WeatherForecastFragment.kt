@@ -102,6 +102,14 @@ class WeatherForecastFragment : BaseFragment() {
             .build()
     }
 
+    private val itemDecoration: DividerItemDecoration by lazy {
+        DividerItemDecoration(context, RecyclerView.VERTICAL)
+    }
+
+    private val drawable: Drawable? by lazy {
+        context?.getDrawable(R.drawable.search_item_divider)
+    }
+
     // ---------------------------------------------------------------------------------------------
 
     override fun layoutId(): Int = R.layout.weather_forecast_fragment
@@ -445,9 +453,6 @@ class WeatherForecastFragment : BaseFragment() {
         autoCompleteRecyclerView.apply {
             adapter = autoCompleteAdapter
             layoutManager = LinearLayoutManager(this.context, RecyclerView.VERTICAL, false)
-
-            val itemDecoration: DividerItemDecoration = DividerItemDecoration(this.context, RecyclerView.VERTICAL)
-            val drawable: Drawable? = context.getDrawable(R.drawable.search_item_divider)
 
             drawable?.let { res: Drawable ->
                 itemDecoration
