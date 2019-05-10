@@ -22,20 +22,6 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/feelsLikeTemperature"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="-1.0"
-        android:textAlignment="viewEnd"
-        android:textColor="?attr/titleTextHint"
-        android:textSize="14sp"
-        android:textStyle="italic"
-        android:visibility="invisible"
-        app:layout_constraintBottom_toBottomOf="@+id/feelsLike"
-        app:layout_constraintEnd_toStartOf="@+id/feelsLikeTempUnit"
-        app:layout_constraintTop_toTopOf="@+id/feelsLike" />
-
-    <TextView
         android:id="@+id/feelsLike"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -49,6 +35,20 @@
         app:layout_constraintBottom_toBottomOf="@+id/wsymb2Description"
         app:layout_constraintEnd_toStartOf="@+id/feelsLikeTemperature"
         app:layout_constraintTop_toTopOf="@+id/wsymb2Description" />
+
+    <TextView
+        android:id="@+id/feelsLikeTemperature"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="-1.0"
+        android:textAlignment="viewEnd"
+        android:textColor="?attr/titleText"
+        android:textSize="14sp"
+        android:textStyle="italic"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="@+id/feelsLike"
+        app:layout_constraintEnd_toStartOf="@+id/feelsLikeTempUnit"
+        app:layout_constraintTop_toTopOf="@+id/feelsLike" />
 
     <TextView
         android:id="@+id/temperature"
