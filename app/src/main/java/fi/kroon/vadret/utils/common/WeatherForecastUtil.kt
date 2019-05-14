@@ -27,12 +27,12 @@ object WeatherForecastUtil {
      *  Hurricane: > 32.7 m/s
      */
     fun windSpeedToName(windSpeed: Double): Int = when {
-        (windSpeed < 0.2) -> R.string.ws_calm
-        (0.3 < windSpeed && windSpeed < 3.3) -> R.string.ws_weak
-        (3.4 < windSpeed && windSpeed < 7.9) -> R.string.ws_moderate
-        (8.0 < windSpeed && windSpeed < 13.8) -> R.string.ws_fresh
-        (13.9 < windSpeed && windSpeed < 24.4) -> R.string.ws_strong
-        (24.5 < windSpeed && windSpeed < 32.7) -> R.string.ws_windstorms
+        (windSpeed <= 0.2) -> R.string.ws_calm
+        (windSpeed in 0.3..3.3) -> R.string.ws_weak
+        (windSpeed in 3.4..7.9) -> R.string.ws_moderate
+        (windSpeed in 8.0..13.8) -> R.string.ws_fresh
+        (windSpeed in 13.9..24.4) -> R.string.ws_strong
+        (windSpeed in 24.5..32.7) -> R.string.ws_windstorms
         else -> R.string.ws_hurricanes
     }
 
