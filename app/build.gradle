@@ -145,7 +145,7 @@ dependencies {
     def DAGGER_VERSION = "2.22.1"
     def FRAGMENT_KTX_VERSION = "1.0.0"
     def JUNIT_VERSION = "4.13-beta-1"
-    def KOTLIN_STDLIB_VERSION = "1.3.21"
+    def KOTLIN_STDLIB_VERSION = "1.3.31"
     def KTLINT_VERSION = "0.31.0"
     def KTX_VERSION = "1.0.0"
     def LEAK_CANARY = "1.6.3"
