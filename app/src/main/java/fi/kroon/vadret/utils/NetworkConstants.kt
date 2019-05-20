@@ -1,8 +1,5 @@
 package fi.kroon.vadret.utils
 
-const val CONNECTED = true
-const val NOT_CONNECTED = false
-
 const val HTTP_100_CONTINUE = 100
 const val HTTP_101_SWITCHING_PROTOCOLS = 101
 const val HTTP_200_OK = 200
