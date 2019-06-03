@@ -165,7 +165,7 @@ dependencies {
     def RXJAVA_VERSION = "2.2.9"
     def RXKOTLIN_VERSION = "2.3.0"
     def RXK_PREFS_VERSION = "1.2.5"
-    def THREETEN_ABP_VERSION = "1.2.0"
+    def THREETEN_ABP_VERSION = "1.2.1"
     def THREETEN_BP_VERSION = "1.4.0"
     def TIMBER_VERSION = "4.7.1"
 
