@@ -5,7 +5,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [1.1.0] -- 2019-04-*
+## [1.1.0] -- 2019-06-*
 
 ### Added
 - Dark/AMOLED themes
