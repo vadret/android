@@ -404,8 +404,7 @@ class WeatherForecastFragment : BaseFragment() {
             isSearchToggled = state.isSearchToggled,
             forceNet = state.forceNet,
             startRefreshing = state.startRefreshing,
-            stopRefreshing = state.stopRefreshing,
-            timeStamp = state.timeStamp
+            stopRefreshing = state.stopRefreshing
         )
         Timber.d("updateStateParcel: $stateParcel")
 

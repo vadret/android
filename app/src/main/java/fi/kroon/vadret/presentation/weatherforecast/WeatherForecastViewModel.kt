@@ -5,10 +5,12 @@ import fi.kroon.vadret.data.functional.Either
 import fi.kroon.vadret.data.nominatim.model.Locality
 import fi.kroon.vadret.domain.weatherforecast.GetAppLocationModeTask
 import fi.kroon.vadret.domain.weatherforecast.GetAutoCompleteService
+import fi.kroon.vadret.domain.weatherforecast.GetWeatherForecastLastCheckedTask
 import fi.kroon.vadret.domain.weatherforecast.GetWeatherForecastService
 import fi.kroon.vadret.domain.weatherforecast.SetDefaultLocationInformationTask
 import fi.kroon.vadret.domain.weatherforecast.SetLocationInformationTask
 import fi.kroon.vadret.domain.weatherforecast.SetLocationModeTask
+import fi.kroon.vadret.domain.weatherforecast.SetWeatherForecastLastCheckedTask
 import fi.kroon.vadret.presentation.shared.IViewModel
 import fi.kroon.vadret.presentation.weatherforecast.di.WeatherForecastFeatureScope
 import fi.kroon.vadret.utils.AUTOCOMPLETE_DEBOUNCE_MILLIS
@@ -28,7 +30,9 @@ class WeatherForecastViewModel @Inject constructor(
     private val getAutoCompleteService: GetAutoCompleteService,
     private val setLocationInformationTask: SetLocationInformationTask,
     private val enableGpsLocationModeTask: SetLocationModeTask,
-    private val getAppLocationModeTask: GetAppLocationModeTask
+    private val getAppLocationModeTask: GetAppLocationModeTask,
+    private val setWeatherForecastLastCheckedTask: SetWeatherForecastLastCheckedTask,
+    private val getWeatherForecastLastCheckedTask: GetWeatherForecastLastCheckedTask
 ) : IViewModel {
 
     operator fun invoke(): ObservableTransformer<WeatherForecastView.Event,
@@ -134,8 +138,7 @@ class WeatherForecastViewModel @Inject constructor(
                 isSearchToggled = isSearchToggled,
                 wasRestoredFromStateParcel = true,
                 startRefreshing = startRefreshing,
-                stopRefreshing = stopRefreshing,
-                timeStamp = timeStamp
+                stopRefreshing = stopRefreshing
             )
         }
     }
@@ -182,8 +185,7 @@ class WeatherForecastViewModel @Inject constructor(
             else -> {
                 Timber.d("preLoadingWeatherForecast ended")
                 state = state.copy(
-                    isInitialised = true,
-                    timeStamp = currentTimeMillis
+                    isInitialised = true
                 )
                 loadWeatherForecast()
             }
@@ -349,28 +351,58 @@ class WeatherForecastViewModel @Inject constructor(
      *  location permission is successfully granted.
      */
     private fun loadWeatherForecast(): Observable<WeatherForecastView.State> =
-        getWeatherForecastService(state.timeStamp, state.forceNet)
-            .map { result: Either<Failure, GetWeatherForecastService.Data> ->
+        getWeatherForecastLastCheckedTask()
+            .flatMapObservable { result: Either<Failure, Long> ->
                 result.either(
                     { failure: Failure ->
-                        Timber.e("loadWeatherForecastFailure: $failure")
-                        val errorCode: Int = getErrorCode(failure)
-                        val renderEvent: WeatherForecastView.RenderEvent.DisplayError = WeatherForecastView.RenderEvent.DisplayError(errorCode)
-
-                        state = state.copy(renderEvent = renderEvent, timeStamp = null)
-                        state
+                        Timber.e("Failure: $failure")
+                        state.asObservable()
                     },
-                    { data: GetWeatherForecastService.Data ->
-                        val renderEvent: WeatherForecastView.RenderEvent.DisplayWeatherForecast =
-                            WeatherForecastView.RenderEvent.DisplayWeatherForecast(
-                                list = data.weatherForecastModelList,
-                                locality = Locality(name = data.localityName)
-                            )
-                        state = state.copy(renderEvent = renderEvent, timeStamp = data.timeStamp)
-                        state
+                    { timeStamp: Long ->
+                        getWeatherForecastService(timeStamp, state.forceNet)
+                            .flatMapObservable { result: Either<Failure, GetWeatherForecastService.Data> ->
+                                result.either(
+                                    { failure: Failure ->
+                                        Timber.e("loadWeatherForecastFailure: $failure")
+                                        val errorCode: Int = getErrorCode(failure)
+                                        val renderEvent: WeatherForecastView.RenderEvent.DisplayError = WeatherForecastView.RenderEvent.DisplayError(errorCode)
+
+                                        state = state.copy(renderEvent = renderEvent)
+                                        state.asObservable()
+                                    },
+                                    { data: GetWeatherForecastService.Data ->
+
+                                        val renderEvent: WeatherForecastView.RenderEvent.DisplayWeatherForecast =
+                                            WeatherForecastView.RenderEvent.DisplayWeatherForecast(
+                                                list = data.weatherForecastModelList,
+                                                locality = Locality(name = data.localityName)
+                                            )
+
+                                        state = state.copy(
+                                            renderEvent = renderEvent
+                                        )
+                                        updateLastChecked(data.timeStamp)
+                                    }
+                                )
+                            }
                     }
                 )
-            }.toObservable()
+            }
+
+    private fun updateLastChecked(timeStamp: Long): Observable<WeatherForecastView.State> =
+        setWeatherForecastLastCheckedTask(value = timeStamp)
+            .flatMapObservable { result: Either<Failure, Unit> ->
+                result.either(
+                    { failure: Failure ->
+                        Timber.e("Failure: $failure")
+                        state.asObservable()
+                    },
+                    {
+                        Timber.d("LAST CHECKED UPDATED")
+                        state.asObservable()
+                    }
+                )
+            }
 
     private fun onSearchButtonToggledEvent(): Observable<WeatherForecastView.State> {
         state = state.copy(

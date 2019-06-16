@@ -12,6 +12,7 @@ import fi.kroon.vadret.utils.DEFAULT_LATITUDE
 import fi.kroon.vadret.utils.DEFAULT_LOCALITY
 import fi.kroon.vadret.utils.DEFAULT_LONGITUDE
 import fi.kroon.vadret.utils.DEFAULT_MUNICIPALITY
+import fi.kroon.vadret.utils.LAST_CHECKED_KEY
 import fi.kroon.vadret.utils.LATITUDE_KEY
 import fi.kroon.vadret.utils.LOCALITY_KEY
 import fi.kroon.vadret.utils.LONGITUDE_KEY
@@ -64,6 +65,38 @@ class WeatherForecastLocalKeyValueDataSource @Inject constructor(
                 .asSingle()
         }
     }
+
+    fun putLong(key: String, value: Long): Single<Either<Failure, Unit>> =
+        when (key) {
+            (LAST_CHECKED_KEY) -> {
+                rxkPrefs.long(key = LAST_CHECKED_KEY)
+                    .set(value = value)
+                    .asRight()
+                    .asSingle()
+            }
+            else -> {
+                WeatherForecastFailure
+                    .LoadingWeatherSettingFailed
+                    .asLeft()
+                    .asSingle()
+            }
+        }
+
+    fun getLong(key: String): Single<Either<Failure, Long>> =
+        when (key) {
+            LAST_CHECKED_KEY -> {
+                rxkPrefs.long(key = LAST_CHECKED_KEY, defaultValue = System.currentTimeMillis())
+                    .get()
+                    .asRight()
+                    .asSingle()
+            }
+            else -> {
+                WeatherForecastFailure
+                    .LoadingWeatherSettingFailed
+                    .asLeft()
+                    .asSingle()
+            }
+        }
 
     fun getString(key: String): Single<Either<Failure, String>> =
         when (key) {

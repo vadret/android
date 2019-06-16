@@ -39,7 +39,6 @@ object WeatherForecastView {
         val searchText: String = String.empty(),
         val startRefreshing: Boolean = false,
         val stopRefreshing: Boolean = false,
-        val timeStamp: Long? = null,
         val locationModeKey: String = AUTOMATIC_LOCATION_MODE_KEY,
         val wasRestoredFromStateParcel: Boolean = false
     )
@@ -64,7 +63,6 @@ object WeatherForecastView {
         val isSearchToggled: Boolean,
         val searchText: String = String.empty(),
         val startRefreshing: Boolean,
-        val stopRefreshing: Boolean,
-        val timeStamp: Long? = null
+        val stopRefreshing: Boolean
     ) : Parcelable
 }

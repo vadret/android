@@ -37,7 +37,7 @@ class GetWeatherForecastService @Inject constructor(
         val forceNet: Boolean = false,
         val weather: Weather? = null,
         val weatherOut: WeatherOut? = null,
-        val timeStamp: Long? = null,
+        val timeStamp: Long,
         val locationMode: Boolean = false,
         val location: Location? = null
     )
@@ -54,7 +54,7 @@ class GetWeatherForecastService @Inject constructor(
      *  should be used.
      *  [forceNet]          -- Forces a network request regardless of value in timeStamp.
      */
-    operator fun invoke(timeStamp: Long?, forceNet: Boolean): Single<Either<Failure, Data>> =
+    operator fun invoke(timeStamp: Long, forceNet: Boolean): Single<Either<Failure, Data>> =
         Single.just(Data(timeStamp = timeStamp, forceNet = forceNet))
             .flatMap(::getLocationMode)
             .flatMap(::getGpsLocationOrStoredLocation)
@@ -152,7 +152,7 @@ class GetWeatherForecastService @Inject constructor(
     private fun getWeather(data: Data): Single<Either<Failure, Data>> =
         with(data) {
             when {
-                forceNet || (currentTimeMillis > (timeStamp!! + FIVE_MINUTES_IN_MILLIS)) -> {
+                forceNet || (currentTimeMillis > (timeStamp + FIVE_MINUTES_IN_MILLIS)) -> {
                     Timber.d("DATA: $data")
                     getWeatherForecastTask(data.weatherOut!!)
                         .map { either: Either<Failure, Weather> ->
