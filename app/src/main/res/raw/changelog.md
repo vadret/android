@@ -5,7 +5,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [1.1.0] -- 2019-06-*
+## [1.1.0] -- 2019-06-17
 
 ### Added
 - Configurable widgets are now supported
@@ -14,6 +14,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Always trim whitespace on library urls
+
+### Changed
+- Miscellaneous 3P version bumps
 
 ## [1.0.0] -- 2019-03-31
 
