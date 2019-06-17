@@ -5,7 +5,7 @@ import fi.kroon.vadret.data.functional.Either
 import fi.kroon.vadret.data.location.exception.LocationFailure
 import fi.kroon.vadret.data.location.local.LocationLocalDataSource
 import fi.kroon.vadret.data.location.model.Location
-import fi.kroon.vadret.utils.extensions.asLeft
+import fi.kroon.vadret.util.extension.asLeft
 import io.reactivex.Single
 import timber.log.Timber
 import javax.inject.Inject

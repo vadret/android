@@ -5,7 +5,7 @@ import fi.kroon.vadret.di.scope.CoreApplicationScope
 import fi.kroon.vadret.data.aboutinfo.model.AboutInfo
 import fi.kroon.vadret.data.exception.Failure
 import fi.kroon.vadret.data.functional.Either
-import fi.kroon.vadret.utils.extensions.asRight
+import fi.kroon.vadret.util.extension.asRight
 import io.reactivex.Single
 import timber.log.Timber
 import javax.inject.Inject

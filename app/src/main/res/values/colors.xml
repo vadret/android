@@ -2,6 +2,7 @@
 <resources>
 
     <color name="default_search_button_background">#6779CA</color>
+    <color name="default_search_button_tint">#ffffff</color>
     <color name="progressbar_background_tint">#B4FFFFFF</color>
 
     <!-- BEGIN LIGHT THEME -->
@@ -12,11 +13,38 @@
     <color name="fragment_background_light">#52F0F8FF</color>
     <color name="icon_color_background_light">@color/text_color_light</color>
     <color name="item_background_light">#FDFDFD</color>
+    <color name="confirm_button_background_light">@color/default_search_button_background</color>
     <color name="search_button_background_light">@color/default_search_button_background</color>
+    <color name="radar_button_background_light">@color/default_search_button_background</color>
+    <color name="filter_button_background_light">@color/default_search_button_background</color>
+    <color name="tab_indicator_color">@color/default_search_button_background</color>
     <color name="search_result_background_light">#ffffff</color>
     <color name="text_color_hint_light">#979797</color>
     <color name="text_color_light">#727272</color>
     <color name="thunder_risk_light">#F1F3FC</color>
+
+    <color name="warning_chip_background_color_light">#EBF0FF</color>
+    <color name="warning_chip_stroke_color_light">#CFDCFA</color>
+
+    <!-- District Land -->
+    <color name="warning_filter_chip_district_land_color_light">@color/district_land</color>
+    <color name="warning_filter_chip_district_land_color_stroke_light">@color/district_land_stroke</color>
+
+    <!-- District Sea -->
+    <color name="warning_filter_chip_district_sea_color_light">@color/district_sea</color>
+    <color name="warning_filter_chip_district_sea_color_stroke_light">@color/district_sea_stroke</color>
+
+    <!-- Feed Source 0 is KrisInformation -->
+    <color name="warning_filter_feed_source_0_color_light">@color/feed_source_color_0</color>
+    <color name="warning_filter_feed_source_0_stroke_color_light">@color/feed_source_color_0_stroke</color>
+
+    <!-- Feed Source 1 is SMHI -->
+    <color name="warning_filter_feed_source_1_color_light">@color/feed_source_color_1</color>
+    <color name="warning_filter_feed_source_1_stroke_color_light">@color/feed_source_color_1_stroke</color>
+
+    <!-- Feed Source 2 is Trafikverket -->
+    <color name="warning_filter_feed_source_2_color_light">@color/feed_source_color_2</color>
+    <color name="warning_filter_feed_source_2_stroke_color_light">@color/feed_source_color_2_stroke</color>
     <!-- END LIGHT THEME -->
 
     <!-- BEGIN DARK THEME -->
@@ -25,12 +53,33 @@
     <color name="divider_color_dark">#474747</color>
     <color name="fragment_background_dark">#373737</color>
     <color name="search_button_background_dark">@color/default_search_button_background</color>
+    <color name="filter_button_background_dark">@color/default_search_button_background</color>
     <color name="search_result_background_dark">#474747</color>
     <color name="text_color_dark">#E6E6E6</color>
     <color name="text_color_dark_disabled">#727272</color>
     <color name="text_color_hint_dark">#CECECE</color>
     <color name="theme_primary_item_background_dark">#3D3D3D</color>
     <color name="thunder_risk_dark">#474747</color>
+    <color name="warning_chip_background_color_dark">#ffffff</color>
+    <color name="warning_chip_stroke_color_dark">#979797</color>
+
+    <color name="warning_filter_chip_district_land_color_dark">@color/district_land</color>
+    <color name="warning_filter_chip_district_land_color_stroke_dark">@color/district_land_stroke</color>
+
+    <color name="warning_filter_chip_district_sea_color_dark">@color/district_sea</color>
+    <color name="warning_filter_chip_district_sea_color_stroke_dark">@color/district_sea_stroke</color>
+
+    <!-- Feed Source 0 is KrisInformation -->
+    <color name="warning_filter_feed_source_0_color_dark">@color/feed_source_color_0</color>
+    <color name="warning_filter_feed_source_0_stroke_color_dark">@color/feed_source_color_0_stroke</color>
+
+    <!-- Feed Source 1 is SMHI -->
+    <color name="warning_filter_feed_source_1_color_dark">@color/feed_source_color_1</color>
+    <color name="warning_filter_feed_source_1_stroke_color_dark">@color/feed_source_color_1_stroke</color>
+
+    <!-- Feed Source 2 is Trafikverket -->
+    <color name="warning_filter_feed_source_2_color_dark">@color/feed_source_color_2</color>
+    <color name="warning_filter_feed_source_2_stroke_color_dark">@color/feed_source_color_2_stroke</color>
     <!-- END DARK THEME -->
 
     <!-- BEGIN AMOLED THEME -->
@@ -39,12 +88,35 @@
     <color name="divider_color_amoled">#000000</color>
     <color name="fragment_background_amoled">#000000</color>
     <color name="search_button_background_amoled">@color/default_search_button_background</color>
+    <color name="filter_button_background_amoled">@color/default_search_button_background</color>
     <color name="search_result_background_amoled">#000000</color>
     <color name="text_color_amoled">#E6E6E6</color>
     <color name="text_color_amoled_disabled">#727272</color>
     <color name="text_color_hint_amoled">#CECECE</color>
     <color name="theme_primary_item_background_amoled">#000000</color>
     <color name="thunder_risk_amoled">#0F0F0F</color>
+    <color name="warning_chip_background_color_amoled">#ffffff</color>
+    <color name="warning_chip_stroke_color_amoled">#979797</color>
+
+    <!-- District Land -->
+    <color name="warning_filter_chip_district_land_color_amoled">@color/district_land</color>
+    <color name="warning_filter_chip_district_land_color_stroke_amoled">@color/district_land_stroke</color>
+
+    <!-- District Sea -->
+    <color name="warning_filter_chip_district_sea_color_amoled">@color/district_sea</color>
+    <color name="warning_filter_chip_district_sea_color_stroke_amoled">@color/district_sea_stroke</color>
+
+    <!-- Feed Source 0 is KrisInformation -->
+    <color name="warning_filter_feed_source_0_color_amoled">@color/feed_source_color_0</color>
+    <color name="warning_filter_feed_source_0_stroke_color_amoled">@color/feed_source_color_0_stroke</color>
+
+    <!-- Feed Source 1 is SMHI -->
+    <color name="warning_filter_feed_source_1_color_amoled">@color/feed_source_color_1</color>
+    <color name="warning_filter_feed_source_1_stroke_color_amoled">@color/feed_source_color_1_stroke</color>
+
+    <!-- Feed Source 2 is Trafikverket -->
+    <color name="warning_filter_feed_source_2_color_amoled">@color/feed_source_color_2</color>
+    <color name="warning_filter_feed_source_2_stroke_color_amoled">@color/feed_source_color_2_stroke</color>
     <!-- END AMOLED THEME -->
 
     <!-- SMHI WARNING COLOR CODES -->
@@ -55,6 +127,26 @@
     <color name="risk_for_very_difficult_weather">#9CD7F1</color>
     <color name="risk_for_fire">#9D8AC7</color>
     <color name="light_purple_shade">#D0C6DF</color>
+
+    <!-- District -->
+    <!-- District Land -->
+    <color name="district_land">#CDE7CA</color>
+    <color name="district_land_stroke">#B1C9AD</color>
+    <!-- District Sea -->
+    <color name="district_sea">#D2DFF8</color>
+    <color name="district_sea_stroke">#BBC9E6</color>
+
+    <!-- Feed Source -->
+    <!-- Feed Source 0 is KrisInformation -->
+    <color name="feed_source_color_0">#D2DFF8</color>
+    <color name="feed_source_color_0_stroke">#BBC9E6</color>
+    <!-- Feed Source 1 is SMHI -->
+    <color name="feed_source_color_1">#CDE7CA</color>
+    <color name="feed_source_color_1_stroke">#B1C9AD</color>
+    <!-- Feed Source 2 is Trafikverket -->
+    <color name="feed_source_color_2">#F5B7B7</color>
+    <color name="feed_source_color_2_stroke">#D19A9A</color>
+    <color name="feed_source_unknown_color">#D0C6DF</color>
 
     <!-- Temperature Color Gradient -->
     <color name="color_gradient_0">#4A4394</color>

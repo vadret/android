@@ -4,14 +4,14 @@ import android.os.Parcelable
 import androidx.annotation.StringRes
 import androidx.recyclerview.widget.DiffUtil
 import fi.kroon.vadret.data.autocomplete.model.AutoCompleteItem
-import fi.kroon.vadret.utils.DEFAULT_COUNTY
-import fi.kroon.vadret.utils.DEFAULT_LATITUDE
-import fi.kroon.vadret.utils.DEFAULT_LOCALITY
-import fi.kroon.vadret.utils.DEFAULT_LONGITUDE
-import fi.kroon.vadret.utils.DEFAULT_MUNICIPALITY
-import fi.kroon.vadret.utils.DEFAULT_THEME
-import fi.kroon.vadret.utils.DEFAULT_UPDATE_INTERVAL
-import fi.kroon.vadret.utils.extensions.empty
+import fi.kroon.vadret.util.DEFAULT_COUNTY
+import fi.kroon.vadret.util.DEFAULT_LATITUDE
+import fi.kroon.vadret.util.DEFAULT_LOCALITY
+import fi.kroon.vadret.util.DEFAULT_LONGITUDE
+import fi.kroon.vadret.util.DEFAULT_MUNICIPALITY
+import fi.kroon.vadret.util.DEFAULT_THEME
+import fi.kroon.vadret.util.DEFAULT_UPDATE_INTERVAL
+import fi.kroon.vadret.util.extension.empty
 import kotlinx.android.parcel.Parcelize
 
 object WeatherForecastTinySetupView {

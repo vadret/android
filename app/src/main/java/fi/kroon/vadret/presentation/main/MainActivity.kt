@@ -14,11 +14,11 @@ import fi.kroon.vadret.data.theme.model.Theme
 import fi.kroon.vadret.presentation.shared.BaseActivity
 import fi.kroon.vadret.presentation.main.di.MainActivityComponent
 import fi.kroon.vadret.presentation.main.di.MainActivityScope
-import fi.kroon.vadret.utils.DEFAULT_SETTINGS
-import fi.kroon.vadret.utils.Schedulers
-import fi.kroon.vadret.utils.extensions.appComponent
-import fi.kroon.vadret.utils.extensions.setupWithNavController
-import fi.kroon.vadret.utils.extensions.toObservable
+import fi.kroon.vadret.util.DEFAULT_SETTINGS
+import fi.kroon.vadret.util.Schedulers
+import fi.kroon.vadret.util.extension.appComponent
+import fi.kroon.vadret.util.extension.setupWithNavController
+import fi.kroon.vadret.util.extension.toObservable
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo

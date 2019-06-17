@@ -2,13 +2,38 @@
 
     <!-- Base application theme -->
     <style name="BaseAppTheme" parent="Theme.MaterialComponents.Light.DarkActionBar">
-        <item name="colorPrimary">@color/item_background_light</item>
+        <item name="colorPrimary">@color/theme_primary_item_background_dark</item>
         <item name="colorPrimaryDark">@color/theme_primary_item_background_dark</item>
         <item name="colorAccent">@color/default_search_button_background</item>
+        <item name="fabIconTint">@color/default_search_button_tint</item>
+        <item name="buttonBarTint">@color/default_search_button_tint</item>
+        <item name="radarButtonBackground">@color/radar_button_background_light</item>
+        <item name="searchButtonBackground">@color/search_button_background_light</item>
+        <item name="filterButtonBackground">@color/filter_button_background_light</item>
+        <item name="tabSelectedUnderlineColor">@color/tab_indicator_color</item>
+        <item name="confirmButtonBackground">@color/confirm_button_background_light</item>
+
+        <item name="warningChipBackgroundColor">@color/warning_chip_background_color_light</item>
+        <item name="warningChipStrokeColor">@color/warning_chip_stroke_color_light</item>
+
+        <item name="warningFilterChipDefaultColor">@color/warning_chip_background_color_light</item>
+        <item name="warningFilterChipDefaultStrokeColor">@color/warning_chip_stroke_color_light</item>
+
+        <item name="warningFilterChipDistrictLandColor">@color/warning_filter_chip_district_land_color_light</item>
+        <item name="warningFilterChipDistrictLandStrokeColor">@color/warning_filter_chip_district_land_color_stroke_light</item>
+        <item name="warningFilterChipDistrictSeaColor">@color/warning_filter_chip_district_sea_color_light</item>
+        <item name="warningFilterChipDistrictSeaStrokeColor">@color/warning_filter_chip_district_sea_color_stroke_light</item>
+
+        <item name="warningFilterChipFeedSource0Color">@color/warning_filter_feed_source_0_color_light</item>
+        <item name="warningFilterChipFeedSource0StrokeColor">@color/warning_filter_feed_source_0_stroke_color_light</item>
+        <item name="warningFilterChipFeedSource1Color">@color/warning_filter_feed_source_1_color_light</item>
+        <item name="warningFilterChipFeedSource1StrokeColor">@color/warning_filter_feed_source_1_stroke_color_light</item>
+        <item name="warningFilterChipFeedSource2Color">@color/warning_filter_feed_source_2_color_light</item>
+        <item name="warningFilterChipFeedSource2StrokeColor">@color/warning_filter_feed_source_2_stroke_color_light</item>
+
     </style>
 
     <style name="AppTheme" parent="BaseAppTheme">
-        <item name="searchButtonBackground">@color/search_button_background_light</item>
         <item name="themeBackground">@color/fragment_background_light</item>
         <item name="cardViewBackground">@color/cardview_background_light</item>
         <item name="themePrimaryItemBackground">@color/item_background_light</item>
@@ -20,7 +45,6 @@
         <item name="iconBackground">@color/icon_color_background_light</item>
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
-        <item name="android:statusBarColor">?attr/colorPrimaryDark</item>
         <item name="thunderRiskBackground">@color/thunder_risk_light</item>
     </style>
 
@@ -34,6 +58,7 @@
         <item name="colorPrimary">@color/theme_primary_item_background_dark</item>
         <item name="colorPrimaryDark">@color/theme_primary_item_background_dark</item>
         <item name="colorAccent">@color/search_button_background_dark</item>
+        <item name="filterButtonBackground">@color/filter_button_background_dark</item>
         <item name="titleText">@color/text_color_dark</item>
         <item name="titleTextHint">@color/text_color_hint_dark</item>
         <item name="iconBackground">@color/text_color_dark</item>
@@ -43,15 +68,33 @@
         <item name="themePrimaryItemBackground">@color/theme_primary_item_background_dark</item>
         <item name="titleTextPrimaryDisabled">@color/text_color_dark_disabled</item>
         <item name="titleTextSecondaryDisabled">@color/text_color_dark_disabled</item>
-        <item name="toolBarTheme">@style/ThemeOverlay.AppCompat.Dark.ActionBar</item>
         <item name="itemDivider">@color/divider_color_dark</item>
         <item name="searchResultBackground">@color/search_result_background_dark</item>
         <item name="bottomNavigationStyle">@style/BottomNavDarkStyle</item>
         <item name="android:textColorPrimary">@color/primary_text_color_selector</item>
         <item name="android:textColorSecondary">@color/secondary_text_color_selector</item>
         <item name="android:textColorHint">@color/text_color_dark</item>
-        <item name="alertDialogTheme">@style/dialogAlertDarkTheme</item>
+        <!-- [Warning] This controls AlertDialog style as in Android internals.-->
+        <item name="alertDialogTheme">@style/dialogWarningDarkTheme</item>
         <item name="thunderRiskBackground">@color/thunder_risk_dark</item>
+
+        <item name="warningChipBackgroundColor">@color/warning_chip_background_color_dark</item>
+        <item name="warningChipStrokeColor">@color/warning_chip_stroke_color_dark</item>
+
+        <item name="warningFilterChipDefaultColor">@color/warning_chip_background_color_dark</item>
+        <item name="warningFilterChipDefaultStrokeColor">@color/warning_chip_stroke_color_dark</item>
+
+        <item name="warningFilterChipDistrictLandColor">@color/warning_filter_chip_district_land_color_dark</item>
+        <item name="warningFilterChipDistrictLandStrokeColor">@color/warning_filter_chip_district_land_color_stroke_dark</item>
+        <item name="warningFilterChipDistrictSeaColor">@color/warning_filter_chip_district_sea_color_dark</item>
+        <item name="warningFilterChipDistrictSeaStrokeColor">@color/warning_filter_chip_district_sea_color_stroke_dark</item>
+
+        <item name="warningFilterChipFeedSource0Color">@color/warning_filter_feed_source_0_color_dark</item>
+        <item name="warningFilterChipFeedSource0StrokeColor">@color/warning_filter_feed_source_0_stroke_color_dark</item>
+        <item name="warningFilterChipFeedSource1Color">@color/warning_filter_feed_source_1_color_dark</item>
+        <item name="warningFilterChipFeedSource1StrokeColor">@color/warning_filter_feed_source_1_stroke_color_dark</item>
+        <item name="warningFilterChipFeedSource2Color">@color/warning_filter_feed_source_2_color_dark</item>
+        <item name="warningFilterChipFeedSource2StrokeColor">@color/warning_filter_feed_source_2_stroke_color_dark</item>
     </style>
 
     <!-- AMOLED THEME -->
@@ -59,6 +102,7 @@
         <item name="colorPrimary">@color/theme_primary_item_background_amoled</item>
         <item name="colorPrimaryDark">@color/theme_primary_item_background_amoled</item>
         <item name="colorAccent">@color/search_button_background_amoled</item>
+        <item name="filterButtonBackground">@color/filter_button_background_amoled</item>
         <item name="titleText">@color/text_color_amoled</item>
         <item name="titleTextHint">@color/text_color_hint_amoled</item>
         <item name="iconBackground">@color/text_color_amoled</item>
@@ -68,25 +112,34 @@
         <item name="themePrimaryItemBackground">@color/theme_primary_item_background_amoled</item>
         <item name="titleTextPrimaryDisabled">@color/text_color_amoled_disabled</item>
         <item name="titleTextSecondaryDisabled">@color/text_color_amoled_disabled</item>
-        <item name="toolBarTheme">@style/ThemeOverlay.AppCompat.Dark.ActionBar</item>
         <item name="itemDivider">@color/divider_color_amoled</item>
         <item name="searchResultBackground">@color/search_result_background_amoled</item>
         <item name="bottomNavigationStyle">@style/BottomNavAmoledStyle</item>
         <item name="android:textColorPrimary">@color/primary_text_color_selector</item>
         <item name="android:textColorSecondary">@color/secondary_text_color_selector</item>
         <item name="android:textColorHint">@color/text_color_amoled</item>
-        <item name="alertDialogTheme">@style/dialogAlertAmoledTheme</item>
+        <item name="alertDialogTheme">@style/dialogWarningAmoledTheme</item>
         <item name="thunderRiskBackground">@color/thunder_risk_amoled</item>
+
+        <item name="warningFilterChipDefaultColor">@color/warning_chip_background_color_light</item>
+        <item name="warningFilterChipDefaultStrokeColor">@color/warning_chip_stroke_color_light</item>
+
+        <item name="warningFilterChipFeedSource0Color">@color/warning_filter_feed_source_0_color_amoled</item>
+        <item name="warningFilterChipFeedSource0StrokeColor">@color/warning_filter_feed_source_0_stroke_color_amoled</item>
+        <item name="warningFilterChipFeedSource1Color">@color/warning_filter_feed_source_1_color_amoled</item>
+        <item name="warningFilterChipFeedSource1StrokeColor">@color/warning_filter_feed_source_1_stroke_color_amoled</item>
+        <item name="warningFilterChipFeedSource2Color">@color/warning_filter_feed_source_2_color_amoled</item>
+        <item name="warningFilterChipFeedSource2StrokeColor">@color/warning_filter_feed_source_2_stroke_color_amoled</item>
     </style>
 
-    <style name="dialogAlertDarkTheme" parent="@style/Theme.AppCompat.Dialog.Alert">
+    <style name="dialogWarningDarkTheme" parent="@style/Theme.AppCompat.Dialog.Alert">
         <item name="colorPrimary">@color/theme_primary_item_background_dark</item>
         <item name="colorPrimaryDark">@color/theme_primary_item_background_dark</item>
         <item name="colorAccent">@color/default_search_button_background</item>
         <item name="android:windowBackground">@color/theme_primary_item_background_dark</item>
     </style>
 
-    <style name="dialogAlertAmoledTheme" parent="@style/Theme.AppCompat.Dialog.Alert">
+    <style name="dialogWarningAmoledTheme" parent="@style/Theme.AppCompat.Dialog.Alert">
         <item name="colorPrimary">@color/theme_primary_item_background_amoled</item>
         <item name="colorPrimaryDark">@color/theme_primary_item_background_amoled</item>
         <item name="colorAccent">@color/default_search_button_background</item>
@@ -102,10 +155,6 @@
         <item name="colorAccent">@color/default_search_button_background</item>
         <item name="android:progressBackgroundTint">@color/progressbar_background_tint</item>
     </style>
-
-    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.MaterialComponents.Dark.ActionBar" />
-
-    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.MaterialComponents.Light" />
 
     <style name="BottomNavDarkStyle">
         <item name="android:background">@color/bottom_navigation_background_dark</item>

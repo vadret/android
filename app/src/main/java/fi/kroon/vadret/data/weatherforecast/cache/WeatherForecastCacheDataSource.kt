@@ -4,14 +4,14 @@ import androidx.collection.LruCache
 import fi.kroon.vadret.data.exception.Failure
 import fi.kroon.vadret.data.functional.Either
 import fi.kroon.vadret.data.weatherforecast.model.Weather
-import fi.kroon.vadret.utils.extensions.asLeft
-import fi.kroon.vadret.utils.extensions.asRight
+import fi.kroon.vadret.util.extension.asLeft
+import fi.kroon.vadret.util.extension.asRight
 import io.reactivex.Single
 import timber.log.Timber
 import javax.inject.Inject
 
 class WeatherForecastCacheDataSource @Inject constructor(
-    private val diskCache: WeatherForecastDiskCacheImpl,
+    private val diskCache: WeatherForecastDiskCache,
     private val memoryCache: LruCache<String, Weather>
 ) {
 

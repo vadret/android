@@ -3,7 +3,7 @@ package fi.kroon.vadret.presentation.weatherforecastwidget.shared
 import android.appwidget.AppWidgetManager
 import android.os.SystemClock
 import androidx.appcompat.app.AppCompatActivity
-import fi.kroon.vadret.utils.Schedulers
+import fi.kroon.vadret.util.Schedulers
 import javax.inject.Inject
 
 abstract class BaseAppWidgetSetup : AppCompatActivity() {

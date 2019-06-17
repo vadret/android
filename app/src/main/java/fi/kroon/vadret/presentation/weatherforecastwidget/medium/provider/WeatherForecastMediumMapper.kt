@@ -3,10 +3,10 @@ package fi.kroon.vadret.presentation.weatherforecastwidget.medium.provider
 import fi.kroon.vadret.data.weatherforecast.model.Parameter
 import fi.kroon.vadret.data.weatherforecast.model.TimeSerie
 import fi.kroon.vadret.presentation.weatherforecastwidget.medium.provider.model.WeatherForecastMediumModel
-import fi.kroon.vadret.utils.MPS_TO_KMPH_FACTOR
-import fi.kroon.vadret.utils.WINDCHILL_FORMULA_MAXIMUM
-import fi.kroon.vadret.utils.WINDCHILL_FORMULA_MINIMUM
-import fi.kroon.vadret.utils.extensions.toWindChill
+import fi.kroon.vadret.util.MPS_TO_KMPH_FACTOR
+import fi.kroon.vadret.util.WINDCHILL_FORMULA_MAXIMUM
+import fi.kroon.vadret.util.WINDCHILL_FORMULA_MINIMUM
+import fi.kroon.vadret.util.extension.toWindChill
 
 object WeatherForecastMediumMapper {
 

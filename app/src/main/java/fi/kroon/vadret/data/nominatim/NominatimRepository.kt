@@ -8,10 +8,10 @@ import fi.kroon.vadret.data.nominatim.model.Nominatim
 import fi.kroon.vadret.data.nominatim.model.NominatimOut
 import fi.kroon.vadret.data.nominatim.model.NominatimReverseOut
 import fi.kroon.vadret.data.nominatim.net.NominatimNetDataSource
-import fi.kroon.vadret.utils.NetworkHandler
-import fi.kroon.vadret.utils.extensions.asLeft
-import fi.kroon.vadret.utils.extensions.asRight
-import fi.kroon.vadret.utils.extensions.asSingle
+import fi.kroon.vadret.util.NetworkHandler
+import fi.kroon.vadret.util.extension.asLeft
+import fi.kroon.vadret.util.extension.asRight
+import fi.kroon.vadret.util.extension.asSingle
 import io.reactivex.Single
 import retrofit2.Response
 import timber.log.Timber

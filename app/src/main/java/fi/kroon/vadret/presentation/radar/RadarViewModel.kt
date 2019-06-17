@@ -5,8 +5,8 @@ import fi.kroon.vadret.data.functional.Either
 import fi.kroon.vadret.domain.radar.GetRadarImageUrlService
 import fi.kroon.vadret.presentation.shared.IViewModel
 import fi.kroon.vadret.presentation.radar.di.RadarFeatureScope
-import fi.kroon.vadret.utils.NIL_INT
-import fi.kroon.vadret.utils.extensions.asObservable
+import fi.kroon.vadret.util.NIL_INT
+import fi.kroon.vadret.util.extension.asObservable
 import io.reactivex.Observable
 import io.reactivex.ObservableTransformer
 import timber.log.Timber

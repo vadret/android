@@ -1,6 +1,6 @@
 package fi.kroon.vadret.common
 
-import fi.kroon.vadret.utils.extensions.toWindChill
+import fi.kroon.vadret.util.extension.toWindChill
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 

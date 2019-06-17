@@ -1,7 +1,7 @@
 package fi.kroon.vadret.domain.weatherforecast
 
 import fi.kroon.vadret.data.weatherforecast.local.WeatherForecastLocalKeyValueDataSource
-import fi.kroon.vadret.utils.LAST_CHECKED_KEY
+import fi.kroon.vadret.util.LAST_CHECKED_KEY
 import javax.inject.Inject
 
 class SetWeatherForecastLastCheckedTask @Inject constructor(

@@ -7,7 +7,7 @@ import fi.kroon.vadret.domain.theme.GetThemeModeTask
 import fi.kroon.vadret.domain.theme.ObserveThemeChangeTask
 import fi.kroon.vadret.presentation.shared.IViewModel
 import fi.kroon.vadret.presentation.main.di.MainActivityScope
-import fi.kroon.vadret.utils.extensions.asObservable
+import fi.kroon.vadret.util.extension.asObservable
 import io.reactivex.Observable
 import io.reactivex.ObservableTransformer
 import io.reactivex.Single

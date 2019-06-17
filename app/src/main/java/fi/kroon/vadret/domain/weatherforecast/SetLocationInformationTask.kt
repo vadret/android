@@ -4,11 +4,11 @@ import fi.kroon.vadret.data.autocomplete.model.AutoCompleteItem
 import fi.kroon.vadret.data.exception.Failure
 import fi.kroon.vadret.data.functional.Either
 import fi.kroon.vadret.data.weatherforecast.local.WeatherForecastLocalKeyValueDataSource
-import fi.kroon.vadret.utils.COUNTY_KEY
-import fi.kroon.vadret.utils.LATITUDE_KEY
-import fi.kroon.vadret.utils.LOCALITY_KEY
-import fi.kroon.vadret.utils.LONGITUDE_KEY
-import fi.kroon.vadret.utils.MUNICIPALITY_KEY
+import fi.kroon.vadret.util.COUNTY_KEY
+import fi.kroon.vadret.util.LATITUDE_KEY
+import fi.kroon.vadret.util.LOCALITY_KEY
+import fi.kroon.vadret.util.LONGITUDE_KEY
+import fi.kroon.vadret.util.MUNICIPALITY_KEY
 import io.reactivex.Observable
 import io.reactivex.Single
 import timber.log.Timber

@@ -1,7 +1,7 @@
 package fi.kroon.vadret.data.nominatim.model
 
-import fi.kroon.vadret.utils.NOMINATIM_DATA_FORMAT
-import fi.kroon.vadret.utils.NOMINATIM_CITY_ZOOM_LEVEL
+import fi.kroon.vadret.util.NOMINATIM_DATA_FORMAT
+import fi.kroon.vadret.util.NOMINATIM_CITY_ZOOM_LEVEL
 
 class NominatimReverseOut(
     val format: String = NOMINATIM_DATA_FORMAT,

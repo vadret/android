@@ -4,8 +4,8 @@ import fi.kroon.vadret.data.exception.Failure
 import fi.kroon.vadret.data.functional.Either
 import fi.kroon.vadret.data.functional.flatMap
 import fi.kroon.vadret.data.weatherforecast.model.WeatherOut
-import fi.kroon.vadret.utils.extensions.asRight
-import fi.kroon.vadret.utils.extensions.toCoordinate
+import fi.kroon.vadret.util.extension.asRight
+import fi.kroon.vadret.util.extension.toCoordinate
 import io.reactivex.Single
 import io.reactivex.rxkotlin.Singles
 import javax.inject.Inject

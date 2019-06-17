@@ -9,8 +9,8 @@ import fi.kroon.vadret.data.exception.Failure
 import fi.kroon.vadret.data.location.exception.LocationFailure
 import fi.kroon.vadret.data.location.model.Location
 import fi.kroon.vadret.data.location.local.LocationLocalDataSource
-import fi.kroon.vadret.utils.DEFAULT_LATITUDE
-import fi.kroon.vadret.utils.DEFAULT_LONGITUDE
+import fi.kroon.vadret.util.DEFAULT_LATITUDE
+import fi.kroon.vadret.util.DEFAULT_LONGITUDE
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mock

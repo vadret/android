@@ -2,7 +2,7 @@ package fi.kroon.vadret.presentation.weatherforecastwidget.medium.provider
 
 import android.appwidget.AppWidgetManager
 import fi.kroon.vadret.presentation.weatherforecastwidget.medium.provider.model.WeatherForecastMediumModel
-import fi.kroon.vadret.utils.extensions.empty
+import fi.kroon.vadret.util.extension.empty
 
 object WeatherForecastMediumView {
 

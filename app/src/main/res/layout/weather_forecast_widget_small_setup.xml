@@ -170,7 +170,9 @@
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/weather_forecast_setup_button_margin"
             android:layout_weight="1"
+            android:backgroundTint="?attr/colorAccent"
             android:text="@string/widget_setup_cancel"
+            android:textColor="?attr/buttonBarTint"
             android:textSize="@dimen/weather_forecast_setup_text_size" />
 
         <Button
@@ -180,7 +182,9 @@
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/weather_forecast_setup_button_margin"
             android:layout_weight="1"
+            android:backgroundTint="?attr/colorAccent"
             android:text="@string/widget_setup_confirm"
+            android:textColor="?attr/buttonBarTint"
             android:textSize="@dimen/weather_forecast_setup_text_size" />
     </LinearLayout>
 </LinearLayout>

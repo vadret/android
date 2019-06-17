@@ -6,13 +6,13 @@ import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import fi.kroon.vadret.R
 import fi.kroon.vadret.presentation.aboutapp.di.AboutAppFeatureScope
-import fi.kroon.vadret.utils.COUNTY_KEY
-import fi.kroon.vadret.utils.DEFAULT_SETTINGS
-import fi.kroon.vadret.utils.DEFAULT_VALUE
-import fi.kroon.vadret.utils.LATITUDE_KEY
-import fi.kroon.vadret.utils.LOCALITY_KEY
-import fi.kroon.vadret.utils.LONGITUDE_KEY
-import fi.kroon.vadret.utils.MUNICIPALITY_KEY
+import fi.kroon.vadret.util.COUNTY_KEY
+import fi.kroon.vadret.util.DEFAULT_SETTINGS
+import fi.kroon.vadret.util.DEFAULT_VALUE
+import fi.kroon.vadret.util.LATITUDE_KEY
+import fi.kroon.vadret.util.LOCALITY_KEY
+import fi.kroon.vadret.util.LONGITUDE_KEY
+import fi.kroon.vadret.util.MUNICIPALITY_KEY
 import timber.log.Timber
 
 @AboutAppFeatureScope

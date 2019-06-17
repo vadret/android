@@ -11,7 +11,7 @@ import fi.kroon.vadret.presentation.shared.BaseFragment
 import fi.kroon.vadret.presentation.main.MainActivity
 import fi.kroon.vadret.presentation.aboutapp.AboutAppFragment
 import fi.kroon.vadret.presentation.aboutapp.di.AboutAppFeatureScope
-import fi.kroon.vadret.utils.extensions.toObservable
+import fi.kroon.vadret.util.extension.toObservable
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo

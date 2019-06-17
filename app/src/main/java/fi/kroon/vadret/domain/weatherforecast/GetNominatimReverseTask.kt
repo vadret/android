@@ -6,7 +6,7 @@ import fi.kroon.vadret.data.nominatim.NominatimRepository
 import fi.kroon.vadret.data.nominatim.exception.NominatimFailure
 import fi.kroon.vadret.data.nominatim.model.Nominatim
 import fi.kroon.vadret.data.nominatim.model.NominatimReverseOut
-import fi.kroon.vadret.utils.extensions.asLeft
+import fi.kroon.vadret.util.extension.asLeft
 import io.reactivex.Single
 import timber.log.Timber
 import javax.inject.Inject

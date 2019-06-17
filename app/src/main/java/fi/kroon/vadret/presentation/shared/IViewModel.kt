@@ -1,8 +1,9 @@
 package fi.kroon.vadret.presentation.shared
 
 import fi.kroon.vadret.R
-import fi.kroon.vadret.data.alert.exception.AlertFailure
+import fi.kroon.vadret.data.aggregatedfeed.exception.AggregatedFeedFailure
 import fi.kroon.vadret.data.common.exception.LocalFileReaderFailure
+import fi.kroon.vadret.data.district.exception.DistrictFailure
 import fi.kroon.vadret.data.exception.Failure
 import fi.kroon.vadret.data.location.exception.LocationFailure
 import fi.kroon.vadret.data.nominatim.exception.NominatimFailure
@@ -37,8 +38,9 @@ interface IViewModel {
             Failure.DiskCacheLruWriteFailure -> R.string.disk_cache_write
             WeatherForecastFailure.NoWeatherAvailableForThisLocation -> R.string.data_not_available_at_this_location
             WeatherForecastFailure.NoWeatherAvailable -> R.string.no_weather_available
-            AlertFailure.NoAlertAvailable -> R.string.no_alert_available
+            AggregatedFeedFailure.NoAggregatedFeedAvailable -> R.string.no_alert_available
             WeatherForecastWidgetFailure.NoLocalitySelected -> R.string.widget_must_select_a_locality
+            DistrictFailure.DistrictNotAvailable -> R.string.filter_failure_districts_not_available
             else -> {
                 Timber.e("Error occured but was not properly handled: $failure")
                 R.string.unhandled_error

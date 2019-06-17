@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import fi.kroon.vadret.data.nominatim.model.Locality
 import fi.kroon.vadret.presentation.main.MainActivity
-import fi.kroon.vadret.utils.Schedulers
+import fi.kroon.vadret.util.Schedulers
 import timber.log.Timber
 import javax.inject.Inject
 

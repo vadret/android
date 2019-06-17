@@ -12,7 +12,6 @@
     <dimen name="default_corner_radius">8dp</dimen>
 
     <dimen name="weather_desc_margin">16dp</dimen>
-
     <dimen name="activity_padding">16dp</dimen>
     <dimen name="placeholder_image">50dp</dimen>
     <dimen name="placeholder_text_height">8dp</dimen>
@@ -26,11 +25,6 @@
     <dimen name="weatherIcon">48dp</dimen>
     <dimen name="weekday_placeholder">120dp</dimen>
     <dimen name="date_placeholder">70dp</dimen>
-
-    <!-- Weather Forecast Widget Setup -->
-
-
-    <!-- Cheatsheet for custom cell size: 70 × n − 30 -->
 
     <!-- Weather Forecast Tiny -->
     <!-- 2x1 widget cells -->
@@ -100,5 +94,55 @@
     <dimen name="weather_forecast_empty_text_size">16sp</dimen>
     <dimen name="weather_forecast_empty_icon_width">32dp</dimen>
     <dimen name="weather_forecast_empty_icon_height">32dp</dimen>
+
+    <!-- Warning Display -->
+    <dimen name="warning_display_fab_border_width">0dp</dimen>
+    <dimen name="warning_display_fab_elevation">6dp</dimen>
+    <dimen name="warning_display_fab_margin_bottom">16dp</dimen>
+    <dimen name="warning_display_fab_margin_start">16dp</dimen>
+    <dimen name="warning_display_fab_margin_end">16dp</dimen>
+    <dimen name="warning_display_headline_text_size">20sp</dimen>
+    <dimen name="warning_display_elevation">4dp</dimen>
+    <dimen name="warning_display_margin_top">8dp</dimen>
+    <dimen name="warning_display_margin_start">8dp</dimen>
+    <dimen name="warning_display_margin_end">16dp</dimen>
+    <dimen name="warning_display_margin_bottom">8dp</dimen>
+    <dimen name="warning_display_warning_icon_width">20dp</dimen>
+    <dimen name="warning_display_warning_icon_height">20dp</dimen>
+    <dimen name="warning_display_warning_issued_text_size">14sp</dimen>
+    <dimen name="warning_display_color_view_width">6dp</dimen>
+    <dimen name="warning_display_no_warning_issued">20sp</dimen>
+    <dimen name="warning_display_chip_stroke_width">1dp</dimen>
+    <dimen name="warning_display_no_warnings_margin_start">32dp</dimen>
+    <dimen name="warning_display_no_warnings_margin_end">32dp</dimen>
+    <dimen name="warning_display_padding_start">8dp</dimen>
+    <dimen name="warning_display_padding_end">8dp</dimen>
+    <dimen name="warning_display_padding_bottom">8dp</dimen>
+    <dimen name="warning_display_progress_bar_height">32dp</dimen>
+    <dimen name="warning_display_frame_layout_height">4dp</dimen>
+
+    <!-- Warning Filter -->
+    <dimen name="warning_filter_layout_height">0dp</dimen>
+    <dimen name="warning_filter_button_text_size">16sp</dimen>
+    <dimen name="warning_filter_title_text_size">20sp</dimen>
+    <dimen name="warning_filter_margin_start">16dp</dimen>
+    <dimen name="warning_filter_margin_top">8dp</dimen>
+    <dimen name="warning_filter_margin_bottom">4dp</dimen>
+    <dimen name="warning_filter_margin">16dp</dimen>
+    <dimen name="warning_filter_chip_stroke_width">1dp</dimen>
+
+    <!-- Radar -->
+    <dimen name="radar_fab_border_width">0dp</dimen>
+    <dimen name="radar_fab_elevation">6dp</dimen>
+    <dimen name="radar_fab_margin_bottom">16dp</dimen>
+    <dimen name="radar_fab_margin_start">16dp</dimen>
+    <dimen name="radar_fab_margin_end">16dp</dimen>
+    <dimen name="radar_seekbar_width">0dp</dimen>
+    <dimen name="radar_seekbar_margin_start">8dp</dimen>
+    <dimen name="radar_seekbar_margin_end">8dp</dimen>
+    <dimen name="radar_seekbar_margin_bottom">36dp</dimen>
+    <dimen name="radar_date_margin_top">16dp</dimen>
+    <dimen name="radar_date_margin_end">8dp</dimen>
+    <dimen name="radar_map_view_margin">0dp</dimen>
 
 </resources>

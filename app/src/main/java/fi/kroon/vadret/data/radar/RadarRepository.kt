@@ -7,10 +7,10 @@ import fi.kroon.vadret.data.radar.exception.RadarFailure
 import fi.kroon.vadret.data.radar.model.Radar
 import fi.kroon.vadret.data.radar.model.RadarRequest
 import fi.kroon.vadret.data.radar.net.RadarNetDataSource
-import fi.kroon.vadret.utils.NetworkHandler
-import fi.kroon.vadret.utils.extensions.asLeft
-import fi.kroon.vadret.utils.extensions.asRight
-import fi.kroon.vadret.utils.extensions.asSingle
+import fi.kroon.vadret.util.NetworkHandler
+import fi.kroon.vadret.util.extension.asLeft
+import fi.kroon.vadret.util.extension.asRight
+import fi.kroon.vadret.util.extension.asSingle
 import io.reactivex.Single
 import retrofit2.Response
 import timber.log.Timber

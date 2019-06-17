@@ -10,10 +10,10 @@ import fi.kroon.vadret.R
 import fi.kroon.vadret.presentation.weatherforecastwidget.medium.service.di.WeatherForecastMediumServiceComponent
 import fi.kroon.vadret.presentation.weatherforecastwidget.medium.service.di.WeatherForecastMediumServiceScope
 import fi.kroon.vadret.presentation.weatherforecastwidget.medium.service.model.WeatherForecastMediumServiceModel
-import fi.kroon.vadret.utils.DEGREE_SYMBOL
-import fi.kroon.vadret.utils.MPS_SUFFIX
-import fi.kroon.vadret.utils.Schedulers
-import fi.kroon.vadret.utils.extensions.toObservable
+import fi.kroon.vadret.util.DEGREE_SYMBOL
+import fi.kroon.vadret.util.MPS_SUFFIX
+import fi.kroon.vadret.util.Schedulers
+import fi.kroon.vadret.util.extension.toObservable
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo

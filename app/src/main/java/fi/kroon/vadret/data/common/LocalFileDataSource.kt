@@ -6,7 +6,7 @@ import fi.kroon.vadret.data.autocomplete.model.AutoCompleteItem
 import fi.kroon.vadret.data.common.exception.LocalFileReaderFailure
 import fi.kroon.vadret.data.exception.Failure
 import fi.kroon.vadret.data.functional.Either
-import fi.kroon.vadret.utils.extensions.asLeft
+import fi.kroon.vadret.util.extension.asLeft
 import io.reactivex.Single
 import org.apache.commons.csv.CSVFormat
 import org.apache.commons.csv.CSVParser

@@ -7,7 +7,7 @@ import fi.kroon.vadret.domain.weatherforecastwidget.shared.GetWidgetLastCheckedK
 import fi.kroon.vadret.domain.weatherforecastwidget.shared.GetWidgetWeatherForecastService
 import fi.kroon.vadret.presentation.weatherforecastwidget.medium.service.di.WeatherForecastMediumServiceScope
 import fi.kroon.vadret.presentation.weatherforecastwidget.medium.service.model.WeatherForecastMediumServiceModel
-import fi.kroon.vadret.utils.extensions.asObservable
+import fi.kroon.vadret.util.extension.asObservable
 import io.reactivex.Observable
 import io.reactivex.ObservableTransformer
 import timber.log.Timber

@@ -3,8 +3,8 @@ package fi.kroon.vadret.presentation.shared
 import androidx.appcompat.app.AppCompatActivity
 import fi.kroon.vadret.R
 import fi.kroon.vadret.data.nominatim.model.Locality
-import fi.kroon.vadret.utils.extensions.toGone
-import fi.kroon.vadret.utils.extensions.toVisible
+import fi.kroon.vadret.util.extension.toGone
+import fi.kroon.vadret.util.extension.toVisible
 import kotlinx.android.synthetic.main.activity_main.*
 
 abstract class BaseActivity : AppCompatActivity() {

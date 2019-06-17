@@ -170,4 +170,5 @@
     <string name="widget_widget_theme">Widget Tema</string>
     <string name="risk_for_thunder">Risk för åska</string>
     <string name="widget_use_gps_automatically">Använd min GPS automatiskt</string>
+    <string name="warning_display_no_warnings_issued">Inga varning utfärdade förnärvarande.</string>
 </resources>

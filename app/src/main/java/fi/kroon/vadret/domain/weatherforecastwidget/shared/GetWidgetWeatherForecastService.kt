@@ -17,8 +17,8 @@ import fi.kroon.vadret.domain.weatherforecast.GetWeatherForecastMemoryCacheTask
 import fi.kroon.vadret.domain.weatherforecast.GetWeatherForecastTask
 import fi.kroon.vadret.domain.weatherforecast.SetWeatherForecastDiskCacheTask
 import fi.kroon.vadret.domain.weatherforecast.SetWeatherForecastMemoryCacheTask
-import fi.kroon.vadret.utils.FIVE_MINUTES_IN_MILLIS
-import fi.kroon.vadret.utils.extensions.asSingle
+import fi.kroon.vadret.util.FIVE_MINUTES_IN_MILLIS
+import fi.kroon.vadret.util.extension.asSingle
 import io.reactivex.Single
 import io.reactivex.rxkotlin.zipWith
 import timber.log.Timber

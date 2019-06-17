@@ -7,7 +7,7 @@ import fi.kroon.vadret.data.location.LocationRepository
 import fi.kroon.vadret.data.location.exception.LocationFailure
 import fi.kroon.vadret.data.location.model.Location
 import fi.kroon.vadret.data.location.local.LocationLocalDataSource
-import fi.kroon.vadret.utils.extensions.asLeft
+import fi.kroon.vadret.util.extension.asLeft
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mock

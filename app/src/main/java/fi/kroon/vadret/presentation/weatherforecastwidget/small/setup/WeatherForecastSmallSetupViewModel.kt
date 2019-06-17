@@ -18,9 +18,9 @@ import fi.kroon.vadret.domain.weatherforecastwidget.small.SetWidgetSmallConfigur
 import fi.kroon.vadret.presentation.shared.IViewModel
 import fi.kroon.vadret.presentation.weatherforecastwidget.small.setup.di.WeatherForecastSmallSetupScope
 import fi.kroon.vadret.presentation.weatherforecastwidget.small.setup.model.WeatherForecastSmallConfigurationModel
-import fi.kroon.vadret.utils.AUTOCOMPLETE_DEBOUNCE_MILLIS
-import fi.kroon.vadret.utils.extensions.asObservable
-import fi.kroon.vadret.utils.extensions.empty
+import fi.kroon.vadret.util.AUTOCOMPLETE_DEBOUNCE_MILLIS
+import fi.kroon.vadret.util.extension.asObservable
+import fi.kroon.vadret.util.extension.empty
 import io.reactivex.Observable
 import io.reactivex.ObservableTransformer
 import io.reactivex.Single

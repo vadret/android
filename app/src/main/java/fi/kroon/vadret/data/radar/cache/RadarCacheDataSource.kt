@@ -4,15 +4,15 @@ import androidx.collection.LruCache
 import fi.kroon.vadret.data.exception.Failure
 import fi.kroon.vadret.data.functional.Either
 import fi.kroon.vadret.data.radar.model.Radar
-import fi.kroon.vadret.utils.RADAR_CACHE_KEY
-import fi.kroon.vadret.utils.extensions.asLeft
-import fi.kroon.vadret.utils.extensions.asRight
+import fi.kroon.vadret.util.RADAR_CACHE_KEY
+import fi.kroon.vadret.util.extension.asLeft
+import fi.kroon.vadret.util.extension.asRight
 import io.reactivex.Single
 import timber.log.Timber
 import javax.inject.Inject
 
 class RadarCacheDataSource @Inject constructor(
-    private val diskCache: RadarDiskCacheImpl,
+    private val diskCache: RadarDiskCache,
     private val memoryCache: LruCache<Long, Radar>
 ) {
     fun getMemoryCache(): Single<Either<Failure, Radar>> =

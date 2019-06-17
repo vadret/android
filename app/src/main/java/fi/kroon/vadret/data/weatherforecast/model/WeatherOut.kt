@@ -1,9 +1,9 @@
 package fi.kroon.vadret.data.weatherforecast.model
 
 import android.os.Parcelable
-import fi.kroon.vadret.utils.PMP3G_CATEGORY
-import fi.kroon.vadret.utils.POINT_GEOTYPE
-import fi.kroon.vadret.utils.SMHI_BASE_API_VERSION
+import fi.kroon.vadret.util.PMP3G_CATEGORY
+import fi.kroon.vadret.util.POINT_GEOTYPE
+import fi.kroon.vadret.util.SMHI_BASE_API_VERSION
 import kotlinx.android.parcel.Parcelize
 
 @Parcelize

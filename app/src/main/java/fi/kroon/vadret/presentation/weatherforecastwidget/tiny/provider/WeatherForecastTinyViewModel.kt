@@ -12,10 +12,10 @@ import fi.kroon.vadret.domain.weatherforecastwidget.shared.SetWidgetLastCheckedK
 import fi.kroon.vadret.presentation.shared.IViewModel
 import fi.kroon.vadret.presentation.weatherforecastwidget.tiny.provider.di.WeatherForecastTinyFeatureScope
 import fi.kroon.vadret.presentation.weatherforecastwidget.tiny.provider.model.WeatherForecastTinyModel
-import fi.kroon.vadret.utils.DARK_THEME
-import fi.kroon.vadret.utils.LIGHT_THEME_NO_BACKGROUND
-import fi.kroon.vadret.utils.extensions.asObservable
-import fi.kroon.vadret.utils.extensions.asRight
+import fi.kroon.vadret.util.DARK_THEME
+import fi.kroon.vadret.util.LIGHT_THEME_NO_BACKGROUND
+import fi.kroon.vadret.util.extension.asObservable
+import fi.kroon.vadret.util.extension.asRight
 import io.reactivex.Observable
 import io.reactivex.ObservableTransformer
 import io.reactivex.Single

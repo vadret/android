@@ -7,6 +7,7 @@ import com.squareup.leakcanary.LeakCanary
 import fi.kroon.vadret.di.component.CoreApplicationComponent
 import fi.kroon.vadret.di.component.DaggerCoreApplicationComponent
 import fi.kroon.vadret.di.modules.ContextModule
+import fi.kroon.vadret.di.modules.DatabaseModule
 import timber.log.Timber
 
 abstract class BaseApplication : Application() {
@@ -21,6 +22,7 @@ abstract class BaseApplication : Application() {
         DaggerCoreApplicationComponent
             .builder()
             .contextModule(ContextModule(this))
+            .databaseModule(DatabaseModule(this))
             .build()
     }
 

@@ -2,7 +2,7 @@ package fi.kroon.vadret.presentation.weatherforecastwidget.tiny.provider
 
 import android.appwidget.AppWidgetManager.INVALID_APPWIDGET_ID
 import fi.kroon.vadret.presentation.weatherforecastwidget.tiny.provider.model.WeatherForecastTinyModel
-import fi.kroon.vadret.utils.extensions.empty
+import fi.kroon.vadret.util.extension.empty
 
 object WeatherForecastTinyView {
 

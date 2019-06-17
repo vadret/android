@@ -1,12 +1,12 @@
 package fi.kroon.vadret.data.nominatim.model
 
-import fi.kroon.vadret.utils.NOMINATIM_DATA_FORMAT
-import fi.kroon.vadret.utils.SWEDEN
-import fi.kroon.vadret.utils.GERMANY
-import fi.kroon.vadret.utils.NORWAY
-import fi.kroon.vadret.utils.POLAND
-import fi.kroon.vadret.utils.DENMARK
-import fi.kroon.vadret.utils.FINLAND
+import fi.kroon.vadret.util.NOMINATIM_DATA_FORMAT
+import fi.kroon.vadret.util.SWEDEN
+import fi.kroon.vadret.util.GERMANY
+import fi.kroon.vadret.util.NORWAY
+import fi.kroon.vadret.util.POLAND
+import fi.kroon.vadret.util.DENMARK
+import fi.kroon.vadret.util.FINLAND
 
 data class NominatimOut(
     val city: String,

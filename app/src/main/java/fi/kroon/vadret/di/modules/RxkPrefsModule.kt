@@ -6,7 +6,7 @@ import com.afollestad.rxkprefs.rxkPrefs
 import dagger.Module
 import dagger.Provides
 import fi.kroon.vadret.di.scope.CoreApplicationScope
-import fi.kroon.vadret.utils.DEFAULT_SETTINGS
+import fi.kroon.vadret.util.DEFAULT_SETTINGS
 
 @Module
 object RxkPrefsModule {

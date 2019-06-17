@@ -1,7 +1,7 @@
 package fi.kroon.vadret.presentation.aboutapp
 
 import fi.kroon.vadret.presentation.aboutapp.di.AboutAppFeatureScope
-import fi.kroon.vadret.utils.extensions.asObservable
+import fi.kroon.vadret.util.extension.asObservable
 import io.reactivex.Observable
 import io.reactivex.ObservableTransformer
 import javax.inject.Inject

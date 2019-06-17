@@ -1,18 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <attr name="searchButtonBackground" format="reference" />
+    <attr name="filterButtonBackground" format="reference" />
+    <attr name="radarButtonBackground" format="reference" />
+    <attr name="confirmButtonBackground" format="reference" />
+    <attr name="tabSelectedUnderlineColor" format="reference" />
     <attr name="themeBackground" format="reference" />
     <attr name="cardViewBackground" format="reference" />
+    <attr name="warningChipBackgroundColor" format="reference" />
+    <attr name="warningChipStrokeColor" format="reference" />
     <attr name="themePrimaryItemBackground" format="reference" />
     <attr name="titleText" format="reference" />
     <attr name="titleTextHint" format="reference" />
     <attr name="titleTextPrimaryDisabled" format="reference" />
     <attr name="titleTextSecondaryDisabled" format="reference" />
+    <attr name="fabIconTint" format="reference" />
+    <attr name="buttonBarTint" format="reference" />
     <attr name="iconBackground" format="reference" />
-    <attr name="toolBarTheme" format="reference" />
-    <attr name="alertDialogTheme" format="reference" />
+    <attr name="warningDialogTheme" format="reference" />
     <attr name="itemDivider" format="reference" />
     <attr name="searchResultBackground" format="reference" />
     <attr name="bottomNavigationStyle" format="reference" />
     <attr name="thunderRiskBackground" format="reference" />
+
+    <!-- CHIP DISTRICT LAND -->
+    <attr name="warningFilterChipDistrictLandColor" format="reference" />
+    <attr name="warningFilterChipDistrictLandStrokeColor" format="reference" />
+
+    <!-- CHIP DISTRICT SEA -->
+    <attr name="warningFilterChipDistrictSeaColor" format="reference" />
+    <attr name="warningFilterChipDistrictSeaStrokeColor" format="reference" />
+
+    <!-- CHIP DEFAULT COLOR -->
+    <attr name="warningFilterChipDefaultColor" format="reference" />
+    <attr name="warningFilterChipDefaultStrokeColor" format="reference" />
+
+    <!-- CHIP FEED SOURCE 0  -->
+    <attr name="warningFilterChipFeedSource0Color" format="reference" />
+    <attr name="warningFilterChipFeedSource0StrokeColor" format="reference" />
+
+    <!-- CHIP FEED SOURCE 1  -->
+    <attr name="warningFilterChipFeedSource1Color" format="reference" />
+    <attr name="warningFilterChipFeedSource1StrokeColor" format="reference" />
+
+    <!-- CHIP FEED SOURCE 2  -->
+    <attr name="warningFilterChipFeedSource2Color" format="reference" />
+    <attr name="warningFilterChipFeedSource2StrokeColor" format="reference" />
+
 </resources>

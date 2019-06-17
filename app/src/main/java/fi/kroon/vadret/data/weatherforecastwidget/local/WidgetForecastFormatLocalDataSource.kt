@@ -4,8 +4,8 @@ import android.content.Context
 import fi.kroon.vadret.R
 import fi.kroon.vadret.data.exception.Failure
 import fi.kroon.vadret.data.functional.Either
-import fi.kroon.vadret.utils.extensions.asRight
-import fi.kroon.vadret.utils.extensions.asSingle
+import fi.kroon.vadret.util.extension.asRight
+import fi.kroon.vadret.util.extension.asSingle
 import io.reactivex.Single
 import javax.inject.Inject
 

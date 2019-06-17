@@ -3,7 +3,7 @@ package fi.kroon.vadret.presentation.weatherforecastwidget.medium.service
 import fi.kroon.vadret.data.weatherforecast.model.Parameter
 import fi.kroon.vadret.data.weatherforecast.model.TimeSerie
 import fi.kroon.vadret.presentation.weatherforecastwidget.medium.service.model.WeatherForecastMediumServiceModel
-import fi.kroon.vadret.utils.common.WeatherForecastUtil
+import fi.kroon.vadret.util.common.WeatherForecastUtil
 
 object WeatherForecastMediumServiceMapper {
 

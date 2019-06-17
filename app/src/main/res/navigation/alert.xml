@@ -2,10 +2,20 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/alert"
-    app:startDestination="@id/alertFragment">
+    app:startDestination="@id/warningFragment">
 
     <fragment
-        android:id="@+id/alertFragment"
-        android:name="fi.kroon.vadret.presentation.alert.AlertFragment"
-        android:label="@string/app_name" />
+        android:id="@+id/warningFragment"
+        android:name="fi.kroon.vadret.presentation.warning.display.WarningFragment"
+        android:label="@string/app_name" >
+        <action
+            android:id="@+id/action_warningFragment_to_warningFilterDialogFragment"
+            app:destination="@id/warningFilterDialogFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/warningFilterDialogFragment"
+        android:name="fi.kroon.vadret.presentation.warning.filter.WarningFilterDialogFragment"
+        android:label="@string/filter_result_label" />
+
 </navigation>

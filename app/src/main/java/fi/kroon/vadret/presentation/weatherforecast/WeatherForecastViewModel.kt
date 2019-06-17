@@ -13,9 +13,9 @@ import fi.kroon.vadret.domain.weatherforecast.SetLocationModeTask
 import fi.kroon.vadret.domain.weatherforecast.SetWeatherForecastLastCheckedTask
 import fi.kroon.vadret.presentation.shared.IViewModel
 import fi.kroon.vadret.presentation.weatherforecast.di.WeatherForecastFeatureScope
-import fi.kroon.vadret.utils.AUTOCOMPLETE_DEBOUNCE_MILLIS
-import fi.kroon.vadret.utils.extensions.asObservable
-import fi.kroon.vadret.utils.extensions.empty
+import fi.kroon.vadret.util.AUTOCOMPLETE_DEBOUNCE_MILLIS
+import fi.kroon.vadret.util.extension.asObservable
+import fi.kroon.vadret.util.extension.empty
 import io.reactivex.Observable
 import io.reactivex.ObservableTransformer
 import timber.log.Timber

@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/warningFragment"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <FrameLayout
+        android:id="@+id/warningFrameLayout"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/warning_display_frame_layout_height"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ProgressBar
+            android:id="@+id/warningLoadingProgressBar"
+            style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/warning_display_progress_bar_height"
+            android:layout_gravity="center"
+            android:indeterminate="true"
+            android:theme="@style/LinearProgress"
+            android:visibility="gone" />
+    </FrameLayout>
+
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/warningSwipeRefreshView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.recyclerview.widget.RecyclerView xmlns:tools="http://schemas.android.com/tools"
+            android:id="@+id/warningRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:paddingStart="@dimen/warning_display_padding_start"
+            android:paddingEnd="@dimen/warning_display_padding_end"
+            android:paddingBottom="@dimen/warning_display_padding_bottom"
+            android:scrollbars="none"
+            tools:listitem="@layout/warning_item" />
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+    <TextView
+        android:id="@+id/warningDisplayNoWarningsIssued"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/warning_display_no_warnings_margin_start"
+        android:layout_marginEnd="@dimen/warning_display_no_warnings_margin_end"
+        android:text="@string/warning_display_no_warnings_issued"
+        android:textSize="@dimen/warning_display_no_warning_issued"
+        android:visibility="gone"
+        android:textColor="?attr/titleText"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/warningFrameLayout" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/warningFilterButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/warning_display_fab_margin_end"
+        android:layout_marginBottom="@dimen/warning_display_fab_margin_bottom"
+        android:backgroundTint="?attr/filterButtonBackground"
+        app:borderWidth="@dimen/warning_display_fab_border_width"
+        app:elevation="@dimen/warning_display_fab_elevation"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:srcCompat="@drawable/ic_filter_list_black_24dp"
+        app:tint="?attr/fabIconTint" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

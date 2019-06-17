@@ -5,6 +5,7 @@ sealed class Failure {
     object IOException : Failure()
     object NetworkException : Failure()
     object NetworkOfflineFailure : Failure()
+    object NetworkResponseEmpty : Failure()
     object MemoryCacheLruWriteFailure : Failure()
     object MemoryCacheLruReadFailure : Failure()
     object MemoryCacheEvictionFailure : Failure()

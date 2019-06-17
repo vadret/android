@@ -9,9 +9,9 @@ import fi.kroon.vadret.data.radar.model.File
 import fi.kroon.vadret.data.radar.model.Radar
 import fi.kroon.vadret.data.radar.model.RadarRequest
 import fi.kroon.vadret.domain.IService
-import fi.kroon.vadret.utils.FIFTEEN_MINUTES_IN_MILLIS
-import fi.kroon.vadret.utils.OFF_BY_ONE
-import fi.kroon.vadret.utils.extensions.asSingle
+import fi.kroon.vadret.util.FIFTEEN_MINUTES_IN_MILLIS
+import fi.kroon.vadret.util.OFF_BY_ONE
+import fi.kroon.vadret.util.extension.asSingle
 import io.reactivex.Single
 import io.reactivex.rxkotlin.zipWith
 import timber.log.Timber

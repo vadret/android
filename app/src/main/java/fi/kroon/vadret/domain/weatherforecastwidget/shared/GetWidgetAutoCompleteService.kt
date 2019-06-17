@@ -7,8 +7,8 @@ import fi.kroon.vadret.data.exception.Failure
 import fi.kroon.vadret.data.functional.Either
 import fi.kroon.vadret.data.functional.map
 import fi.kroon.vadret.presentation.weatherforecast.autocomplete.AutoCompleteDiffUtil
-import fi.kroon.vadret.utils.DEFAULT_AUTOCOMPLETE_LIMIT
-import fi.kroon.vadret.utils.extensions.empty
+import fi.kroon.vadret.util.DEFAULT_AUTOCOMPLETE_LIMIT
+import fi.kroon.vadret.util.extension.empty
 import io.reactivex.Single
 import timber.log.Timber
 import javax.inject.Inject

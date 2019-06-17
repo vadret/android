@@ -26,7 +26,7 @@ def isRunningOnTravis = System.getenv("CI") == "true"
 def getGitSha = { ->
     def stdout = new ByteArrayOutputStream()
     exec {
-        commandLine 'git', 'rev-parse', '--short' , 'HEAD'
+        commandLine 'git', 'rev-parse', '--short', 'HEAD'
         standardOutput = stdout
     }
     return stdout.toString().trim()
@@ -50,11 +50,16 @@ android {
         vectorDrawables.useSupportLibrary = true
         flavorDimensions "default"
         testInstrumentationRunner "androidx.top.runner.AndroidJUnitRunner"
-        manifestPlaceholders = [ FABRIC_API_KEY:loadFromFile("FABRIC_API_KEY", ".env") ]
+        manifestPlaceholders = [FABRIC_API_KEY: loadFromFile("FABRIC_API_KEY", ".env")]
         if (isRunningOnTravis) {
-            manifestPlaceholders = [ FABRIC_API_KEY:loadFromEnvironment("FABRIC_API_KEY") ]
+            manifestPlaceholders = [FABRIC_API_KEY: loadFromEnvironment("FABRIC_API_KEY")]
         }
         multiDexEnabled true
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments = ["room.schemaLocation": "$projectDir/schemas".toString()]
+            }
+        }
     }
     signingConfigs {
         release {
@@ -127,7 +132,7 @@ android {
 }
 
 jacoco {
-    toolVersion = "0.8.3"
+    toolVersion = "0.8.4"
     reportsDir = file("$buildDir/reports")
 }
 
@@ -137,7 +142,7 @@ configurations {
 
 dependencies {
 
-    def APPCOMPAT_VERSION = "1.1.0-alpha05"
+    def APPCOMPAT_VERSION = "1.1.0-rc01"
     def ASSERTJ_VERSION = "3.12.2"
     def COMMONS_CSV_VERSION = "1.7"
     def CONSTRAINT_LAYOUT_VERSION = "1.1.3"
@@ -150,17 +155,18 @@ dependencies {
     def KTLINT_VERSION = "0.31.0"
     def KTX_VERSION = "1.0.0"
     def LEAK_CANARY = "1.6.3"
-    def MATERIAL_VERSION = "1.0.0"
+    def MATERIAL_VERSION = "1.1.0-alpha07"
     def MOCKITO_CORE_VERSION = "2.28.2"
     def MOSHI_VERSION = "1.8.0"
-    def NAVIGATION_VERSION = "2.0.0"
+    def NAVIGATION_VERSION = "2.1.0-alpha06"
     def OKHTTP_VERSION = "3.14.2"
     def OKIO_VERSION = "2.2.2"
     def OSMDROID_VERSION = "6.1.0"
     def PERMISSIONS_DISPATCHER_VERSION = "4.1.0"
     def PICASSO_VERSION = "2.71828"
-    def PREFERENCE_VERSION = "1.1.0-alpha04"
+    def PREFERENCE_VERSION = "1.1.0-rc01"
     def RETROFIT_VERSION = "2.6.0"
+    def ROOM_VERSION = "2.1.0"
     def RXANDROID_VERSION = "2.1.1"
     def RXBINDING_VERSION = "3.0.0-alpha2"
     def RXJAVA_VERSION = "2.2.9"
@@ -201,6 +207,12 @@ dependencies {
     implementation "com.squareup.retrofit2:converter-moshi:${RETROFIT_VERSION}"
     implementation "com.squareup.retrofit2:retrofit:${RETROFIT_VERSION}"
 
+    // Database
+    implementation "androidx.room:room-runtime:${ROOM_VERSION}"
+    kapt "androidx.room:room-compiler:${ROOM_VERSION}"
+    implementation "androidx.room:room-ktx:${ROOM_VERSION}"
+    implementation "androidx.room:room-rxjava2:${ROOM_VERSION}"
+
     // Serialization
     implementation "com.squareup.moshi:moshi-adapters:${MOSHI_VERSION}"
     implementation "com.squareup.moshi:moshi:${MOSHI_VERSION}"
@@ -227,7 +239,9 @@ dependencies {
     // Debugging, Testing, Linting, Analytics
     debugImplementation "com.squareup.leakcanary:leakcanary-android:${LEAK_CANARY}"
     debugImplementation "com.squareup.leakcanary:leakcanary-support-fragment:${LEAK_CANARY}"
-    googleImplementation("com.crashlytics.sdk.android:crashlytics:${CRASHLYTICS_VERSION}@aar") { transitive = true }
+    googleImplementation("com.crashlytics.sdk.android:crashlytics:${CRASHLYTICS_VERSION}@aar") {
+        transitive = true
+    }
     implementation "com.jakewharton.timber:timber:${TIMBER_VERSION}"
     ktlint "com.github.shyiko:ktlint:${KTLINT_VERSION}"
     releaseImplementation "com.squareup.leakcanary:leakcanary-android-no-op:${LEAK_CANARY}"

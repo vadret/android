@@ -267,4 +267,12 @@
     <string name="alert">Alert</string>
     <string name="wind">wind</string>
 
+    <string name="filter_failure_districts_not_available">Failed to load districts</string>
+    <string name="filter_feed_source">Feed source</string>
+    <string name="filter_district">District</string>
+    <string name="filter_must_select_one">At least one district and feed source required.</string>
+    <string name="filter_apply">Apply</string>
+    <string name="filter_result_label">Filter results</string>
+    <string name="warning_display_no_warnings_issued">No warnings issued at present.</string>
+
 </resources>

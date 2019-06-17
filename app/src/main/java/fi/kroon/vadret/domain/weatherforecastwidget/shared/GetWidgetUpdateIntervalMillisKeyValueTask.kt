@@ -4,8 +4,8 @@ import fi.kroon.vadret.data.exception.Failure
 import fi.kroon.vadret.data.functional.Either
 import fi.kroon.vadret.data.functional.map
 import fi.kroon.vadret.data.weatherforecastwidget.local.WeatherForecastWidgetLocalKeyValueDataSource
-import fi.kroon.vadret.utils.UPDATE_INTERVAL_WIDGET_KEY
-import fi.kroon.vadret.utils.common.WeatherForecastUtil.getUpdateIntervalInMillis
+import fi.kroon.vadret.util.UPDATE_INTERVAL_WIDGET_KEY
+import fi.kroon.vadret.util.common.WeatherForecastUtil.getUpdateIntervalInMillis
 import io.reactivex.Single
 import javax.inject.Inject
 

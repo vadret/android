@@ -4,7 +4,7 @@ import fi.kroon.vadret.data.functional.Either
 import fi.kroon.vadret.data.exception.Failure
 import fi.kroon.vadret.data.library.model.Library
 import fi.kroon.vadret.domain.aboutapp.GetLibraryTask
-import fi.kroon.vadret.utils.extensions.asObservable
+import fi.kroon.vadret.util.extension.asObservable
 import io.reactivex.Observable
 import io.reactivex.ObservableTransformer
 import javax.inject.Inject

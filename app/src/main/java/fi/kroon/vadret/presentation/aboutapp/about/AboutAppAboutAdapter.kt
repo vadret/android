@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import fi.kroon.vadret.R
 import fi.kroon.vadret.data.aboutinfo.model.AboutInfo
 import fi.kroon.vadret.presentation.aboutapp.di.AboutAppFeatureScope
-import fi.kroon.vadret.utils.extensions.toGone
+import fi.kroon.vadret.util.extension.toGone
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.about_app_about_item.view.*
 import javax.inject.Inject

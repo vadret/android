@@ -1,7 +1,7 @@
 package fi.kroon.vadret.domain.weatherforecastwidget.shared
 
 import fi.kroon.vadret.data.weatherforecastwidget.local.WeatherForecastWidgetLocalKeyValueDataSource
-import fi.kroon.vadret.utils.LAST_CHECKED_WIDGET_KEY
+import fi.kroon.vadret.util.LAST_CHECKED_WIDGET_KEY
 import javax.inject.Inject
 
 class SetWidgetLastCheckedKeyValueTask @Inject constructor(

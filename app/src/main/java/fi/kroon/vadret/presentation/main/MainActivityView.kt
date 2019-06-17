@@ -1,7 +1,7 @@
 package fi.kroon.vadret.presentation.main
 
 import androidx.annotation.StringRes
-import fi.kroon.vadret.utils.LIGHT_THEME
+import fi.kroon.vadret.util.LIGHT_THEME
 
 object MainActivityView {
 

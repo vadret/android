@@ -12,8 +12,8 @@ import fi.kroon.vadret.data.weatherforecast.model.WeatherOut
 import fi.kroon.vadret.domain.IService
 import fi.kroon.vadret.presentation.weatherforecast.WeatherForecastMapper
 import fi.kroon.vadret.presentation.weatherforecast.model.IWeatherForecastModel
-import fi.kroon.vadret.utils.FIVE_MINUTES_IN_MILLIS
-import fi.kroon.vadret.utils.extensions.asSingle
+import fi.kroon.vadret.util.FIVE_MINUTES_IN_MILLIS
+import fi.kroon.vadret.util.extension.asSingle
 import io.reactivex.Single
 import io.reactivex.rxkotlin.zipWith
 import timber.log.Timber
