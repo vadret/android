@@ -6,10 +6,7 @@
 ![Vädret](https://raw.githubusercontent.com/vadret/android/master/assets/logo.png)
 
 # Vädret
-Vädret is a simple weather app for Sweden written in Kotlin with reactive streams from RxJava2. Icons
-used in this project can be found [here](https://github.com/vadret/assets).
-Weather data is collected from [SMHI Open Data Meteorological Forecast](https://opendata-download-metfcst.smhi.se/).
-The data is licensed under [Creative commons Erkännande 4.0 SE](https://www.smhi.se/klimatdata/oppna-data/information-om-oppna-data/villkor-for-anvandning-1.30622).
+A simple weather app that uses the Swedish weather service [SMHI](https://opendata-download-metfcst.smhi.se/) for weather data, and [Krisinformation](https://www.krisinformation.se/en) for emergency information from Swedish authorities. Built with MVI/MVVM in mind ontop of RxJava2, written entirely in Kotlin. Icons used in this project can be found [here](https://github.com/vadret/assets). The data is licensed under [Creative commons Erkännande 4.0 SE](https://www.smhi.se/klimatdata/oppna-data/information-om-oppna-data/villkor-for-anvandning-1.30622).
 
 ## SMHI Open Data API Docs
 
