@@ -50,7 +50,6 @@ class AutoCompleteAdapter @Inject constructor(
     fun updateList(itemList: List<AutoCompleteItem>) {
         list.clear()
         list.addAll(itemList)
-        notifyDataSetChanged()
     }
 
     fun clearList() {
