@@ -27,7 +27,7 @@ object WarningMapper {
                     updated = updated,
                     published = published,
                     headline = headline,
-                    preamble = preamble,
+                    preamble = preamble.replace(",", ", "),
                     bodyText = bodyText,
                     areaList = areaList,
                     web = web,

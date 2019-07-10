@@ -1,12 +1,13 @@
 package fi.kroon.vadret.presentation.warning.display
 
 import fi.kroon.vadret.R
-import fi.kroon.vadret.util.KRISINFORMATION
-import fi.kroon.vadret.util.SMHI
-import fi.kroon.vadret.util.TRAFIKVERKET
 import fi.kroon.vadret.util.extension.empty
 
 object WarningUtil {
+
+    private const val SMHI = "SMHI"
+    private const val KRISINFORMATION = "Krisinformation"
+    private const val TRAFIKVERKET = "Trafikverket"
 
     fun getSourceIdentifier(sourceId: Int): String = when (sourceId) {
         0 -> KRISINFORMATION
@@ -21,6 +22,22 @@ object WarningUtil {
         2 -> R.color.feed_source_color_2
         else -> R.color.feed_source_unknown_color
     }
+
+    fun getChipFeedSourceStrokeColor(name: String): Int =
+        when (name) {
+            KRISINFORMATION -> R.attr.warningFilterChipFeedSource0StrokeColor
+            SMHI -> R.attr.warningFilterChipFeedSource1StrokeColor
+            TRAFIKVERKET -> R.attr.warningFilterChipFeedSource2StrokeColor
+            else -> R.attr.warningFilterChipDefaultStrokeColor
+        }
+
+    fun getChipFeedSourceBackgroundColor(name: String): Int =
+        when (name) {
+            KRISINFORMATION -> R.attr.warningFilterChipFeedSource0Color
+            SMHI -> R.attr.warningFilterChipFeedSource1Color
+            TRAFIKVERKET -> R.attr.warningFilterChipFeedSource2Color
+            else -> R.attr.warningFilterChipDefaultColor
+        }
 
     fun getWarningSeverityColor(level: String): Int =
         when (level) {

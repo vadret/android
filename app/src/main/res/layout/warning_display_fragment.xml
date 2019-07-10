@@ -42,7 +42,7 @@
             android:paddingEnd="@dimen/warning_display_padding_end"
             android:paddingBottom="@dimen/warning_display_padding_bottom"
             android:scrollbars="none"
-            tools:listitem="@layout/warning_item" />
+            tools:listitem="@layout/warning_display_item" />
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
     <TextView

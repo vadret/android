@@ -21,7 +21,7 @@ import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.subjects.PublishSubject
-import kotlinx.android.synthetic.main.warning_fragment.*
+import kotlinx.android.synthetic.main.warning_display_fragment.*
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -78,7 +78,7 @@ class WarningFragment : BaseFragment() {
     @Inject
     lateinit var subscriptions: CompositeDisposable
 
-    override fun layoutId(): Int = R.layout.warning_fragment
+    override fun layoutId(): Int = R.layout.warning_display_fragment
 
     override fun renderError(errorCode: Int) {
         snack(errorCode)

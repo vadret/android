@@ -6,16 +6,18 @@ import android.view.ViewGroup
 import androidx.annotation.StringRes
 import androidx.recyclerview.widget.RecyclerView
 import fi.kroon.vadret.R
+import fi.kroon.vadret.presentation.warning.display.WarningUtil.getChipFeedSourceBackgroundColor
+import fi.kroon.vadret.presentation.warning.display.WarningUtil.getChipFeedSourceStrokeColor
 import fi.kroon.vadret.presentation.warning.display.model.IWarningModel
 import fi.kroon.vadret.presentation.warning.display.model.WarningModel
 import fi.kroon.vadret.util.DAY_IN_MILLIS
 import fi.kroon.vadret.util.HOUR_IN_MILLIS
 import fi.kroon.vadret.util.MINUTE_IN_MILLIS
 import fi.kroon.vadret.util.extension.empty
+import fi.kroon.vadret.util.extension.getAttribute
 import fi.kroon.vadret.util.extension.toGone
 import fi.kroon.vadret.util.extension.toVisible
-import kotlinx.android.synthetic.main.warning_fragment.view.*
-import kotlinx.android.synthetic.main.warning_item.view.*
+import kotlinx.android.synthetic.main.warning_display_item.view.*
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -35,7 +37,6 @@ class WarningAdapter @Inject constructor() : RecyclerView.Adapter<RecyclerView.V
             Timber.d("RENDER: $entity")
             with(itemView) {
                 warningDisplayTitle.text = entity.headline
-                warningDisplayFeedSourceColor.setBackgroundResource(entity.backgroundResourceId)
 
                 if (entity.preamble != String.empty()) {
                     warningDisplayPreamble.text = entity.preamble
@@ -43,6 +44,22 @@ class WarningAdapter @Inject constructor() : RecyclerView.Adapter<RecyclerView.V
                 } else {
                     warningDisplayPreamble.toGone()
                 }
+
+                val backgroundColorResource: Int = itemView
+                    .context
+                    .getAttribute(
+                        attributeId = getChipFeedSourceBackgroundColor(name = entity.senderName)
+                    )
+
+                val strokeColorResource: Int = itemView
+                    .context
+                    .getAttribute(
+                        attributeId = getChipFeedSourceStrokeColor(name = entity.senderName)
+                    )
+
+                warningDisplayFeedSource.setChipBackgroundColorResource(backgroundColorResource)
+                warningDisplayFeedSource.setChipStrokeColorResource(strokeColorResource)
+                warningDisplayFeedSource.setChipStrokeWidthResource(R.dimen.warning_filter_chip_stroke_width)
 
                 warningDisplayDescription.text = entity.bodyText
                 warningDisplayFeedSource.text = entity.senderName
@@ -78,7 +95,7 @@ class WarningAdapter @Inject constructor() : RecyclerView.Adapter<RecyclerView.V
                 LayoutInflater
                     .from(parent.context)
                     .inflate(
-                        R.layout.warning_item,
+                        R.layout.warning_display_item,
                         parent,
                         false
                     )
@@ -87,7 +104,7 @@ class WarningAdapter @Inject constructor() : RecyclerView.Adapter<RecyclerView.V
                 LayoutInflater
                     .from(parent.context)
                     .inflate(
-                        R.layout.warning_item,
+                        R.layout.warning_display_item,
                         parent,
                         false
                     )

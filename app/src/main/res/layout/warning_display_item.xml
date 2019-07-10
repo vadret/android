@@ -8,16 +8,6 @@
     android:elevation="@dimen/warning_display_elevation"
     android:orientation="vertical">
 
-    <View
-        android:id="@+id/warningDisplayFeedSourceColor"
-        android:layout_width="@dimen/warning_display_color_view_width"
-        android:layout_height="0dp"
-        android:layout_alignParentEnd="true"
-        android:visibility="invisible"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
     <TextView
         android:id="@+id/warningDisplayTitle"
         android:layout_width="0dp"
@@ -30,7 +20,7 @@
         android:textColor="?attr/titleText"
         android:textSize="@dimen/warning_display_headline_text_size"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/warningDisplayFeedSourceColor"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <com.google.android.material.chip.Chip
@@ -46,15 +36,15 @@
         app:chipStrokeColor="?attr/warningChipStrokeColor"
         app:chipStrokeWidth="@dimen/warning_display_chip_stroke_width"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/warningDisplayFeedSourceColor"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/warningDisplayPreamble" />
 
     <TextView
         android:id="@+id/warningDisplayPublished"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/warning_display_margin_start"
-        android:layout_marginEnd="@dimen/warning_display_margin_end"
+        android:layout_marginStart="@dimen/warning_display_warning_icon_margin_start"
+        android:layout_marginEnd="@dimen/warning_display_warning_icon_margin_start"
         android:textColor="?attr/titleText"
         android:textSize="@dimen/warning_display_warning_issued_text_size"
         app:layout_constraintBottom_toBottomOf="@+id/warningDisplayIcon"
@@ -69,7 +59,7 @@
         android:layout_marginStart="@dimen/warning_display_margin_start"
         android:layout_marginTop="@dimen/warning_display_margin_top"
         android:tint="?attr/iconBackground"
-        app:layout_constraintStart_toEndOf="@+id/warningDisplayFeedSourceColor"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/warningDisplayTitle"
         app:srcCompat="@drawable/ic_error_outline_black_24dp" />
 
@@ -83,20 +73,19 @@
         android:text="@string/place_holder_string"
         android:textColor="?attr/titleText"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/warningDisplayFeedSourceColor"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/warningDisplayPublished" />
 
     <TextView
         android:id="@+id/warningDisplayPreamble"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/warning_display_margin_start"
         android:layout_marginTop="@dimen/warning_display_margin_top"
         android:layout_marginEnd="@dimen/warning_display_margin_end"
         android:text="@string/place_holder_string"
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/warningDisplayFeedSourceColor"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/warningDisplayDescription" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

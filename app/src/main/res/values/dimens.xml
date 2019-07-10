@@ -104,8 +104,9 @@
     <dimen name="warning_display_headline_text_size">20sp</dimen>
     <dimen name="warning_display_elevation">4dp</dimen>
     <dimen name="warning_display_margin_top">8dp</dimen>
-    <dimen name="warning_display_margin_start">8dp</dimen>
+    <dimen name="warning_display_margin_start">16dp</dimen>
     <dimen name="warning_display_margin_end">16dp</dimen>
+    <dimen name="warning_display_warning_icon_margin_start">8dp</dimen>
     <dimen name="warning_display_margin_bottom">8dp</dimen>
     <dimen name="warning_display_warning_icon_width">20dp</dimen>
     <dimen name="warning_display_warning_icon_height">20dp</dimen>

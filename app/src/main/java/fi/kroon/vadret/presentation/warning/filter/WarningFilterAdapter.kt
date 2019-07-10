@@ -90,7 +90,6 @@ class WarningFilterAdapter @Inject constructor(
                 warningFilterDistrictChipGroup.removeAllViews()
                 val chip = Chip(warningFilterDistrictChipGroup.context)
 
-                Timber.d("")
                 val backgroundColorResource: Int = itemView.context.getAttribute(getChipDistrictBackgroundColor(category = entity.category))
                 val strokeColorResource: Int = itemView.context.getAttribute(getChipDistrictStrokeColor(category = entity.category))
 

@@ -3,7 +3,7 @@ package fi.kroon.vadret.util.extension
 import org.threeten.bp.LocalDate
 import org.threeten.bp.OffsetDateTime
 
-fun String.Companion.empty() = ""
+fun String.Companion.empty(): String = ""
 fun String.splitToList(): List<String> = this
     .split(",")
     .map { string ->
