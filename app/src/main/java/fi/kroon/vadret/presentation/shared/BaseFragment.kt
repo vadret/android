@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import fi.kroon.vadret.data.nominatim.model.Locality
 import fi.kroon.vadret.presentation.main.MainActivity
-import fi.kroon.vadret.util.Schedulers
+import fi.kroon.vadret.util.Scheduler
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -18,7 +18,7 @@ abstract class BaseFragment : Fragment() {
     abstract fun renderError(errorCode: Int)
 
     @Inject
-    lateinit var schedulers: Schedulers
+    lateinit var scheduler: Scheduler
 
     var isConfigChangeOrProcessDeath = false
 

@@ -286,11 +286,11 @@ class RadarFragment : BaseFragment() {
                     }
 
             ).observeOn(
-                schedulers.io()
+                scheduler.io()
             ).compose(
                 viewModel()
             ).observeOn(
-                schedulers.ui()
+                scheduler.ui()
             ).subscribe(
                 ::render
             ).addTo(

@@ -15,7 +15,7 @@ import fi.kroon.vadret.presentation.shared.BaseActivity
 import fi.kroon.vadret.presentation.main.di.MainActivityComponent
 import fi.kroon.vadret.presentation.main.di.MainActivityScope
 import fi.kroon.vadret.util.DEFAULT_SETTINGS
-import fi.kroon.vadret.util.Schedulers
+import fi.kroon.vadret.util.Scheduler
 import fi.kroon.vadret.util.extension.appComponent
 import fi.kroon.vadret.util.extension.setupWithNavController
 import fi.kroon.vadret.util.extension.toObservable
@@ -36,7 +36,7 @@ class MainActivity : BaseActivity() {
     lateinit var subscriptions: CompositeDisposable
 
     @Inject
-    lateinit var schedulers: Schedulers
+    lateinit var scheduler: Scheduler
 
     @Inject
     lateinit var viewModel: MainActivityViewModel
@@ -185,11 +185,11 @@ class MainActivity : BaseActivity() {
                 onViewInitialisedSubject
                     .toObservable()
             ).observeOn(
-                schedulers.io()
+                scheduler.io()
             ).compose(
                 viewModel()
             ).observeOn(
-                schedulers.ui()
+                scheduler.ui()
             ).subscribe(
                 ::render
             ).addTo(

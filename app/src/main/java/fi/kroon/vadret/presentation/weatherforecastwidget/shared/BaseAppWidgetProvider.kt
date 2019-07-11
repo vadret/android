@@ -3,13 +3,13 @@ package fi.kroon.vadret.presentation.weatherforecastwidget.shared
 import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider
 import android.os.SystemClock
-import fi.kroon.vadret.util.Schedulers
+import fi.kroon.vadret.util.Scheduler
 import javax.inject.Inject
 
 abstract class BaseAppWidgetProvider : AppWidgetProvider() {
 
     @Inject
-    lateinit var schedulers: Schedulers
+    lateinit var scheduler: Scheduler
 
     @Inject
     lateinit var appWidgetManager: AppWidgetManager

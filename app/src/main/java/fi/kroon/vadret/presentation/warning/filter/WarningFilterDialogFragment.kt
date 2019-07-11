@@ -17,7 +17,7 @@ import fi.kroon.vadret.data.feedsource.model.FeedSourceOptionEntity
 import fi.kroon.vadret.presentation.warning.filter.di.WarningFilterComponent
 import fi.kroon.vadret.presentation.warning.filter.di.WarningFilterScope
 import fi.kroon.vadret.presentation.warning.filter.model.IFilterable
-import fi.kroon.vadret.util.Schedulers
+import fi.kroon.vadret.util.Scheduler
 import fi.kroon.vadret.util.extension.appComponent
 import fi.kroon.vadret.util.extension.toObservable
 import io.reactivex.Observable
@@ -53,7 +53,7 @@ class WarningFilterDialogFragment : BottomSheetDialogFragment() {
     lateinit var subscriptions: CompositeDisposable
 
     @Inject
-    lateinit var schedulers: Schedulers
+    lateinit var scheduler: Scheduler
 
     private var isConfigChangeOrProcessDeath = false
 
@@ -191,11 +191,11 @@ class WarningFilterDialogFragment : BottomSheetDialogFragment() {
                             .OnFilterOptionsApplyClicked
                     }
             ).observeOn(
-                schedulers.io()
+                scheduler.io()
             ).compose(
                 viewModel()
             ).observeOn(
-                schedulers.ui()
+                scheduler.ui()
             ).subscribe(
                 ::render
             ).addTo(

@@ -12,7 +12,7 @@ import fi.kroon.vadret.presentation.weatherforecastwidget.medium.service.di.Weat
 import fi.kroon.vadret.presentation.weatherforecastwidget.medium.service.model.WeatherForecastMediumServiceModel
 import fi.kroon.vadret.util.DEGREE_SYMBOL
 import fi.kroon.vadret.util.MPS_SUFFIX
-import fi.kroon.vadret.util.Schedulers
+import fi.kroon.vadret.util.Scheduler
 import fi.kroon.vadret.util.extension.toObservable
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
@@ -50,7 +50,7 @@ class WeatherForecastMediumService : RemoteViewsService() {
         lateinit var cmp: WeatherForecastMediumServiceComponent
 
         @Inject
-        lateinit var schedulers: Schedulers
+        lateinit var scheduler: Scheduler
 
         private var injected: Boolean = false
 
@@ -163,7 +163,7 @@ class WeatherForecastMediumService : RemoteViewsService() {
                 ).compose(
                     viewModel()
                 ).observeOn(
-                    schedulers.ui()
+                    scheduler.ui()
                 ).subscribe(
                     ::render
                 ).addTo(
