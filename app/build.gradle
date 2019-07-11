@@ -33,7 +33,7 @@ def getGitSha = { ->
 }
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion 29
     dataBinding {
         enabled = true
     }
@@ -44,7 +44,7 @@ android {
     defaultConfig {
         applicationId "fi.kroon.vadret"
         minSdkVersion 21
-        targetSdkVersion 28
+        targetSdkVersion 29
         versionCode 16
         versionName "1.2.0"
         vectorDrawables.useSupportLibrary = true
