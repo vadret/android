@@ -16,10 +16,10 @@ sealed class Either<out L0, out R0> {
     val isRight get() = this is Right<R0>
     val isLeft get() = this is Left<L0>
 
-    fun <L2> left(a: L2) = Left(a)
-    fun <R2> right(b: R2) = Right(b)
+    fun <L2> left(a: L2): Left<L2> = Left(a)
+    fun <R2> right(b: R2): Right<R2> = Right(b)
 
-    fun <T0> either(fnL: (L0) -> T0, fnR: (R0) -> T0): T0 =
+    inline fun <T0> either(fnL: (L0) -> T0, fnR: (R0) -> T0): T0 =
         when (this) {
             is Left -> fnL(a)
             is Right -> fnR(b)
@@ -30,13 +30,13 @@ fun <A, B, C> ((A) -> B).c(fn: (B) -> C): (A) -> C = {
     fn(this(it))
 }
 
-fun <T, L, R> Either<L, R>.flatMapSingle(fn: (R) -> Single<Either<L, T>>): Single<Either<L, T>> =
+inline fun <T, L, R> Either<L, R>.flatMapSingle(fn: (R) -> Single<Either<L, T>>): Single<Either<L, T>> =
     when (this) {
         is Either.Left -> Single.just(Either.Left(a))
         is Either.Right -> fn(b)
     }
 
-fun <T, L, R> Either<L, R>.flatMap(fn: (R) -> Either<L, T>): Either<L, T> =
+inline fun <T, L, R> Either<L, R>.flatMap(fn: (R) -> Either<L, T>): Either<L, T> =
     when (this) {
         is Either.Left -> Either.Left(a)
         is Either.Right -> fn(b)
