@@ -10,6 +10,7 @@ import fi.kroon.vadret.domain.feedsourcepreference.UpdateFeedSourcePreferenceLis
 import fi.kroon.vadret.domain.warningfilter.GetWarningFilterOptionListService
 import fi.kroon.vadret.presentation.shared.IViewModel
 import fi.kroon.vadret.presentation.warning.filter.di.WarningFilterScope
+import fi.kroon.vadret.presentation.warning.filter.model.IFilterable
 import fi.kroon.vadret.util.extension.asObservable
 import io.reactivex.Observable
 import io.reactivex.ObservableTransformer
@@ -76,7 +77,7 @@ class WarningFilterViewModel @Inject constructor(
                     { data: GetWarningFilterOptionListService.Data ->
 
                         Timber.d("GET WARNING FILTER OPTION LIST")
-                        val list = WarningFilterMapper(
+                        val list: List<IFilterable> = WarningFilterMapper(
                             districtOptionEntityList = data.districtOptionList,
                             feedSourceOptionEntityList = data.feedSourceOptionList
                         )
@@ -160,7 +161,7 @@ class WarningFilterViewModel @Inject constructor(
 
         feedSourceOptionEntity?.let {
 
-            val neweedSourceOptionEntity = FeedSourceOptionEntity(
+            val newFeedSourceOptionEntity = FeedSourceOptionEntity(
                 id = it.id,
                 feedSourceId = it.feedSourceId,
                 isEnabled = it.isEnabled.not(),
@@ -168,8 +169,22 @@ class WarningFilterViewModel @Inject constructor(
                 name = it.name
             )
 
-            state.feedSourceOptionList.remove(entity)
-            state.feedSourceOptionList.add(neweedSourceOptionEntity)
+            val entityIndex: Int = state.feedSourceOptionList.indexOf(feedSourceOptionEntity)
+
+            state.feedSourceOptionList.removeAt(entityIndex)
+            state.feedSourceOptionList.add(entityIndex, newFeedSourceOptionEntity)
+
+            val list: List<IFilterable> = WarningFilterMapper(
+                districtOptionEntityList = state.districtOptionList,
+                feedSourceOptionEntityList = state.feedSourceOptionList
+            )
+
+            val renderEvent: WarningFilterView.RenderEvent =
+                WarningFilterView.RenderEvent.UpdateFilterList(list = list)
+
+            state = state.copy(renderEvent = renderEvent)
+
+            return state.asObservable()
         }
 
         state = state.copy(renderEvent = WarningFilterView.RenderEvent.None)
@@ -184,6 +199,8 @@ class WarningFilterViewModel @Inject constructor(
                 fields.id == entity.id
             }
 
+        val entityIndex: Int = state.districtOptionList.indexOf(districtOptionEntity)
+
         districtOptionEntity?.let {
             val newDistrictOptionEntity = DistrictOptionEntity(
                 id = it.id,
@@ -194,8 +211,23 @@ class WarningFilterViewModel @Inject constructor(
                 name = it.name
             )
 
-            state.districtOptionList.remove(entity)
-            state.districtOptionList.add(newDistrictOptionEntity)
+            state.districtOptionList.removeAt(entityIndex)
+            state.districtOptionList.add(
+                    entityIndex,
+                    newDistrictOptionEntity
+                )
+
+            val list: List<IFilterable> = WarningFilterMapper(
+                districtOptionEntityList = state.districtOptionList,
+                feedSourceOptionEntityList = state.feedSourceOptionList
+            )
+
+            val renderEvent: WarningFilterView.RenderEvent =
+                WarningFilterView.RenderEvent.UpdateFilterList(list = list)
+
+            state = state.copy(renderEvent = renderEvent)
+
+            return state.asObservable()
         }
 
         state = state.copy(renderEvent = WarningFilterView.RenderEvent.None)

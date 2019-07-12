@@ -224,11 +224,21 @@ class WarningFilterDialogFragment : BottomSheetDialogFragment() {
             }
             WarningFilterView.RenderEvent.FinishDialog -> finishDialog()
             is WarningFilterView.RenderEvent.DisplayError -> renderError(viewState.renderEvent.errorCode)
+            is WarningFilterView.RenderEvent.UpdateFilterList -> updateFilterList(viewState.renderEvent.list)
         }
 
     private fun renderError(errorCode: Int) {
         Toast.makeText(context, getString(errorCode), Toast.LENGTH_LONG)
             .show()
+    }
+
+    private fun updateFilterList(entityList: List<IFilterable>) {
+        Timber.d("UPDATE FILTER LIST")
+        warningFilterAdapter
+            .updateList(
+                entityList = entityList,
+                notifyDataSetChanged = false
+            )
     }
 
     private fun finishDialog() {

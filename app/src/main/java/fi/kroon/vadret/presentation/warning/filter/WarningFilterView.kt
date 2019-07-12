@@ -27,6 +27,7 @@ object WarningFilterView {
         object None : RenderEvent()
         object FinishDialog : RenderEvent()
         class DisplayError(val errorCode: Int) : RenderEvent()
+        class UpdateFilterList(val list: List<IFilterable>) : RenderEvent()
         class DisplayFilterList(val list: List<IFilterable>) : RenderEvent()
     }
 

@@ -161,11 +161,14 @@ class WarningFilterAdapter @Inject constructor(
 
     override fun getItemCount(): Int = list.size
 
-    fun updateList(entityList: List<IFilterable>) {
+    fun updateList(entityList: List<IFilterable>, notifyDataSetChanged: Boolean = true) {
         Timber.d("WARNING FILTER ADAPTER")
         list.clear()
         list.addAll(entityList)
         Timber.d("LIST LENGTH: ${list.size}")
-        notifyDataSetChanged()
+
+        if (notifyDataSetChanged) {
+            notifyDataSetChanged()
+        }
     }
 }
