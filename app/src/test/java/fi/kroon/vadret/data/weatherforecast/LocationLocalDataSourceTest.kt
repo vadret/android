@@ -3,28 +3,27 @@ package fi.kroon.vadret.data.weatherforecast
 import android.location.LocationManager
 import android.location.LocationManager.GPS_PROVIDER
 import android.location.LocationManager.NETWORK_PROVIDER
-import fi.kroon.vadret.BaseUnitTest
-import fi.kroon.vadret.data.functional.Either
 import fi.kroon.vadret.data.exception.Failure
+import fi.kroon.vadret.data.functional.Either
 import fi.kroon.vadret.data.location.exception.LocationFailure
-import fi.kroon.vadret.data.location.model.Location
 import fi.kroon.vadret.data.location.local.LocationLocalDataSource
+import fi.kroon.vadret.data.location.model.Location
 import fi.kroon.vadret.util.DEFAULT_LATITUDE
 import fi.kroon.vadret.util.DEFAULT_LONGITUDE
 import org.junit.Before
 import org.junit.Test
+import org.junit.runner.RunWith
 import org.mockito.Mock
 import org.mockito.Mockito.doReturn
+import org.mockito.junit.MockitoJUnitRunner
 
-class LocationLocalDataSourceTest : BaseUnitTest() {
+@RunWith(MockitoJUnitRunner::class)
+class LocationLocalDataSourceTest {
 
     private lateinit var mockLocationLocalDataSource: LocationLocalDataSource
 
     @Mock
     private lateinit var mockAndroidLocation: android.location.Location
-
-    @Mock
-    private lateinit var mockLocation: Location
 
     @Mock
     private lateinit var mockLocationManager: LocationManager

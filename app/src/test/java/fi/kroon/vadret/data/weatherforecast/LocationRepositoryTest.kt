@@ -1,19 +1,21 @@
 package fi.kroon.vadret.data.weatherforecast
 
-import fi.kroon.vadret.BaseUnitTest
-import fi.kroon.vadret.data.functional.Either
 import fi.kroon.vadret.data.exception.Failure
+import fi.kroon.vadret.data.functional.Either
 import fi.kroon.vadret.data.location.LocationRepository
 import fi.kroon.vadret.data.location.exception.LocationFailure
-import fi.kroon.vadret.data.location.model.Location
 import fi.kroon.vadret.data.location.local.LocationLocalDataSource
+import fi.kroon.vadret.data.location.model.Location
 import fi.kroon.vadret.util.extension.asLeft
 import org.junit.Before
 import org.junit.Test
+import org.junit.runner.RunWith
 import org.mockito.Mock
 import org.mockito.Mockito.doReturn
+import org.mockito.junit.MockitoJUnitRunner
 
-class LocationRepositoryTest : BaseUnitTest() {
+@RunWith(MockitoJUnitRunner::class)
+class LocationRepositoryTest {
 
     @Mock
     private lateinit var mockLocationLocalDataSource: LocationLocalDataSource
@@ -52,5 +54,6 @@ class LocationRepositoryTest : BaseUnitTest() {
     private fun getLocationFailure() = LocationFailure
         .LocationNotAvailable
         .asLeft()
+
     private fun createLocationEither(location: Location): Either<Failure, Location> = Either.Right(location)
 }

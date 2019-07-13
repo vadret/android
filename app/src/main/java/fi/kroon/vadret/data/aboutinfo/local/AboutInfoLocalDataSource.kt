@@ -1,19 +1,19 @@
 package fi.kroon.vadret.data.aboutinfo.local
 
 import fi.kroon.vadret.R
-import fi.kroon.vadret.di.scope.CoreApplicationScope
 import fi.kroon.vadret.data.aboutinfo.model.AboutInfo
 import fi.kroon.vadret.data.exception.Failure
 import fi.kroon.vadret.data.functional.Either
+import fi.kroon.vadret.di.scope.CoreApplicationScope
 import fi.kroon.vadret.util.extension.asRight
+import fi.kroon.vadret.util.extension.asSingle
 import io.reactivex.Single
-import timber.log.Timber
 import javax.inject.Inject
 
 @CoreApplicationScope
 class AboutInfoLocalDataSource @Inject constructor() {
 
-    operator fun invoke(): Single<Either<Failure, List<AboutInfo>>> = Single.fromCallable {
+    operator fun invoke(): Single<Either<Failure, List<AboutInfo>>> =
         listOf(
             AboutInfo(
                 iconResourceId = R.drawable.ic_info_outline,
@@ -37,8 +37,6 @@ class AboutInfoLocalDataSource @Inject constructor() {
                 titleResourceId = R.string.source_code_row_title,
                 urlResourceId = R.string.app_github_source_url
             )
-        ).asRight() as Either<Failure, List<AboutInfo>>
-    }.doOnError {
-        Timber.e("$it")
-    }
+        ).asRight()
+            .asSingle()
 }

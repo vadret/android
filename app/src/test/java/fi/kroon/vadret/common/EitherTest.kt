@@ -1,11 +1,10 @@
 package fi.kroon.vadret.common
 
-import fi.kroon.vadret.BaseUnitTest
 import fi.kroon.vadret.data.functional.Either
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
-class EitherTest : BaseUnitTest() {
+class EitherTest {
 
     @Test
     fun `Either Right should return correct type`() {

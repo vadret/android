@@ -29,7 +29,7 @@ class AboutAppLibraryFragment : BaseFragment() {
     }
 
     @Inject
-    lateinit var onInitEventSubject: PublishSubject<AboutAppLibraryView.Event.OnInit>
+    lateinit var onInitEventSubject: PublishSubject<AboutAppLibraryView.Event.OnViewInitialised>
 
     @Inject
     @field:[Named("projectUrl")]
@@ -129,7 +129,7 @@ class AboutAppLibraryFragment : BaseFragment() {
             .onNext(
                 AboutAppLibraryView
                     .Event
-                    .OnInit
+                    .OnViewInitialised
             )
     }
 
@@ -139,13 +139,12 @@ class AboutAppLibraryFragment : BaseFragment() {
 
     private fun render(viewState: AboutAppLibraryView.State) =
         when (viewState.renderEvent) {
-            AboutAppLibraryView.RenderEvent.Init -> Unit
+            AboutAppLibraryView.RenderEvent.Initialised -> Unit
             is AboutAppLibraryView.RenderEvent.DisplayLibrary ->
                 displayLibraries(viewState.renderEvent)
             is AboutAppLibraryView.RenderEvent.OpenUrl ->
                 openUrlInBrowser(viewState.renderEvent.url)
             AboutAppLibraryView.RenderEvent.None -> Unit
-            is AboutAppLibraryView.RenderEvent.Error -> Unit
         }
 
     private fun openUrlInBrowser(url: String?) {

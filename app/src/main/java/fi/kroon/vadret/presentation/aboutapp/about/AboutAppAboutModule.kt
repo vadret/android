@@ -12,7 +12,7 @@ object AboutAppAboutModule {
     @Provides
     @JvmStatic
     @AboutAppFeatureScope
-    fun provideOnInitEventSubject(): PublishSubject<AboutAppAboutView.Event.OnInit> =
+    fun provideOnInitEventSubject(): PublishSubject<AboutAppAboutView.Event.OnViewInitialised> =
         PublishSubject.create()
 
     @Provides

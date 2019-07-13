@@ -6,18 +6,18 @@ import kotlinx.android.parcel.Parcelize
 object AboutAppView {
 
     sealed class Event {
-        object OnInit : Event()
+        object OnViewInitialised : Event()
         class OnTabSelected(val position: Int) : Event()
     }
 
     data class State(
+        val isInitialised: Boolean = false,
         val renderEvent: RenderEvent = RenderEvent.None
     )
 
     sealed class RenderEvent {
-        object Init : RenderEvent()
+        object Initialised : RenderEvent()
         object None : RenderEvent()
-        class Error(val message: String) : RenderEvent()
     }
 
     @Parcelize

@@ -17,7 +17,7 @@ object AboutAppModule {
     @Provides
     @JvmStatic
     @AboutAppFeatureScope
-    fun provideOnInitEventSubject(): PublishSubject<AboutAppView.Event.OnInit> =
+    fun provideOnInitEventSubject(): PublishSubject<AboutAppView.Event.OnViewInitialised> =
         PublishSubject.create()
 
     @Provides

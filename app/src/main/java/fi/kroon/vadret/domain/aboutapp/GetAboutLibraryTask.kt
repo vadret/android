@@ -6,10 +6,9 @@ import fi.kroon.vadret.data.functional.map
 import fi.kroon.vadret.data.library.LibraryRepository
 import fi.kroon.vadret.data.library.model.Library
 import io.reactivex.Single
-import timber.log.Timber
 import javax.inject.Inject
 
-class GetLibraryTask @Inject constructor(
+class GetAboutLibraryTask @Inject constructor(
     private val libraryRepository: LibraryRepository
 ) {
 
@@ -23,7 +22,5 @@ class GetLibraryTask @Inject constructor(
                         }
                     )
                 }
-            }.doOnError {
-                Timber.e("$it")
             }
 }

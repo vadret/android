@@ -1,6 +1,5 @@
 package fi.kroon.vadret.data.weatherforecast
 
-import fi.kroon.vadret.BaseUnitTest
 import fi.kroon.vadret.data.exception.Failure
 import fi.kroon.vadret.data.functional.Either
 import fi.kroon.vadret.data.weatherforecast.exception.WeatherForecastFailure
@@ -22,11 +21,14 @@ import fi.kroon.vadret.util.extension.asSingle
 import io.reactivex.Single
 import org.junit.Before
 import org.junit.Test
+import org.junit.runner.RunWith
 import org.mockito.Mock
 import org.mockito.Mockito.doReturn
+import org.mockito.junit.MockitoJUnitRunner
 import retrofit2.Response
 
-class WeatherForecastRepositoryTest : BaseUnitTest() {
+@RunWith(MockitoJUnitRunner::class)
+class WeatherForecastRepositoryTest {
 
     @Mock
     private lateinit var mockWeatherForecastNetDataSource: WeatherForecastNetDataSource

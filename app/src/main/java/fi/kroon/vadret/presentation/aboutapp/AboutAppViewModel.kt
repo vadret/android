@@ -18,7 +18,7 @@ class AboutAppViewModel @Inject constructor(
 
         upstream.publish { shared: Observable<AboutAppView.Event> ->
             Observable.mergeArray(
-                shared.ofType(AboutAppView.Event.OnInit::class.java)
+                shared.ofType(AboutAppView.Event.OnViewInitialised::class.java)
             ).compose(
                 eventToViewState
             )
@@ -30,8 +30,8 @@ class AboutAppViewModel @Inject constructor(
 
         upstream.flatMap { event: AboutAppView.Event ->
             when (event) {
-                AboutAppView.Event.OnInit ->
-                    onInitEvent()
+                AboutAppView.Event.OnViewInitialised ->
+                    onInitialisedEvent()
 
                 is AboutAppView.Event.OnTabSelected ->
                     state.asObservable()
@@ -39,8 +39,11 @@ class AboutAppViewModel @Inject constructor(
         }
     }
 
-    private fun onInitEvent(): Observable<AboutAppView.State> {
-        state = state.copy(renderEvent = AboutAppView.RenderEvent.Init)
+    private fun onInitialisedEvent(): Observable<AboutAppView.State> {
+        state = state.copy(
+            renderEvent = AboutAppView.RenderEvent.Initialised,
+            isInitialised = true
+        )
         return state.asObservable()
     }
 }

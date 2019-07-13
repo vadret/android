@@ -3,14 +3,14 @@ package fi.kroon.vadret.presentation.aboutapp
 import android.content.Context
 import android.os.Bundle
 import com.google.android.material.tabs.TabLayout
-import fix495.selections
 import fi.kroon.vadret.R
-import fi.kroon.vadret.presentation.shared.BaseFragment
 import fi.kroon.vadret.presentation.aboutapp.di.AboutAppComponent
 import fi.kroon.vadret.presentation.aboutapp.di.AboutAppFeatureScope
+import fi.kroon.vadret.presentation.shared.BaseFragment
 import fi.kroon.vadret.util.extension.appComponent
 import fi.kroon.vadret.util.extension.snack
 import fi.kroon.vadret.util.extension.toObservable
+import fix495.selections
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
@@ -26,7 +26,7 @@ class AboutAppFragment : BaseFragment() {
     lateinit var viewModel: AboutAppViewModel
 
     @Inject
-    lateinit var onInitEventSubject: PublishSubject<AboutAppView.Event.OnInit>
+    lateinit var onInitEventSubject: PublishSubject<AboutAppView.Event.OnViewInitialised>
 
     @Inject
     lateinit var subscriptions: CompositeDisposable
@@ -113,14 +113,13 @@ class AboutAppFragment : BaseFragment() {
             .onNext(
                 AboutAppView
                     .Event
-                    .OnInit
+                    .OnViewInitialised
             )
     }
 
     private fun render(viewState: AboutAppView.State) =
         when (viewState.renderEvent) {
-            AboutAppView.RenderEvent.Init -> Unit
+            AboutAppView.RenderEvent.Initialised -> Unit
             AboutAppView.RenderEvent.None -> Unit
-            is AboutAppView.RenderEvent.Error -> Unit
         }
 }

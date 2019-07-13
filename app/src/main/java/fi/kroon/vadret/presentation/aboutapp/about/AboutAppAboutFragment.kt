@@ -24,7 +24,7 @@ import javax.inject.Inject
 class AboutAppAboutFragment : BaseFragment() {
 
     @Inject
-    lateinit var onInitEventSubject: PublishSubject<AboutAppAboutView.Event.OnInit>
+    lateinit var onInitEventSubject: PublishSubject<AboutAppAboutView.Event.OnViewInitialised>
 
     @Inject
     lateinit var onAboutInfoItemClickSubject: PublishSubject<AboutInfo>
@@ -102,19 +102,18 @@ class AboutAppAboutFragment : BaseFragment() {
 
         onInitEventSubject
             .onNext(
-                AboutAppAboutView.Event.OnInit
+                AboutAppAboutView.Event.OnViewInitialised
             )
     }
 
     private fun render(viewState: AboutAppAboutView.State) =
         when (viewState.renderEvent) {
-            AboutAppAboutView.RenderEvent.Init -> Unit
+            AboutAppAboutView.RenderEvent.Initialised -> Unit
             is AboutAppAboutView.RenderEvent.DisplayInfo ->
                 displayInfo(viewState.renderEvent)
             is AboutAppAboutView.RenderEvent.OpenUrl ->
                 openUrlInBrowser(viewState.renderEvent.url)
             AboutAppAboutView.RenderEvent.None -> Unit
-            is AboutAppAboutView.RenderEvent.Error -> Unit
         }
 
     private fun displayInfo(renderEvent: AboutAppAboutView.RenderEvent.DisplayInfo) {

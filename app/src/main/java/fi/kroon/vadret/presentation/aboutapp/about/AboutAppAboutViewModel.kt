@@ -22,7 +22,7 @@ class AboutAppAboutViewModel @Inject constructor(
         AboutAppAboutView.State> { upstream: Observable<AboutAppAboutView.Event> ->
         upstream.publish { shared: Observable<AboutAppAboutView.Event> ->
             Observable.mergeArray(
-                shared.ofType(AboutAppAboutView.Event.OnInit::class.java),
+                shared.ofType(AboutAppAboutView.Event.OnViewInitialised::class.java),
                 shared.ofType(AboutAppAboutView.Event.OnItemClick::class.java)
             ).compose(
                 eventToViewState
@@ -35,8 +35,8 @@ class AboutAppAboutViewModel @Inject constructor(
 
         upstream.flatMap { event: AboutAppAboutView.Event ->
             when (event) {
-                AboutAppAboutView.Event.OnInit ->
-                    onInitEvent()
+                AboutAppAboutView.Event.OnViewInitialised ->
+                    onViewInitialisedEvent()
 
                 is AboutAppAboutView.Event.OnItemClick ->
                     onItemClickEvent(event.item)
@@ -44,15 +44,14 @@ class AboutAppAboutViewModel @Inject constructor(
         }
     }
 
-    private fun onInitEvent(): Observable<AboutAppAboutView.State> =
+    private fun onViewInitialisedEvent(): Observable<AboutAppAboutView.State> =
         getAboutInfoTask()
-            .map { result: Either<Failure, List<AboutInfo>> ->
+            .flatMapObservable { result: Either<Failure, List<AboutInfo>> ->
 
                 result.either(
                     { _: Failure ->
                         state = state.copy(renderEvent = AboutAppAboutView.RenderEvent.None)
-
-                        state
+                        state.asObservable()
                     },
                     { list: List<AboutInfo> ->
 
@@ -60,11 +59,10 @@ class AboutAppAboutViewModel @Inject constructor(
                             AboutAppAboutView.RenderEvent.DisplayInfo(list)
 
                         state = state.copy(renderEvent = renderEvent)
-
-                        state
+                        state.asObservable()
                     }
                 )
-            }.toObservable()
+            }
 
     private fun onItemClickEvent(item: AboutInfo): Observable<AboutAppAboutView.State> =
         when {
@@ -82,7 +80,6 @@ class AboutAppAboutViewModel @Inject constructor(
                     val url = context.getString(item.urlResourceId)
                     state = state.copy(renderEvent = AboutAppAboutView.RenderEvent.OpenUrl(url))
                 }
-
                 state.asObservable()
             }
             // sourceUrl

@@ -13,7 +13,7 @@ object AboutAppLibraryModule {
     @Provides
     @JvmStatic
     @AboutAppFeatureScope
-    fun provideOnInitEventSubject(): PublishSubject<AboutAppLibraryView.Event.OnInit> =
+    fun provideOnInitEventSubject(): PublishSubject<AboutAppLibraryView.Event.OnViewInitialised> =
         PublishSubject.create()
 
     @Provides
