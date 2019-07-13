@@ -72,7 +72,7 @@ class MainActivityViewModel @Inject constructor(
      *  before setContentView has executed in [MainActivity] onCreate.
      */
     fun getThemeMode(): Single<Either<Failure, Theme>> = getThemeModeTask()
-        .map { result ->
+        .map { result: Either<Failure, Theme> ->
             result.either(
                 {
                     result
