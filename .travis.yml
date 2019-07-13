@@ -18,6 +18,7 @@ android:
   - android-26
   - android-27
   - android-28
+  - android-29
 script:
 - "./gradlew ktlint"
 - "./gradlew clean build"
