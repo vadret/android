@@ -8,9 +8,9 @@ import fi.kroon.vadret.data.functional.map
 import fi.kroon.vadret.data.radar.model.File
 import fi.kroon.vadret.data.radar.model.Radar
 import fi.kroon.vadret.data.radar.model.RadarRequest
-import fi.kroon.vadret.domain.IService
 import fi.kroon.vadret.util.FIFTEEN_MINUTES_IN_MILLIS
 import fi.kroon.vadret.util.OFF_BY_ONE
+import fi.kroon.vadret.util.common.IDateTimeUtil
 import fi.kroon.vadret.util.extension.asSingle
 import io.reactivex.Single
 import io.reactivex.rxkotlin.zipWith
@@ -22,21 +22,22 @@ class GetRadarImageUrlService @Inject constructor(
     private val getRadarDiskCacheTask: GetRadarDiskCacheTask,
     private val getRadarMemoryCacheTask: GetRadarMemoryCacheTask,
     private val setRadarDiskCacheTask: SetRadarDiskCacheTask,
-    private val setRadarMemoryCacheTask: SetRadarMemoryCacheTask
-) : IService {
+    private val setRadarMemoryCacheTask: SetRadarMemoryCacheTask,
+    private val iDateTimeUtil: IDateTimeUtil
+) : IDateTimeUtil by iDateTimeUtil {
 
     data class Data(
         val index: Int,
         val maxIndex: Int? = null,
-        val timeStamp: Long? = null,
+        val timeStamp: Long,
         val radar: Radar? = null,
         val radarRequest: RadarRequest = RadarRequest(),
         val file: File? = null
     )
 
-    operator fun invoke(timeStamp: Long?, index: Int): Single<Either<Failure, Data>> =
+    operator fun invoke(timeStamp: Long, index: Int): Single<Either<Failure, Data>> =
         Data(
-            timeStamp = timeStamp ?: currentTimeMillis,
+            timeStamp = timeStamp,
             index = index
         ).asSingle()
             .flatMap(::getRadar)
@@ -54,10 +55,10 @@ class GetRadarImageUrlService @Inject constructor(
     private fun getRadar(data: Data): Single<Either<Failure, Data>> =
         with(data) {
             when {
-                (currentTimeMillis > (timeStamp!! + FIFTEEN_MINUTES_IN_MILLIS)) -> {
+                (currentTimeMillis() > (timeStamp + FIFTEEN_MINUTES_IN_MILLIS)) -> {
                     getRadarImageUrlTask(radarRequest).map { either ->
                         either.map { radar: Radar ->
-                            data.copy(radar = radar, timeStamp = currentTimeMillis)
+                            data.copy(radar = radar, timeStamp = currentTimeMillis())
                         }
                     }.flatMap { data ->
                         updateCache(data)
@@ -66,18 +67,18 @@ class GetRadarImageUrlService @Inject constructor(
                 else -> {
                     Single.merge(
                         getRadarDiskCacheTask()
-                            .map { either ->
+                            .map { either: Either<Failure, Radar> ->
                                 either.map { radar: Radar ->
                                     data.copy(radar = radar)
                                 }
                             },
                         getRadarMemoryCacheTask()
-                            .map { either ->
+                            .map { either: Either<Failure, Radar> ->
                                 either.map { radar: Radar ->
                                     data.copy(radar = radar)
                                 }
                             }
-                    ).filter { result ->
+                    ).filter { result: Either<Failure, Data> ->
                         result.either(
                             {
                                 false
@@ -95,10 +96,10 @@ class GetRadarImageUrlService @Inject constructor(
                                     either.map { radar: Radar ->
                                         data.copy(
                                             radar = radar,
-                                            timeStamp = currentTimeMillis
+                                            timeStamp = currentTimeMillis()
                                         )
                                     }
-                                }.flatMap { data ->
+                                }.flatMap { data: Either<Failure, Data> ->
                                     updateCache(data)
                                 }.toFlowable()
                         ).singleOrError()

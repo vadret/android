@@ -10,6 +10,7 @@ import fi.kroon.vadret.di.modules.LocationServiceModule
 import fi.kroon.vadret.di.modules.NetworkModule
 import fi.kroon.vadret.di.modules.RxkPrefsModule
 import fi.kroon.vadret.di.modules.SchedulerModule
+import fi.kroon.vadret.di.modules.ServiceModule
 import fi.kroon.vadret.di.scope.CoreApplicationScope
 import fi.kroon.vadret.presentation.aboutapp.di.AboutAppComponent
 import fi.kroon.vadret.presentation.warning.display.di.WarningComponent
@@ -32,6 +33,7 @@ import fi.kroon.vadret.presentation.weatherforecastwidget.tiny.setup.di.WeatherF
         CacheModule::class,
         DatabaseModule::class,
         NetworkModule::class,
+        ServiceModule::class,
         RxkPrefsModule::class,
         SchedulerModule::class,
         LocationServiceModule::class

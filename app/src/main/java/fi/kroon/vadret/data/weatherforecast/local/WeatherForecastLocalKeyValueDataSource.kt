@@ -3,8 +3,9 @@ package fi.kroon.vadret.data.weatherforecast.local
 import com.afollestad.rxkprefs.Pref
 import com.afollestad.rxkprefs.RxkPrefs
 import fi.kroon.vadret.data.exception.Failure
+import fi.kroon.vadret.data.exception.ErrorHandler
+import fi.kroon.vadret.data.exception.IErrorHandler
 import fi.kroon.vadret.data.functional.Either
-import fi.kroon.vadret.data.weatherforecast.exception.WeatherForecastFailure
 import fi.kroon.vadret.util.AUTOMATIC_LOCATION_MODE_KEY
 import fi.kroon.vadret.util.COUNTY_KEY
 import fi.kroon.vadret.util.DEFAULT_COUNTY
@@ -17,16 +18,15 @@ import fi.kroon.vadret.util.LATITUDE_KEY
 import fi.kroon.vadret.util.LOCALITY_KEY
 import fi.kroon.vadret.util.LONGITUDE_KEY
 import fi.kroon.vadret.util.MUNICIPALITY_KEY
-import fi.kroon.vadret.util.extension.asLeft
 import fi.kroon.vadret.util.extension.asRight
 import fi.kroon.vadret.util.extension.asSingle
-import io.reactivex.Observable
 import io.reactivex.Single
 import javax.inject.Inject
 
 class WeatherForecastLocalKeyValueDataSource @Inject constructor(
-    private val rxkPrefs: RxkPrefs
-) {
+    private val rxkPrefs: RxkPrefs,
+    private val errorHandler: ErrorHandler
+) : IErrorHandler by errorHandler {
 
     private val locationName: Pref<String> = rxkPrefs.string(LOCALITY_KEY, DEFAULT_LOCALITY)
     private val municipalityName: Pref<String> = rxkPrefs.string(MUNICIPALITY_KEY, DEFAULT_MUNICIPALITY)
@@ -43,12 +43,7 @@ class WeatherForecastLocalKeyValueDataSource @Inject constructor(
                     .asRight()
                     .asSingle()
             }
-            else -> {
-                WeatherForecastFailure
-                    .LoadingWeatherSettingFailed
-                    .asLeft()
-                    .asSingle()
-            }
+            else -> getLocalKeyValueReadError(key = key)
         }
 
     fun putBoolean(key: String, value: Boolean): Single<Either<Failure, Unit>> = when (key) {
@@ -58,28 +53,18 @@ class WeatherForecastLocalKeyValueDataSource @Inject constructor(
             Unit.asRight()
                 .asSingle()
         }
-        else -> {
-            WeatherForecastFailure
-                .CachingWeatherForecastDataFailed
-                .asLeft()
-                .asSingle()
-        }
+        else -> getLocalKeyValueWriteError(key = key, value = value)
     }
 
     fun putLong(key: String, value: Long): Single<Either<Failure, Unit>> =
         when (key) {
-            (LAST_CHECKED_KEY) -> {
+            LAST_CHECKED_KEY -> {
                 rxkPrefs.long(key = LAST_CHECKED_KEY)
                     .set(value = value)
                     .asRight()
                     .asSingle()
             }
-            else -> {
-                WeatherForecastFailure
-                    .LoadingWeatherSettingFailed
-                    .asLeft()
-                    .asSingle()
-            }
+            else -> getLocalKeyValueWriteError(key = key, value = value)
         }
 
     fun getLong(key: String): Single<Either<Failure, Long>> =
@@ -90,12 +75,7 @@ class WeatherForecastLocalKeyValueDataSource @Inject constructor(
                     .asRight()
                     .asSingle()
             }
-            else -> {
-                WeatherForecastFailure
-                    .LoadingWeatherSettingFailed
-                    .asLeft()
-                    .asSingle()
-            }
+            else -> getLocalKeyValueReadError(key = key)
         }
 
     fun getString(key: String): Single<Either<Failure, String>> =
@@ -130,12 +110,7 @@ class WeatherForecastLocalKeyValueDataSource @Inject constructor(
                     .asRight()
                     .asSingle()
             }
-            else -> {
-                WeatherForecastFailure
-                    .LoadingWeatherSettingFailed
-                    .asLeft()
-                    .asSingle()
-            }
+            else -> getLocalKeyValueReadError(key = key)
         }
 
     fun putString(key: String, value: String): Single<Either<Failure, Unit>> =
@@ -165,53 +140,6 @@ class WeatherForecastLocalKeyValueDataSource @Inject constructor(
                 Unit.asRight()
                     .asSingle()
             }
-            else -> {
-                WeatherForecastFailure
-                    .CachingWeatherForecastDataFailed
-                    .asLeft()
-                    .asSingle()
-            }
-        }
-
-    fun observeBoolean(key: String): Observable<Either<Failure, Boolean>> =
-        when (key) {
-            AUTOMATIC_LOCATION_MODE_KEY -> automaticLocationMode.observe()
-            else -> {
-                throw Error("key doesn't exist")
-            }
-        }.map { value: Boolean ->
-            Either.Right(value) as Either<Failure, Boolean>
-        }.onErrorReturn {
-            WeatherForecastFailure
-                .LoadingWeatherSettingFailed
-                .asLeft()
-        }
-
-    fun observeString(key: String): Observable<Either<Failure, String>> =
-        when (key) {
-            COUNTY_KEY -> {
-                countyName.observe()
-            }
-            LOCALITY_KEY -> {
-                locationName.observe()
-            }
-            LATITUDE_KEY -> {
-                latitude.observe()
-            }
-            LONGITUDE_KEY -> {
-                longitude.observe()
-            }
-            MUNICIPALITY_KEY -> {
-                municipalityName.observe()
-            }
-            else -> {
-                throw Error("key doesn't exist")
-            }
-        }.map { value: String ->
-            Either.Right(value) as Either<Failure, String>
-        }.onErrorReturn {
-            WeatherForecastFailure
-                .LoadingWeatherSettingFailed
-                .asLeft()
+            else -> getLocalKeyValueWriteError(key = key, value = value)
         }
 }

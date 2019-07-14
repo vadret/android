@@ -2,8 +2,9 @@ package fi.kroon.vadret.data.weatherforecastwidget.local
 
 import com.afollestad.rxkprefs.RxkPrefs
 import fi.kroon.vadret.data.exception.Failure
+import fi.kroon.vadret.data.exception.ErrorHandler
+import fi.kroon.vadret.data.exception.IErrorHandler
 import fi.kroon.vadret.data.functional.Either
-import fi.kroon.vadret.data.weatherforecast.exception.WeatherForecastFailure
 import fi.kroon.vadret.util.AUTOMATIC_LOCATION_MODE_WIDGET_KEY
 import fi.kroon.vadret.util.COUNTY_WIDGET_KEY
 import fi.kroon.vadret.util.FORECAST_FORMAT_WIDGET_KEY
@@ -15,15 +16,15 @@ import fi.kroon.vadret.util.LONGITUDE_WIDGET_KEY
 import fi.kroon.vadret.util.MUNICIPALITY_WIDGET_KEY
 import fi.kroon.vadret.util.THEME_MODE_WIDGET_KEY
 import fi.kroon.vadret.util.UPDATE_INTERVAL_WIDGET_KEY
-import fi.kroon.vadret.util.extension.asLeft
 import fi.kroon.vadret.util.extension.asRight
 import fi.kroon.vadret.util.extension.asSingle
 import io.reactivex.Single
 import javax.inject.Inject
 
 class WeatherForecastWidgetLocalKeyValueDataSource @Inject constructor(
-    private val prefs: RxkPrefs
-) {
+    private val prefs: RxkPrefs,
+    private val errorHandler: ErrorHandler
+) : IErrorHandler by errorHandler {
 
     fun putInt(key: String, appWidgetId: Int, value: Int): Single<Either<Failure, Unit>> =
         when (key + appWidgetId) {
@@ -34,12 +35,7 @@ class WeatherForecastWidgetLocalKeyValueDataSource @Inject constructor(
                     .asRight()
                     .asSingle()
             }
-            else -> {
-                WeatherForecastFailure
-                    .LoadingWeatherSettingFailed
-                    .asLeft()
-                    .asSingle()
-            }
+            else -> getLocalKeyValueWriteError(key = key + appWidgetId, value = value)
         }
 
     fun getInt(key: String, appWidgetId: Int): Single<Either<Failure, Int>> =
@@ -51,12 +47,7 @@ class WeatherForecastWidgetLocalKeyValueDataSource @Inject constructor(
                     .asRight()
                     .asSingle()
             }
-            else -> {
-                WeatherForecastFailure
-                    .LoadingWeatherSettingFailed
-                    .asLeft()
-                    .asSingle()
-            }
+            else -> getLocalKeyValueReadError(key = key + appWidgetId)
         }
 
     fun putLong(key: String, appWidgetId: Int, value: Long): Single<Either<Failure, Unit>> =
@@ -67,12 +58,7 @@ class WeatherForecastWidgetLocalKeyValueDataSource @Inject constructor(
                     .asRight()
                     .asSingle()
             }
-            else -> {
-                WeatherForecastFailure
-                    .LoadingWeatherSettingFailed
-                    .asLeft()
-                    .asSingle()
-            }
+            else -> getLocalKeyValueWriteError(key = key + appWidgetId, value = value)
         }
 
     fun getLong(key: String, appWidgetId: Int): Single<Either<Failure, Long>> =
@@ -83,12 +69,7 @@ class WeatherForecastWidgetLocalKeyValueDataSource @Inject constructor(
                     .asRight()
                     .asSingle()
             }
-            else -> {
-                WeatherForecastFailure
-                    .LoadingWeatherSettingFailed
-                    .asLeft()
-                    .asSingle()
-            }
+            else -> getLocalKeyValueReadError(key = key + appWidgetId)
         }
 
     fun putBoolean(key: String, appWidgetId: Int, value: Boolean): Single<Either<Failure, Unit>> =
@@ -105,12 +86,7 @@ class WeatherForecastWidgetLocalKeyValueDataSource @Inject constructor(
                     .asRight()
                     .asSingle()
             }
-            else -> {
-                WeatherForecastFailure
-                    .LoadingWeatherSettingFailed
-                    .asLeft()
-                    .asSingle()
-            }
+            else -> getLocalKeyValueWriteError(key = key + appWidgetId, value = value)
         }
 
     fun getBoolean(key: String, appWidgetId: Int): Single<Either<Failure, Boolean>> =
@@ -127,12 +103,7 @@ class WeatherForecastWidgetLocalKeyValueDataSource @Inject constructor(
                     .asRight()
                     .asSingle()
             }
-            else -> {
-                WeatherForecastFailure
-                    .LoadingWeatherSettingFailed
-                    .asLeft()
-                    .asSingle()
-            }
+            else -> getLocalKeyValueReadError(key = key + appWidgetId)
         }
 
     fun putString(key: String, appWidgetId: Int, value: String): Single<Either<Failure, Unit>> =
@@ -185,12 +156,7 @@ class WeatherForecastWidgetLocalKeyValueDataSource @Inject constructor(
                     .asRight()
                     .asSingle()
             }
-            else -> {
-                WeatherForecastFailure
-                    .LoadingWeatherSettingFailed
-                    .asLeft()
-                    .asSingle()
-            }
+            else -> getLocalKeyValueWriteError(key = key + appWidgetId, value = value)
         }
 
     fun getString(key: String, appWidgetId: Int): Single<Either<Failure, String>> =
@@ -243,11 +209,6 @@ class WeatherForecastWidgetLocalKeyValueDataSource @Inject constructor(
                     .asRight()
                     .asSingle()
             }
-            else -> {
-                WeatherForecastFailure
-                    .LoadingWeatherSettingFailed
-                    .asLeft()
-                    .asSingle()
-            }
+            else -> getLocalKeyValueReadError(key = key + appWidgetId)
         }
 }

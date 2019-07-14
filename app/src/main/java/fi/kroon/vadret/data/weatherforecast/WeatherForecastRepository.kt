@@ -1,12 +1,14 @@
 package fi.kroon.vadret.data.weatherforecast
 
-import fi.kroon.vadret.di.scope.CoreApplicationScope
 import fi.kroon.vadret.data.exception.Failure
+import fi.kroon.vadret.data.exception.ErrorHandler
+import fi.kroon.vadret.data.exception.IErrorHandler
 import fi.kroon.vadret.data.functional.Either
 import fi.kroon.vadret.data.weatherforecast.exception.WeatherForecastFailure
 import fi.kroon.vadret.data.weatherforecast.model.Weather
 import fi.kroon.vadret.data.weatherforecast.model.WeatherOut
 import fi.kroon.vadret.data.weatherforecast.net.WeatherForecastNetDataSource
+import fi.kroon.vadret.di.scope.CoreApplicationScope
 import fi.kroon.vadret.util.HTTP_200_OK
 import fi.kroon.vadret.util.HTTP_204_NO_CONTENT
 import fi.kroon.vadret.util.HTTP_400_BAD_REQUEST
@@ -17,17 +19,16 @@ import fi.kroon.vadret.util.HTTP_503_SERVICE_UNAVAILABLE
 import fi.kroon.vadret.util.HTTP_504_GATEWAY_TIMEOUT
 import fi.kroon.vadret.util.NetworkHandler
 import fi.kroon.vadret.util.extension.asLeft
-import fi.kroon.vadret.util.extension.asSingle
 import fi.kroon.vadret.util.extension.toCoordinate
 import io.reactivex.Single
-import timber.log.Timber
 import javax.inject.Inject
 
 @CoreApplicationScope
 class WeatherForecastRepository @Inject constructor(
     private val weatherForecastNetDataSource: WeatherForecastNetDataSource,
-    private val networkHandler: NetworkHandler
-) {
+    private val networkHandler: NetworkHandler,
+    private val errorHandler: ErrorHandler
+) : IErrorHandler by errorHandler {
 
     fun get(request: WeatherOut): Single<Either<Failure, Weather>> =
         when (networkHandler.isConnected) {
@@ -48,18 +49,7 @@ class WeatherForecastRepository @Inject constructor(
                     HTTP_504_GATEWAY_TIMEOUT -> Failure.HttpGatewayTimeout504.asLeft()
                     else -> WeatherForecastFailure.NoWeatherAvailable.asLeft()
                 }
-            }.doOnError {
-                Timber.e("$it")
-            }.onErrorReturn {
-                Failure
-                    .NetworkException
-                    .asLeft()
             }
-            false -> {
-                Failure
-                    .NetworkOfflineFailure
-                    .asLeft()
-                    .asSingle()
-            }
+            false -> getNetworkOfflineError()
         }
 }

@@ -20,7 +20,7 @@ class ThemeRepository @Inject constructor(
 
     operator fun invoke(key: String): Single<Either<Failure, Theme>> =
         keyValueStore.getString(key)
-            .map { result ->
+            .map { result: Either<Failure, String> ->
                 result.either(
                     { failure: Failure ->
                         Timber.e("Failure: $failure")

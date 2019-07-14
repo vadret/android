@@ -5,17 +5,12 @@ import fi.kroon.vadret.data.functional.Either
 import fi.kroon.vadret.data.radar.cache.RadarCacheDataSource
 import fi.kroon.vadret.data.radar.model.Radar
 import io.reactivex.Single
-import timber.log.Timber
 import javax.inject.Inject
 
 class SetRadarMemoryCacheTask @Inject constructor(
-    private val repo: RadarCacheDataSource
+    private val cache: RadarCacheDataSource
 ) {
-
     operator fun invoke(radar: Radar): Single<Either<Failure, Radar>> =
-        repo
+        cache
             .updateMemoryCache(radar)
-            .doOnError {
-                Timber.e("$it")
-            }
 }

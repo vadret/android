@@ -25,8 +25,8 @@ interface IViewModel {
             Failure.HttpInternalServerError500 -> R.string.http_internal_server_error_500
             Failure.HttpServiceUnavailable503 -> R.string.http_service_unavailable_503
             Failure.IOException -> R.string.io_exception
-            Failure.NetworkException -> R.string.network_failure
-            Failure.NetworkOfflineFailure -> R.string.no_network_available
+            is Failure.NetworkError -> R.string.network_failure
+            is Failure.NetworkOfflineError -> R.string.no_network_available
             RadarFailure.NoRadarAvailable -> R.string.no_radar_available
             LocationFailure.LocationNotAvailable -> R.string.location_failure
             LocationFailure.NoLocationPermissions -> R.string.no_location_permission

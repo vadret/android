@@ -29,7 +29,6 @@ object RadarView {
         val seekStep: Int = 1,
         val currentSeekBarIndex: Int = NIL_INT,
         val renderEvent: RenderEvent = RenderEvent.None,
-        val timeStamp: Long? = null,
         val wasRestoredFromStateParcel: Boolean = false
     )
 
@@ -51,7 +50,6 @@ object RadarView {
         val isInitialised: Boolean,
         val isSeekBarRunning: Boolean = false,
         val seekBarMax: Int,
-        val currentSeekBarIndex: Int,
-        val timeStamp: Long? = null
+        val currentSeekBarIndex: Int
     ) : Parcelable
 }

@@ -1,6 +1,7 @@
 package fi.kroon.vadret.data.weatherforecast
 
 import fi.kroon.vadret.data.exception.Failure
+import fi.kroon.vadret.data.exception.ErrorHandler
 import fi.kroon.vadret.data.functional.Either
 import fi.kroon.vadret.data.weatherforecast.exception.WeatherForecastFailure
 import fi.kroon.vadret.data.weatherforecast.model.Weather
@@ -30,6 +31,15 @@ import retrofit2.Response
 @RunWith(MockitoJUnitRunner::class)
 class WeatherForecastRepositoryTest {
 
+    private val errorHandler: ErrorHandler = ErrorHandler()
+
+    private val weatherForecastRequest: WeatherOut = WeatherOut(
+        latitude = DEFAULT_LATITUDE.toDouble(),
+        longitude = DEFAULT_LONGITUDE.toDouble()
+    )
+
+    private lateinit var testWeatherForecastRepository: WeatherForecastRepository
+
     @Mock
     private lateinit var mockWeatherForecastNetDataSource: WeatherForecastNetDataSource
 
@@ -42,18 +52,12 @@ class WeatherForecastRepositoryTest {
     @Mock
     private lateinit var mockWeatherForecast: Weather
 
-    private lateinit var testWeatherForecastRepository: WeatherForecastRepository
-
-    private val weatherForecastRequest: WeatherOut = WeatherOut(
-        latitude = DEFAULT_LATITUDE.toDouble(),
-        longitude = DEFAULT_LONGITUDE.toDouble()
-    )
-
     @Before
     fun setup() {
         testWeatherForecastRepository = WeatherForecastRepository(
             mockWeatherForecastNetDataSource,
-            mockNetworkHandler
+            mockNetworkHandler,
+            errorHandler = errorHandler
         )
     }
 
@@ -90,7 +94,7 @@ class WeatherForecastRepositoryTest {
             .test()
             .assertComplete()
             .assertNoErrors()
-            .assertValueAt(0) { it is Either.Left<Failure> && it.a is Failure.NetworkOfflineFailure }
+            .assertValueAt(0) { it is Either.Left<Failure> && it.a is Failure.NetworkOfflineError }
     }
 
     @Test
@@ -239,28 +243,4 @@ class WeatherForecastRepositoryTest {
             .assertNoErrors()
             .assertValueAt(0) { it is Either.Left<Failure> && it.a is Failure.HttpGatewayTimeout504 }
     }
-
-    @Test
-    fun `repository returns single exception failure`() {
-
-        doReturn(true).`when`(mockNetworkHandler).isConnected
-        doReturn(throwException())
-            .`when`(mockWeatherForecastNetDataSource)
-            .get(
-                weatherForecastRequest.category,
-                weatherForecastRequest.version,
-                weatherForecastRequest.longitude,
-                weatherForecastRequest.latitude
-            )
-
-        testWeatherForecastRepository
-            .get(weatherForecastRequest)
-            .test()
-            .assertComplete()
-            .assertNoErrors()
-            .assertValueAt(0) { it is Either.Left<Failure> && it.a is Failure.NetworkException }
-    }
-
-    private fun throwException(): Single<Either<Failure, Weather>> =
-        Single.error<Either<Failure, Weather>>(Exception("failure"))
 }

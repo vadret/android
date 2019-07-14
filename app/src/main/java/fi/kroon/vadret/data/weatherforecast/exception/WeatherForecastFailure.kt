@@ -6,5 +6,4 @@ class WeatherForecastFailure {
     object NoWeatherAvailable : Failure.FeatureFailure()
     object NoWeatherAvailableForThisLocation : Failure.FeatureFailure()
     object CachingWeatherForecastDataFailed : Failure.FeatureFailure()
-    object LoadingWeatherSettingFailed : Failure.FeatureFailure()
 }

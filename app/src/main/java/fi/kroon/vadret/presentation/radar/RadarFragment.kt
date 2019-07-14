@@ -56,7 +56,7 @@ typealias RadarFile = fi.kroon.vadret.data.radar.model.File
 @RadarFeatureScope
 class RadarFragment : BaseFragment() {
 
-    companion object {
+    private companion object {
         const val A_NAME = "wikimedia"
         const val A_ZOOM_MIN_LEVEL = 1
         const val A_ZOOM_MAX_LEVEL = 18
@@ -316,8 +316,7 @@ class RadarFragment : BaseFragment() {
             isInitialised = state.isInitialised,
             currentSeekBarIndex = state.currentSeekBarIndex,
             isSeekBarRunning = state.isSeekBarRunning,
-            seekBarMax = state.seekBarMax,
-            timeStamp = state.timeStamp
+            seekBarMax = state.seekBarMax
         )
 
         onStateParcelUpdatedSubject
