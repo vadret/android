@@ -35,7 +35,7 @@ object WarningMapper {
                     event = event,
                     senderName = senderName,
                     push = push,
-                    bodyLinks = bodyLinks,
+                    bodyLinks = bodyLinks ?: emptyList(),
                     sourceId = sourceId,
                     isVma = isVma,
                     isTestVma = isTestVma,

@@ -42,13 +42,13 @@ data class AggregatedFeed(
     val event: String,
 
     @Json(name = "SenderName")
-    val senderName: String,
+    val senderName: String? = null,
 
     @Json(name = "Push")
     val push: Boolean,
 
     @Json(name = "BodyLinks")
-    val bodyLinks: List<String>,
+    val bodyLinks: List<String>? = emptyList(),
 
     @Json(name = "SourceID")
     val sourceId: Int,
