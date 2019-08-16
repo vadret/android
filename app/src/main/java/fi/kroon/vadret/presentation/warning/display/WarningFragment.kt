@@ -2,6 +2,7 @@ package fi.kroon.vadret.presentation.warning.display
 
 import android.content.Context
 import android.os.Bundle
+import android.os.Parcelable
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -33,6 +34,7 @@ class WarningFragment : BaseFragment() {
         const val SCROLL_POSITION_KEY: String = "SCROLL_POSITION_KEY"
     }
 
+    private var recyclerViewParcelable: Parcelable? = null
     private var stateParcel: WarningView.StateParcel? = null
     private var bundle: Bundle? = null
 
@@ -124,6 +126,16 @@ class WarningFragment : BaseFragment() {
             Timber.d("Saving instance: $stateParcel")
             Timber.d("-----END-----")
             putParcelable(STATE_PARCEL_KEY, stateParcel)
+
+            recyclerViewParcelable?.run {
+                putParcelable(SCROLL_POSITION_KEY, this)
+            } ?: warningRecyclerView?.layoutManager?.run {
+                putParcelable(
+                    SCROLL_POSITION_KEY,
+                    (this as LinearLayoutManager)
+                        .onSaveInstanceState()
+                )
+            }
         }
     }
 
