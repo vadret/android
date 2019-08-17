@@ -170,7 +170,7 @@ dependencies {
     def RXANDROID_VERSION = "2.1.1"
     def RXBINDING_VERSION = "3.0.0"
     def RXJAVA_VERSION = "2.2.10"
-    def RXKOTLIN_VERSION = "2.3.0"
+    def RXKOTLIN_VERSION = "2.4.0"
     def RXK_PREFS_VERSION = "1.2.5"
     def THREETEN_ABP_VERSION = "1.2.1"
     def THREETEN_BP_VERSION = "1.4.0"
