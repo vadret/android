@@ -8,8 +8,8 @@ import fi.kroon.vadret.util.RADAR_CACHE_KEY
 import fi.kroon.vadret.util.extension.asLeft
 import fi.kroon.vadret.util.extension.asRight
 import io.reactivex.Single
-import timber.log.Timber
 import javax.inject.Inject
+import timber.log.Timber
 
 class RadarCacheDataSource @Inject constructor(
     private val diskCache: RadarDiskCache,

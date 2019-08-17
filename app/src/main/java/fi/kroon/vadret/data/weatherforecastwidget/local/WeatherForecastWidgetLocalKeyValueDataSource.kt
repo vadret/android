@@ -1,8 +1,8 @@
 package fi.kroon.vadret.data.weatherforecastwidget.local
 
 import com.afollestad.rxkprefs.RxkPrefs
-import fi.kroon.vadret.data.exception.Failure
 import fi.kroon.vadret.data.exception.ErrorHandler
+import fi.kroon.vadret.data.exception.Failure
 import fi.kroon.vadret.data.exception.IErrorHandler
 import fi.kroon.vadret.data.functional.Either
 import fi.kroon.vadret.util.AUTOMATIC_LOCATION_MODE_WIDGET_KEY

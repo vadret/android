@@ -7,12 +7,12 @@ import fi.kroon.vadret.data.weatherforecast.model.Weather
 import fi.kroon.vadret.util.extension.asLeft
 import fi.kroon.vadret.util.extension.asRight
 import io.reactivex.Single
+import javax.inject.Inject
 import okhttp3.internal.cache.DiskLruCache
 import okio.BufferedSink
 import okio.Sink
 import okio.buffer
 import timber.log.Timber
-import javax.inject.Inject
 
 class WeatherForecastDiskCache @Inject constructor(
     private val cache: DiskLruCache

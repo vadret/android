@@ -10,8 +10,8 @@ import fi.kroon.vadret.data.functional.map
 import fi.kroon.vadret.domain.warning.CountDistrictEntityTask
 import fi.kroon.vadret.util.extension.asSingle
 import io.reactivex.Single
-import timber.log.Timber
 import javax.inject.Inject
+import timber.log.Timber
 
 class GetDistrictNetService @Inject constructor(
     private val getDistrictNetTask: GetDistrictNetTask,

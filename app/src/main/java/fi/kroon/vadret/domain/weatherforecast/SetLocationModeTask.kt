@@ -5,8 +5,8 @@ import fi.kroon.vadret.data.functional.Either
 import fi.kroon.vadret.data.weatherforecast.local.WeatherForecastLocalKeyValueDataSource
 import fi.kroon.vadret.util.AUTOMATIC_LOCATION_MODE_KEY
 import io.reactivex.Single
-import timber.log.Timber
 import javax.inject.Inject
+import timber.log.Timber
 
 class SetLocationModeTask @Inject constructor(
     private val repo: WeatherForecastLocalKeyValueDataSource

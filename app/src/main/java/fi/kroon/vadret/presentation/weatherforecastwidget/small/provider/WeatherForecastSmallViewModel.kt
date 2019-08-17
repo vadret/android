@@ -3,11 +3,11 @@ package fi.kroon.vadret.presentation.weatherforecastwidget.small.provider
 import fi.kroon.vadret.R
 import fi.kroon.vadret.data.exception.Failure
 import fi.kroon.vadret.data.functional.Either
-import fi.kroon.vadret.domain.weatherforecastwidget.shared.GetWidgetWeatherForecastService
 import fi.kroon.vadret.domain.weatherforecastwidget.shared.GetWidgetInitialisedKeyValueTask
 import fi.kroon.vadret.domain.weatherforecastwidget.shared.GetWidgetLastCheckedKeyValueTask
 import fi.kroon.vadret.domain.weatherforecastwidget.shared.GetWidgetThemeKeyValueTask
 import fi.kroon.vadret.domain.weatherforecastwidget.shared.GetWidgetUpdateIntervalMillisKeyValueTask
+import fi.kroon.vadret.domain.weatherforecastwidget.shared.GetWidgetWeatherForecastService
 import fi.kroon.vadret.domain.weatherforecastwidget.shared.SetWidgetLastCheckedKeyValueTask
 import fi.kroon.vadret.presentation.shared.IViewModel
 import fi.kroon.vadret.presentation.weatherforecastwidget.small.provider.di.WeatherForecastSmallFeatureScope
@@ -19,8 +19,8 @@ import fi.kroon.vadret.util.extension.asRight
 import io.reactivex.Observable
 import io.reactivex.ObservableTransformer
 import io.reactivex.Single
-import timber.log.Timber
 import javax.inject.Inject
+import timber.log.Timber
 
 @WeatherForecastSmallFeatureScope
 class WeatherForecastSmallViewModel @Inject constructor(

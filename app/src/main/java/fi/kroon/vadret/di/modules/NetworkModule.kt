@@ -4,9 +4,9 @@ import dagger.Module
 import dagger.Provides
 import fi.kroon.vadret.BuildConfig
 import fi.kroon.vadret.di.scope.CoreApplicationScope
+import java.util.concurrent.TimeUnit
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
-import java.util.concurrent.TimeUnit
 
 @Module(
     includes = [

@@ -12,9 +12,9 @@ import com.squareup.picasso.Picasso
 import com.squareup.picasso.Target
 import fi.kroon.vadret.BuildConfig
 import fi.kroon.vadret.R
-import fi.kroon.vadret.presentation.shared.BaseFragment
 import fi.kroon.vadret.presentation.radar.di.RadarComponent
 import fi.kroon.vadret.presentation.radar.di.RadarFeatureScope
+import fi.kroon.vadret.presentation.shared.BaseFragment
 import fi.kroon.vadret.presentation.weatherforecast.WeatherForecastFragment
 import fi.kroon.vadret.util.DEFAULT_BOUNDINGBOX_CENTER_LATITUDE
 import fi.kroon.vadret.util.DEFAULT_BOUNDINGBOX_CENTER_LONGITUDE
@@ -36,6 +36,9 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.subjects.PublishSubject
+import java.io.File
+import java.util.concurrent.TimeUnit
+import javax.inject.Inject
 import kotlinx.android.synthetic.main.radar_fragment.*
 import org.osmdroid.config.Configuration
 import org.osmdroid.config.IConfigurationProvider
@@ -47,9 +50,6 @@ import org.osmdroid.views.overlay.GroundOverlay2
 import org.threeten.bp.OffsetDateTime
 import org.threeten.bp.format.DateTimeFormatter
 import timber.log.Timber
-import java.io.File
-import java.util.concurrent.TimeUnit
-import javax.inject.Inject
 
 typealias RadarFile = fi.kroon.vadret.data.radar.model.File
 

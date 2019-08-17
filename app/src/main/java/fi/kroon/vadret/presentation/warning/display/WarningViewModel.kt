@@ -20,8 +20,8 @@ import fi.kroon.vadret.presentation.warning.display.model.IWarningModel
 import fi.kroon.vadret.util.extension.asObservable
 import io.reactivex.Observable
 import io.reactivex.ObservableTransformer
-import timber.log.Timber
 import javax.inject.Inject
+import timber.log.Timber
 
 @WarningScope
 class WarningViewModel @Inject constructor(

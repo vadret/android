@@ -10,8 +10,8 @@ import fi.kroon.vadret.domain.IService
 import fi.kroon.vadret.util.FIVE_MINUTES_IN_MILLIS
 import io.reactivex.Single
 import io.reactivex.rxkotlin.zipWith
-import timber.log.Timber
 import javax.inject.Inject
+import timber.log.Timber
 
 class GetAggregatedFeedService @Inject constructor(
     private val getAggregatedFeedTask: GetAggregatedFeedTask,

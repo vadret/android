@@ -10,8 +10,8 @@ import fi.kroon.vadret.domain.district.GetAllDistrictTask
 import fi.kroon.vadret.domain.districtpreference.SetDistrictPreferenceListTask
 import fi.kroon.vadret.util.APP_WARNING_FILTER_KEY
 import io.reactivex.Single
-import timber.log.Timber
 import javax.inject.Inject
+import timber.log.Timber
 
 class SetDefaultDistrictPreferenceEntityService @Inject constructor(
     private val getAllDistrictTask: GetAllDistrictTask,

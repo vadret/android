@@ -18,9 +18,9 @@ import fi.kroon.vadret.util.extension.asObservable
 import fi.kroon.vadret.util.extension.empty
 import io.reactivex.Observable
 import io.reactivex.ObservableTransformer
-import timber.log.Timber
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
+import timber.log.Timber
 
 @WeatherForecastFeatureScope
 class WeatherForecastViewModel @Inject constructor(

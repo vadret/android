@@ -8,8 +8,8 @@ import fi.kroon.vadret.util.AGGREGATED_FEED_CACHE_KEY
 import fi.kroon.vadret.util.extension.asLeft
 import fi.kroon.vadret.util.extension.asRight
 import io.reactivex.Single
-import timber.log.Timber
 import javax.inject.Inject
+import timber.log.Timber
 
 class AggregatedFeedCacheDataSource @Inject constructor(
     private val diskCache: AggregatedFeedDiskCache,

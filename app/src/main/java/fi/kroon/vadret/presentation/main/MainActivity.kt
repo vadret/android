@@ -11,9 +11,9 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import fi.kroon.vadret.R
 import fi.kroon.vadret.data.exception.Failure
 import fi.kroon.vadret.data.theme.model.Theme
-import fi.kroon.vadret.presentation.shared.BaseActivity
 import fi.kroon.vadret.presentation.main.di.MainActivityComponent
 import fi.kroon.vadret.presentation.main.di.MainActivityScope
+import fi.kroon.vadret.presentation.shared.BaseActivity
 import fi.kroon.vadret.util.DEFAULT_SETTINGS
 import fi.kroon.vadret.util.Scheduler
 import fi.kroon.vadret.util.extension.appComponent
@@ -23,9 +23,9 @@ import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.subjects.PublishSubject
+import javax.inject.Inject
 import kotlinx.android.synthetic.main.activity_main.*
 import timber.log.Timber
-import javax.inject.Inject
 
 @MainActivityScope
 class MainActivity : BaseActivity() {

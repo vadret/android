@@ -3,8 +3,8 @@ package fi.kroon.vadret.presentation.aboutapp.about
 import android.content.Context
 import fi.kroon.vadret.R
 import fi.kroon.vadret.data.aboutinfo.model.AboutInfo
-import fi.kroon.vadret.data.functional.Either
 import fi.kroon.vadret.data.exception.Failure
+import fi.kroon.vadret.data.functional.Either
 import fi.kroon.vadret.domain.aboutapp.GetAboutInfoTask
 import fi.kroon.vadret.util.extension.asObservable
 import io.reactivex.Observable

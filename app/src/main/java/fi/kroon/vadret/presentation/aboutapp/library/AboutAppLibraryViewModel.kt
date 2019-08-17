@@ -7,8 +7,8 @@ import fi.kroon.vadret.domain.aboutapp.GetAboutLibraryTask
 import fi.kroon.vadret.util.extension.asObservable
 import io.reactivex.Observable
 import io.reactivex.ObservableTransformer
-import timber.log.Timber
 import javax.inject.Inject
+import timber.log.Timber
 
 class AboutAppLibraryViewModel @Inject constructor(
     private var state: AboutAppLibraryView.State,

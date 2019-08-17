@@ -14,8 +14,8 @@ import fi.kroon.vadret.util.common.IDateTimeUtil
 import fi.kroon.vadret.util.extension.asSingle
 import io.reactivex.Single
 import io.reactivex.rxkotlin.zipWith
-import timber.log.Timber
 import javax.inject.Inject
+import timber.log.Timber
 
 class GetRadarImageUrlService @Inject constructor(
     private val getRadarImageUrlTask: GetRadarImageUrlTask,

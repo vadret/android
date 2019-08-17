@@ -18,13 +18,13 @@ import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.subjects.PublishSubject
+import java.util.Locale
+import javax.inject.Inject
 import org.threeten.bp.OffsetDateTime
 import org.threeten.bp.format.DateTimeFormatter
 import org.threeten.bp.format.FormatStyle
 import org.threeten.bp.format.TextStyle
 import timber.log.Timber
-import java.util.Locale
-import javax.inject.Inject
 
 class WeatherForecastMediumService : RemoteViewsService() {
 

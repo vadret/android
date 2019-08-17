@@ -2,8 +2,8 @@ package fi.kroon.vadret.data.district
 
 import fi.kroon.vadret.data.district.model.DistrictView
 import fi.kroon.vadret.data.district.net.DistrictNetDataSource
-import fi.kroon.vadret.data.exception.Failure
 import fi.kroon.vadret.data.exception.ErrorHandler
+import fi.kroon.vadret.data.exception.Failure
 import fi.kroon.vadret.data.exception.IErrorHandler
 import fi.kroon.vadret.data.functional.Either
 import fi.kroon.vadret.di.scope.CoreApplicationScope
@@ -11,8 +11,8 @@ import fi.kroon.vadret.util.NetworkHandler
 import fi.kroon.vadret.util.extension.asLeft
 import fi.kroon.vadret.util.extension.asRight
 import io.reactivex.Single
-import retrofit2.Response
 import javax.inject.Inject
+import retrofit2.Response
 
 @CoreApplicationScope
 class DistrictRepository @Inject constructor(

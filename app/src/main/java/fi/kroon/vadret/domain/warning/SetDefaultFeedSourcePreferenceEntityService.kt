@@ -10,8 +10,8 @@ import fi.kroon.vadret.domain.feedsource.GetAllFeedSourceTask
 import fi.kroon.vadret.domain.feedsourcepreference.SetFeedSourcePreferenceListTask
 import fi.kroon.vadret.util.APP_WARNING_FILTER_KEY
 import io.reactivex.Single
-import timber.log.Timber
 import javax.inject.Inject
+import timber.log.Timber
 
 class SetDefaultFeedSourcePreferenceEntityService @Inject constructor(
     private val setFeedSourcePreferenceListTask: SetFeedSourcePreferenceListTask,

@@ -7,19 +7,19 @@ import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import fi.kroon.vadret.R
 import fi.kroon.vadret.data.library.model.Library
-import fi.kroon.vadret.presentation.shared.BaseFragment
-import fi.kroon.vadret.presentation.main.MainActivity
 import fi.kroon.vadret.presentation.aboutapp.AboutAppFragment
 import fi.kroon.vadret.presentation.aboutapp.di.AboutAppFeatureScope
+import fi.kroon.vadret.presentation.main.MainActivity
+import fi.kroon.vadret.presentation.shared.BaseFragment
 import fi.kroon.vadret.util.extension.toObservable
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.subjects.PublishSubject
-import kotlinx.android.synthetic.main.about_app_library_fragment.*
-import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Named
+import kotlinx.android.synthetic.main.about_app_library_fragment.*
+import timber.log.Timber
 
 @AboutAppFeatureScope
 class AboutAppLibraryFragment : BaseFragment() {

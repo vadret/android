@@ -11,16 +11,18 @@ import fi.kroon.vadret.presentation.weatherforecast.model.WeatherForecastDateIte
 import fi.kroon.vadret.presentation.weatherforecast.model.WeatherForecastHeadlineModel
 import fi.kroon.vadret.presentation.weatherforecast.model.WeatherForecastItemModel
 import fi.kroon.vadret.presentation.weatherforecast.model.WeatherForecastSplashItemModel
-import fi.kroon.vadret.util.common.WeatherForecastUtil.getTemperatureColorResourceId
 import fi.kroon.vadret.util.common.WeatherForecastUtil.getPrecipitationResourceId
-import fi.kroon.vadret.util.common.WeatherForecastUtil.handleWindDirection
-import fi.kroon.vadret.util.common.WeatherForecastUtil.getWsymb2ResourceId
-import fi.kroon.vadret.util.common.WeatherForecastUtil.getWsymb2IconResourceId
+import fi.kroon.vadret.util.common.WeatherForecastUtil.getTemperatureColorResourceId
 import fi.kroon.vadret.util.common.WeatherForecastUtil.getWindSpeedClassResourceId
+import fi.kroon.vadret.util.common.WeatherForecastUtil.getWsymb2IconResourceId
+import fi.kroon.vadret.util.common.WeatherForecastUtil.getWsymb2ResourceId
+import fi.kroon.vadret.util.common.WeatherForecastUtil.handleWindDirection
 import fi.kroon.vadret.util.extension.empty
 import fi.kroon.vadret.util.extension.toGone
 import fi.kroon.vadret.util.extension.toInvisible
 import fi.kroon.vadret.util.extension.toVisible
+import java.util.Locale
+import javax.inject.Inject
 import kotlinx.android.synthetic.main.weather_forecast_date_item.view.*
 import kotlinx.android.synthetic.main.weather_forecast_headline_item.view.*
 import kotlinx.android.synthetic.main.weather_forecast_item.view.*
@@ -29,8 +31,6 @@ import org.threeten.bp.format.DateTimeFormatter
 import org.threeten.bp.format.FormatStyle
 import org.threeten.bp.format.TextStyle
 import timber.log.Timber
-import java.util.Locale
-import javax.inject.Inject
 
 @WeatherForecastFeatureScope
 class WeatherForecastAdapter @Inject constructor() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {

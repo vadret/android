@@ -7,8 +7,8 @@ import fi.kroon.vadret.data.location.local.LocationLocalDataSource
 import fi.kroon.vadret.data.location.model.Location
 import fi.kroon.vadret.util.extension.asLeft
 import io.reactivex.Single
-import timber.log.Timber
 import javax.inject.Inject
+import timber.log.Timber
 
 class LocationRepository @Inject constructor(
     private val locationLocalDataSource: LocationLocalDataSource

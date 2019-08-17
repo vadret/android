@@ -13,9 +13,9 @@ import fi.kroon.vadret.di.modules.SchedulerModule
 import fi.kroon.vadret.di.modules.ServiceModule
 import fi.kroon.vadret.di.scope.CoreApplicationScope
 import fi.kroon.vadret.presentation.aboutapp.di.AboutAppComponent
-import fi.kroon.vadret.presentation.warning.display.di.WarningComponent
 import fi.kroon.vadret.presentation.main.di.MainActivityComponent
 import fi.kroon.vadret.presentation.radar.di.RadarComponent
+import fi.kroon.vadret.presentation.warning.display.di.WarningComponent
 import fi.kroon.vadret.presentation.warning.filter.di.WarningFilterComponent
 import fi.kroon.vadret.presentation.weatherforecast.di.WeatherForecastComponent
 import fi.kroon.vadret.presentation.weatherforecastwidget.medium.provider.di.WeatherForecastMediumComponent

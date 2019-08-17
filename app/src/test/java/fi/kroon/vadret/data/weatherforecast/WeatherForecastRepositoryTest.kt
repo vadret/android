@@ -1,7 +1,7 @@
 package fi.kroon.vadret.data.weatherforecast
 
-import fi.kroon.vadret.data.exception.Failure
 import fi.kroon.vadret.data.exception.ErrorHandler
+import fi.kroon.vadret.data.exception.Failure
 import fi.kroon.vadret.data.functional.Either
 import fi.kroon.vadret.data.weatherforecast.exception.WeatherForecastFailure
 import fi.kroon.vadret.data.weatherforecast.model.Weather

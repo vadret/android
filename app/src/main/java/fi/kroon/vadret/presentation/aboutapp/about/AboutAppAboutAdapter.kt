@@ -10,8 +10,8 @@ import fi.kroon.vadret.data.aboutinfo.model.AboutInfo
 import fi.kroon.vadret.presentation.aboutapp.di.AboutAppFeatureScope
 import fi.kroon.vadret.util.extension.toGone
 import io.reactivex.subjects.PublishSubject
-import kotlinx.android.synthetic.main.about_app_about_item.view.*
 import javax.inject.Inject
+import kotlinx.android.synthetic.main.about_app_about_item.view.*
 
 @AboutAppFeatureScope
 class AboutAppAboutAdapter @Inject constructor(

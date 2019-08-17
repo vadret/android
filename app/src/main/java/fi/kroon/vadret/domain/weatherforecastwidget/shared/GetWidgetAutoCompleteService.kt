@@ -10,8 +10,8 @@ import fi.kroon.vadret.presentation.weatherforecast.autocomplete.AutoCompleteDif
 import fi.kroon.vadret.util.DEFAULT_AUTOCOMPLETE_LIMIT
 import fi.kroon.vadret.util.extension.empty
 import io.reactivex.Single
-import timber.log.Timber
 import javax.inject.Inject
+import timber.log.Timber
 
 class GetWidgetAutoCompleteService @Inject constructor(
     private val autoCompleteRepository: AutoCompleteRepository

@@ -9,8 +9,8 @@ import fi.kroon.vadret.data.functional.map
 import fi.kroon.vadret.domain.warning.CountFeedSourceEntityTask
 import fi.kroon.vadret.util.extension.asSingle
 import io.reactivex.Single
-import timber.log.Timber
 import javax.inject.Inject
+import timber.log.Timber
 
 class GetFeedSourceNetService @Inject constructor(
     private val countFeedSourceEntityTask: CountFeedSourceEntityTask,

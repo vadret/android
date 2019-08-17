@@ -5,8 +5,8 @@ import fi.kroon.vadret.data.functional.Either
 import fi.kroon.vadret.data.functional.map
 import fi.kroon.vadret.data.weatherforecastwidget.local.WidgetThemeLocalDataSource
 import io.reactivex.Single
-import timber.log.Timber
 import javax.inject.Inject
+import timber.log.Timber
 
 class GetWidgetThemeOptionTask @Inject constructor(
     private val local: WidgetThemeLocalDataSource

@@ -8,8 +8,8 @@ import fi.kroon.vadret.data.nominatim.model.NominatimReverseOut
 import fi.kroon.vadret.util.extension.asLeft
 import fi.kroon.vadret.util.extension.asRight
 import io.reactivex.Single
-import timber.log.Timber
 import javax.inject.Inject
+import timber.log.Timber
 
 class GetReverseLocalityNameTask @Inject constructor(
     private val task: GetNominatimReverseTask

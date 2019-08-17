@@ -8,14 +8,14 @@ import fi.kroon.vadret.data.exception.Failure
 import fi.kroon.vadret.data.functional.Either
 import fi.kroon.vadret.util.extension.asLeft
 import io.reactivex.Single
-import org.apache.commons.csv.CSVFormat
-import org.apache.commons.csv.CSVParser
-import org.apache.commons.csv.CSVRecord
-import timber.log.Timber
 import java.io.InputStream
 import java.nio.charset.Charset
 import java.nio.charset.StandardCharsets
 import javax.inject.Inject
+import org.apache.commons.csv.CSVFormat
+import org.apache.commons.csv.CSVParser
+import org.apache.commons.csv.CSVRecord
+import timber.log.Timber
 
 class LocalFileDataSource @Inject constructor(
     private val context: Context

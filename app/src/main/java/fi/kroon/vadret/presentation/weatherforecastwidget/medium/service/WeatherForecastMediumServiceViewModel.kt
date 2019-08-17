@@ -10,8 +10,8 @@ import fi.kroon.vadret.presentation.weatherforecastwidget.medium.service.model.W
 import fi.kroon.vadret.util.extension.asObservable
 import io.reactivex.Observable
 import io.reactivex.ObservableTransformer
-import timber.log.Timber
 import javax.inject.Inject
+import timber.log.Timber
 
 @WeatherForecastMediumServiceScope
 class WeatherForecastMediumServiceViewModel @Inject constructor(

@@ -32,8 +32,8 @@ import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.subjects.PublishSubject
-import timber.log.Timber
 import javax.inject.Inject
+import timber.log.Timber
 
 @WeatherForecastMediumFeatureScope
 class WeatherForecastMediumAppWidgetProvider : BaseAppWidgetProvider() {

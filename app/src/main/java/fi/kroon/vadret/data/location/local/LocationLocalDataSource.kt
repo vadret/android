@@ -10,8 +10,8 @@ import fi.kroon.vadret.data.functional.Either
 import fi.kroon.vadret.data.location.exception.LocationFailure
 import fi.kroon.vadret.util.extension.asLeft
 import fi.kroon.vadret.util.extension.asRight
-import timber.log.Timber
 import javax.inject.Inject
+import timber.log.Timber
 
 class LocationLocalDataSource @Inject constructor(
     private val locationManager: LocationManager

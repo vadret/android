@@ -7,8 +7,8 @@ import fi.kroon.vadret.data.weatherforecast.model.Weather
 import fi.kroon.vadret.util.extension.asLeft
 import fi.kroon.vadret.util.extension.asRight
 import io.reactivex.Single
-import timber.log.Timber
 import javax.inject.Inject
+import timber.log.Timber
 
 class WeatherForecastCacheDataSource @Inject constructor(
     private val diskCache: WeatherForecastDiskCache,

@@ -11,8 +11,8 @@ import fi.kroon.vadret.util.LONGITUDE_KEY
 import fi.kroon.vadret.util.MUNICIPALITY_KEY
 import io.reactivex.Observable
 import io.reactivex.Single
-import timber.log.Timber
 import javax.inject.Inject
+import timber.log.Timber
 
 class SetLocationInformationTask @Inject constructor(
     private val repo: WeatherForecastLocalKeyValueDataSource

@@ -8,10 +8,10 @@ import fi.kroon.vadret.data.theme.model.Theme
 import fi.kroon.vadret.data.weatherforecastwidget.exception.WeatherForecastWidgetFailure
 import fi.kroon.vadret.domain.theme.GetThemeModeTask
 import fi.kroon.vadret.domain.weatherforecastwidget.medium.SetWidgetMediumConfigurationService
-import fi.kroon.vadret.domain.weatherforecastwidget.shared.GetWidgetUpdateIntervalOptionTask
 import fi.kroon.vadret.domain.weatherforecastwidget.shared.GetWidgetAutoCompleteService
 import fi.kroon.vadret.domain.weatherforecastwidget.shared.GetWidgetThemeOptionTask
 import fi.kroon.vadret.domain.weatherforecastwidget.shared.GetWidgetUpdateIntervalMillisKeyValueTask
+import fi.kroon.vadret.domain.weatherforecastwidget.shared.GetWidgetUpdateIntervalOptionTask
 import fi.kroon.vadret.domain.weatherforecastwidget.shared.SetWidgetInitialisedKeyValueTask
 import fi.kroon.vadret.domain.weatherforecastwidget.shared.SetWidgetLocationInformationService
 import fi.kroon.vadret.domain.weatherforecastwidget.shared.SetWidgetLocationModeKeyValueTask
@@ -24,9 +24,9 @@ import fi.kroon.vadret.util.extension.empty
 import io.reactivex.Observable
 import io.reactivex.ObservableTransformer
 import io.reactivex.Single
-import timber.log.Timber
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
+import timber.log.Timber
 
 @WeatherForecastMediumSetupScope
 class WeatherForecastMediumSetupViewModel @Inject constructor(

@@ -5,8 +5,8 @@ import fi.kroon.vadret.data.functional.Either
 import fi.kroon.vadret.data.functional.map
 import fi.kroon.vadret.data.weatherforecastwidget.local.WidgetUpdateIntervalLocalDataSource
 import io.reactivex.Single
-import timber.log.Timber
 import javax.inject.Inject
+import timber.log.Timber
 
 class GetWidgetUpdateIntervalOptionTask @Inject constructor(
     private val local: WidgetUpdateIntervalLocalDataSource

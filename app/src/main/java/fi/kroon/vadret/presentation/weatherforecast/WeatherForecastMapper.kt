@@ -14,9 +14,9 @@ import fi.kroon.vadret.util.WINDCHILL_FORMULA_MINIMUM
 import fi.kroon.vadret.util.common.SunsetUtil
 import fi.kroon.vadret.util.extension.parseToLocalDate
 import fi.kroon.vadret.util.extension.toWindChill
+import java.util.Calendar
 import org.threeten.bp.OffsetDateTime
 import org.threeten.bp.ZoneId
-import java.util.Calendar
 
 object WeatherForecastMapper {
 

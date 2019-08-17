@@ -20,8 +20,8 @@ import fi.kroon.vadret.util.extension.asRight
 import io.reactivex.Observable
 import io.reactivex.ObservableTransformer
 import io.reactivex.Single
-import timber.log.Timber
 import javax.inject.Inject
+import timber.log.Timber
 
 @WeatherForecastMediumFeatureScope
 class WeatherForecastMediumViewModel @Inject constructor(

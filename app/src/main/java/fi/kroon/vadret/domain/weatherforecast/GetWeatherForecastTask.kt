@@ -6,8 +6,8 @@ import fi.kroon.vadret.data.weatherforecast.WeatherForecastRepository
 import fi.kroon.vadret.data.weatherforecast.model.Weather
 import fi.kroon.vadret.data.weatherforecast.model.WeatherOut
 import io.reactivex.Single
-import timber.log.Timber
 import javax.inject.Inject
+import timber.log.Timber
 
 class GetWeatherForecastTask @Inject constructor(
     private val repo: WeatherForecastRepository

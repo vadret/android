@@ -40,13 +40,13 @@ import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.subjects.PublishSubject
+import javax.inject.Inject
 import kotlinx.android.synthetic.main.weather_forecast_widget_tiny_setup.*
 import permissions.dispatcher.NeedsPermission
 import permissions.dispatcher.OnNeverAskAgain
 import permissions.dispatcher.OnPermissionDenied
 import permissions.dispatcher.RuntimePermissions
 import timber.log.Timber
-import javax.inject.Inject
 
 @RuntimePermissions
 @WeatherForecastTinySetupScope

@@ -1,7 +1,7 @@
 package fi.kroon.vadret.data.feedsource
 
-import fi.kroon.vadret.data.exception.Failure
 import fi.kroon.vadret.data.exception.ErrorHandler
+import fi.kroon.vadret.data.exception.Failure
 import fi.kroon.vadret.data.exception.IErrorHandler
 import fi.kroon.vadret.data.feedsource.model.FeedSource
 import fi.kroon.vadret.data.feedsource.net.FeedSourceNetDataSource
@@ -11,8 +11,8 @@ import fi.kroon.vadret.util.NetworkHandler
 import fi.kroon.vadret.util.extension.asLeft
 import fi.kroon.vadret.util.extension.asRight
 import io.reactivex.Single
-import retrofit2.Response
 import javax.inject.Inject
+import retrofit2.Response
 
 @CoreApplicationScope
 class FeedSourceRepository @Inject constructor(

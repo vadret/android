@@ -6,19 +6,19 @@ import android.os.Bundle
 import androidx.recyclerview.widget.LinearLayoutManager
 import fi.kroon.vadret.R
 import fi.kroon.vadret.data.aboutinfo.model.AboutInfo
-import fi.kroon.vadret.presentation.shared.BaseFragment
-import fi.kroon.vadret.presentation.main.MainActivity
 import fi.kroon.vadret.presentation.aboutapp.AboutAppFragment
 import fi.kroon.vadret.presentation.aboutapp.di.AboutAppFeatureScope
+import fi.kroon.vadret.presentation.main.MainActivity
+import fi.kroon.vadret.presentation.shared.BaseFragment
 import fi.kroon.vadret.util.extension.snack
 import fi.kroon.vadret.util.extension.toObservable
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.subjects.PublishSubject
+import javax.inject.Inject
 import kotlinx.android.synthetic.main.about_app_about_fragment.*
 import timber.log.Timber
-import javax.inject.Inject
 
 @AboutAppFeatureScope
 class AboutAppAboutFragment : BaseFragment() {

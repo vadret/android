@@ -2,9 +2,9 @@ package fi.kroon.vadret.util.common
 
 import fi.kroon.vadret.R
 import fi.kroon.vadret.presentation.warning.display.model.ElapsedTime
+import fi.kroon.vadret.util.A_SECOND_IN_MILLIS
 import fi.kroon.vadret.util.HOUR_IN_MILLIS
 import fi.kroon.vadret.util.MINUTE_IN_MILLIS
-import fi.kroon.vadret.util.A_SECOND_IN_MILLIS
 import org.threeten.bp.OffsetDateTime
 
 object DateTimeStringUtil {

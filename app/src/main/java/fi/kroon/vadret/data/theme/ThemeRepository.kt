@@ -11,8 +11,8 @@ import fi.kroon.vadret.util.DARK_THEME
 import fi.kroon.vadret.util.extension.asLeft
 import fi.kroon.vadret.util.extension.asRight
 import io.reactivex.Single
-import timber.log.Timber
 import javax.inject.Inject
+import timber.log.Timber
 
 class ThemeRepository @Inject constructor(
     private val keyValueStore: ThemeLocalKeyValueDataSource
