@@ -24,9 +24,6 @@ script:
 - "./gradlew clean build"
 - "./gradlew tasks"
 - "./gradlew assembleGithub"
-- "./gradlew test jacocoTestReport"
-after_success:
-- bash <(curl -s https://codecov.io/bash)
 before_install:
 - openssl aes-256-cbc -K $encrypted_f7c7591dbff3_key -iv $encrypted_f7c7591dbff3_iv
   -in .keystore.enc -out .keystore -d

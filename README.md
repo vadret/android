@@ -1,6 +1,6 @@
 [![travis-ci](https://travis-ci.org/vadret/android.svg?branch=master)](https://travis-ci.org/vadret/android)
-[![crowdin](https://d322cqt584bo4o.cloudfront.net/vadret/localized.svg)](https://crowdin.com/project/vadret)
 [![ktlint](https://img.shields.io/badge/code%20style-%E2%9D%A4-FF4081.svg)](https://ktlint.github.io/)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/vadret/android/blob/master/LICENSE)
 
 ![Vädret](https://raw.githubusercontent.com/vadret/android/master/assets/logo.png)
 
