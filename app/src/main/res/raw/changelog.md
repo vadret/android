@@ -5,10 +5,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [1.2.2] -- 2019-08-*
+## [1.2.2] -- 2019-08-30
 
 ### Changed
 - Either type extracted into separate dependency
+
+### Fixed
+- FC on Weather widget medium
+- Correct cache invalidation
 
 ## [1.2.1] -- 2019-08-17
 ### Fixed
