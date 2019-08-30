@@ -3,12 +3,12 @@ package fi.kroon.vadret.domain.warning
 import fi.kroon.vadret.data.exception.Failure
 import fi.kroon.vadret.data.feedsource.model.FeedSourceEntity
 import fi.kroon.vadret.data.feedsourcepreference.model.FeedSourcePreferenceEntity
-import fi.kroon.vadret.data.functional.Either
-import fi.kroon.vadret.data.functional.flatMapSingle
-import fi.kroon.vadret.data.functional.map
 import fi.kroon.vadret.domain.feedsource.GetAllFeedSourceTask
 import fi.kroon.vadret.domain.feedsourcepreference.SetFeedSourcePreferenceListTask
 import fi.kroon.vadret.util.APP_WARNING_FILTER_KEY
+import fi.kroon.vadret.util.extension.flatMapSingle
+import io.github.sphrak.either.Either
+import io.github.sphrak.either.map
 import io.reactivex.Single
 import javax.inject.Inject
 import timber.log.Timber

@@ -23,7 +23,6 @@ import com.jakewharton.rxbinding3.widget.itemSelections
 import fi.kroon.vadret.R
 import fi.kroon.vadret.data.autocomplete.model.AutoCompleteItem
 import fi.kroon.vadret.data.exception.Failure
-import fi.kroon.vadret.data.functional.Either
 import fi.kroon.vadret.data.theme.model.Theme
 import fi.kroon.vadret.presentation.weatherforecast.autocomplete.AutoCompleteAdapter
 import fi.kroon.vadret.presentation.weatherforecastwidget.shared.BaseAppWidgetSetup
@@ -36,6 +35,7 @@ import fi.kroon.vadret.util.extension.toInvisible
 import fi.kroon.vadret.util.extension.toObservable
 import fi.kroon.vadret.util.extension.toVisible
 import fi.kroon.vadret.util.extension.toast
+import io.github.sphrak.either.Either
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo

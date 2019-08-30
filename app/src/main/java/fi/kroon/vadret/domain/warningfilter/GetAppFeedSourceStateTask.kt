@@ -3,9 +3,9 @@ package fi.kroon.vadret.domain.warningfilter
 import fi.kroon.vadret.data.exception.Failure
 import fi.kroon.vadret.data.feedsource.model.FeedSourceOptionEntity
 import fi.kroon.vadret.data.feedsourcepreference.local.FeedSourcePreferenceDao
-import fi.kroon.vadret.data.functional.Either
 import fi.kroon.vadret.util.APP_WARNING_FILTER_KEY
 import fi.kroon.vadret.util.extension.asRight
+import io.github.sphrak.either.Either
 import io.reactivex.Single
 import javax.inject.Inject
 

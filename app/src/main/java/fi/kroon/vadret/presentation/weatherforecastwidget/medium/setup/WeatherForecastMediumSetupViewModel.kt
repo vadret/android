@@ -3,7 +3,6 @@ package fi.kroon.vadret.presentation.weatherforecastwidget.medium.setup
 import android.appwidget.AppWidgetManager.INVALID_APPWIDGET_ID
 import fi.kroon.vadret.data.autocomplete.model.AutoCompleteItem
 import fi.kroon.vadret.data.exception.Failure
-import fi.kroon.vadret.data.functional.Either
 import fi.kroon.vadret.data.theme.model.Theme
 import fi.kroon.vadret.data.weatherforecastwidget.exception.WeatherForecastWidgetFailure
 import fi.kroon.vadret.domain.theme.GetThemeModeTask
@@ -21,6 +20,7 @@ import fi.kroon.vadret.presentation.weatherforecastwidget.medium.setup.model.Wea
 import fi.kroon.vadret.util.AUTOCOMPLETE_DEBOUNCE_MILLIS
 import fi.kroon.vadret.util.extension.asObservable
 import fi.kroon.vadret.util.extension.empty
+import io.github.sphrak.either.Either
 import io.reactivex.Observable
 import io.reactivex.ObservableTransformer
 import io.reactivex.Single

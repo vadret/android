@@ -2,7 +2,6 @@ package fi.kroon.vadret.presentation.weatherforecastwidget.small.provider
 
 import fi.kroon.vadret.R
 import fi.kroon.vadret.data.exception.Failure
-import fi.kroon.vadret.data.functional.Either
 import fi.kroon.vadret.domain.weatherforecastwidget.shared.GetWidgetInitialisedKeyValueTask
 import fi.kroon.vadret.domain.weatherforecastwidget.shared.GetWidgetLastCheckedKeyValueTask
 import fi.kroon.vadret.domain.weatherforecastwidget.shared.GetWidgetThemeKeyValueTask
@@ -16,6 +15,7 @@ import fi.kroon.vadret.util.DARK_THEME
 import fi.kroon.vadret.util.LIGHT_THEME_NO_BACKGROUND
 import fi.kroon.vadret.util.extension.asObservable
 import fi.kroon.vadret.util.extension.asRight
+import io.github.sphrak.either.Either
 import io.reactivex.Observable
 import io.reactivex.ObservableTransformer
 import io.reactivex.Single

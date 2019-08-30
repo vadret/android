@@ -1,9 +1,9 @@
 package fi.kroon.vadret.data.exception
 
-import fi.kroon.vadret.data.functional.Either
 import fi.kroon.vadret.di.scope.CoreApplicationScope
 import fi.kroon.vadret.util.extension.asLeft
 import fi.kroon.vadret.util.extension.asSingle
+import io.github.sphrak.either.Either
 import io.reactivex.Single
 
 @CoreApplicationScope

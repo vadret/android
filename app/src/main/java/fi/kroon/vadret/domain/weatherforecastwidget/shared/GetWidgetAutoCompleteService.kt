@@ -4,11 +4,11 @@ import androidx.recyclerview.widget.DiffUtil
 import fi.kroon.vadret.data.autocomplete.AutoCompleteRepository
 import fi.kroon.vadret.data.autocomplete.model.AutoCompleteItem
 import fi.kroon.vadret.data.exception.Failure
-import fi.kroon.vadret.data.functional.Either
-import fi.kroon.vadret.data.functional.map
 import fi.kroon.vadret.presentation.weatherforecast.autocomplete.AutoCompleteDiffUtil
 import fi.kroon.vadret.util.DEFAULT_AUTOCOMPLETE_LIMIT
 import fi.kroon.vadret.util.extension.empty
+import io.github.sphrak.either.Either
+import io.github.sphrak.either.map
 import io.reactivex.Single
 import javax.inject.Inject
 import timber.log.Timber

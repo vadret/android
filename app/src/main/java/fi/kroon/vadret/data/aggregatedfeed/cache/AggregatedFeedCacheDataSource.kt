@@ -3,10 +3,10 @@ package fi.kroon.vadret.data.aggregatedfeed.cache
 import androidx.collection.LruCache
 import fi.kroon.vadret.data.aggregatedfeed.model.AggregatedFeed
 import fi.kroon.vadret.data.exception.Failure
-import fi.kroon.vadret.data.functional.Either
 import fi.kroon.vadret.util.AGGREGATED_FEED_CACHE_KEY
 import fi.kroon.vadret.util.extension.asLeft
 import fi.kroon.vadret.util.extension.asRight
+import io.github.sphrak.either.Either
 import io.reactivex.Single
 import javax.inject.Inject
 import timber.log.Timber

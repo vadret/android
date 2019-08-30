@@ -3,11 +3,11 @@ package fi.kroon.vadret.domain.feedsource
 import fi.kroon.vadret.data.exception.Failure
 import fi.kroon.vadret.data.feedsource.model.FeedSource
 import fi.kroon.vadret.data.feedsource.model.FeedSourceEntity
-import fi.kroon.vadret.data.functional.Either
-import fi.kroon.vadret.data.functional.flatMapSingle
-import fi.kroon.vadret.data.functional.map
 import fi.kroon.vadret.domain.warning.CountFeedSourceEntityTask
 import fi.kroon.vadret.util.extension.asSingle
+import fi.kroon.vadret.util.extension.flatMapSingle
+import io.github.sphrak.either.Either
+import io.github.sphrak.either.map
 import io.reactivex.Single
 import javax.inject.Inject
 import timber.log.Timber

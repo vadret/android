@@ -5,11 +5,11 @@ import fi.kroon.vadret.data.exception.Failure
 import fi.kroon.vadret.data.exception.IErrorHandler
 import fi.kroon.vadret.data.feedsource.model.FeedSource
 import fi.kroon.vadret.data.feedsource.net.FeedSourceNetDataSource
-import fi.kroon.vadret.data.functional.Either
 import fi.kroon.vadret.di.scope.CoreApplicationScope
 import fi.kroon.vadret.util.NetworkHandler
 import fi.kroon.vadret.util.extension.asLeft
 import fi.kroon.vadret.util.extension.asRight
+import io.github.sphrak.either.Either
 import io.reactivex.Single
 import javax.inject.Inject
 import retrofit2.Response

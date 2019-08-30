@@ -1,10 +1,10 @@
 package fi.kroon.vadret.domain.radar
 
 import fi.kroon.vadret.data.exception.Failure
-import fi.kroon.vadret.data.functional.Either
 import fi.kroon.vadret.data.radar.RadarRepository
 import fi.kroon.vadret.data.radar.model.Radar
 import fi.kroon.vadret.data.radar.model.RadarRequest
+import io.github.sphrak.either.Either
 import io.reactivex.Single
 import javax.inject.Inject
 

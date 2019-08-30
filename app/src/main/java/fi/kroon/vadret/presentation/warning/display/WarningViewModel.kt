@@ -2,7 +2,6 @@ package fi.kroon.vadret.presentation.warning.display
 
 import fi.kroon.vadret.data.district.exception.DistrictFailure
 import fi.kroon.vadret.data.exception.Failure
-import fi.kroon.vadret.data.functional.Either
 import fi.kroon.vadret.domain.aggregatedfeed.GetAggregatedFeedLastCheckedTask
 import fi.kroon.vadret.domain.aggregatedfeed.GetAggregatedFeedService
 import fi.kroon.vadret.domain.aggregatedfeed.SetAggregatedFeedLastCheckedTask
@@ -18,6 +17,7 @@ import fi.kroon.vadret.presentation.shared.IViewModel
 import fi.kroon.vadret.presentation.warning.display.di.WarningScope
 import fi.kroon.vadret.presentation.warning.display.model.IWarningModel
 import fi.kroon.vadret.util.extension.asObservable
+import io.github.sphrak.either.Either
 import io.reactivex.Observable
 import io.reactivex.ObservableTransformer
 import javax.inject.Inject

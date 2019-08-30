@@ -1,11 +1,11 @@
 package fi.kroon.vadret.data.library.local
 
 import fi.kroon.vadret.data.exception.Failure
-import fi.kroon.vadret.data.functional.Either
 import fi.kroon.vadret.data.library.model.Library
 import fi.kroon.vadret.di.scope.CoreApplicationScope
 import fi.kroon.vadret.util.extension.asRight
 import fi.kroon.vadret.util.extension.asSingle
+import io.github.sphrak.either.Either
 import io.reactivex.Single
 import javax.inject.Inject
 
@@ -66,6 +66,15 @@ class LibraryLocalDataSource @Inject constructor() {
                 sourceUrl = "https://github.com/sphrak/svenska-stader",
                 licenseUrl = "https://github.com/sphrak/svenska-stader/blob/master/LICENSE",
                 license = apache2License
+            ),
+            Library(
+                author = "Niclas Kron",
+                title = "Either",
+                projectUrl = "https://github.com/sphrak/Either/",
+                sourceUrl = "https://github.com/sphrak/Either/",
+                licenseUrl = "https://github.com/sphrak/Either/blob/master/LICENSE",
+                license = apache2License,
+                description = "Either type for Kotlin"
             ),
             Library(
                 author = "Aidan Follestad",

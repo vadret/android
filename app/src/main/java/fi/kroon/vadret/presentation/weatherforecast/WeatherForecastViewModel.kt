@@ -1,7 +1,6 @@
 package fi.kroon.vadret.presentation.weatherforecast
 
 import fi.kroon.vadret.data.exception.Failure
-import fi.kroon.vadret.data.functional.Either
 import fi.kroon.vadret.data.nominatim.model.Locality
 import fi.kroon.vadret.domain.weatherforecast.GetAppLocationModeTask
 import fi.kroon.vadret.domain.weatherforecast.GetAutoCompleteService
@@ -16,6 +15,7 @@ import fi.kroon.vadret.presentation.weatherforecast.di.WeatherForecastFeatureSco
 import fi.kroon.vadret.util.AUTOCOMPLETE_DEBOUNCE_MILLIS
 import fi.kroon.vadret.util.extension.asObservable
 import fi.kroon.vadret.util.extension.empty
+import io.github.sphrak.either.Either
 import io.reactivex.Observable
 import io.reactivex.ObservableTransformer
 import java.util.concurrent.TimeUnit

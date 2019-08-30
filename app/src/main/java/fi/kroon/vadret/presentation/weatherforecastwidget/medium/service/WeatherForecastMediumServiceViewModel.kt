@@ -1,13 +1,13 @@
 package fi.kroon.vadret.presentation.weatherforecastwidget.medium.service
 
 import fi.kroon.vadret.data.exception.Failure
-import fi.kroon.vadret.data.functional.Either
 import fi.kroon.vadret.domain.weatherforecastwidget.medium.GetWidgetForecastFormatKeyValueTask
 import fi.kroon.vadret.domain.weatherforecastwidget.shared.GetWidgetLastCheckedKeyValueTask
 import fi.kroon.vadret.domain.weatherforecastwidget.shared.GetWidgetWeatherForecastService
 import fi.kroon.vadret.presentation.weatherforecastwidget.medium.service.di.WeatherForecastMediumServiceScope
 import fi.kroon.vadret.presentation.weatherforecastwidget.medium.service.model.WeatherForecastMediumServiceModel
 import fi.kroon.vadret.util.extension.asObservable
+import io.github.sphrak.either.Either
 import io.reactivex.Observable
 import io.reactivex.ObservableTransformer
 import javax.inject.Inject

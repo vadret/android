@@ -151,6 +151,7 @@ dependencies {
     def DAGGER_VERSION = "2.24"
     def FRAGMENT_KTX_VERSION = "1.0.0"
     def JUNIT_VERSION = "4.13-beta-3"
+    def EITHER_VERSION = "1.0.1"
     def KOTLIN_STDLIB_VERSION = "1.3.50"
     def KTLINT_VERSION = "0.34.2"
     def KTX_VERSION = "1.0.0"
@@ -230,6 +231,7 @@ dependencies {
     implementation "org.apache.commons:commons-csv:${COMMONS_CSV_VERSION}"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${KOTLIN_STDLIB_VERSION}"
     implementation "org.osmdroid:osmdroid-android:${OSMDROID_VERSION}"
+    implementation "io.github.sphrak:either:${EITHER_VERSION}"
     kapt "com.github.hotchemi:permissionsdispatcher-processor:${PERMISSIONS_DISPATCHER_VERSION}"
 
     // Datetime

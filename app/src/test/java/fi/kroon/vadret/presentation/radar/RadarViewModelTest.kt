@@ -1,7 +1,6 @@
 package fi.kroon.vadret.presentation.radar
 
 import fi.kroon.vadret.data.exception.Failure
-import fi.kroon.vadret.data.functional.Either
 import fi.kroon.vadret.data.radar.model.File
 import fi.kroon.vadret.data.radar.model.Radar
 import fi.kroon.vadret.data.radar.model.RadarRequest
@@ -13,6 +12,7 @@ import fi.kroon.vadret.util.extension.asLeft
 import fi.kroon.vadret.util.extension.asObservable
 import fi.kroon.vadret.util.extension.asRight
 import fi.kroon.vadret.util.extension.asSingle
+import io.github.sphrak.either.Either
 import io.reactivex.Single
 import org.junit.Before
 import org.junit.Test

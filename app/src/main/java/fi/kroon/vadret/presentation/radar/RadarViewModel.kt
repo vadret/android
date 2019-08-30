@@ -1,7 +1,6 @@
 package fi.kroon.vadret.presentation.radar
 
 import fi.kroon.vadret.data.exception.Failure
-import fi.kroon.vadret.data.functional.Either
 import fi.kroon.vadret.domain.radar.GetRadarImageUrlService
 import fi.kroon.vadret.domain.radar.GetRadarLastCheckedKeyValueTask
 import fi.kroon.vadret.domain.radar.SetRadarLastCheckedKeyValueTask
@@ -9,6 +8,7 @@ import fi.kroon.vadret.presentation.radar.di.RadarFeatureScope
 import fi.kroon.vadret.presentation.shared.IViewModel
 import fi.kroon.vadret.util.NIL_INT
 import fi.kroon.vadret.util.extension.asObservable
+import io.github.sphrak.either.Either
 import io.reactivex.Observable
 import io.reactivex.ObservableTransformer
 import javax.inject.Inject

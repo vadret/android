@@ -2,11 +2,11 @@ package fi.kroon.vadret.domain.radar
 
 import fi.kroon.vadret.data.exception.ErrorHandler
 import fi.kroon.vadret.data.exception.Failure
-import fi.kroon.vadret.data.functional.Either
 import fi.kroon.vadret.data.radar.cache.RadarCacheDataSource
 import fi.kroon.vadret.data.radar.model.Radar
 import fi.kroon.vadret.util.extension.asRight
 import fi.kroon.vadret.util.extension.asSingle
+import io.github.sphrak.either.Either
 import io.reactivex.Single
 import org.junit.Before
 import org.junit.Test

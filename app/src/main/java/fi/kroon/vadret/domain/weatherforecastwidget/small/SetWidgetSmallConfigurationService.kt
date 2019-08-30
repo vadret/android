@@ -1,10 +1,10 @@
 package fi.kroon.vadret.domain.weatherforecastwidget.small
 
 import fi.kroon.vadret.data.exception.Failure
-import fi.kroon.vadret.data.functional.Either
 import fi.kroon.vadret.domain.weatherforecastwidget.shared.SetWidgetThemeKeyValueTask
 import fi.kroon.vadret.domain.weatherforecastwidget.shared.SetWidgetUpdateIntervalKeyValueTask
 import fi.kroon.vadret.presentation.weatherforecastwidget.small.setup.model.WeatherForecastSmallConfigurationModel
+import io.github.sphrak.either.Either
 import io.reactivex.Observable
 import io.reactivex.Single
 import javax.inject.Inject

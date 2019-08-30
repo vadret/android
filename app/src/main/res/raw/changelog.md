@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.2.2] -- 2019-08-*
 
+### Changed
+- Either type extracted into separate dependency
+
 ## [1.2.1] -- 2019-08-17
 ### Fixed
 - Adjust radar overlay image position

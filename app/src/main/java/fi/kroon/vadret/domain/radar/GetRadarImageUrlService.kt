@@ -1,10 +1,6 @@
 package fi.kroon.vadret.domain.radar
 
 import fi.kroon.vadret.data.exception.Failure
-import fi.kroon.vadret.data.functional.Either
-import fi.kroon.vadret.data.functional.flatMap
-import fi.kroon.vadret.data.functional.flatMapSingle
-import fi.kroon.vadret.data.functional.map
 import fi.kroon.vadret.data.radar.model.File
 import fi.kroon.vadret.data.radar.model.Radar
 import fi.kroon.vadret.data.radar.model.RadarRequest
@@ -12,6 +8,10 @@ import fi.kroon.vadret.util.FIFTEEN_MINUTES_IN_MILLIS
 import fi.kroon.vadret.util.OFF_BY_ONE
 import fi.kroon.vadret.util.common.IDateTimeUtil
 import fi.kroon.vadret.util.extension.asSingle
+import fi.kroon.vadret.util.extension.flatMapSingle
+import io.github.sphrak.either.Either
+import io.github.sphrak.either.flatMap
+import io.github.sphrak.either.map
 import io.reactivex.Single
 import io.reactivex.rxkotlin.zipWith
 import javax.inject.Inject

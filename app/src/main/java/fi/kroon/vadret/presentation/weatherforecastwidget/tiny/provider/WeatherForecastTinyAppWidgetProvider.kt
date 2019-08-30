@@ -14,13 +14,13 @@ import androidx.annotation.LayoutRes
 import fi.kroon.vadret.BaseApplication.Companion.appComponent
 import fi.kroon.vadret.R
 import fi.kroon.vadret.data.exception.Failure
-import fi.kroon.vadret.data.functional.Either
 import fi.kroon.vadret.presentation.weatherforecastwidget.shared.BaseAppWidgetProvider
 import fi.kroon.vadret.presentation.weatherforecastwidget.tiny.provider.di.WeatherForecastTinyComponent
 import fi.kroon.vadret.presentation.weatherforecastwidget.tiny.provider.di.WeatherForecastTinyFeatureScope
 import fi.kroon.vadret.presentation.weatherforecastwidget.tiny.provider.model.WeatherForecastTinyModel
 import fi.kroon.vadret.util.DEGREE_SYMBOL
 import fi.kroon.vadret.util.extension.toObservable
+import io.github.sphrak.either.Either
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
