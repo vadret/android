@@ -4,13 +4,13 @@ import android.content.Context
 import fi.kroon.vadret.R
 import fi.kroon.vadret.data.aboutinfo.model.AboutInfo
 import fi.kroon.vadret.data.exception.Failure
-import fi.kroon.vadret.data.functional.Either
 import fi.kroon.vadret.domain.aboutapp.GetAboutInfoTask
 import fi.kroon.vadret.presentation.aboutapp.about.AboutAppAboutView
 import fi.kroon.vadret.presentation.aboutapp.about.AboutAppAboutViewModel
 import fi.kroon.vadret.util.extension.asObservable
 import fi.kroon.vadret.util.extension.asRight
 import fi.kroon.vadret.util.extension.asSingle
+import io.github.sphrak.either.Either
 import io.reactivex.Single
 import org.junit.Before
 import org.junit.Test

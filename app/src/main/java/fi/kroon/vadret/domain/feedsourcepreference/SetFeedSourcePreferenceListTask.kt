@@ -3,7 +3,7 @@ package fi.kroon.vadret.domain.feedsourcepreference
 import fi.kroon.vadret.data.exception.Failure
 import fi.kroon.vadret.data.feedsourcepreference.FeedSourcePreferenceRepository
 import fi.kroon.vadret.data.feedsourcepreference.model.FeedSourcePreferenceEntity
-import fi.kroon.vadret.data.functional.Either
+import io.github.sphrak.either.Either
 import io.reactivex.Single
 import javax.inject.Inject
 

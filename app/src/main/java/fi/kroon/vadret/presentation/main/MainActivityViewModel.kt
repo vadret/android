@@ -1,13 +1,13 @@
 package fi.kroon.vadret.presentation.main
 
 import fi.kroon.vadret.data.exception.Failure
-import fi.kroon.vadret.data.functional.Either
 import fi.kroon.vadret.data.theme.model.Theme
 import fi.kroon.vadret.domain.theme.GetThemeModeTask
 import fi.kroon.vadret.domain.theme.ObserveThemeChangeTask
 import fi.kroon.vadret.presentation.main.di.MainActivityScope
 import fi.kroon.vadret.presentation.shared.IViewModel
 import fi.kroon.vadret.util.extension.asObservable
+import io.github.sphrak.either.Either
 import io.reactivex.Observable
 import io.reactivex.ObservableTransformer
 import io.reactivex.Single

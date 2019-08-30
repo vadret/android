@@ -1,10 +1,10 @@
 package fi.kroon.vadret.domain.weatherforecast
 
 import fi.kroon.vadret.data.exception.Failure
-import fi.kroon.vadret.data.functional.Either
 import fi.kroon.vadret.data.weatherforecast.WeatherForecastRepository
 import fi.kroon.vadret.data.weatherforecast.model.Weather
 import fi.kroon.vadret.data.weatherforecast.model.WeatherOut
+import io.github.sphrak.either.Either
 import io.reactivex.Single
 import javax.inject.Inject
 import timber.log.Timber

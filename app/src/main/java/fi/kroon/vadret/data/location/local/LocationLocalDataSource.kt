@@ -6,10 +6,10 @@ import android.location.LocationManager
 import android.location.LocationManager.GPS_PROVIDER
 import android.location.LocationManager.NETWORK_PROVIDER
 import fi.kroon.vadret.data.exception.Failure
-import fi.kroon.vadret.data.functional.Either
 import fi.kroon.vadret.data.location.exception.LocationFailure
 import fi.kroon.vadret.util.extension.asLeft
 import fi.kroon.vadret.util.extension.asRight
+import io.github.sphrak.either.Either
 import javax.inject.Inject
 import timber.log.Timber
 

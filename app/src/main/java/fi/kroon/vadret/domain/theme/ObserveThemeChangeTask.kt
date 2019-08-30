@@ -1,9 +1,9 @@
 package fi.kroon.vadret.domain.theme
 
 import fi.kroon.vadret.data.exception.Failure
-import fi.kroon.vadret.data.functional.Either
 import fi.kroon.vadret.data.theme.local.ThemeLocalKeyValueDataSource
 import fi.kroon.vadret.util.THEME_MODE_KEY
+import io.github.sphrak.either.Either
 import io.reactivex.Observable
 import javax.inject.Inject
 

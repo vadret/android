@@ -2,7 +2,6 @@ package fi.kroon.vadret.domain.theme
 
 import fi.kroon.vadret.R
 import fi.kroon.vadret.data.exception.Failure
-import fi.kroon.vadret.data.functional.Either
 import fi.kroon.vadret.data.theme.ThemeRepository
 import fi.kroon.vadret.data.theme.exception.ThemeFailure
 import fi.kroon.vadret.data.theme.model.Theme
@@ -11,6 +10,7 @@ import fi.kroon.vadret.util.THEME_MODE_KEY
 import fi.kroon.vadret.util.extension.asLeft
 import fi.kroon.vadret.util.extension.asRight
 import fi.kroon.vadret.util.extension.asSingle
+import io.github.sphrak.either.Either
 import io.reactivex.Single
 import org.junit.Before
 import org.junit.Test

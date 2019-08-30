@@ -16,7 +16,6 @@ import androidx.annotation.LayoutRes
 import fi.kroon.vadret.BaseApplication.Companion.appComponent
 import fi.kroon.vadret.R
 import fi.kroon.vadret.data.exception.Failure
-import fi.kroon.vadret.data.functional.Either
 import fi.kroon.vadret.presentation.weatherforecastwidget.medium.provider.di.WeatherForecastMediumComponent
 import fi.kroon.vadret.presentation.weatherforecastwidget.medium.provider.di.WeatherForecastMediumFeatureScope
 import fi.kroon.vadret.presentation.weatherforecastwidget.medium.provider.model.WeatherForecastMediumModel
@@ -28,6 +27,7 @@ import fi.kroon.vadret.util.MPS_SUFFIX
 import fi.kroon.vadret.util.common.WeatherForecastUtil.getWsymb2IconResourceId
 import fi.kroon.vadret.util.common.WeatherForecastUtil.getWsymb2ResourceId
 import fi.kroon.vadret.util.extension.toObservable
+import io.github.sphrak.either.Either
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo

@@ -4,7 +4,6 @@ import fi.kroon.vadret.R
 import fi.kroon.vadret.data.district.model.DistrictOptionEntity
 import fi.kroon.vadret.data.exception.Failure
 import fi.kroon.vadret.data.feedsource.model.FeedSourceOptionEntity
-import fi.kroon.vadret.data.functional.Either
 import fi.kroon.vadret.domain.districtpreference.UpdateDistrictPreferenceListTask
 import fi.kroon.vadret.domain.feedsourcepreference.UpdateFeedSourcePreferenceListTask
 import fi.kroon.vadret.domain.warningfilter.GetWarningFilterOptionListService
@@ -12,6 +11,7 @@ import fi.kroon.vadret.presentation.shared.IViewModel
 import fi.kroon.vadret.presentation.warning.filter.di.WarningFilterScope
 import fi.kroon.vadret.presentation.warning.filter.model.IFilterable
 import fi.kroon.vadret.util.extension.asObservable
+import io.github.sphrak.either.Either
 import io.reactivex.Observable
 import io.reactivex.ObservableTransformer
 import javax.inject.Inject

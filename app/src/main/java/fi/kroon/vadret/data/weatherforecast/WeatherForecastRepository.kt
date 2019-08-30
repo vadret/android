@@ -3,7 +3,6 @@ package fi.kroon.vadret.data.weatherforecast
 import fi.kroon.vadret.data.exception.ErrorHandler
 import fi.kroon.vadret.data.exception.Failure
 import fi.kroon.vadret.data.exception.IErrorHandler
-import fi.kroon.vadret.data.functional.Either
 import fi.kroon.vadret.data.weatherforecast.exception.WeatherForecastFailure
 import fi.kroon.vadret.data.weatherforecast.model.Weather
 import fi.kroon.vadret.data.weatherforecast.model.WeatherOut
@@ -20,6 +19,7 @@ import fi.kroon.vadret.util.HTTP_504_GATEWAY_TIMEOUT
 import fi.kroon.vadret.util.NetworkHandler
 import fi.kroon.vadret.util.extension.asLeft
 import fi.kroon.vadret.util.extension.toCoordinate
+import io.github.sphrak.either.Either
 import io.reactivex.Single
 import javax.inject.Inject
 

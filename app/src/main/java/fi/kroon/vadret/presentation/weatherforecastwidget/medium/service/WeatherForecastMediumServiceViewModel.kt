@@ -1,13 +1,14 @@
 package fi.kroon.vadret.presentation.weatherforecastwidget.medium.service
 
 import fi.kroon.vadret.data.exception.Failure
-import fi.kroon.vadret.data.functional.Either
 import fi.kroon.vadret.domain.weatherforecastwidget.medium.GetWidgetForecastFormatKeyValueTask
 import fi.kroon.vadret.domain.weatherforecastwidget.shared.GetWidgetLastCheckedKeyValueTask
 import fi.kroon.vadret.domain.weatherforecastwidget.shared.GetWidgetWeatherForecastService
+import fi.kroon.vadret.domain.weatherforecastwidget.shared.SetWidgetLastCheckedKeyValueTask
 import fi.kroon.vadret.presentation.weatherforecastwidget.medium.service.di.WeatherForecastMediumServiceScope
 import fi.kroon.vadret.presentation.weatherforecastwidget.medium.service.model.WeatherForecastMediumServiceModel
 import fi.kroon.vadret.util.extension.asObservable
+import io.github.sphrak.either.Either
 import io.reactivex.Observable
 import io.reactivex.ObservableTransformer
 import javax.inject.Inject
@@ -18,6 +19,7 @@ class WeatherForecastMediumServiceViewModel @Inject constructor(
     private var state: WeatherForecastMediumServiceView.State,
     private val getWidgetWeatherForecastService: GetWidgetWeatherForecastService,
     private val getWidgetLastCheckedKeyValueTask: GetWidgetLastCheckedKeyValueTask,
+    private val setWidgetLastCheckedKeyValueTask: SetWidgetLastCheckedKeyValueTask,
     private val getWidgetForecastFormatKeyValueTask: GetWidgetForecastFormatKeyValueTask
 ) {
     operator fun invoke(): ObservableTransformer<WeatherForecastMediumServiceView.Event,
@@ -53,7 +55,7 @@ class WeatherForecastMediumServiceViewModel @Inject constructor(
 
                         Timber.d("ON INITIALISED EVENT: $appWidgetId")
                         getWidgetForecastFormatKeyValueTask(appWidgetId = appWidgetId)
-                            .flatMapObservable { result ->
+                            .flatMapObservable { result: Either<Failure, Int> ->
                                 result.either(
                                     { failure: Failure ->
                                         Timber.e("Failure: $failure")
@@ -82,13 +84,31 @@ class WeatherForecastMediumServiceViewModel @Inject constructor(
                                                         .UpdateWeatherForecastList(weatherForecastMediumServiceModelList = weatherForecastMediumServiceModelList)
 
                                                     state = state.copy(renderEvent = renderEvent)
-                                                    state.asObservable()
+                                                    updateLastChecked(
+                                                        appWidgetId = appWidgetId,
+                                                        timeStamp = data.timeStamp
+                                                    )
                                                 }
                                             )
                                         }
                                     }
                                 )
                             }
+                    }
+                )
+            }
+
+    private fun updateLastChecked(appWidgetId: Int, timeStamp: Long): Observable<WeatherForecastMediumServiceView.State> =
+        setWidgetLastCheckedKeyValueTask(appWidgetId = appWidgetId, value = timeStamp)
+            .flatMapObservable { result: Either<Failure, Unit> ->
+                result.either(
+                    { failure: Failure ->
+                        Timber.e("Failure: $failure")
+                        state.asObservable()
+                    },
+                    {
+                        Timber.d("LAST CHECKED UPDATED")
+                        state.asObservable()
                     }
                 )
             }

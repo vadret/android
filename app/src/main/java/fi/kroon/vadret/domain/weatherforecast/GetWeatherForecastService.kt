@@ -1,10 +1,6 @@
 package fi.kroon.vadret.domain.weatherforecast
 
 import fi.kroon.vadret.data.exception.Failure
-import fi.kroon.vadret.data.functional.Either
-import fi.kroon.vadret.data.functional.flatMap
-import fi.kroon.vadret.data.functional.flatMapSingle
-import fi.kroon.vadret.data.functional.map
 import fi.kroon.vadret.data.location.model.Location
 import fi.kroon.vadret.data.nominatim.model.NominatimReverseOut
 import fi.kroon.vadret.data.weatherforecast.model.Weather
@@ -14,6 +10,10 @@ import fi.kroon.vadret.presentation.weatherforecast.WeatherForecastMapper
 import fi.kroon.vadret.presentation.weatherforecast.model.IWeatherForecastModel
 import fi.kroon.vadret.util.FIVE_MINUTES_IN_MILLIS
 import fi.kroon.vadret.util.extension.asSingle
+import fi.kroon.vadret.util.extension.flatMapSingle
+import io.github.sphrak.either.Either
+import io.github.sphrak.either.flatMap
+import io.github.sphrak.either.map
 import io.reactivex.Single
 import io.reactivex.rxkotlin.zipWith
 import javax.inject.Inject

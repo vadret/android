@@ -2,7 +2,6 @@ package fi.kroon.vadret.presentation.weatherforecastwidget.medium.provider
 
 import fi.kroon.vadret.R
 import fi.kroon.vadret.data.exception.Failure
-import fi.kroon.vadret.data.functional.Either
 import fi.kroon.vadret.domain.weatherforecastwidget.medium.GetWidgetForecastFormatKeyValueTask
 import fi.kroon.vadret.domain.weatherforecastwidget.shared.GetWidgetInitialisedKeyValueTask
 import fi.kroon.vadret.domain.weatherforecastwidget.shared.GetWidgetLastCheckedKeyValueTask
@@ -17,6 +16,7 @@ import fi.kroon.vadret.util.DARK_THEME
 import fi.kroon.vadret.util.LIGHT_THEME_NO_BACKGROUND
 import fi.kroon.vadret.util.extension.asObservable
 import fi.kroon.vadret.util.extension.asRight
+import io.github.sphrak.either.Either
 import io.reactivex.Observable
 import io.reactivex.ObservableTransformer
 import io.reactivex.Single
@@ -83,40 +83,26 @@ class WeatherForecastMediumViewModel @Inject constructor(
             }
 
     private fun onWidgetInitialisedEvent(appWidgetId: Int): Observable<WeatherForecastMediumView.State> =
-        getWidgetLastCheckedKeyValueTask(appWidgetId)
-            .flatMapObservable { result: Either<Failure, Long> ->
+        getWidgetInitialisedKeyValueTask(appWidgetId)
+            .flatMapObservable { result: Either<Failure, Boolean> ->
                 result.either(
                     { failure: Failure ->
                         Timber.e("Failure: $failure")
+                        state = state.copy(renderEvent = WeatherForecastMediumView.RenderEvent.None)
                         state.asObservable()
                     },
-                    { lastChecked: Long ->
-                        state = state.copy(timeStamp = lastChecked)
-                        getInitialisedState(appWidgetId)
+                    { isInitialised: Boolean ->
+                        when (isInitialised) {
+                            true -> {
+                                getStepSize(appWidgetId)
+                            }
+                            false -> {
+                                doNothing()
+                            }
+                        }
                     }
                 )
             }
-
-    private fun getInitialisedState(appWidgetId: Int) = getWidgetInitialisedKeyValueTask(appWidgetId)
-        .flatMapObservable { result: Either<Failure, Boolean> ->
-            result.either(
-                { failure: Failure ->
-                    Timber.e("Failure: $failure")
-                    state = state.copy(renderEvent = WeatherForecastMediumView.RenderEvent.None)
-                    state.asObservable()
-                },
-                { isInitialised: Boolean ->
-                    when (isInitialised) {
-                        true -> {
-                            getStepSize(appWidgetId)
-                        }
-                        false -> {
-                            doNothing()
-                        }
-                    }
-                }
-            )
-        }
 
     private fun getStepSize(appWidgetId: Int) =
         getWidgetForecastFormatKeyValueTask(appWidgetId)
@@ -141,48 +127,59 @@ class WeatherForecastMediumViewModel @Inject constructor(
     }
 
     private fun getWeatherForecast(appWidgetId: Int): Observable<WeatherForecastMediumView.State> =
-        getWidgetWeatherForecastService(
-            timeStamp = state.timeStamp,
-            forceNet = state.forceNet,
-            appWidgetId = appWidgetId
-        ).flatMapObservable { result: Either<Failure, GetWidgetWeatherForecastService.Data> ->
-            result.either(
-                { failure: Failure ->
-                    Timber.e("$failure")
-                    state = state.copy(renderEvent = WeatherForecastMediumView.RenderEvent.None)
-                    state.asObservable()
-                },
-                { data: GetWidgetWeatherForecastService.Data ->
-
-                    val weatherForecastModelList: List<WeatherForecastMediumModel> = WeatherForecastMediumMapper(
-                        data.weather!!.timeSeries!!,
-                        data.localityName
-                    )
-
-                    val renderEvent: WeatherForecastMediumView.RenderEvent = WeatherForecastMediumView.RenderEvent.UpdateAppWidget(
-                        weather = weatherForecastModelList.first()
-                    )
-
-                    setWidgetLastCheckedKeyValueTask(appWidgetId = appWidgetId, value = data.timeStamp)
-                        .flatMapObservable { result ->
+        getWidgetLastCheckedKeyValueTask(appWidgetId = appWidgetId)
+            .flatMapObservable { result: Either<Failure, Long> ->
+                result.either(
+                    { failure: Failure ->
+                        Timber.e("Failure: $failure")
+                        state = state.copy(renderEvent = WeatherForecastMediumView.RenderEvent.None)
+                        state.asObservable()
+                    },
+                    { timeStamp: Long ->
+                        getWidgetWeatherForecastService(
+                            timeStamp = timeStamp,
+                            forceNet = state.forceNet,
+                            appWidgetId = appWidgetId
+                        ).flatMapObservable { result: Either<Failure, GetWidgetWeatherForecastService.Data> ->
                             result.either(
                                 { failure: Failure ->
-                                    Timber.e("Failure: $failure")
+                                    Timber.e("$failure")
+                                    state = state.copy(renderEvent = WeatherForecastMediumView.RenderEvent.None)
                                     state.asObservable()
                                 },
-                                {
-                                    state = state.copy(
-                                        renderEvent = renderEvent,
-                                        appWidgetId = appWidgetId,
-                                        timeStamp = data.timeStamp
+                                { data: GetWidgetWeatherForecastService.Data ->
+
+                                    val weatherForecastModelList: List<WeatherForecastMediumModel> = WeatherForecastMediumMapper(
+                                        data.weather!!.timeSeries!!,
+                                        data.localityName
                                     )
-                                    state.asObservable()
+
+                                    val renderEvent: WeatherForecastMediumView.RenderEvent = WeatherForecastMediumView.RenderEvent.UpdateAppWidget(
+                                        weather = weatherForecastModelList.first()
+                                    )
+
+                                    setWidgetLastCheckedKeyValueTask(appWidgetId = appWidgetId, value = data.timeStamp)
+                                        .flatMapObservable { result ->
+                                            result.either(
+                                                { failure: Failure ->
+                                                    Timber.e("Failure: $failure")
+                                                    state.asObservable()
+                                                },
+                                                {
+                                                    state = state.copy(
+                                                        renderEvent = renderEvent,
+                                                        appWidgetId = appWidgetId
+                                                    )
+                                                    state.asObservable()
+                                                }
+                                            )
+                                        }
                                 }
                             )
                         }
-                }
-            )
-        }
+                    }
+                )
+            }
 
     private fun onWidgetUpdatedEvent(): Observable<WeatherForecastMediumView.State> {
         state = state.copy(renderEvent = WeatherForecastMediumView.RenderEvent.None)

@@ -16,9 +16,8 @@ object WeatherForecastMediumView {
         val text: String = String.empty(),
         val forceNet: Boolean = false,
         val stepSize: Int = 0,
-        val timeStamp: Long = System.currentTimeMillis(),
         val appWidgetId: Int = AppWidgetManager.INVALID_APPWIDGET_ID,
-        val renderEvent: RenderEvent = WeatherForecastMediumView.RenderEvent.None
+        val renderEvent: RenderEvent = RenderEvent.None
     )
 
     sealed class RenderEvent {

@@ -1,10 +1,6 @@
 package fi.kroon.vadret.domain.weatherforecastwidget.shared
 
 import fi.kroon.vadret.data.exception.Failure
-import fi.kroon.vadret.data.functional.Either
-import fi.kroon.vadret.data.functional.flatMap
-import fi.kroon.vadret.data.functional.flatMapSingle
-import fi.kroon.vadret.data.functional.map
 import fi.kroon.vadret.data.location.model.Location
 import fi.kroon.vadret.data.nominatim.model.NominatimReverseOut
 import fi.kroon.vadret.data.weatherforecast.model.Weather
@@ -19,6 +15,10 @@ import fi.kroon.vadret.domain.weatherforecast.SetWeatherForecastDiskCacheTask
 import fi.kroon.vadret.domain.weatherforecast.SetWeatherForecastMemoryCacheTask
 import fi.kroon.vadret.util.FIVE_MINUTES_IN_MILLIS
 import fi.kroon.vadret.util.extension.asSingle
+import fi.kroon.vadret.util.extension.flatMapSingle
+import io.github.sphrak.either.Either
+import io.github.sphrak.either.flatMap
+import io.github.sphrak.either.map
 import io.reactivex.Single
 import io.reactivex.rxkotlin.zipWith
 import javax.inject.Inject
@@ -156,7 +156,7 @@ class GetWidgetWeatherForecastService @Inject constructor(
         with(data) {
             when {
                 forceNet || (currentTimeMillis > (timeStamp + FIVE_MINUTES_IN_MILLIS)) -> {
-                    Timber.d("NETWORK RESPONSE: $data")
+                    Timber.d("ONLINE RESPONSE: $data")
                     getWeatherForecastTask(data.weatherOut!!)
                         .map { either: Either<Failure, Weather> ->
                             either.map { weather: Weather ->
@@ -172,7 +172,7 @@ class GetWidgetWeatherForecastService @Inject constructor(
                      */
                     Timber.d("OFFLINE RESPONSE: $data")
                     Single.merge(
-                        getWeatherForecastMemoryCacheTask(cacheKey + appWidgetId)
+                        getWeatherForecastMemoryCacheTask(cacheKey = cacheKey + appWidgetId)
                             .map { either: Either<Failure, Weather> ->
                                 either.map { weather ->
                                     data.copy(weather = weather)
@@ -203,9 +203,9 @@ class GetWidgetWeatherForecastService @Inject constructor(
                                 .map { either: Either<Failure, Weather> ->
                                     Timber.d("CACHE EMPTY. NETWORK REQUEST")
                                     either.map { weather: Weather ->
-                                        data.copy(weather = weather, timeStamp = currentTimeMillis)
+                                        data.copy(weather = weather)
                                     }
-                                }.flatMap { data ->
+                                }.flatMap { data: Either<Failure, Data> ->
                                     updateCache(data)
                                 }.toFlowable()
                         ).singleOrError()

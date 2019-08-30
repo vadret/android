@@ -2,10 +2,10 @@ package fi.kroon.vadret.data.weatherforecast.cache
 
 import fi.kroon.vadret.data.common.BaseCache
 import fi.kroon.vadret.data.exception.Failure
-import fi.kroon.vadret.data.functional.Either
 import fi.kroon.vadret.data.weatherforecast.model.Weather
 import fi.kroon.vadret.util.extension.asLeft
 import fi.kroon.vadret.util.extension.asRight
+import io.github.sphrak.either.Either
 import io.reactivex.Single
 import javax.inject.Inject
 import okhttp3.internal.cache.DiskLruCache

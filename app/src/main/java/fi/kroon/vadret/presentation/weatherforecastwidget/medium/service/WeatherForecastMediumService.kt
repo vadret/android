@@ -103,6 +103,7 @@ class WeatherForecastMediumService : RemoteViewsService() {
 
         override fun getViewAt(position: Int): RemoteViews {
 
+            Timber.d("GET VIEW AT: $position")
             val model: WeatherForecastMediumServiceModel = list[position]
             val views = RemoteViews(context.packageName, layoutId)
 
@@ -186,6 +187,7 @@ class WeatherForecastMediumService : RemoteViewsService() {
 
         private fun updateWeatherForecastList(weatherForecastMediumServiceModelList: List<WeatherForecastMediumServiceModel>) {
             Timber.d("UPDATE WEATHER FORECAST LIST: ${weatherForecastMediumServiceModelList.size}")
+            Timber.d("RECEIVED WEATHER: $weatherForecastMediumServiceModelList")
             list.clear()
             list.addAll(weatherForecastMediumServiceModelList)
         }

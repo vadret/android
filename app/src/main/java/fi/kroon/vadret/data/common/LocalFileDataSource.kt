@@ -5,8 +5,8 @@ import androidx.annotation.RawRes
 import fi.kroon.vadret.data.autocomplete.model.AutoCompleteItem
 import fi.kroon.vadret.data.common.exception.LocalFileReaderFailure
 import fi.kroon.vadret.data.exception.Failure
-import fi.kroon.vadret.data.functional.Either
 import fi.kroon.vadret.util.extension.asLeft
+import io.github.sphrak.either.Either
 import io.reactivex.Single
 import java.io.InputStream
 import java.nio.charset.Charset

@@ -1,11 +1,11 @@
 package fi.kroon.vadret.domain.weatherforecastwidget.shared
 
 import fi.kroon.vadret.data.exception.Failure
-import fi.kroon.vadret.data.functional.Either
-import fi.kroon.vadret.data.functional.flatMap
 import fi.kroon.vadret.data.weatherforecast.model.WeatherOut
 import fi.kroon.vadret.util.extension.asRight
 import fi.kroon.vadret.util.extension.toCoordinate
+import io.github.sphrak.either.Either
+import io.github.sphrak.either.flatMap
 import io.reactivex.Single
 import io.reactivex.rxkotlin.Singles
 import javax.inject.Inject

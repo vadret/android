@@ -4,12 +4,12 @@ import android.location.LocationManager
 import android.location.LocationManager.GPS_PROVIDER
 import android.location.LocationManager.NETWORK_PROVIDER
 import fi.kroon.vadret.data.exception.Failure
-import fi.kroon.vadret.data.functional.Either
 import fi.kroon.vadret.data.location.exception.LocationFailure
 import fi.kroon.vadret.data.location.local.LocationLocalDataSource
 import fi.kroon.vadret.data.location.model.Location
 import fi.kroon.vadret.util.DEFAULT_LATITUDE
 import fi.kroon.vadret.util.DEFAULT_LONGITUDE
+import io.github.sphrak.either.Either
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith

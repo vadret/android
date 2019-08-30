@@ -1,6 +1,6 @@
 package fi.kroon.vadret.data.exception
 
-import fi.kroon.vadret.data.functional.Either
+import io.github.sphrak.either.Either
 import io.reactivex.Single
 
 interface IErrorHandler {
