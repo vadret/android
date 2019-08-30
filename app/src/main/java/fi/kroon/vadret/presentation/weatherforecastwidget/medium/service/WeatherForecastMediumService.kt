@@ -160,6 +160,8 @@ class WeatherForecastMediumService : RemoteViewsService() {
                 Observable.mergeArray(
                     onInitialisedSubject
                         .toObservable()
+                ).observeOn(
+                    scheduler.io()
                 ).compose(
                     viewModel()
                 ).observeOn(
