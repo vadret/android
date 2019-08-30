@@ -156,7 +156,7 @@ class GetWidgetWeatherForecastService @Inject constructor(
         with(data) {
             when {
                 forceNet || (currentTimeMillis > (timeStamp + FIVE_MINUTES_IN_MILLIS)) -> {
-                    Timber.d("NETWORK RESPONSE: $data")
+                    Timber.d("ONLINE RESPONSE: $data")
                     getWeatherForecastTask(data.weatherOut!!)
                         .map { either: Either<Failure, Weather> ->
                             either.map { weather: Weather ->
@@ -172,7 +172,7 @@ class GetWidgetWeatherForecastService @Inject constructor(
                      */
                     Timber.d("OFFLINE RESPONSE: $data")
                     Single.merge(
-                        getWeatherForecastMemoryCacheTask(cacheKey + appWidgetId)
+                        getWeatherForecastMemoryCacheTask(cacheKey = cacheKey + appWidgetId)
                             .map { either: Either<Failure, Weather> ->
                                 either.map { weather ->
                                     data.copy(weather = weather)
@@ -203,9 +203,9 @@ class GetWidgetWeatherForecastService @Inject constructor(
                                 .map { either: Either<Failure, Weather> ->
                                     Timber.d("CACHE EMPTY. NETWORK REQUEST")
                                     either.map { weather: Weather ->
-                                        data.copy(weather = weather, timeStamp = currentTimeMillis)
+                                        data.copy(weather = weather)
                                     }
-                                }.flatMap { data ->
+                                }.flatMap { data: Either<Failure, Data> ->
                                     updateCache(data)
                                 }.toFlowable()
                         ).singleOrError()
