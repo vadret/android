@@ -142,7 +142,7 @@ configurations {
 
 dependencies {
 
-    def APPCOMPAT_VERSION = "1.1.0-rc01"
+    def APPCOMPAT_VERSION = "1.1.0"
     def ASSERTJ_VERSION = "3.13.2"
     def COMMONS_CSV_VERSION = "1.7"
     def CONSTRAINT_LAYOUT_VERSION = "1.1.3"
