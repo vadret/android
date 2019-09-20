@@ -149,13 +149,6 @@ class WeatherForecastMediumService : RemoteViewsService() {
                 .weatherForecastMediumServiceComponentBuilder()
                 .build()
 
-        /**
-         *  This must be executed synchronously
-         *  otherwise by the time
-         *  [list.size] is evaluated it will
-         *  be zero and no further methods
-         *  are invoked.
-         */
         private fun setupEvents() {
             if (subscriptions.size() == 0) {
                 Observable.mergeArray(
