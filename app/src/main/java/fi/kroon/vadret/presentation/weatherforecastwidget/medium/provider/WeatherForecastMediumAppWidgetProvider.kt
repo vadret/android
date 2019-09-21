@@ -33,6 +33,8 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.subjects.PublishSubject
 import javax.inject.Inject
+import org.threeten.bp.LocalDateTime
+import org.threeten.bp.format.DateTimeFormatter
 import timber.log.Timber
 
 @WeatherForecastMediumFeatureScope
@@ -82,6 +84,10 @@ class WeatherForecastMediumAppWidgetProvider : BaseAppWidgetProvider() {
 
     private val serviceIntent: Intent by lazy {
         Intent(context, WeatherForecastMediumService::class.java)
+    }
+
+    private val dateTimeFormat: DateTimeFormatter by lazy {
+        DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
     }
 
     private val pendingIntent: PendingIntent by lazy {
@@ -210,12 +216,6 @@ class WeatherForecastMediumAppWidgetProvider : BaseAppWidgetProvider() {
 
             remoteViews.setRemoteAdapter(R.id.weatherForecastMediumGridView, serviceIntent)
 
-            appWidgetManager
-                .notifyAppWidgetViewDataChanged(
-                    appWidgetId,
-                    R.id.weatherForecastMediumGridView
-                )
-
             weather.windSpeed?.let {
                 remoteViews.setTextViewText(
                     R.id.weatherMediumWindSpeed,
@@ -270,6 +270,15 @@ class WeatherForecastMediumAppWidgetProvider : BaseAppWidgetProvider() {
                 )
             }
 
+            val datetimeStamp: LocalDateTime = LocalDateTime.now()
+
+            remoteViews.setTextViewText(
+                R.id.weatherMediumUpdatedAt,
+                datetimeStamp
+                    .format(dateTimeFormat)
+                    .toString()
+            )
+
             weather.feelsLikeTemperature?.let {
                 remoteViews.setTextViewText(R.id.weatherMediumFeelsLikeTemperature, feelsLikeTemperature)
             } ?: remoteViews.setViewVisibility(R.id.weatherMediumFeelsLikeTemperature, View.GONE)
@@ -277,6 +286,7 @@ class WeatherForecastMediumAppWidgetProvider : BaseAppWidgetProvider() {
             remoteViews.setTextViewText(R.id.weatherMediumTemperature, temperature)
             remoteViews.setTextViewText(R.id.weatherMediumLocalityName, localityName)
         }
+
         appWidgetManager.updateAppWidget(appWidgetId, remoteViews)
     }
 

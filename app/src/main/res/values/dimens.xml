@@ -65,6 +65,7 @@
     <dimen name="weather_forecast_small_splash_icons_height">14dp</dimen>
     <dimen name="weather_forecast_small_icon_margin_end">4dp</dimen>
     <dimen name="weather_forecast_small_small_text">14sp</dimen>
+    <dimen name="weather_forecast_small_tiny_text">10sp</dimen>
     <dimen name="weather_forecast_small_temperature_text_size">14sp</dimen>
     <dimen name="weather_forecast_small_item_spacing">8dp</dimen>
     <dimen name="weather_forecast_small_item_divider_width">1dp</dimen>
@@ -88,6 +89,7 @@
     <dimen name="weather_forecast_medium_splash_icons_height">14dp</dimen>
     <dimen name="weather_forecast_medium_icon_margin_end">4dp</dimen>
     <dimen name="weather_forecast_medium_padding">4dp</dimen>
+    <dimen name="weather_forecast_medium_last_updated_spacing">2dp</dimen>
 
     <!-- Weather Forecast Empty Layout -->
     <dimen name="weather_forecast_empty_margin_top">4dp</dimen>

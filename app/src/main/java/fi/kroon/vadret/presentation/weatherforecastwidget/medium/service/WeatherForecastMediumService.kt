@@ -38,6 +38,9 @@ class WeatherForecastMediumService : RemoteViewsService() {
     ) : RemoteViewsFactory {
 
         @Inject
+        lateinit var appWidgetManager: AppWidgetManager
+
+        @Inject
         lateinit var viewModel: WeatherForecastMediumServiceViewModel
 
         @Inject
@@ -89,12 +92,7 @@ class WeatherForecastMediumService : RemoteViewsService() {
 
         override fun onDataSetChanged() {
             Timber.d("ON DATASET CHANGED")
-            onInitialisedSubject
-                .onNext(
-                    WeatherForecastMediumServiceView
-                        .Event
-                        .OnInitialised(appWidgetId)
-                )
+            // no-op
         }
 
         override fun getLoadingView(): RemoteViews? = null
@@ -154,7 +152,7 @@ class WeatherForecastMediumService : RemoteViewsService() {
                 Observable.mergeArray(
                     onInitialisedSubject
                         .toObservable()
-                ).subscribeOn(
+                ).observeOn(
                     scheduler.io()
                 ).compose(
                     viewModel()
@@ -185,6 +183,7 @@ class WeatherForecastMediumService : RemoteViewsService() {
             Timber.d("RECEIVED WEATHER: $weatherForecastMediumServiceModelList")
             list.clear()
             list.addAll(weatherForecastMediumServiceModelList)
+            appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetId, R.id.weatherForecastMediumGridView)
         }
     }
 }

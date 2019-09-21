@@ -172,4 +172,8 @@
     <color name="widget_background_light">#1AFFFFFF</color>
     <color name="widget_background_dark">#1A000000</color>
 
+    <!-- Dark/Light Widget Last Updated Text Color -->
+    <color name="widget_last_updated_text_light">#F4F4F4</color>
+    <color name="widget_last_updated_text_dark">#F4F4F4</color>
+
 </resources>

@@ -126,6 +126,14 @@
         android:textColor="@android:color/white"
         android:textSize="@dimen/weather_forecast_small_small_text" />
 
+    <TextView
+        android:id="@+id/weatherMediumUpdatedAt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/weather_forecast_medium_last_updated_spacing"
+        android:textColor="@color/widget_last_updated_text_light"
+        android:textSize="@dimen/weather_forecast_small_tiny_text" />
+
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

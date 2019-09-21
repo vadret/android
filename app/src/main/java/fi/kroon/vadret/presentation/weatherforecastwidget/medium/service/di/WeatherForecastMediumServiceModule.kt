@@ -1,5 +1,7 @@
 package fi.kroon.vadret.presentation.weatherforecastwidget.medium.service.di
 
+import android.appwidget.AppWidgetManager
+import android.content.Context
 import dagger.Module
 import dagger.Provides
 import fi.kroon.vadret.presentation.weatherforecastwidget.medium.service.WeatherForecastMediumServiceView
@@ -24,4 +26,11 @@ object WeatherForecastMediumServiceModule {
     @JvmStatic
     @WeatherForecastMediumServiceScope
     fun provideCompositeDisposable(): CompositeDisposable = CompositeDisposable()
+
+    @Provides
+    @JvmStatic
+    @WeatherForecastMediumServiceScope
+    fun provideAppWidgetManager(context: Context): AppWidgetManager =
+        AppWidgetManager
+            .getInstance(context)
 }
