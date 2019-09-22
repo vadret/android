@@ -24,41 +24,14 @@ import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.subjects.PublishSubject
-import javax.inject.Inject
 import kotlinx.android.synthetic.main.warning_filter_dialog_fragment.*
 import timber.log.Timber
 
 @WarningFilterScope
 class WarningFilterDialogFragment : BottomSheetDialogFragment() {
 
-    @Inject
-    lateinit var viewModel: WarningFilterViewModel
-
-    @Inject
-    lateinit var onFeedSourceItemSelectedSubject: PublishSubject<FeedSourceOptionEntity>
-
-    @Inject
-    lateinit var onDistrictItemSelectedSubject: PublishSubject<DistrictOptionEntity>
-
-    @Inject
-    lateinit var onViewInitialisedSubject: PublishSubject<WarningFilterView.Event.OnViewInitialised>
-
-    @Inject
-    lateinit var onFilterOptionsDisplayedSubject: PublishSubject<WarningFilterView.Event.OnFilterOptionsDisplayed>
-
-    @Inject
-    lateinit var warningFilterAdapter: WarningFilterAdapter
-
-    @Inject
-    lateinit var subscriptions: CompositeDisposable
-
-    @Inject
-    lateinit var scheduler: Scheduler
-
     private var isConfigChangeOrProcessDeath = false
-
     private var stateParcel: WarningFilterView.StateParcel? = null
-
     private var bundle: Bundle? = null
 
     private companion object {
@@ -76,6 +49,38 @@ class WarningFilterDialogFragment : BottomSheetDialogFragment() {
         appComponent()
             .warningFilterComponentBuilder()
             .build()
+    }
+
+    private val viewModel: WarningFilterViewModel by lazy {
+        cmp.provideWarningFilterViewModel()
+    }
+
+    private val onFeedSourceItemSelectedSubject: PublishSubject<FeedSourceOptionEntity> by lazy {
+        cmp.provideOnFeedSourceItemSelectedSubject()
+    }
+
+    private val onDistrictItemSelectedSubject: PublishSubject<DistrictOptionEntity> by lazy {
+        cmp.provideOnDistrictItemSelectedSubject()
+    }
+
+    private val onViewInitialisedSubject: PublishSubject<WarningFilterView.Event.OnViewInitialised> by lazy {
+        cmp.provideOnViewInitialised()
+    }
+
+    private val onFilterOptionsDisplayedSubject: PublishSubject<WarningFilterView.Event.OnFilterOptionsDisplayed> by lazy {
+        cmp.provideOnFilterOptionsDisplayed()
+    }
+
+    private val warningFilterAdapter: WarningFilterAdapter by lazy {
+        cmp.provideWarningFilterAdapter()
+    }
+
+    private val subscriptions: CompositeDisposable by lazy {
+        cmp.provideCompositeDisposable()
+    }
+
+    private val scheduler: Scheduler by lazy {
+        cmp.provideScheduler()
     }
 
     override fun onAttach(context: Context) {

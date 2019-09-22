@@ -37,23 +37,7 @@ class WeatherForecastMediumService : RemoteViewsService() {
         private val intent: Intent?
     ) : RemoteViewsFactory {
 
-        @Inject
-        lateinit var appWidgetManager: AppWidgetManager
-
-        @Inject
-        lateinit var viewModel: WeatherForecastMediumServiceViewModel
-
-        @Inject
-        lateinit var onInitialisedSubject: PublishSubject<WeatherForecastMediumServiceView.Event.OnInitialised>
-
-        @Inject
-        lateinit var subscriptions: CompositeDisposable
-
-        @Inject
-        lateinit var cmp: WeatherForecastMediumServiceComponent
-
-        @Inject
-        lateinit var scheduler: Scheduler
+        private lateinit var cmp: WeatherForecastMediumServiceComponent
 
         private var injected: Boolean = false
 
@@ -63,6 +47,26 @@ class WeatherForecastMediumService : RemoteViewsService() {
 
         private val timeOfDayFormat: DateTimeFormatter =
             DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT)
+
+        private val appWidgetManager: AppWidgetManager by lazy {
+            cmp.provideAppWidgetManager()
+        }
+
+        private val viewModel: WeatherForecastMediumServiceViewModel by lazy {
+            cmp.provideWeatherForecastMediumServiceViewModel()
+        }
+
+        private val onInitialisedSubject: PublishSubject<WeatherForecastMediumServiceView.Event.OnInitialised> by lazy {
+            cmp.provideOnInitialised()
+        }
+
+        private val subscriptions: CompositeDisposable by lazy {
+            cmp.provideCompositeDisposable()
+        }
+
+        private val scheduler: Scheduler by lazy {
+            cmp.provideScheduler()
+        }
 
         /**
          *  If [appWidgetId] is not derived from
@@ -93,6 +97,7 @@ class WeatherForecastMediumService : RemoteViewsService() {
         override fun onDataSetChanged() {
             Timber.d("ON DATASET CHANGED")
             // no-op
+            Timber.d("NO OP")
         }
 
         override fun getLoadingView(): RemoteViews? = null

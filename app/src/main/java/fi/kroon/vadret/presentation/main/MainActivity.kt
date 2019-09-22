@@ -23,7 +23,6 @@ import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.subjects.PublishSubject
-import javax.inject.Inject
 import kotlinx.android.synthetic.main.activity_main.*
 import timber.log.Timber
 
@@ -32,22 +31,26 @@ class MainActivity : BaseActivity() {
 
     private var navController: LiveData<NavController>? = null
 
-    @Inject
-    lateinit var subscriptions: CompositeDisposable
-
-    @Inject
-    lateinit var scheduler: Scheduler
-
-    @Inject
-    lateinit var viewModel: MainActivityViewModel
-
-    @Inject
-    lateinit var onViewInitialisedSubject: PublishSubject<MainActivityView.Event.OnViewInitialised>
-
     private val cmp: MainActivityComponent by lazy {
         appComponent()
             .mainActivityComponentBuilder()
             .build()
+    }
+
+    private val subscriptions: CompositeDisposable by lazy {
+        cmp.provideCompositeDisposable()
+    }
+
+    private val scheduler: Scheduler by lazy {
+        cmp.provideScheduler()
+    }
+
+    private val viewModel: MainActivityViewModel by lazy {
+        cmp.provideMainActivityViewModel()
+    }
+
+    private val onViewInitialisedSubject: PublishSubject<MainActivityView.Event.OnViewInitialised> by lazy {
+        cmp.provideOnViewInitialised()
     }
 
     /**
@@ -106,7 +109,7 @@ class MainActivity : BaseActivity() {
         subscriptions.clear()
     }
 
-    override fun onRestoreInstanceState(savedInstanceState: Bundle?) {
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
         // Now that BottomNavigationBar has restored its instance state
         // and its selectedItemId, we can proceed with setting up the
