@@ -3,7 +3,6 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 apply plugin: "androidx.navigation.safeargs"
-apply plugin: 'jacoco'
 apply plugin: 'io.fabric'
 
 def static loadFromEnvironment(String key) {
@@ -129,11 +128,6 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
-}
-
-jacoco {
-    toolVersion = "0.8.4"
-    reportsDir = file("$buildDir/reports")
 }
 
 configurations {
@@ -270,46 +264,6 @@ tasks.register("ktlintFormat", JavaExec) {
     classpath = configurations.ktlint
     main = "com.pinterest.ktlint.Main"
     args "-F", "src/**/*.kt"
-}
-tasks.register("jacocoTestReport", JacocoReport) {
-
-    group = "Reporting"
-    description = "Generate Jacoco coverage reports for Debug build"
-
-    reports {
-        xml.enabled = true
-        html.enabled = true
-        html.destination file("${buildDir}/reports/jacoco/html")
-    }
-
-    // what to exclude from coverage report
-    // UI, "noise", generated classes, platform classes, etc.
-    def excludes = [
-            '**/R.class',
-            '**/R$*.class',
-            '**/*$ViewInjector*.*',
-            '**/BuildConfig.*',
-            '**/Manifest*.*',
-            '**/*Test*.*',
-            'android/**/*.*',
-            '**/*Fragment.*',
-            '**/*Activity.*'
-    ]
-    // generated classes
-    classDirectories = fileTree(
-            dir: "$buildDir/intermediates/classes/debug",
-            excludes: excludes
-    ) + fileTree(
-            dir: "$buildDir/tmp/kotlin-classes/debug",
-            excludes: excludes
-    )
-
-    // sources
-    sourceDirectories = files([
-            android.sourceSets.main.java.srcDirs,
-            "src/main/java"
-    ])
-    executionData = files("$buildDir/jacoco/testDebugUnitTest.exec")
 }
 
 repositories {
