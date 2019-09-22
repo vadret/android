@@ -22,7 +22,6 @@ import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.subjects.PublishSubject
-import javax.inject.Inject
 import kotlinx.android.synthetic.main.warning_display_fragment.*
 import timber.log.Timber
 
@@ -44,41 +43,57 @@ class WarningFragment : BaseFragment() {
             .build()
     }
 
-    @Inject
-    lateinit var viewModel: WarningViewModel
+    private val viewModel: WarningViewModel by lazy {
+        cmp.provideWarningViewModel()
+    }
 
-    @Inject
-    lateinit var onViewInitialisedSubject: PublishSubject<WarningView.Event.OnViewInitialised>
+    private val onViewInitialisedSubject: PublishSubject<WarningView.Event.OnViewInitialised> by lazy {
+        cmp.provideOnViewInitialised()
+    }
 
-    @Inject
-    lateinit var onProgressBarEffectStartedSubject: PublishSubject<WarningView.Event.OnProgressBarEffectStarted>
+    private val onProgressBarEffectStartedSubject: PublishSubject<WarningView.Event.OnProgressBarEffectStarted> by lazy {
+        cmp.provideOnProgressBarEffectStarted()
+    }
 
-    @Inject
-    lateinit var onProgressBarEffectStoppedSubject: PublishSubject<WarningView.Event.OnProgressBarEffectStopped>
+    private val onProgressBarEffectStoppedSubject: PublishSubject<WarningView.Event.OnProgressBarEffectStopped> by lazy {
+        cmp.provideOnProgressBarEffectStopped()
+    }
 
-    @Inject
-    lateinit var onSwipedToRefreshSubject: PublishSubject<WarningView.Event.OnSwipedToRefresh>
+    private val onSwipedToRefreshSubject: PublishSubject<WarningView.Event.OnSwipedToRefresh> by lazy {
+        cmp.provideOnSwipedToRefresh()
+    }
 
-    @Inject
-    lateinit var onWarningListDisplayedSubject: PublishSubject<WarningView.Event.OnWarningListDisplayed>
+    private val onWarningListDisplayedSubject: PublishSubject<WarningView.Event.OnWarningListDisplayed> by lazy {
+        cmp.provideOnWarningListDisplayed()
+    }
 
-    @Inject
-    lateinit var onScrollPositionRestoredSubject: PublishSubject<WarningView.Event.OnScrollPositionRestored>
+    private val onScrollPositionRestoredSubject: PublishSubject<WarningView.Event.OnScrollPositionRestored> by lazy {
+        cmp.provideOnScrollPositionRestored()
+    }
 
-    @Inject
-    lateinit var onStateParcelUpdatedSubject: PublishSubject<WarningView.Event.OnStateParcelUpdated>
+    private val onStateParcelUpdatedSubject: PublishSubject<WarningView.Event.OnStateParcelUpdated> by lazy {
+        cmp.provideOnStateParcelUpdated()
+    }
 
-    @Inject
-    lateinit var onFailureHandledSubject: PublishSubject<WarningView.Event.OnFailureHandled>
+    private val onFailureHandledSubject: PublishSubject<WarningView.Event.OnFailureHandled> by lazy {
+        cmp.provideOnFailureHandled()
+    }
 
-    @Inject
-    lateinit var onNoWarningsIssuedDisplayedSubject: PublishSubject<WarningView.Event.OnNoWarningsIssuedDisplayed>
+    private val onNoWarningsIssuedDisplayedSubject: PublishSubject<WarningView.Event.OnNoWarningsIssuedDisplayed> by lazy {
+        cmp.provideOnNoWarningsIssuedDisplayed()
+    }
 
-    @Inject
-    lateinit var warningAdapter: WarningAdapter
+    private val warningAdapter: WarningAdapter by lazy {
+        cmp.provideWarningAdapter()
+    }
 
-    @Inject
-    lateinit var subscriptions: CompositeDisposable
+    private val subscriptions: CompositeDisposable by lazy {
+        cmp.provideCompositeDisposable()
+    }
+
+    private val navController: NavController by lazy {
+        findNavController()
+    }
 
     override fun layoutId(): Int = R.layout.warning_display_fragment
 
@@ -96,10 +111,6 @@ class WarningFragment : BaseFragment() {
         Timber.d("ON ATTACH")
         cmp.inject(this)
         super.onAttach(context)
-    }
-
-    private val navController: NavController by lazy {
-        findNavController()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -40,7 +40,6 @@ import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.subjects.PublishSubject
-import javax.inject.Inject
 import kotlinx.android.synthetic.main.weather_forecast_widget_small_setup.*
 import permissions.dispatcher.NeedsPermission
 import permissions.dispatcher.OnNeverAskAgain
@@ -55,42 +54,6 @@ class WeatherForecastSmallSetup : BaseAppWidgetSetup() {
     private companion object {
         const val STATE_PARCEL_KEY = "WEATHER_FORECAST_APPWIDGET_SETUP_SMALL_KEY"
     }
-
-    @Inject
-    lateinit var viewModel: WeatherForecastSmallSetupViewModel
-
-    @Inject
-    lateinit var subscriptions: CompositeDisposable
-
-    @Inject
-    lateinit var onSetupInitialisedSubject: PublishSubject<WeatherForecastSmallSetupView.Event.OnSetupInitialised>
-
-    @Inject
-    lateinit var onConfigurationConfirmedSubject: PublishSubject<WeatherForecastSmallSetupView.Event.OnConfigurationConfirmed>
-
-    @Inject
-    lateinit var onCanceledClickedSubject: PublishSubject<WeatherForecastSmallSetupView.Event.OnCanceledClicked>
-
-    @Inject
-    lateinit var onLocalitySearchEnabledSubject: PublishSubject<WeatherForecastSmallSetupView.Event.OnLocalitySearchEnabled>
-
-    @Inject
-    lateinit var onLocalitySearchDisabledSubject: PublishSubject<WeatherForecastSmallSetupView.Event.OnLocalitySearchDisabled>
-
-    @Inject
-    lateinit var onAutoCompleteItemClickedSubject: PublishSubject<AutoCompleteItem>
-
-    @Inject
-    lateinit var onSearchViewDismissedSubject: PublishSubject<WeatherForecastSmallSetupView.Event.OnSearchViewDismissed>
-
-    @Inject
-    lateinit var onLocalityTextUpdatedSubject: PublishSubject<WeatherForecastSmallSetupView.Event.OnLocalityTextUpdated>
-
-    @Inject
-    lateinit var onLocationPermissionDeniedSubject: PublishSubject<WeatherForecastSmallSetupView.Event.OnLocationPermissionDenied>
-
-    @Inject
-    lateinit var autoCompleteAdapter: AutoCompleteAdapter
 
     private var stateParcel: WeatherForecastSmallSetupView.StateParcel? = null
 
@@ -111,7 +74,7 @@ class WeatherForecastSmallSetup : BaseAppWidgetSetup() {
         Intent(this, WeatherForecastSmallAppWidgetProvider::class.java)
     }
 
-    private val component by lazy {
+    private val component: ComponentName by lazy {
         ComponentName(this, WeatherForecastSmallAppWidgetProvider::class.java)
     }
 
@@ -135,9 +98,57 @@ class WeatherForecastSmallSetup : BaseAppWidgetSetup() {
             .build()
     }
 
-    override fun onSaveInstanceState(outState: Bundle?, outPersistentState: PersistableBundle?) {
+    private val viewModel: WeatherForecastSmallSetupViewModel by lazy {
+        cmp.provideWeatherForecastSmallSetupViewModel()
+    }
+
+    private val subscriptions: CompositeDisposable by lazy {
+        cmp.provideCompositeDisposable()
+    }
+
+    private val onSetupInitialisedSubject: PublishSubject<WeatherForecastSmallSetupView.Event.OnSetupInitialised> by lazy {
+        cmp.provideOnSetupInitialised()
+    }
+
+    private val onConfigurationConfirmedSubject: PublishSubject<WeatherForecastSmallSetupView.Event.OnConfigurationConfirmed> by lazy {
+        cmp.provideOnConfigurationConfirmed()
+    }
+
+    private val onCanceledClickedSubject: PublishSubject<WeatherForecastSmallSetupView.Event.OnCanceledClicked> by lazy {
+        cmp.provideOnCanceledClicked()
+    }
+
+    private val onLocalitySearchEnabledSubject: PublishSubject<WeatherForecastSmallSetupView.Event.OnLocalitySearchEnabled> by lazy {
+        cmp.provideOnLocalitySearchEnabled()
+    }
+
+    private val onLocalitySearchDisabledSubject: PublishSubject<WeatherForecastSmallSetupView.Event.OnLocalitySearchDisabled> by lazy {
+        cmp.provideOnLocalitySearchDisabled()
+    }
+
+    private val onAutoCompleteItemClickedSubject: PublishSubject<AutoCompleteItem> by lazy {
+        cmp.provideOnAutoCompleteItemClicked()
+    }
+
+    private val onSearchViewDismissedSubject: PublishSubject<WeatherForecastSmallSetupView.Event.OnSearchViewDismissed> by lazy {
+        cmp.provideOnSearchViewDismissed()
+    }
+
+    private val onLocalityTextUpdatedSubject: PublishSubject<WeatherForecastSmallSetupView.Event.OnLocalityTextUpdated> by lazy {
+        cmp.provideOnLocalityTextUpdated()
+    }
+
+    private val onLocationPermissionDeniedSubject: PublishSubject<WeatherForecastSmallSetupView.Event.OnLocationPermissionDenied> by lazy {
+        cmp.provideOnLocationPermissionDenied()
+    }
+
+    private val autoCompleteAdapter: AutoCompleteAdapter by lazy {
+        cmp.provideAutoCompleteAdapter()
+    }
+
+    override fun onSaveInstanceState(outState: Bundle, outPersistentState: PersistableBundle) {
         super.onSaveInstanceState(outState, outPersistentState)
-        outState?.apply {
+        outState.apply {
             putParcelable(STATE_PARCEL_KEY, stateParcel)
         }
     }

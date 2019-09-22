@@ -27,7 +27,6 @@ import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.subjects.PublishSubject
-import javax.inject.Inject
 import kotlinx.android.synthetic.main.weather_forecast_fragment.*
 import permissions.dispatcher.NeedsPermission
 import permissions.dispatcher.OnNeverAskAgain
@@ -44,54 +43,6 @@ class WeatherForecastFragment : BaseFragment() {
         const val SCROLL_POSITION_KEY: String = "SCROLL_POSITION_KEY"
     }
 
-    @Inject
-    lateinit var viewModel: WeatherForecastViewModel
-
-    @Inject
-    lateinit var onViewInitialisedEventSubject: PublishSubject<WeatherForecastView.Event.OnViewInitialised>
-
-    @Inject
-    lateinit var onLocationPermissionDeniedSubject: PublishSubject<WeatherForecastView.Event.OnLocationPermissionDenied>
-
-    @Inject
-    lateinit var onLocationPermissionDeniedNeverAskAgainSubject: PublishSubject<WeatherForecastView.Event.OnLocationPermissionDeniedNeverAskAgain>
-
-    @Inject
-    lateinit var onLocationPermissionGrantedSubject: PublishSubject<WeatherForecastView.Event.OnLocationPermissionGranted>
-
-    @Inject
-    lateinit var onProgressBarEffectStartedSubject: PublishSubject<WeatherForecastView.Event.OnProgressBarEffectStarted>
-
-    @Inject
-    lateinit var onProgressBarEffectStoppedSubject: PublishSubject<WeatherForecastView.Event.OnProgressBarEffectStopped>
-
-    @Inject
-    lateinit var onAutoCompleteItemClickedSubject: PublishSubject<AutoCompleteItem>
-
-    @Inject
-    lateinit var onSearchViewDismissedSubject: PublishSubject<WeatherForecastView.Event.OnSearchViewDismissed>
-
-    @Inject
-    lateinit var onFailureHandledSubject: PublishSubject<WeatherForecastView.Event.OnFailureHandled>
-
-    @Inject
-    lateinit var onWeatherListDisplayedSubject: PublishSubject<WeatherForecastView.Event.OnWeatherListDisplayed>
-
-    @Inject
-    lateinit var onScrollPositionRestoredSubject: PublishSubject<WeatherForecastView.Event.OnScrollPositionRestored>
-
-    @Inject
-    lateinit var onStateParcelUpdatedSubject: PublishSubject<WeatherForecastView.Event.OnStateParcelUpdated>
-
-    @Inject
-    lateinit var weatherForecastAdapter: WeatherForecastAdapter
-
-    @Inject
-    lateinit var autoCompleteAdapter: AutoCompleteAdapter
-
-    @Inject
-    lateinit var subscriptions: CompositeDisposable
-
     private var stateParcel: WeatherForecastView.StateParcel? = null
     private var bundle: Bundle? = null
     private var recyclerViewParcelable: Parcelable? = null
@@ -102,6 +53,70 @@ class WeatherForecastFragment : BaseFragment() {
             .build()
     }
 
+    private val viewModel: WeatherForecastViewModel by lazy {
+        cmp.provideWeatherForecastViewModel()
+    }
+
+    private val onViewInitialisedSubject: PublishSubject<WeatherForecastView.Event.OnViewInitialised> by lazy {
+        cmp.provideOnViewInitialisedSubject()
+    }
+
+    private val onLocationPermissionDeniedSubject: PublishSubject<WeatherForecastView.Event.OnLocationPermissionDenied> by lazy {
+        cmp.provideOnLocationPermissionDeniedSubject()
+    }
+
+    private val onLocationPermissionDeniedNeverAskAgainSubject: PublishSubject<WeatherForecastView.Event.OnLocationPermissionDeniedNeverAskAgain> by lazy {
+        cmp.provideOnLocationPermissionDeniedNeverAskAgainSubject()
+    }
+
+    private val onLocationPermissionGrantedSubject: PublishSubject<WeatherForecastView.Event.OnLocationPermissionGranted> by lazy {
+        cmp.provideOnLocationPermissionGrantedSubject()
+    }
+
+    private val onProgressBarEffectStartedSubject: PublishSubject<WeatherForecastView.Event.OnProgressBarEffectStarted> by lazy {
+        cmp.provideOnProgressBarEffectStarted()
+    }
+
+    private val onProgressBarEffectStoppedSubject: PublishSubject<WeatherForecastView.Event.OnProgressBarEffectStopped> by lazy {
+        cmp.provideOnProgressBarEffectStopped()
+    }
+
+    private val onAutoCompleteItemClickedSubject: PublishSubject<AutoCompleteItem> by lazy {
+        cmp.provideOnAutoCompleteItemClickedSubject()
+    }
+
+    private val onSearchViewDismissedSubject: PublishSubject<WeatherForecastView.Event.OnSearchViewDismissed> by lazy {
+        cmp.provideOnSearchViewDismissed()
+    }
+
+    private val onFailureHandledSubject: PublishSubject<WeatherForecastView.Event.OnFailureHandled> by lazy {
+        cmp.provideOnFailureHandled()
+    }
+
+    private val onWeatherListDisplayedSubject: PublishSubject<WeatherForecastView.Event.OnWeatherListDisplayed> by lazy {
+        cmp.provideOnWeatherListDisplayed()
+    }
+
+    private val onScrollPositionRestoredSubject: PublishSubject<WeatherForecastView.Event.OnScrollPositionRestored> by lazy {
+        cmp.provideOnScrollPositionRestored()
+    }
+
+    private val onStateParcelUpdatedSubject: PublishSubject<WeatherForecastView.Event.OnStateParcelUpdated> by lazy {
+        cmp.provideOnStateParcelUpdated()
+    }
+
+    private val weatherForecastAdapter: WeatherForecastAdapter by lazy {
+        cmp.provideWeatherForecastAdapter()
+    }
+
+    private val autoCompleteAdapter: AutoCompleteAdapter by lazy {
+        cmp.provideAutoCompleteAdapter()
+    }
+
+    private val subscriptions: CompositeDisposable by lazy {
+        cmp.provideCompositeDisposable()
+    }
+
     private val itemDecoration: DividerItemDecoration by lazy {
         DividerItemDecoration(context, RecyclerView.VERTICAL)
     }
@@ -109,8 +124,6 @@ class WeatherForecastFragment : BaseFragment() {
     private val drawable: Drawable? by lazy {
         context?.getDrawable(R.drawable.search_item_divider)
     }
-
-    // ---------------------------------------------------------------------------------------------
 
     override fun layoutId(): Int = R.layout.weather_forecast_fragment
 
@@ -217,8 +230,6 @@ class WeatherForecastFragment : BaseFragment() {
         }
     }
 
-    // ---------------------------------------------------------------------------------------------
-
     private fun setup() {
         setupEvents()
         setupRecyclerView()
@@ -245,7 +256,7 @@ class WeatherForecastFragment : BaseFragment() {
                 }
 
             Observable.mergeArray(
-                onViewInitialisedEventSubject
+                onViewInitialisedSubject
                     .toObservable(),
                 onLocationPermissionGrantedSubject
                     .toObservable(),
@@ -315,7 +326,7 @@ class WeatherForecastFragment : BaseFragment() {
                 subscriptions
             )
 
-            onViewInitialisedEventSubject
+            onViewInitialisedSubject
                 .onNext(
                     WeatherForecastView
                         .Event

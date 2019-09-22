@@ -2,6 +2,11 @@ package fi.kroon.vadret.presentation.main.di
 
 import dagger.Subcomponent
 import fi.kroon.vadret.presentation.main.MainActivity
+import fi.kroon.vadret.presentation.main.MainActivityView
+import fi.kroon.vadret.presentation.main.MainActivityViewModel
+import fi.kroon.vadret.util.Scheduler
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.subjects.PublishSubject
 
 @Subcomponent(
     modules = [
@@ -12,6 +17,11 @@ import fi.kroon.vadret.presentation.main.MainActivity
 interface MainActivityComponent {
 
     fun inject(mainActivity: MainActivity)
+
+    fun provideOnViewInitialised(): PublishSubject<MainActivityView.Event.OnViewInitialised>
+    fun provideMainActivityViewModel(): MainActivityViewModel
+    fun provideCompositeDisposable(): CompositeDisposable
+    fun provideScheduler(): Scheduler
 
     @Subcomponent.Builder
     interface Builder {

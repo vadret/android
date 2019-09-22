@@ -25,37 +25,41 @@ import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.subjects.PublishSubject
-import javax.inject.Inject
 import timber.log.Timber
 
 @WeatherForecastTinyFeatureScope
 class WeatherForecastTinyAppWidgetProvider : BaseAppWidgetProvider() {
 
-    @Inject
-    lateinit var viewModel: WeatherForecastTinyViewModel
-
-    @Inject
-    lateinit var subscriptions: CompositeDisposable
-
-    @Inject
-    lateinit var onWidgetInitialisedSubject: PublishSubject<WeatherForecastTinyView.Event.OnWidgetInitialised>
-
-    @Inject
-    lateinit var onWidgetUpdatedSubject: PublishSubject<WeatherForecastTinyView.Event.OnWidgetUpdated>
-
-    @Inject
-    lateinit var onBootCompletedSubject: PublishSubject<WeatherForecastTinyView.Event.OnBootCompleted>
-
-    @Inject
-    lateinit var context: Context
-
-    @Inject
-    lateinit var cmp: WeatherForecastTinyComponent
+    private lateinit var cmp: WeatherForecastTinyComponent
 
     @LayoutRes
     private var layoutId: Int = R.layout.weather_forecast_widget_tiny_light
 
     private var injected = false
+
+    private val viewModel: WeatherForecastTinyViewModel by lazy {
+        cmp.provideWeatherForecastTinyViewModel()
+    }
+
+    private val subscriptions: CompositeDisposable by lazy {
+        cmp.provideCompositeDisposable()
+    }
+
+    private val onWidgetInitialisedSubject: PublishSubject<WeatherForecastTinyView.Event.OnWidgetInitialised> by lazy {
+        cmp.provideOnWidgetInitialised()
+    }
+
+    private val onWidgetUpdatedSubject: PublishSubject<WeatherForecastTinyView.Event.OnWidgetUpdated> by lazy {
+        cmp.provideOnWidgetUpdated()
+    }
+
+    private val onBootCompletedSubject: PublishSubject<WeatherForecastTinyView.Event.OnBootCompleted> by lazy {
+        cmp.provideOnBootCompleted()
+    }
+
+    private val context: Context by lazy {
+        cmp.provideContext()
+    }
 
     private val componentName: ComponentName by lazy {
         ComponentName(context, WeatherForecastTinyAppWidgetProvider::class.java)

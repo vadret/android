@@ -32,7 +32,6 @@ import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.subjects.PublishSubject
-import javax.inject.Inject
 import org.threeten.bp.LocalDateTime
 import org.threeten.bp.format.DateTimeFormatter
 import timber.log.Timber
@@ -40,31 +39,35 @@ import timber.log.Timber
 @WeatherForecastMediumFeatureScope
 class WeatherForecastMediumAppWidgetProvider : BaseAppWidgetProvider() {
 
-    @Inject
-    lateinit var viewModel: WeatherForecastMediumViewModel
-
-    @Inject
-    lateinit var subscriptions: CompositeDisposable
-
-    @Inject
-    lateinit var onWidgetInitialisedSubject: PublishSubject<WeatherForecastMediumView.Event.OnWidgetInitialised>
-
-    @Inject
-    lateinit var onWidgetUpdatedSubject: PublishSubject<WeatherForecastMediumView.Event.OnWidgetUpdated>
-
-    @Inject
-    lateinit var onBootCompletedSubject: PublishSubject<WeatherForecastMediumView.Event.OnBootCompleted>
-
-    @Inject
-    lateinit var context: Context
-
-    @Inject
-    lateinit var cmp: WeatherForecastMediumComponent
+    private lateinit var cmp: WeatherForecastMediumComponent
 
     @LayoutRes
     private var layoutId: Int = R.layout.weather_forecast_widget_medium_item
 
     private var injected = false
+
+    private val viewModel: WeatherForecastMediumViewModel by lazy {
+        cmp.provideWeatherForecastMediumViewModel()
+    }
+
+    private val subscriptions: CompositeDisposable by lazy {
+        cmp.provideCompositeDisposable()
+    }
+
+    private val onWidgetInitialisedSubject: PublishSubject<WeatherForecastMediumView.Event.OnWidgetInitialised> by lazy {
+        cmp.provideOnWidgetInitialised()
+    }
+
+    private val onWidgetUpdatedSubject: PublishSubject<WeatherForecastMediumView.Event.OnWidgetUpdated> by lazy {
+        cmp.provideOnWidgetUpdated()
+    }
+
+    private val onBootCompletedSubject: PublishSubject<WeatherForecastMediumView.Event.OnBootCompleted> by lazy {
+        cmp.provideOnBootCompleted()
+    }
+    private val context: Context by lazy {
+        cmp.provideContext()
+    }
 
     private val componentName: ComponentName by lazy {
         ComponentName(context, WeatherForecastMediumAppWidgetProvider::class.java)

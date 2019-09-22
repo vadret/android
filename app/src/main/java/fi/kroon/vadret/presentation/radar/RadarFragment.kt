@@ -38,7 +38,6 @@ import io.reactivex.rxkotlin.addTo
 import io.reactivex.subjects.PublishSubject
 import java.io.File
 import java.util.concurrent.TimeUnit
-import javax.inject.Inject
 import kotlinx.android.synthetic.main.radar_fragment.*
 import org.osmdroid.config.Configuration
 import org.osmdroid.config.IConfigurationProvider
@@ -64,42 +63,6 @@ class RadarFragment : BaseFragment() {
         const val STATE_PARCEL_KEY = "STATE_PARCEL_KEY"
     }
 
-    @Inject
-    lateinit var viewModel: RadarViewModel
-
-    @Inject
-    lateinit var onViewInitialisedSubject: PublishSubject<RadarView.Event.OnViewInitialised>
-
-    @Inject
-    lateinit var onFailureHandledSubject: PublishSubject<RadarView.Event.OnFailureHandled>
-
-    @Inject
-    lateinit var onRadarImageDisplayedSubject: PublishSubject<RadarView.Event.OnRadarImageDisplayed>
-
-    @Inject
-    lateinit var onSeekBarStoppedSubject: PublishSubject<RadarView.Event.OnSeekBarStopped>
-
-    @Inject
-    lateinit var onStateParcelUpdatedSubject: PublishSubject<RadarView.Event.OnStateParcelUpdated>
-
-    @Inject
-    lateinit var onPlayButtonStartedSubject: PublishSubject<RadarView.Event.OnPlayButtonStarted>
-
-    @Inject
-    lateinit var onPlayButtonStoppedSubject: PublishSubject<RadarView.Event.OnPlayButtonStopped>
-
-    @Inject
-    lateinit var onSeekBarResetSubject: PublishSubject<RadarView.Event.OnSeekBarReset>
-
-    @Inject
-    lateinit var onPositionUpdatedSubject: PublishSubject<RadarView.Event.OnPositionUpdated>
-
-    @Inject
-    lateinit var onSeekBarRestoredSubject: PublishSubject<RadarView.Event.OnSeekBarRestored>
-
-    @Inject
-    lateinit var subscriptions: CompositeDisposable
-
     private lateinit var disposable: Disposable
     private var bundle: Bundle? = null
     private var stateParcel: RadarView.StateParcel? = null
@@ -108,6 +71,54 @@ class RadarFragment : BaseFragment() {
         appComponent()
             .radarComponentBuilder()
             .build()
+    }
+
+    private val viewModel: RadarViewModel by lazy {
+        cmp.provideRadarViewModel()
+    }
+
+    private val onViewInitialisedSubject: PublishSubject<RadarView.Event.OnViewInitialised> by lazy {
+        cmp.provideOnViewInitialised()
+    }
+
+    private val onFailureHandledSubject: PublishSubject<RadarView.Event.OnFailureHandled> by lazy {
+        cmp.provideOnFailureHandled()
+    }
+
+    private val onRadarImageDisplayedSubject: PublishSubject<RadarView.Event.OnRadarImageDisplayed> by lazy {
+        cmp.provideOnRadarImageDisplayed()
+    }
+
+    private val onSeekBarStoppedSubject: PublishSubject<RadarView.Event.OnSeekBarStopped> by lazy {
+        cmp.provideOnSeekBarStopped()
+    }
+
+    private val onStateParcelUpdatedSubject: PublishSubject<RadarView.Event.OnStateParcelUpdated> by lazy {
+        cmp.provideOnStateParcelUpdated()
+    }
+
+    private val onPlayButtonStartedSubject: PublishSubject<RadarView.Event.OnPlayButtonStarted> by lazy {
+        cmp.provideOnPlayButtonStarted()
+    }
+
+    private val onPlayButtonStoppedSubject: PublishSubject<RadarView.Event.OnPlayButtonStopped> by lazy {
+        cmp.provideOnPlayButtonStopped()
+    }
+
+    private val onSeekBarResetSubject: PublishSubject<RadarView.Event.OnSeekBarReset> by lazy {
+        cmp.provideOnSeekBarReset()
+    }
+
+    private val onPositionUpdatedSubject: PublishSubject<RadarView.Event.OnPositionUpdated> by lazy {
+        cmp.provideOnPositionUpdated()
+    }
+
+    private val onSeekBarRestoredSubject: PublishSubject<RadarView.Event.OnSeekBarRestored> by lazy {
+        cmp.provideOnSeekBarRestored()
+    }
+
+    private val subscriptions: CompositeDisposable by lazy {
+        cmp.provideCompositeDisposable()
     }
 
     private val defaultTileSource = XYTileSource(
