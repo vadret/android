@@ -1,6 +1,6 @@
 package fi.kroon.vadret.presentation.weatherforecast
 
-import fi.kroon.vadret.data.exception.Failure
+import fi.kroon.vadret.data.failure.Failure
 import fi.kroon.vadret.data.nominatim.model.Locality
 import fi.kroon.vadret.domain.weatherforecast.GetAppLocationModeTask
 import fi.kroon.vadret.domain.weatherforecast.GetAutoCompleteService

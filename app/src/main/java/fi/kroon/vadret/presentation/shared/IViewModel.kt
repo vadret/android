@@ -4,7 +4,7 @@ import fi.kroon.vadret.R
 import fi.kroon.vadret.data.aggregatedfeed.exception.AggregatedFeedFailure
 import fi.kroon.vadret.data.common.exception.LocalFileReaderFailure
 import fi.kroon.vadret.data.district.exception.DistrictFailure
-import fi.kroon.vadret.data.exception.Failure
+import fi.kroon.vadret.data.failure.Failure
 import fi.kroon.vadret.data.location.exception.LocationFailure
 import fi.kroon.vadret.data.nominatim.exception.NominatimFailure
 import fi.kroon.vadret.data.radar.exception.RadarFailure

@@ -1,6 +1,6 @@
 package fi.kroon.vadret.domain.weatherforecast
 
-import fi.kroon.vadret.data.exception.Failure
+import fi.kroon.vadret.data.failure.Failure
 import fi.kroon.vadret.data.weatherforecast.WeatherForecastRepository
 import fi.kroon.vadret.data.weatherforecast.model.Weather
 import fi.kroon.vadret.data.weatherforecast.model.WeatherOut
@@ -13,9 +13,5 @@ class GetWeatherForecastTask @Inject constructor(
     private val repo: WeatherForecastRepository
 ) {
     operator fun invoke(request: WeatherOut): Single<Either<Failure, Weather>> =
-        repo.get(
-            request
-        ).doOnError {
-            Timber.e("$it")
-        }
+        repo(request)
 }

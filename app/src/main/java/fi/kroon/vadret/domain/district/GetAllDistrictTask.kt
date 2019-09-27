@@ -2,7 +2,7 @@ package fi.kroon.vadret.domain.district
 
 import fi.kroon.vadret.data.district.local.DistrictDao
 import fi.kroon.vadret.data.district.model.DistrictEntity
-import fi.kroon.vadret.data.exception.Failure
+import fi.kroon.vadret.data.failure.Failure
 import fi.kroon.vadret.util.extension.asRight
 import io.github.sphrak.either.Either
 import io.reactivex.Single

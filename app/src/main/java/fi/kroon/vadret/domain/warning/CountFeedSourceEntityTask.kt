@@ -1,6 +1,6 @@
 package fi.kroon.vadret.domain.warning
 
-import fi.kroon.vadret.data.exception.Failure
+import fi.kroon.vadret.data.failure.Failure
 import fi.kroon.vadret.data.feedsource.local.FeedSourceDao
 import fi.kroon.vadret.util.FEED_SOURCE_MAX
 import fi.kroon.vadret.util.extension.asRight

@@ -1,7 +1,7 @@
 package fi.kroon.vadret.domain.weatherforecast
 
 import fi.kroon.vadret.data.autocomplete.model.AutoCompleteItem
-import fi.kroon.vadret.data.exception.Failure
+import fi.kroon.vadret.data.failure.Failure
 import fi.kroon.vadret.data.weatherforecast.local.WeatherForecastLocalKeyValueDataSource
 import fi.kroon.vadret.util.COUNTY_KEY
 import fi.kroon.vadret.util.LATITUDE_KEY

@@ -1,6 +1,6 @@
 package fi.kroon.vadret.domain.feedsourcepreference
 
-import fi.kroon.vadret.data.exception.Failure
+import fi.kroon.vadret.data.failure.Failure
 import fi.kroon.vadret.data.feedsourcepreference.local.FeedSourcePreferenceDao
 import fi.kroon.vadret.util.APP_WARNING_FILTER_KEY
 import fi.kroon.vadret.util.extension.asRight

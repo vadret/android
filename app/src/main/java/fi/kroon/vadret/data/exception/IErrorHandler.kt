@@ -1,5 +1,6 @@
 package fi.kroon.vadret.data.exception
 
+import fi.kroon.vadret.data.failure.Failure
 import io.github.sphrak.either.Either
 import io.reactivex.Single
 

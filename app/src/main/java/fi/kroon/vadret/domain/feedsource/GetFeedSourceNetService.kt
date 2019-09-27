@@ -1,6 +1,6 @@
 package fi.kroon.vadret.domain.feedsource
 
-import fi.kroon.vadret.data.exception.Failure
+import fi.kroon.vadret.data.failure.Failure
 import fi.kroon.vadret.data.feedsource.model.FeedSource
 import fi.kroon.vadret.data.feedsource.model.FeedSourceEntity
 import fi.kroon.vadret.domain.warning.CountFeedSourceEntityTask

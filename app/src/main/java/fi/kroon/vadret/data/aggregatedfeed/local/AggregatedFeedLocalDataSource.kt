@@ -2,7 +2,7 @@ package fi.kroon.vadret.data.aggregatedfeed.local
 
 import com.afollestad.rxkprefs.RxkPrefs
 import fi.kroon.vadret.data.aggregatedfeed.exception.AggregatedFeedFailure
-import fi.kroon.vadret.data.exception.Failure
+import fi.kroon.vadret.data.failure.Failure
 import fi.kroon.vadret.util.APP_AGGREGATED_FEED_LAST_CHECKED_KEY
 import fi.kroon.vadret.util.extension.asLeft
 import fi.kroon.vadret.util.extension.asRight

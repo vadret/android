@@ -3,7 +3,7 @@ package fi.kroon.vadret.domain.district
 import fi.kroon.vadret.data.district.model.District
 import fi.kroon.vadret.data.district.model.DistrictEntity
 import fi.kroon.vadret.data.district.model.DistrictView
-import fi.kroon.vadret.data.exception.Failure
+import fi.kroon.vadret.data.failure.Failure
 import fi.kroon.vadret.domain.warning.CountDistrictEntityTask
 import fi.kroon.vadret.util.extension.asSingle
 import fi.kroon.vadret.util.extension.flatMapSingle

@@ -2,7 +2,7 @@ package fi.kroon.vadret.data.aggregatedfeed.cache
 
 import androidx.collection.LruCache
 import fi.kroon.vadret.data.aggregatedfeed.model.AggregatedFeed
-import fi.kroon.vadret.data.exception.Failure
+import fi.kroon.vadret.data.failure.Failure
 import fi.kroon.vadret.util.AGGREGATED_FEED_CACHE_KEY
 import fi.kroon.vadret.util.extension.asLeft
 import fi.kroon.vadret.util.extension.asRight

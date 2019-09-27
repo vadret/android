@@ -1,6 +1,6 @@
 package fi.kroon.vadret.domain.weatherforecast
 
-import fi.kroon.vadret.data.exception.Failure
+import fi.kroon.vadret.data.failure.Failure
 import fi.kroon.vadret.data.weatherforecast.cache.WeatherForecastCacheDataSource
 import fi.kroon.vadret.data.weatherforecast.model.Weather
 import io.github.sphrak.either.Either

@@ -1,7 +1,7 @@
 package fi.kroon.vadret.data.weatherforecast.cache
 
 import androidx.collection.LruCache
-import fi.kroon.vadret.data.exception.Failure
+import fi.kroon.vadret.data.failure.Failure
 import fi.kroon.vadret.data.weatherforecast.model.Weather
 import fi.kroon.vadret.util.extension.asLeft
 import fi.kroon.vadret.util.extension.asRight

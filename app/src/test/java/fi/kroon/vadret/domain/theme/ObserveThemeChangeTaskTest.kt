@@ -1,6 +1,6 @@
 package fi.kroon.vadret.domain.theme
 
-import fi.kroon.vadret.data.exception.Failure
+import fi.kroon.vadret.data.failure.Failure
 import fi.kroon.vadret.data.theme.exception.ThemeFailure
 import fi.kroon.vadret.data.theme.local.ThemeLocalKeyValueDataSource
 import fi.kroon.vadret.util.LIGHT_THEME

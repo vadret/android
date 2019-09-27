@@ -1,6 +1,6 @@
 package fi.kroon.vadret.data.feedsource.exception
 
-import fi.kroon.vadret.data.exception.Failure
+import fi.kroon.vadret.data.failure.Failure
 
 class FeedSourceFailure {
     object FeedSourceNotAvailable : Failure.FeatureFailure()

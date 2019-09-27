@@ -1,7 +1,7 @@
 package fi.kroon.vadret.data.radar.cache
 
 import fi.kroon.vadret.data.common.BaseCache
-import fi.kroon.vadret.data.exception.Failure
+import fi.kroon.vadret.data.failure.Failure
 import fi.kroon.vadret.data.radar.model.Radar
 import fi.kroon.vadret.presentation.radar.di.RadarFeatureScope
 import fi.kroon.vadret.util.extension.asLeft

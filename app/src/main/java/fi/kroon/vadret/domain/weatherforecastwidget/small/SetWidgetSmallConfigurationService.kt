@@ -1,6 +1,6 @@
 package fi.kroon.vadret.domain.weatherforecastwidget.small
 
-import fi.kroon.vadret.data.exception.Failure
+import fi.kroon.vadret.data.failure.Failure
 import fi.kroon.vadret.domain.weatherforecastwidget.shared.SetWidgetThemeKeyValueTask
 import fi.kroon.vadret.domain.weatherforecastwidget.shared.SetWidgetUpdateIntervalKeyValueTask
 import fi.kroon.vadret.presentation.weatherforecastwidget.small.setup.model.WeatherForecastSmallConfigurationModel

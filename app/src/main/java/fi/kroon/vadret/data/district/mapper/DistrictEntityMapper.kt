@@ -1,4 +1,4 @@
-package fi.kroon.vadret.data.district
+package fi.kroon.vadret.data.district.mapper
 
 import fi.kroon.vadret.data.district.model.District
 import fi.kroon.vadret.data.district.model.DistrictEntity

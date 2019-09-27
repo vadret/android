@@ -1,6 +1,6 @@
 package fi.kroon.vadret.data.aggregatedfeed.exception
 
-import fi.kroon.vadret.data.exception.Failure
+import fi.kroon.vadret.data.failure.Failure
 
 class AggregatedFeedFailure {
     object NoAggregatedFeedAvailable : Failure.FeatureFailure()

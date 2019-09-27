@@ -1,7 +1,7 @@
 package fi.kroon.vadret.data.radar.cache
 
 import androidx.collection.LruCache
-import fi.kroon.vadret.data.exception.Failure
+import fi.kroon.vadret.data.failure.Failure
 import fi.kroon.vadret.data.radar.model.Radar
 import fi.kroon.vadret.util.RADAR_CACHE_KEY
 import fi.kroon.vadret.util.extension.asLeft

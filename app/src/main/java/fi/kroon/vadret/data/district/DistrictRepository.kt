@@ -3,8 +3,10 @@ package fi.kroon.vadret.data.district
 import fi.kroon.vadret.data.district.model.DistrictView
 import fi.kroon.vadret.data.district.net.DistrictNetDataSource
 import fi.kroon.vadret.data.exception.ErrorHandler
-import fi.kroon.vadret.data.exception.Failure
+import fi.kroon.vadret.data.exception.ExceptionHandler
 import fi.kroon.vadret.data.exception.IErrorHandler
+import fi.kroon.vadret.data.exception.IExceptionHandler
+import fi.kroon.vadret.data.failure.Failure
 import fi.kroon.vadret.di.scope.CoreApplicationScope
 import fi.kroon.vadret.util.NetworkHandler
 import fi.kroon.vadret.util.extension.asLeft
@@ -18,8 +20,9 @@ import retrofit2.Response
 class DistrictRepository @Inject constructor(
     private val networkHandler: NetworkHandler,
     private val networkDataSource: DistrictNetDataSource,
-    private val errorHandler: ErrorHandler
-) : IErrorHandler by errorHandler {
+    private val errorHandler: ErrorHandler,
+    private val exceptionHandler: ExceptionHandler
+) : IErrorHandler by errorHandler, IExceptionHandler<Failure> by exceptionHandler {
     /**
      *  When [response.body] is null [NetworkResponseEmpty] is
      *  returned.
@@ -38,5 +41,8 @@ class DistrictRepository @Inject constructor(
                     }
             }
             false -> getNetworkOfflineError()
+        }.onErrorReturn {
+            exceptionHandler(it)
+                .asLeft()
         }
 }

@@ -2,7 +2,7 @@ package fi.kroon.vadret.data.theme.local
 
 import com.afollestad.rxkprefs.Pref
 import com.afollestad.rxkprefs.RxkPrefs
-import fi.kroon.vadret.data.exception.Failure
+import fi.kroon.vadret.data.failure.Failure
 import fi.kroon.vadret.data.theme.exception.ThemeFailure
 import fi.kroon.vadret.util.LIGHT_THEME
 import fi.kroon.vadret.util.THEME_MODE_KEY

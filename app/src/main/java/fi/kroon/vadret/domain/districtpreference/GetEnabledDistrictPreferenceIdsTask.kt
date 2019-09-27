@@ -1,7 +1,7 @@
 package fi.kroon.vadret.domain.districtpreference
 
 import fi.kroon.vadret.data.districtpreference.local.DistrictPreferenceDao
-import fi.kroon.vadret.data.exception.Failure
+import fi.kroon.vadret.data.failure.Failure
 import fi.kroon.vadret.util.APP_WARNING_FILTER_KEY
 import fi.kroon.vadret.util.extension.asRight
 import io.github.sphrak.either.Either

@@ -1,6 +1,6 @@
 package fi.kroon.vadret.domain.aboutapp
 
-import fi.kroon.vadret.data.exception.Failure
+import fi.kroon.vadret.data.failure.Failure
 import fi.kroon.vadret.data.library.LibraryRepository
 import fi.kroon.vadret.data.library.model.Library
 import fi.kroon.vadret.util.extension.asRight

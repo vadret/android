@@ -1,8 +1,10 @@
 package fi.kroon.vadret.data.weatherforecast
 
 import fi.kroon.vadret.data.exception.ErrorHandler
-import fi.kroon.vadret.data.exception.Failure
+import fi.kroon.vadret.data.exception.ExceptionHandler
 import fi.kroon.vadret.data.exception.IErrorHandler
+import fi.kroon.vadret.data.exception.IExceptionHandler
+import fi.kroon.vadret.data.failure.Failure
 import fi.kroon.vadret.data.weatherforecast.exception.WeatherForecastFailure
 import fi.kroon.vadret.data.weatherforecast.model.Weather
 import fi.kroon.vadret.data.weatherforecast.model.WeatherOut
@@ -22,22 +24,24 @@ import fi.kroon.vadret.util.extension.toCoordinate
 import io.github.sphrak.either.Either
 import io.reactivex.Single
 import javax.inject.Inject
+import retrofit2.Response
 
 @CoreApplicationScope
 class WeatherForecastRepository @Inject constructor(
     private val weatherForecastNetDataSource: WeatherForecastNetDataSource,
     private val networkHandler: NetworkHandler,
-    private val errorHandler: ErrorHandler
-) : IErrorHandler by errorHandler {
+    private val errorHandler: ErrorHandler,
+    private val exceptionHandler: ExceptionHandler
+) : IErrorHandler by errorHandler, IExceptionHandler<Failure> by exceptionHandler {
 
-    fun get(request: WeatherOut): Single<Either<Failure, Weather>> =
+    operator fun invoke(request: WeatherOut): Single<Either<Failure, Weather>> =
         when (networkHandler.isConnected) {
-            true -> weatherForecastNetDataSource.get(
+            true -> weatherForecastNetDataSource(
                 request.category,
                 request.version,
                 request.longitude.toCoordinate(),
                 request.latitude.toCoordinate()
-            ).map { response ->
+            ).map { response: Response<Weather> ->
                 when (response.code()) {
                     HTTP_200_OK -> Either.Right(response.body()!!)
                     HTTP_204_NO_CONTENT -> WeatherForecastFailure.NoWeatherAvailable.asLeft()
@@ -51,5 +55,8 @@ class WeatherForecastRepository @Inject constructor(
                 }
             }
             false -> getNetworkOfflineError()
+        }.onErrorReturn {
+            exceptionHandler(it)
+                .asLeft()
         }
 }

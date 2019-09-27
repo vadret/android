@@ -1,6 +1,6 @@
 package fi.kroon.vadret.data.weatherforecast
 
-import fi.kroon.vadret.data.exception.Failure
+import fi.kroon.vadret.data.failure.Failure
 import fi.kroon.vadret.data.location.LocationRepository
 import fi.kroon.vadret.data.location.exception.LocationFailure
 import fi.kroon.vadret.data.location.local.LocationLocalDataSource

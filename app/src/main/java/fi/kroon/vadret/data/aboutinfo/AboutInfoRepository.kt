@@ -2,7 +2,7 @@ package fi.kroon.vadret.data.aboutinfo
 
 import fi.kroon.vadret.data.aboutinfo.local.AboutInfoLocalDataSource
 import fi.kroon.vadret.data.aboutinfo.model.AboutInfo
-import fi.kroon.vadret.data.exception.Failure
+import fi.kroon.vadret.data.failure.Failure
 import io.github.sphrak.either.Either
 import io.reactivex.Single
 import javax.inject.Inject

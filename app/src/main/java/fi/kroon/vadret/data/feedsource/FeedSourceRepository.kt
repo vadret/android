@@ -1,8 +1,10 @@
 package fi.kroon.vadret.data.feedsource
 
 import fi.kroon.vadret.data.exception.ErrorHandler
-import fi.kroon.vadret.data.exception.Failure
+import fi.kroon.vadret.data.exception.ExceptionHandler
 import fi.kroon.vadret.data.exception.IErrorHandler
+import fi.kroon.vadret.data.exception.IExceptionHandler
+import fi.kroon.vadret.data.failure.Failure
 import fi.kroon.vadret.data.feedsource.model.FeedSource
 import fi.kroon.vadret.data.feedsource.net.FeedSourceNetDataSource
 import fi.kroon.vadret.di.scope.CoreApplicationScope
@@ -18,8 +20,9 @@ import retrofit2.Response
 class FeedSourceRepository @Inject constructor(
     private val networkHandler: NetworkHandler,
     private val feedSourceNetDataSource: FeedSourceNetDataSource,
-    private val errorHandler: ErrorHandler
-) : IErrorHandler by errorHandler {
+    private val errorHandler: ErrorHandler,
+    private val exceptionHandler: ExceptionHandler
+) : IErrorHandler by errorHandler, IExceptionHandler<Failure> by exceptionHandler {
     /**
      *  When [response.body] is null [NetworkResponseEmpty] is
      *  returned.
@@ -38,5 +41,8 @@ class FeedSourceRepository @Inject constructor(
                     }
             }
             false -> getNetworkOfflineError()
+        }.onErrorReturn {
+            exceptionHandler(it)
+                .asLeft()
         }
 }

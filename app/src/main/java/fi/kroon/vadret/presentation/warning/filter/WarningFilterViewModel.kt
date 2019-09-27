@@ -2,7 +2,7 @@ package fi.kroon.vadret.presentation.warning.filter
 
 import fi.kroon.vadret.R
 import fi.kroon.vadret.data.district.model.DistrictOptionEntity
-import fi.kroon.vadret.data.exception.Failure
+import fi.kroon.vadret.data.failure.Failure
 import fi.kroon.vadret.data.feedsource.model.FeedSourceOptionEntity
 import fi.kroon.vadret.domain.districtpreference.UpdateDistrictPreferenceListTask
 import fi.kroon.vadret.domain.feedsourcepreference.UpdateFeedSourcePreferenceListTask

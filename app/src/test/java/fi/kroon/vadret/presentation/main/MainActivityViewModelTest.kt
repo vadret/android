@@ -1,6 +1,6 @@
 package fi.kroon.vadret.presentation.main
 
-import fi.kroon.vadret.data.exception.Failure
+import fi.kroon.vadret.data.failure.Failure
 import fi.kroon.vadret.domain.theme.GetThemeModeTask
 import fi.kroon.vadret.domain.theme.ObserveThemeChangeTask
 import fi.kroon.vadret.util.DARK_THEME

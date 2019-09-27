@@ -1,7 +1,7 @@
 package fi.kroon.vadret.domain.radar
 
 import fi.kroon.vadret.data.exception.ErrorHandler
-import fi.kroon.vadret.data.exception.Failure
+import fi.kroon.vadret.data.failure.Failure
 import fi.kroon.vadret.data.radar.local.RadarLocalKeyValueDataSource
 import fi.kroon.vadret.util.LAST_CHECKED_RADAR_KEY
 import fi.kroon.vadret.util.extension.asRight

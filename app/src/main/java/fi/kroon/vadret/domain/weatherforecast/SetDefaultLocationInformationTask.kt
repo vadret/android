@@ -1,6 +1,6 @@
 package fi.kroon.vadret.domain.weatherforecast
 
-import fi.kroon.vadret.data.exception.Failure
+import fi.kroon.vadret.data.failure.Failure
 import fi.kroon.vadret.data.weatherforecast.local.WeatherForecastLocalKeyValueDataSource
 import fi.kroon.vadret.util.AUTOMATIC_LOCATION_MODE_KEY
 import fi.kroon.vadret.util.COUNTY_KEY

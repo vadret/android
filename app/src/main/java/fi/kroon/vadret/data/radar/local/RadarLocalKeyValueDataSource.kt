@@ -2,8 +2,8 @@ package fi.kroon.vadret.data.radar.local
 
 import com.afollestad.rxkprefs.RxkPrefs
 import fi.kroon.vadret.data.exception.ErrorHandler
-import fi.kroon.vadret.data.exception.Failure
 import fi.kroon.vadret.data.exception.IErrorHandler
+import fi.kroon.vadret.data.failure.Failure
 import fi.kroon.vadret.util.LAST_CHECKED_RADAR_KEY
 import fi.kroon.vadret.util.extension.asRight
 import fi.kroon.vadret.util.extension.asSingle

@@ -1,7 +1,7 @@
 package fi.kroon.vadret.domain.aggregatedfeed
 
 import fi.kroon.vadret.data.aggregatedfeed.model.AggregatedFeed
-import fi.kroon.vadret.data.exception.Failure
+import fi.kroon.vadret.data.failure.Failure
 import fi.kroon.vadret.domain.IService
 import fi.kroon.vadret.util.FIVE_MINUTES_IN_MILLIS
 import fi.kroon.vadret.util.extension.flatMapSingle

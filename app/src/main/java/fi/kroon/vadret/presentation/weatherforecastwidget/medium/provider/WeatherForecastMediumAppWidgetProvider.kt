@@ -15,7 +15,7 @@ import android.widget.RemoteViews
 import androidx.annotation.LayoutRes
 import fi.kroon.vadret.BaseApplication.Companion.appComponent
 import fi.kroon.vadret.R
-import fi.kroon.vadret.data.exception.Failure
+import fi.kroon.vadret.data.failure.Failure
 import fi.kroon.vadret.presentation.weatherforecastwidget.medium.provider.di.WeatherForecastMediumComponent
 import fi.kroon.vadret.presentation.weatherforecastwidget.medium.provider.di.WeatherForecastMediumFeatureScope
 import fi.kroon.vadret.presentation.weatherforecastwidget.medium.provider.model.WeatherForecastMediumModel
@@ -219,12 +219,6 @@ class WeatherForecastMediumAppWidgetProvider : BaseAppWidgetProvider() {
 
             remoteViews.setRemoteAdapter(R.id.weatherForecastMediumGridView, serviceIntent)
 
-            appWidgetManager
-                .notifyAppWidgetViewDataChanged(
-                    appWidgetId,
-                    R.id.weatherForecastMediumGridView
-                )
-
             weather.windSpeed?.let {
                 remoteViews.setTextViewText(
                     R.id.weatherMediumWindSpeed,
@@ -294,6 +288,12 @@ class WeatherForecastMediumAppWidgetProvider : BaseAppWidgetProvider() {
 
             remoteViews.setTextViewText(R.id.weatherMediumTemperature, temperature)
             remoteViews.setTextViewText(R.id.weatherMediumLocalityName, localityName)
+
+            appWidgetManager
+                .notifyAppWidgetViewDataChanged(
+                    appWidgetId,
+                    R.id.weatherForecastMediumGridView
+                )
         }
 
         appWidgetManager.updateAppWidget(appWidgetId, remoteViews)

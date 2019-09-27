@@ -3,7 +3,7 @@ package fi.kroon.vadret.domain.weatherforecastwidget.shared
 import androidx.recyclerview.widget.DiffUtil
 import fi.kroon.vadret.data.autocomplete.AutoCompleteRepository
 import fi.kroon.vadret.data.autocomplete.model.AutoCompleteItem
-import fi.kroon.vadret.data.exception.Failure
+import fi.kroon.vadret.data.failure.Failure
 import fi.kroon.vadret.presentation.weatherforecast.autocomplete.AutoCompleteDiffUtil
 import fi.kroon.vadret.util.DEFAULT_AUTOCOMPLETE_LIMIT
 import fi.kroon.vadret.util.extension.empty

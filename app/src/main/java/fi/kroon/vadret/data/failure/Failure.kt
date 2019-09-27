@@ -1,4 +1,4 @@
-package fi.kroon.vadret.data.exception
+package fi.kroon.vadret.data.failure
 
 import fi.kroon.vadret.util.extension.empty
 
@@ -29,8 +29,12 @@ sealed class Failure {
     data class CacheWriteError(val message: String = String.empty()) : Failure()
     data class CacheReadError(val message: String = String.empty()) : Failure()
 
+    data class NetworkDNSError(val message: String = String.empty()) : Failure()
+    data class NetworkTimeOutError(val message: String = String.empty()) : Failure()
     data class NetworkError(val message: String = String.empty()) : Failure()
     data class NetworkOfflineError(val message: String = String.empty()) : Failure()
+
+    data class UnHandledError(val message: String = String.empty()) : Failure()
 
     /**
      * For feature specific left

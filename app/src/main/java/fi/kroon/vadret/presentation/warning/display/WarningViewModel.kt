@@ -1,7 +1,7 @@
 package fi.kroon.vadret.presentation.warning.display
 
 import fi.kroon.vadret.data.district.exception.DistrictFailure
-import fi.kroon.vadret.data.exception.Failure
+import fi.kroon.vadret.data.failure.Failure
 import fi.kroon.vadret.domain.aggregatedfeed.GetAggregatedFeedLastCheckedTask
 import fi.kroon.vadret.domain.aggregatedfeed.GetAggregatedFeedService
 import fi.kroon.vadret.domain.aggregatedfeed.SetAggregatedFeedLastCheckedTask

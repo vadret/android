@@ -1,6 +1,6 @@
 package fi.kroon.vadret.presentation.radar
 
-import fi.kroon.vadret.data.exception.Failure
+import fi.kroon.vadret.data.failure.Failure
 import fi.kroon.vadret.domain.radar.GetRadarImageUrlService
 import fi.kroon.vadret.domain.radar.GetRadarLastCheckedKeyValueTask
 import fi.kroon.vadret.domain.radar.SetRadarLastCheckedKeyValueTask

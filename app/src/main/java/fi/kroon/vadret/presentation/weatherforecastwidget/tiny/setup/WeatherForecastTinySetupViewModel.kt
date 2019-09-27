@@ -2,7 +2,7 @@ package fi.kroon.vadret.presentation.weatherforecastwidget.tiny.setup
 
 import android.appwidget.AppWidgetManager
 import fi.kroon.vadret.data.autocomplete.model.AutoCompleteItem
-import fi.kroon.vadret.data.exception.Failure
+import fi.kroon.vadret.data.failure.Failure
 import fi.kroon.vadret.data.theme.model.Theme
 import fi.kroon.vadret.data.weatherforecastwidget.exception.WeatherForecastWidgetFailure
 import fi.kroon.vadret.domain.theme.GetThemeModeTask

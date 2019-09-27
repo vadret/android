@@ -1,6 +1,6 @@
 package fi.kroon.vadret.domain.feedsourcepreference
 
-import fi.kroon.vadret.data.exception.Failure
+import fi.kroon.vadret.data.failure.Failure
 import fi.kroon.vadret.data.feedsourcepreference.FeedSourcePreferenceRepository
 import fi.kroon.vadret.data.feedsourcepreference.model.FeedSourcePreferenceEntity
 import io.github.sphrak.either.Either

@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.annotation.RawRes
 import fi.kroon.vadret.data.autocomplete.model.AutoCompleteItem
 import fi.kroon.vadret.data.common.exception.LocalFileReaderFailure
-import fi.kroon.vadret.data.exception.Failure
+import fi.kroon.vadret.data.failure.Failure
 import fi.kroon.vadret.util.extension.asLeft
 import io.github.sphrak.either.Either
 import io.reactivex.Single

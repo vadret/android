@@ -13,7 +13,7 @@ import android.widget.RemoteViews
 import androidx.annotation.LayoutRes
 import fi.kroon.vadret.BaseApplication.Companion.appComponent
 import fi.kroon.vadret.R
-import fi.kroon.vadret.data.exception.Failure
+import fi.kroon.vadret.data.failure.Failure
 import fi.kroon.vadret.presentation.weatherforecastwidget.shared.BaseAppWidgetProvider
 import fi.kroon.vadret.presentation.weatherforecastwidget.tiny.provider.di.WeatherForecastTinyComponent
 import fi.kroon.vadret.presentation.weatherforecastwidget.tiny.provider.di.WeatherForecastTinyFeatureScope

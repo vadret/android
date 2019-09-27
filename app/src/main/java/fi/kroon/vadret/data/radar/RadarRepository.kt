@@ -1,8 +1,10 @@
 package fi.kroon.vadret.data.radar
 
 import fi.kroon.vadret.data.exception.ErrorHandler
-import fi.kroon.vadret.data.exception.Failure
+import fi.kroon.vadret.data.exception.ExceptionHandler
 import fi.kroon.vadret.data.exception.IErrorHandler
+import fi.kroon.vadret.data.exception.IExceptionHandler
+import fi.kroon.vadret.data.failure.Failure
 import fi.kroon.vadret.data.radar.exception.RadarFailure
 import fi.kroon.vadret.data.radar.model.Radar
 import fi.kroon.vadret.data.radar.model.RadarRequest
@@ -20,13 +22,13 @@ import retrofit2.Response
 class RadarRepository @Inject constructor(
     private val radarNetDataSource: RadarNetDataSource,
     private val networkHandler: NetworkHandler,
-    private val errorHandler: ErrorHandler
-) : IErrorHandler by errorHandler {
-
+    private val errorHandler: ErrorHandler,
+    private val exceptionHandler: ExceptionHandler
+) : IErrorHandler by errorHandler, IExceptionHandler<Failure> by exceptionHandler {
     operator fun invoke(radarRequest: RadarRequest): Single<Either<Failure, Radar>> =
         when (networkHandler.isConnected) {
             true -> with(radarRequest) {
-                radarNetDataSource.get(
+                radarNetDataSource(
                     year = year,
                     month = month,
                     date = date,
@@ -47,5 +49,8 @@ class RadarRepository @Inject constructor(
                 }
             }
             false -> getNetworkOfflineError()
+        }.onErrorReturn {
+            exceptionHandler(it)
+                .asLeft()
         }
 }

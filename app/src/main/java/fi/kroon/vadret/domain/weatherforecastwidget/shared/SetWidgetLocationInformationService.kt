@@ -1,7 +1,7 @@
 package fi.kroon.vadret.domain.weatherforecastwidget.shared
 
 import fi.kroon.vadret.data.autocomplete.model.AutoCompleteItem
-import fi.kroon.vadret.data.exception.Failure
+import fi.kroon.vadret.data.failure.Failure
 import io.github.sphrak.either.Either
 import io.reactivex.Observable
 import io.reactivex.Single

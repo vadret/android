@@ -1,6 +1,6 @@
 package fi.kroon.vadret.domain.weatherforecastwidget.shared
 
-import fi.kroon.vadret.data.exception.Failure
+import fi.kroon.vadret.data.failure.Failure
 import fi.kroon.vadret.data.weatherforecast.model.WeatherOut
 import fi.kroon.vadret.util.extension.asRight
 import fi.kroon.vadret.util.extension.toCoordinate

@@ -1,4 +1,4 @@
-package fi.kroon.vadret.data.feedsource
+package fi.kroon.vadret.data.feedsource.mapper
 
 import fi.kroon.vadret.data.feedsource.model.FeedSource
 import fi.kroon.vadret.data.feedsource.model.FeedSourceEntity

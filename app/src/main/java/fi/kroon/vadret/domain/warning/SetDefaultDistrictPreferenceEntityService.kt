@@ -2,7 +2,7 @@ package fi.kroon.vadret.domain.warning
 
 import fi.kroon.vadret.data.district.model.DistrictEntity
 import fi.kroon.vadret.data.districtpreference.model.DistrictPreferenceEntity
-import fi.kroon.vadret.data.exception.Failure
+import fi.kroon.vadret.data.failure.Failure
 import fi.kroon.vadret.domain.district.GetAllDistrictTask
 import fi.kroon.vadret.domain.districtpreference.SetDistrictPreferenceListTask
 import fi.kroon.vadret.util.APP_WARNING_FILTER_KEY

@@ -1,8 +1,10 @@
 package fi.kroon.vadret.data.nominatim
 
 import fi.kroon.vadret.data.exception.ErrorHandler
-import fi.kroon.vadret.data.exception.Failure
+import fi.kroon.vadret.data.exception.ExceptionHandler
 import fi.kroon.vadret.data.exception.IErrorHandler
+import fi.kroon.vadret.data.exception.IExceptionHandler
+import fi.kroon.vadret.data.failure.Failure
 import fi.kroon.vadret.data.nominatim.exception.NominatimFailure
 import fi.kroon.vadret.data.nominatim.model.Nominatim
 import fi.kroon.vadret.data.nominatim.model.NominatimOut
@@ -21,8 +23,9 @@ import retrofit2.Response
 class NominatimRepository @Inject constructor(
     private val nominatimNetDataSource: NominatimNetDataSource,
     private val networkHandler: NetworkHandler,
-    private val errorHandler: ErrorHandler
-) : IErrorHandler by errorHandler {
+    private val errorHandler: ErrorHandler,
+    private val exceptionHandler: ExceptionHandler
+) : IErrorHandler by errorHandler, IExceptionHandler<Failure> by exceptionHandler {
     fun get(request: NominatimOut): Single<Either<Failure, List<Nominatim>>> =
         when (networkHandler.isConnected) {
             true -> nominatimNetDataSource.get(
@@ -44,6 +47,9 @@ class NominatimRepository @Inject constructor(
                 }
             }
             false -> getNetworkOfflineError()
+        }.onErrorReturn {
+            exceptionHandler(it)
+                .asLeft()
         }
 
     fun reverse(request: NominatimReverseOut): Single<Either<Failure, Nominatim>> =
@@ -65,5 +71,8 @@ class NominatimRepository @Inject constructor(
                 }
             }
             false -> getNetworkOfflineError()
+        }.onErrorReturn {
+            exceptionHandler(it)
+                .asLeft()
         }
 }
