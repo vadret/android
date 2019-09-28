@@ -68,7 +68,7 @@ class WeatherForecastSmallAppWidgetProvider : BaseAppWidgetProvider() {
             )
     }
 
-    private val viewModel: WeatherForecastSmallViewModel by lazy {
+    private val viewModel: WeatherForecastSmallViewModel by lazy(LazyThreadSafetyMode.NONE) {
         cmp.provideWeatherForecastSmallViewModel()
     }
 

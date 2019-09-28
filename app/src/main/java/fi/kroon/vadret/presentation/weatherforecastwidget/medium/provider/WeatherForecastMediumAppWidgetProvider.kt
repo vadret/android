@@ -46,7 +46,7 @@ class WeatherForecastMediumAppWidgetProvider : BaseAppWidgetProvider() {
 
     private var injected = false
 
-    private val viewModel: WeatherForecastMediumViewModel by lazy {
+    private val viewModel: WeatherForecastMediumViewModel by lazy(LazyThreadSafetyMode.NONE) {
         cmp.provideWeatherForecastMediumViewModel()
     }
 
@@ -219,6 +219,12 @@ class WeatherForecastMediumAppWidgetProvider : BaseAppWidgetProvider() {
 
             remoteViews.setRemoteAdapter(R.id.weatherForecastMediumGridView, serviceIntent)
 
+            appWidgetManager
+                .notifyAppWidgetViewDataChanged(
+                    appWidgetId,
+                    R.id.weatherForecastMediumGridView
+                )
+
             weather.windSpeed?.let {
                 remoteViews.setTextViewText(
                     R.id.weatherMediumWindSpeed,
@@ -288,12 +294,6 @@ class WeatherForecastMediumAppWidgetProvider : BaseAppWidgetProvider() {
 
             remoteViews.setTextViewText(R.id.weatherMediumTemperature, temperature)
             remoteViews.setTextViewText(R.id.weatherMediumLocalityName, localityName)
-
-            appWidgetManager
-                .notifyAppWidgetViewDataChanged(
-                    appWidgetId,
-                    R.id.weatherForecastMediumGridView
-                )
         }
 
         appWidgetManager.updateAppWidget(appWidgetId, remoteViews)

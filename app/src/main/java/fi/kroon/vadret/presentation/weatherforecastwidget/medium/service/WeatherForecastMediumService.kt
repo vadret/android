@@ -52,7 +52,7 @@ class WeatherForecastMediumService : RemoteViewsService() {
             cmp.provideAppWidgetManager()
         }
 
-        private val viewModel: WeatherForecastMediumServiceViewModel by lazy {
+        private val viewModel: WeatherForecastMediumServiceViewModel by lazy(LazyThreadSafetyMode.NONE) {
             cmp.provideWeatherForecastMediumServiceViewModel()
         }
 

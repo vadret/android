@@ -62,7 +62,7 @@ class WeatherForecastTinySetup : BaseAppWidgetSetup() {
     @LayoutRes
     private var spinnerItemLayoutId: Int = R.layout.weather_forecast_widget_setup_spinner_item
 
-    private val itemDecoration: DividerItemDecoration by lazy {
+    private val itemDecoration: DividerItemDecoration by lazy(LazyThreadSafetyMode.NONE) {
         DividerItemDecoration(this, RecyclerView.VERTICAL)
     }
 

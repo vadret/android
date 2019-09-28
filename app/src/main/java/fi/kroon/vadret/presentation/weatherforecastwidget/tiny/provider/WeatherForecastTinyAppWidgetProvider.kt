@@ -37,7 +37,7 @@ class WeatherForecastTinyAppWidgetProvider : BaseAppWidgetProvider() {
 
     private var injected = false
 
-    private val viewModel: WeatherForecastTinyViewModel by lazy {
+    private val viewModel: WeatherForecastTinyViewModel by lazy(LazyThreadSafetyMode.NONE) {
         cmp.provideWeatherForecastTinyViewModel()
     }
 

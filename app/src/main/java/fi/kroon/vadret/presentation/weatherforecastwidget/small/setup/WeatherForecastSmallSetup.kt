@@ -98,7 +98,7 @@ class WeatherForecastSmallSetup : BaseAppWidgetSetup() {
             .build()
     }
 
-    private val viewModel: WeatherForecastSmallSetupViewModel by lazy {
+    private val viewModel: WeatherForecastSmallSetupViewModel by lazy(LazyThreadSafetyMode.NONE) {
         cmp.provideWeatherForecastSmallSetupViewModel()
     }
 
