@@ -1,6 +1,7 @@
 package fi.kroon.vadret.data.weatherforecast
 
 import fi.kroon.vadret.data.exception.ErrorHandler
+import fi.kroon.vadret.data.exception.ExceptionHandler
 import fi.kroon.vadret.data.failure.Failure
 import fi.kroon.vadret.data.weatherforecast.exception.WeatherForecastFailure
 import fi.kroon.vadret.data.weatherforecast.model.Weather
@@ -32,6 +33,7 @@ import retrofit2.Response
 class WeatherForecastRepositoryTest {
 
     private val errorHandler: ErrorHandler = ErrorHandler()
+    private val exceptionHandler: ExceptionHandler = ExceptionHandler()
 
     private val weatherForecastRequest: WeatherOut = WeatherOut(
         latitude = DEFAULT_LATITUDE.toDouble(),
@@ -57,7 +59,8 @@ class WeatherForecastRepositoryTest {
         testWeatherForecastRepository = WeatherForecastRepository(
             mockWeatherForecastNetDataSource,
             mockNetworkHandler,
-            errorHandler = errorHandler
+            errorHandler = errorHandler,
+            exceptionHandler = exceptionHandler
         )
     }
 
@@ -68,16 +71,14 @@ class WeatherForecastRepositoryTest {
         doReturn(true).`when`(mockNetworkHandler).isConnected
         doReturn(mockWeatherForecast).`when`(mockWeatherResponse).body()
         doReturn(Single.just(mockWeatherResponse))
-            .`when`(mockWeatherForecastNetDataSource)
-            .get(
+            .`when`(mockWeatherForecastNetDataSource)(
                 weatherForecastRequest.category,
                 weatherForecastRequest.version,
                 weatherForecastRequest.longitude,
                 weatherForecastRequest.latitude
             )
 
-        testWeatherForecastRepository
-            .get(weatherForecastRequest)
+        testWeatherForecastRepository(weatherForecastRequest)
             .test()
             .assertComplete()
             .assertNoErrors()
@@ -89,8 +90,7 @@ class WeatherForecastRepositoryTest {
 
         doReturn(false).`when`(mockNetworkHandler).isConnected
 
-        testWeatherForecastRepository
-            .get(weatherForecastRequest)
+        testWeatherForecastRepository(weatherForecastRequest)
             .test()
             .assertComplete()
             .assertNoErrors()
@@ -103,15 +103,13 @@ class WeatherForecastRepositoryTest {
         doReturn(HTTP_204_NO_CONTENT).`when`(mockWeatherResponse).code()
         doReturn(true).`when`(mockNetworkHandler).isConnected
         doReturn(mockWeatherResponse.asSingle())
-            .`when`(mockWeatherForecastNetDataSource)
-            .get(
+            .`when`(mockWeatherForecastNetDataSource)(
                 weatherForecastRequest.category,
                 weatherForecastRequest.version,
                 weatherForecastRequest.longitude,
                 weatherForecastRequest.latitude
             )
-        testWeatherForecastRepository
-            .get(weatherForecastRequest)
+        testWeatherForecastRepository(weatherForecastRequest)
             .test()
             .assertComplete()
             .assertNoErrors()
@@ -124,15 +122,13 @@ class WeatherForecastRepositoryTest {
         doReturn(HTTP_403_FORBIDDEN).`when`(mockWeatherResponse).code()
         doReturn(true).`when`(mockNetworkHandler).isConnected
         doReturn(Single.just(mockWeatherResponse))
-            .`when`(mockWeatherForecastNetDataSource)
-            .get(
+            .`when`(mockWeatherForecastNetDataSource)(
                 weatherForecastRequest.category,
                 weatherForecastRequest.version,
                 weatherForecastRequest.longitude,
                 weatherForecastRequest.latitude
             )
-        testWeatherForecastRepository
-            .get(weatherForecastRequest)
+        testWeatherForecastRepository(weatherForecastRequest)
             .test()
             .assertComplete()
             .assertNoErrors()
@@ -145,15 +141,13 @@ class WeatherForecastRepositoryTest {
         doReturn(HTTP_404_NOT_FOUND).`when`(mockWeatherResponse).code()
         doReturn(true).`when`(mockNetworkHandler).isConnected
         doReturn(Single.just(mockWeatherResponse))
-            .`when`(mockWeatherForecastNetDataSource)
-            .get(
+            .`when`(mockWeatherForecastNetDataSource)(
                 weatherForecastRequest.category,
                 weatherForecastRequest.version,
                 weatherForecastRequest.longitude,
                 weatherForecastRequest.latitude
             )
-        testWeatherForecastRepository
-            .get(weatherForecastRequest)
+        testWeatherForecastRepository(weatherForecastRequest)
             .test()
             .assertComplete()
             .assertNoErrors()
@@ -166,15 +160,13 @@ class WeatherForecastRepositoryTest {
         doReturn(HTTP_400_BAD_REQUEST).`when`(mockWeatherResponse).code()
         doReturn(true).`when`(mockNetworkHandler).isConnected
         doReturn(Single.just(mockWeatherResponse))
-            .`when`(mockWeatherForecastNetDataSource)
-            .get(
+            .`when`(mockWeatherForecastNetDataSource)(
                 weatherForecastRequest.category,
                 weatherForecastRequest.version,
                 weatherForecastRequest.longitude,
                 weatherForecastRequest.latitude
             )
-        testWeatherForecastRepository
-            .get(weatherForecastRequest)
+        testWeatherForecastRepository(weatherForecastRequest)
             .test()
             .assertComplete()
             .assertNoErrors()
@@ -187,15 +179,13 @@ class WeatherForecastRepositoryTest {
         doReturn(HTTP_500_INTERNAL_SERVER_ERROR).`when`(mockWeatherResponse).code()
         doReturn(true).`when`(mockNetworkHandler).isConnected
         doReturn(Single.just(mockWeatherResponse))
-            .`when`(mockWeatherForecastNetDataSource)
-            .get(
+            .`when`(mockWeatherForecastNetDataSource)(
                 weatherForecastRequest.category,
                 weatherForecastRequest.version,
                 weatherForecastRequest.longitude,
                 weatherForecastRequest.latitude
             )
-        testWeatherForecastRepository
-            .get(weatherForecastRequest)
+        testWeatherForecastRepository(weatherForecastRequest)
             .test()
             .assertComplete()
             .assertNoErrors()
@@ -208,15 +198,13 @@ class WeatherForecastRepositoryTest {
         doReturn(HTTP_503_SERVICE_UNAVAILABLE).`when`(mockWeatherResponse).code()
         doReturn(true).`when`(mockNetworkHandler).isConnected
         doReturn(Single.just(mockWeatherResponse))
-            .`when`(mockWeatherForecastNetDataSource)
-            .get(
+            .`when`(mockWeatherForecastNetDataSource)(
                 weatherForecastRequest.category,
                 weatherForecastRequest.version,
                 weatherForecastRequest.longitude,
                 weatherForecastRequest.latitude
             )
-        testWeatherForecastRepository
-            .get(weatherForecastRequest)
+        testWeatherForecastRepository(weatherForecastRequest)
             .test()
             .assertComplete()
             .assertNoErrors()
@@ -229,15 +217,13 @@ class WeatherForecastRepositoryTest {
         doReturn(HTTP_504_GATEWAY_TIMEOUT).`when`(mockWeatherResponse).code()
         doReturn(true).`when`(mockNetworkHandler).isConnected
         doReturn(Single.just(mockWeatherResponse))
-            .`when`(mockWeatherForecastNetDataSource)
-            .get(
+            .`when`(mockWeatherForecastNetDataSource)(
                 weatherForecastRequest.category,
                 weatherForecastRequest.version,
                 weatherForecastRequest.longitude,
                 weatherForecastRequest.latitude
             )
-        testWeatherForecastRepository
-            .get(weatherForecastRequest)
+        testWeatherForecastRepository(weatherForecastRequest)
             .test()
             .assertComplete()
             .assertNoErrors()
