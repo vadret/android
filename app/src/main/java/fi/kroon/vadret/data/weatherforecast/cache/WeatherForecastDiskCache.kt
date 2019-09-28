@@ -48,7 +48,7 @@ class WeatherForecastDiskCache @Inject constructor(
         }
 
     fun read(cacheKey: String): Single<Either<Failure, Weather>> = Single.fromCallable {
-        val snapshot: DiskLruCache.Snapshot = cache.get(cacheKey)
+        val snapshot: DiskLruCache.Snapshot = cache[cacheKey]!!
         val byteArray: ByteArray
         byteArray = snapshot.getSource(INDEX)
             .buffer()

@@ -49,7 +49,7 @@ class RadarDiskCache @Inject constructor(
         }
 
     fun read(): Single<Either<Failure, Radar>> = Single.fromCallable {
-        val snapshot: DiskLruCache.Snapshot = cache.get(KEY)
+        val snapshot: DiskLruCache.Snapshot = cache.get(KEY)!!
         val byteArray: ByteArray
         byteArray = snapshot.getSource(INDEX)
             .buffer()
