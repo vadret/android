@@ -7,7 +7,6 @@ import fi.kroon.vadret.data.weatherforecast.model.WeatherOut
 import io.github.sphrak.either.Either
 import io.reactivex.Single
 import javax.inject.Inject
-import timber.log.Timber
 
 class GetWeatherForecastTask @Inject constructor(
     private val repo: WeatherForecastRepository
