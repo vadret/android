@@ -47,7 +47,7 @@ class AboutAppLibraryViewModel @Inject constructor(
         }
     }
 
-    private fun onLibraryButtonClick(url: String?): Observable<AboutAppLibraryView.State> { 3
+    private fun onLibraryButtonClick(url: String?): Observable<AboutAppLibraryView.State> {
         state = state.copy(renderEvent = AboutAppLibraryView.RenderEvent.OpenUrl(url))
         return state.asObservable()
     }
