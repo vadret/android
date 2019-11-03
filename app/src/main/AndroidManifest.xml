@@ -86,7 +86,7 @@
         <!-- Weather Forecast Medium Service Factory -->
         <service
             android:name="fi.kroon.vadret.presentation.weatherforecastwidget.medium.service.WeatherForecastMediumService"
-            android:permission="android.permission.BIND_REMOTEVIEWS"></service>
+            android:permission="android.permission.BIND_REMOTEVIEWS" />
 
         <meta-data
             android:name="io.fabric.ApiKey"
