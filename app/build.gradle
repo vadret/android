@@ -147,7 +147,7 @@ dependencies {
     def JUNIT_VERSION = "4.13-beta-3"
     def EITHER_VERSION = "1.0.1"
     def KOTLIN_STDLIB_VERSION = "1.3.50"
-    def KTLINT_VERSION = "0.34.2"
+    def KTLINT_VERSION = "0.35.0"
     def KTX_VERSION = "1.0.0"
     def LEAK_CANARY = "1.6.3"
     def MATERIAL_VERSION = "1.1.0-alpha10"
