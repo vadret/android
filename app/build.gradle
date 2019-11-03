@@ -156,7 +156,7 @@ dependencies {
     def OKHTTP_VERSION = "4.2.2"
     def OKIO_VERSION = "2.4.1"
     def OSMDROID_VERSION = "6.1.2"
-    def PERMISSIONS_DISPATCHER_VERSION = "4.1.0"
+    def PERMISSIONS_DISPATCHER_VERSION = "4.6.0"
     def PICASSO_VERSION = "2.71828"
     def PREFERENCE_VERSION = "1.1.0"
     def RETROFIT_VERSION = "2.6.2"
@@ -219,13 +219,13 @@ dependencies {
 
     // Miscellaneous
     implementation "com.afollestad:rxkprefs:${RXK_PREFS_VERSION}"
-    implementation "com.github.hotchemi:permissionsdispatcher:${PERMISSIONS_DISPATCHER_VERSION}"
     implementation "com.squareup.picasso:picasso:${PICASSO_VERSION}"
     implementation "org.apache.commons:commons-csv:${COMMONS_CSV_VERSION}"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${KOTLIN_STDLIB_VERSION}"
     implementation "org.osmdroid:osmdroid-android:${OSMDROID_VERSION}"
     implementation "io.github.sphrak:either:${EITHER_VERSION}"
-    kapt "com.github.hotchemi:permissionsdispatcher-processor:${PERMISSIONS_DISPATCHER_VERSION}"
+    implementation "org.permissionsdispatcher:permissionsdispatcher:${PERMISSIONS_DISPATCHER_VERSION}"
+    kapt "org.permissionsdispatcher:permissionsdispatcher-processor:${PERMISSIONS_DISPATCHER_VERSION}"
 
     // Datetime
     implementation "com.jakewharton.threetenabp:threetenabp:${THREETEN_ABP_VERSION}"
