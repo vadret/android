@@ -152,7 +152,7 @@ dependencies {
     def LEAK_CANARY = "1.6.3"
     def MATERIAL_VERSION = "1.1.0-alpha10"
     def MOCKITO_CORE_VERSION = "3.0.0"
-    def MOSHI_VERSION = "1.8.0"
+    def MOSHI_VERSION = "1.9.1"
     def NAVIGATION_VERSION = "2.2.0-alpha03"
     def OKHTTP_VERSION = "4.2.0"
     def OKIO_VERSION = "2.4.0"
