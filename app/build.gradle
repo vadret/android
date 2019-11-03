@@ -155,7 +155,7 @@ dependencies {
     def MOSHI_VERSION = "1.9.1"
     def NAVIGATION_VERSION = "2.2.0-alpha03"
     def OKHTTP_VERSION = "4.2.0"
-    def OKIO_VERSION = "2.4.0"
+    def OKIO_VERSION = "2.4.1"
     def OSMDROID_VERSION = "6.1.2"
     def PERMISSIONS_DISPATCHER_VERSION = "4.1.0"
     def PICASSO_VERSION = "2.71828"
