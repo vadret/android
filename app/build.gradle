@@ -164,7 +164,7 @@ dependencies {
     def ROOM_VERSION = "2.1.0"
     def RXANDROID_VERSION = "2.1.1"
     def RXBINDING_VERSION = "3.0.0"
-    def RXJAVA_VERSION = "2.2.12"
+    def RXJAVA_VERSION = "2.2.14"
     def RXKOTLIN_VERSION = "2.4.0"
     def RXK_PREFS_VERSION = "1.2.5"
     def THREETEN_ABP_VERSION = "1.2.1"
