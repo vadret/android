@@ -1,5 +1,6 @@
 package fi.kroon.vadret.data.aggregatedfeed
 
+import dagger.Lazy
 import fi.kroon.vadret.data.aggregatedfeed.model.AggregatedFeed
 import fi.kroon.vadret.data.aggregatedfeed.net.AggregatedFeedNetDataSource
 import fi.kroon.vadret.data.exception.ErrorHandler
@@ -19,7 +20,7 @@ import retrofit2.Response
 @CoreApplicationScope
 class AggregatedFeedRepository @Inject constructor(
     private val networkHandler: NetworkHandler,
-    private val netDataSource: AggregatedFeedNetDataSource,
+    private val netDataSource: Lazy<AggregatedFeedNetDataSource>,
     private val errorHandler: ErrorHandler,
     private val exceptionHandler: ExceptionHandler
 ) : IErrorHandler by errorHandler, IExceptionHandler<Failure> by exceptionHandler {
@@ -31,16 +32,18 @@ class AggregatedFeedRepository @Inject constructor(
     operator fun invoke(feeds: String, counties: String): Single<Either<Failure, List<AggregatedFeed>>> =
         when (networkHandler.isConnected) {
             true -> {
-                netDataSource(
-                    feeds = feeds,
-                    counties = counties
-                ).map { response: Response<List<AggregatedFeed>> ->
-                    response
-                        .body()
-                        ?.asRight()
-                        ?: Failure.NetworkResponseEmpty
-                            .asLeft()
-                }
+                netDataSource
+                    .get()
+                    .getAggregatedFeed(
+                        feeds = feeds,
+                        counties = counties
+                    ).map { response: Response<List<AggregatedFeed>> ->
+                        response
+                            .body()
+                            ?.asRight()
+                            ?: Failure.NetworkResponseEmpty
+                                .asLeft()
+                    }
             }
             false -> getNetworkOfflineError()
         }.onErrorReturn {

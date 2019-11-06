@@ -1,5 +1,6 @@
 package fi.kroon.vadret.data.nominatim
 
+import dagger.Lazy
 import fi.kroon.vadret.data.exception.ErrorHandler
 import fi.kroon.vadret.data.exception.ExceptionHandler
 import fi.kroon.vadret.data.exception.IErrorHandler
@@ -21,14 +22,14 @@ import retrofit2.Response
 
 @CoreApplicationScope
 class NominatimRepository @Inject constructor(
-    private val nominatimNetDataSource: NominatimNetDataSource,
+    private val nominatimNetDataSource: Lazy<NominatimNetDataSource>,
     private val networkHandler: NetworkHandler,
     private val errorHandler: ErrorHandler,
     private val exceptionHandler: ExceptionHandler
 ) : IErrorHandler by errorHandler, IExceptionHandler<Failure> by exceptionHandler {
     fun get(request: NominatimOut): Single<Either<Failure, List<Nominatim>>> =
         when (networkHandler.isConnected) {
-            true -> nominatimNetDataSource.get(
+            true -> nominatimNetDataSource.get().getNominatim(
                 city = request.city,
                 format = request.format,
                 limit = request.limit,
@@ -54,7 +55,7 @@ class NominatimRepository @Inject constructor(
 
     fun reverse(request: NominatimReverseOut): Single<Either<Failure, Nominatim>> =
         when (networkHandler.isConnected) {
-            true -> nominatimNetDataSource.reverse(
+            true -> nominatimNetDataSource.get().getNominatimReverse(
                 format = request.format,
                 latitude = request.latitude,
                 longitude = request.longitude,

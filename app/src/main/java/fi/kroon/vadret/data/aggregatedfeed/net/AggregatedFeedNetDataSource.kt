@@ -9,7 +9,7 @@ import retrofit2.http.Query
 interface AggregatedFeedNetDataSource {
 
     @GET("/v2/aggregatedfeed")
-    operator fun invoke(
+    fun getAggregatedFeed(
 
         @Query("days")
         days: Int = 7,

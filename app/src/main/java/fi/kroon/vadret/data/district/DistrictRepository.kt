@@ -1,5 +1,6 @@
 package fi.kroon.vadret.data.district
 
+import dagger.Lazy
 import fi.kroon.vadret.data.district.model.DistrictView
 import fi.kroon.vadret.data.district.net.DistrictNetDataSource
 import fi.kroon.vadret.data.exception.ErrorHandler
@@ -19,7 +20,7 @@ import retrofit2.Response
 @CoreApplicationScope
 class DistrictRepository @Inject constructor(
     private val networkHandler: NetworkHandler,
-    private val networkDataSource: DistrictNetDataSource,
+    private val networkDataSource: Lazy<DistrictNetDataSource>,
     private val errorHandler: ErrorHandler,
     private val exceptionHandler: ExceptionHandler
 ) : IErrorHandler by errorHandler, IExceptionHandler<Failure> by exceptionHandler {
@@ -30,7 +31,7 @@ class DistrictRepository @Inject constructor(
     operator fun invoke(): Single<Either<Failure, DistrictView>> =
         when (networkHandler.isConnected) {
             true -> {
-                networkDataSource()
+                networkDataSource.get()()
                     .map { response: Response<DistrictView> ->
                         response
                             .body()

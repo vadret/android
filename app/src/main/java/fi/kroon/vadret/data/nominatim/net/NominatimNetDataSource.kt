@@ -9,7 +9,7 @@ import retrofit2.http.Query
 interface NominatimNetDataSource {
 
     @GET("search/")
-    fun get(
+    fun getNominatim(
         @Query("city") city: String,
         @Query("format") format: String,
         @Query("countrycodes") countryCodes: String,
@@ -19,7 +19,7 @@ interface NominatimNetDataSource {
     ): Single<Response<List<Nominatim>>>
 
     @GET("reverse/")
-    fun reverse(
+    fun getNominatimReverse(
         @Query("format") format: String,
         @Query("lat") latitude: Double,
         @Query("lon") longitude: Double,

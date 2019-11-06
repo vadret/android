@@ -1,5 +1,6 @@
 package fi.kroon.vadret.data.radar
 
+import dagger.Lazy
 import fi.kroon.vadret.data.exception.ErrorHandler
 import fi.kroon.vadret.data.exception.ExceptionHandler
 import fi.kroon.vadret.data.exception.IErrorHandler
@@ -20,7 +21,7 @@ import retrofit2.Response
 
 @CoreApplicationScope
 class RadarRepository @Inject constructor(
-    private val radarNetDataSource: RadarNetDataSource,
+    private val radarNetDataSource: Lazy<RadarNetDataSource>,
     private val networkHandler: NetworkHandler,
     private val errorHandler: ErrorHandler,
     private val exceptionHandler: ExceptionHandler
@@ -28,13 +29,15 @@ class RadarRepository @Inject constructor(
     operator fun invoke(radarRequest: RadarRequest): Single<Either<Failure, Radar>> =
         when (networkHandler.isConnected) {
             true -> with(radarRequest) {
-                radarNetDataSource(
-                    year = year,
-                    month = month,
-                    date = date,
-                    format = format,
-                    timeZone = timeZone
-                )
+                radarNetDataSource
+                    .get()
+                    .getRadar(
+                        year = year,
+                        month = month,
+                        date = date,
+                        format = format,
+                        timeZone = timeZone
+                    )
             }.map { response: Response<Radar> ->
                 when (response.body()?.files) {
                     null -> {

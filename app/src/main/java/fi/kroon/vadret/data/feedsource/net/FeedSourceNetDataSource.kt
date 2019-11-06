@@ -9,7 +9,7 @@ import retrofit2.http.Query
 interface FeedSourceNetDataSource {
 
     @GET("feedsources/")
-    operator fun invoke(
+    fun getFeedSource(
         @Query("format")
         format: String = "json"
     ): Single<Response<List<FeedSource>>>

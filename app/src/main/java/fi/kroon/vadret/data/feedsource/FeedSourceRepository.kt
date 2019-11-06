@@ -1,5 +1,6 @@
 package fi.kroon.vadret.data.feedsource
 
+import dagger.Lazy
 import fi.kroon.vadret.data.exception.ErrorHandler
 import fi.kroon.vadret.data.exception.ExceptionHandler
 import fi.kroon.vadret.data.exception.IErrorHandler
@@ -19,7 +20,7 @@ import retrofit2.Response
 @CoreApplicationScope
 class FeedSourceRepository @Inject constructor(
     private val networkHandler: NetworkHandler,
-    private val feedSourceNetDataSource: FeedSourceNetDataSource,
+    private val feedSourceNetDataSource: Lazy<FeedSourceNetDataSource>,
     private val errorHandler: ErrorHandler,
     private val exceptionHandler: ExceptionHandler
 ) : IErrorHandler by errorHandler, IExceptionHandler<Failure> by exceptionHandler {
@@ -30,7 +31,9 @@ class FeedSourceRepository @Inject constructor(
     operator fun invoke(): Single<Either<Failure, List<FeedSource>>> =
         when (networkHandler.isConnected) {
             true -> {
-                feedSourceNetDataSource()
+                feedSourceNetDataSource
+                    .get()
+                    .getFeedSource()
                     .map { response: Response<List<FeedSource>> ->
                         response
                             .body()

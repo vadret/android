@@ -12,7 +12,7 @@ interface WeatherForecastNetDataSource {
      * Provide lat/lon for 10 day forecast
      */
     @GET("/api/category/{category}/version/{version}/geotype/point/lon/{longitude}/lat/{latitude}/data.json")
-    operator fun invoke(
+    fun getWeatherForecast(
         @Path("category") category: String,
         @Path("version") version: Int,
         @Path("longitude") longitude: Double,

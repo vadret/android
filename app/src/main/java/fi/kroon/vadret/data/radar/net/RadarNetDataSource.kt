@@ -10,7 +10,7 @@ import retrofit2.http.Query
 interface RadarNetDataSource {
 
     @GET("/api/version/latest/area/sweden/product/comp/{year}/{month}/{date}")
-    operator fun invoke(
+    fun getRadar(
         @Path("year") year: String,
         @Path("month") month: String,
         @Path("date") date: String,

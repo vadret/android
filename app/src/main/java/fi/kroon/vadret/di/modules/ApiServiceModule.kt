@@ -1,6 +1,7 @@
 package fi.kroon.vadret.di.modules
 
 import com.squareup.moshi.Moshi
+import dagger.Lazy
 import dagger.Module
 import dagger.Provides
 import fi.kroon.vadret.data.aggregatedfeed.net.AggregatedFeedNetDataSource
@@ -21,6 +22,7 @@ import fi.kroon.vadret.util.NOMINATIM_BASE_API_URL
 import fi.kroon.vadret.util.SMHI_API_ALERT_URL
 import fi.kroon.vadret.util.SMHI_API_FORECAST_URL
 import fi.kroon.vadret.util.SMHI_API_RADAR_URL
+import fi.kroon.vadret.util.extension.delegatingCallFactory
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
@@ -77,51 +79,48 @@ object ApiServiceModule {
     @Provides
     @JvmStatic
     @CoreApplicationScope
-    fun provideRetrofitNominatim(okHttpClient: OkHttpClient, moshi: Moshi): Retrofit {
-        return Retrofit.Builder()
+    fun provideRetrofitNominatim(okHttpClient: Lazy<OkHttpClient>, moshi: Moshi): Retrofit =
+        Retrofit.Builder()
             .baseUrl(NOMINATIM_BASE_API_URL)
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
             .addConverterFactory(MoshiConverterFactory.create(moshi))
-            .client(okHttpClient)
+            .delegatingCallFactory(okHttpClient)
             .build()
-    }
 
     @Weather
     @Provides
     @JvmStatic
     @CoreApplicationScope
-    fun provideRetrofitWeather(okHttpClient: OkHttpClient, moshi: Moshi): Retrofit {
-        return Retrofit.Builder()
+    fun provideRetrofitWeather(okHttpClient: Lazy<OkHttpClient>, moshi: Moshi): Retrofit =
+        Retrofit.Builder()
             .baseUrl(SMHI_API_FORECAST_URL)
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
             .addConverterFactory(MoshiConverterFactory.create(moshi))
-            .client(okHttpClient)
+            .delegatingCallFactory(okHttpClient)
             .build()
-    }
 
     @Alert
     @Provides
     @JvmStatic
     @CoreApplicationScope
-    fun provideRetrofitAlert(okHttpClient: OkHttpClient, moshi: Moshi): Retrofit {
-        return Retrofit.Builder()
+    fun provideRetrofitAlert(okHttpClient: Lazy<OkHttpClient>, moshi: Moshi): Retrofit =
+        Retrofit.Builder()
             .baseUrl(SMHI_API_ALERT_URL)
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
             .addConverterFactory(MoshiConverterFactory.create(moshi))
-            .client(okHttpClient)
+            .delegatingCallFactory(okHttpClient)
             .build()
-    }
 
     @KrisInformation
     @Provides
     @JvmStatic
     @CoreApplicationScope
-    fun provideRetrofitKrisInformation(okHttpClient: OkHttpClient, moshi: Moshi): Retrofit {
+    fun provideRetrofitKrisInformation(okHttpClient: Lazy<OkHttpClient>, moshi: Moshi): Retrofit {
         return Retrofit.Builder()
             .baseUrl(KRISINFORMATION_API_URL)
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
             .addConverterFactory(MoshiConverterFactory.create(moshi))
-            .client(okHttpClient)
+            .delegatingCallFactory(okHttpClient)
             .build()
     }
 
@@ -129,12 +128,11 @@ object ApiServiceModule {
     @Provides
     @JvmStatic
     @CoreApplicationScope
-    fun provideRetrofitRadar(okHttpClient: OkHttpClient, moshi: Moshi): Retrofit {
-        return Retrofit.Builder()
+    fun provideRetrofitRadar(okHttpClient: Lazy<OkHttpClient>, moshi: Moshi): Retrofit =
+        Retrofit.Builder()
             .baseUrl(SMHI_API_RADAR_URL)
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
             .addConverterFactory(MoshiConverterFactory.create(moshi))
-            .client(okHttpClient)
+            .delegatingCallFactory(okHttpClient)
             .build()
-    }
 }
