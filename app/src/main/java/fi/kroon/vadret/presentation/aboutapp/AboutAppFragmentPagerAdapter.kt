@@ -13,7 +13,7 @@ import javax.inject.Inject
 class AboutAppFragmentPagerAdapter @Inject constructor(
     fragmentManager: FragmentManager,
     private val context: Context
-) : FragmentPagerAdapter(fragmentManager) {
+) : FragmentPagerAdapter(fragmentManager, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
 
     override fun getCount(): Int = 3
 
