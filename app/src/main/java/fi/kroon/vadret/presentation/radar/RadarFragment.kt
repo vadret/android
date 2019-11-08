@@ -45,7 +45,7 @@ import org.osmdroid.tileprovider.tilesource.XYTileSource
 import org.osmdroid.util.BoundingBox
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.CustomZoomButtonsController
-import org.osmdroid.views.overlay.GroundOverlay2
+import org.osmdroid.views.overlay.GroundOverlay
 import org.threeten.bp.OffsetDateTime
 import org.threeten.bp.format.DateTimeFormatter
 import timber.log.Timber
@@ -449,7 +449,7 @@ class RadarFragment : BaseFragment() {
             )
 
     private fun setOverlayImage(bitmap: Bitmap) {
-        val radarOverlay: GroundOverlay2 = GroundOverlay2()
+        val radarOverlay: GroundOverlay = GroundOverlay()
             .apply {
                 image = bitmap
                 setPosition(
