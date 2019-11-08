@@ -36,7 +36,7 @@ class AboutAppFragment : BaseFragment() {
     val cmp: AboutAppComponent by lazy(LazyThreadSafetyMode.NONE) {
         appComponent()
             .appAboutComponentBuilder()
-            .fragmentManager(fragmentManager!!)
+            .fragmentManager(childFragmentManager)
             .build()
     }
 
