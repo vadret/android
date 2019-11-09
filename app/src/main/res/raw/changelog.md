@@ -5,6 +5,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.2.5] -- 2019-11-*
+
+### Changed
+
+- Lazy init on expensive dagger objects. On avg it shaves off 1 second on app startup time
+- Miscellaneous thirdparty version bumps
+- Removed usage of several deprecated API's
+
 ## [1.2.4] -- 2019-09-29
 
 ### Fixes
@@ -156,7 +164,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Radar imagery
 - 10 day weather forecast
 
-[Unreleased]: https://github.com/vadret/android/compare/1.2.4...HEAD
+[Unreleased]: https://github.com/vadret/android/compare/1.2.5...HEAD
+[1.2.5]: https://github.com/vadret/android/compare/1.2.4...1.2.5
 [1.2.4]: https://github.com/vadret/android/compare/1.2.3...1.2.4
 [1.2.3]: https://github.com/vadret/android/compare/1.2.2...1.2.3
 [1.2.2]: https://github.com/vadret/android/compare/1.2.1...1.2.2
