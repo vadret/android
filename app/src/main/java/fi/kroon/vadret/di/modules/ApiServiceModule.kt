@@ -22,6 +22,7 @@ import fi.kroon.vadret.util.NOMINATIM_BASE_API_URL
 import fi.kroon.vadret.util.SMHI_API_ALERT_URL
 import fi.kroon.vadret.util.SMHI_API_FORECAST_URL
 import fi.kroon.vadret.util.SMHI_API_RADAR_URL
+import fi.kroon.vadret.util.extension.assertNoInitMainThread
 import fi.kroon.vadret.util.extension.delegatingCallFactory
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
@@ -79,43 +80,50 @@ object ApiServiceModule {
     @Provides
     @JvmStatic
     @CoreApplicationScope
-    fun provideRetrofitNominatim(okHttpClient: Lazy<OkHttpClient>, moshi: Moshi): Retrofit =
-        Retrofit.Builder()
+    fun provideRetrofitNominatim(okHttpClient: Lazy<OkHttpClient>, moshi: Moshi): Retrofit {
+        assertNoInitMainThread()
+        return Retrofit.Builder()
             .baseUrl(NOMINATIM_BASE_API_URL)
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
             .addConverterFactory(MoshiConverterFactory.create(moshi))
             .delegatingCallFactory(okHttpClient)
             .build()
+    }
 
     @Weather
     @Provides
     @JvmStatic
     @CoreApplicationScope
-    fun provideRetrofitWeather(okHttpClient: Lazy<OkHttpClient>, moshi: Moshi): Retrofit =
-        Retrofit.Builder()
+    fun provideRetrofitWeather(okHttpClient: Lazy<OkHttpClient>, moshi: Moshi): Retrofit {
+        assertNoInitMainThread()
+        return Retrofit.Builder()
             .baseUrl(SMHI_API_FORECAST_URL)
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
             .addConverterFactory(MoshiConverterFactory.create(moshi))
             .delegatingCallFactory(okHttpClient)
             .build()
+    }
 
     @Alert
     @Provides
     @JvmStatic
     @CoreApplicationScope
-    fun provideRetrofitAlert(okHttpClient: Lazy<OkHttpClient>, moshi: Moshi): Retrofit =
-        Retrofit.Builder()
+    fun provideRetrofitAlert(okHttpClient: Lazy<OkHttpClient>, moshi: Moshi): Retrofit {
+        assertNoInitMainThread()
+        return Retrofit.Builder()
             .baseUrl(SMHI_API_ALERT_URL)
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
             .addConverterFactory(MoshiConverterFactory.create(moshi))
             .delegatingCallFactory(okHttpClient)
             .build()
+    }
 
     @KrisInformation
     @Provides
     @JvmStatic
     @CoreApplicationScope
     fun provideRetrofitKrisInformation(okHttpClient: Lazy<OkHttpClient>, moshi: Moshi): Retrofit {
+        assertNoInitMainThread()
         return Retrofit.Builder()
             .baseUrl(KRISINFORMATION_API_URL)
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
@@ -128,11 +136,13 @@ object ApiServiceModule {
     @Provides
     @JvmStatic
     @CoreApplicationScope
-    fun provideRetrofitRadar(okHttpClient: Lazy<OkHttpClient>, moshi: Moshi): Retrofit =
-        Retrofit.Builder()
+    fun provideRetrofitRadar(okHttpClient: Lazy<OkHttpClient>, moshi: Moshi): Retrofit {
+        assertNoInitMainThread()
+        return Retrofit.Builder()
             .baseUrl(SMHI_API_RADAR_URL)
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
             .addConverterFactory(MoshiConverterFactory.create(moshi))
             .delegatingCallFactory(okHttpClient)
             .build()
+    }
 }

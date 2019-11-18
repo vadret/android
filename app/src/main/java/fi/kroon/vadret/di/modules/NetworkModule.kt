@@ -31,7 +31,7 @@ object NetworkModule {
     @CoreApplicationScope
     fun provideHttpLoggingInterceptor(): HttpLoggingInterceptor =
         HttpLoggingInterceptor()
-            .apply { this.level = getLogLevel }
+            .apply { level = getLogLevel }
 
     @Provides
     @JvmStatic
