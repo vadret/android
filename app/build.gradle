@@ -152,7 +152,7 @@ dependencies {
     def MATERIAL_VERSION = "1.1.0-beta02"
     def MOCKITO_CORE_VERSION = "3.1.0"
     def MOSHI_VERSION = "1.9.2"
-    def NAVIGATION_VERSION = "2.2.0-rc01"
+    def NAVIGATION_VERSION = "2.2.0-rc02"
     def OKHTTP_VERSION = "4.2.2"
     def OKIO_VERSION = "2.4.1"
     def OSMDROID_VERSION = "6.1.2"
