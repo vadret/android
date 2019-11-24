@@ -2,8 +2,16 @@ package fi.kroon.vadret.util.extension
 
 import fi.kroon.vadret.util.MPS_TO_KMPH_FACTOR
 
-fun Double.toCoordinate() = "%.6f".format(this).replace(",", ".").toDouble()
-fun String.toCoordinate() = "%.6f".format(this.toDouble()).replace(",", ".").toDouble()
+fun Double.toCoordinate(): Double =
+    "%.6f".format(this)
+        .replace(",", ".")
+        .replace("−", "-")
+        .toDouble()
+fun String.toCoordinate(): Double = "%.6f".format(
+    this.replace("−", "-")
+        .toDouble()
+).replace(",", ".")
+    .toDouble()
 fun Double.toWindChill(wind: Double): String {
 
     /**
