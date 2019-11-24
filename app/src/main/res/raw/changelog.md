@@ -5,6 +5,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.2.6] -- 2019-11-24
+
+### Fixes
+
+- Handle NumberFormatException correctly
+
 ## [1.2.5] -- 2019-11-23
 
 ### Changed
@@ -164,7 +170,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Radar imagery
 - 10 day weather forecast
 
-[Unreleased]: https://github.com/vadret/android/compare/1.2.5...HEAD
+[Unreleased]: https://github.com/vadret/android/compare/1.2.6...HEAD
+[1.2.6]: https://github.com/vadret/android/compare/1.2.5...1.2.6
 [1.2.5]: https://github.com/vadret/android/compare/1.2.4...1.2.5
 [1.2.4]: https://github.com/vadret/android/compare/1.2.3...1.2.4
 [1.2.3]: https://github.com/vadret/android/compare/1.2.2...1.2.3
