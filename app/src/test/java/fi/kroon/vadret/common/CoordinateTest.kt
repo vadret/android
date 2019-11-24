@@ -18,5 +18,4 @@ class CoordinateTest {
         assertEquals(latDouble, -87.684700)
         assertEquals(lonDouble, -8.12)
     }
-
 }
