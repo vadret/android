@@ -17,7 +17,6 @@ import okhttp3.internal.io.FileSystem
 object CacheModule {
 
     @Provides
-    @JvmStatic
     @CoreApplicationScope
     fun provideDiskLruCache(context: Context): DiskLruCache =
         DiskLruCache.create(
@@ -29,17 +28,14 @@ object CacheModule {
         )
 
     @Provides
-    @JvmStatic
     @CoreApplicationScope
     fun provideWeatherLruCache(): LruCache<String, Weather> = LruCache(MEMORY_CACHE_SIZE)
 
     @Provides
-    @JvmStatic
     @CoreApplicationScope
     fun provideAggregatedFeedLruCache(): LruCache<Long, List<AggregatedFeed>> = LruCache(MEMORY_CACHE_SIZE)
 
     @Provides
-    @JvmStatic
     @CoreApplicationScope
     fun provideRadarLruCache(): LruCache<Long, Radar> = LruCache(MEMORY_CACHE_SIZE)
 }

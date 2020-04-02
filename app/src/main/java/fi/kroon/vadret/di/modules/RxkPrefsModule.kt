@@ -13,12 +13,10 @@ import fi.kroon.vadret.util.DEFAULT_SETTINGS
 object RxkPrefsModule {
 
     @Provides
-    @JvmStatic
     @CoreApplicationScope
     fun provideRxkPrefs(context: Context): RxkPrefs = rxkPrefs(context, DEFAULT_SETTINGS)
 
     @Provides
-    @JvmStatic
     @CoreApplicationScope
     fun provideFailureHandler(): ErrorHandler = ErrorHandler()
 }

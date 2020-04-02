@@ -33,43 +33,36 @@ import retrofit2.converter.moshi.MoshiConverterFactory
 object ApiServiceModule {
 
     @Provides
-    @JvmStatic
     @CoreApplicationScope
     fun provideWeatherApi(@Weather retrofit: Retrofit): WeatherForecastNetDataSource =
         retrofit.create(WeatherForecastNetDataSource::class.java)
 
     @Provides
-    @JvmStatic
     @CoreApplicationScope
     fun provideRadarApi(@Radar retrofit: Retrofit): RadarNetDataSource =
         retrofit.create(RadarNetDataSource::class.java)
 
     @Provides
-    @JvmStatic
     @CoreApplicationScope
     fun provideNominatimApi(@Nominatim retrofit: Retrofit): NominatimNetDataSource =
         retrofit.create(NominatimNetDataSource::class.java)
 
     @Provides
-    @JvmStatic
     @CoreApplicationScope
     fun provideDistrictViewApi(@Alert retrofit: Retrofit): DistrictNetDataSource =
         retrofit.create(DistrictNetDataSource::class.java)
 
     @Provides
-    @JvmStatic
     @CoreApplicationScope
     fun provideFeedSourceApi(@KrisInformation retrofit: Retrofit): FeedSourceNetDataSource =
         retrofit.create(FeedSourceNetDataSource::class.java)
 
     @Provides
-    @JvmStatic
     @CoreApplicationScope
     fun provideAggregatedFeedApi(@KrisInformation retrofit: Retrofit): AggregatedFeedNetDataSource =
         retrofit.create(AggregatedFeedNetDataSource::class.java)
 
     @Provides
-    @JvmStatic
     @CoreApplicationScope
     fun provideMoshi(): Moshi = Moshi
         .Builder()
@@ -78,7 +71,6 @@ object ApiServiceModule {
 
     @Nominatim
     @Provides
-    @JvmStatic
     @CoreApplicationScope
     fun provideRetrofitNominatim(okHttpClient: Lazy<OkHttpClient>, moshi: Moshi): Retrofit {
         assertNoInitMainThread()
@@ -92,7 +84,6 @@ object ApiServiceModule {
 
     @Weather
     @Provides
-    @JvmStatic
     @CoreApplicationScope
     fun provideRetrofitWeather(okHttpClient: Lazy<OkHttpClient>, moshi: Moshi): Retrofit {
         assertNoInitMainThread()
@@ -106,7 +97,6 @@ object ApiServiceModule {
 
     @Alert
     @Provides
-    @JvmStatic
     @CoreApplicationScope
     fun provideRetrofitAlert(okHttpClient: Lazy<OkHttpClient>, moshi: Moshi): Retrofit {
         assertNoInitMainThread()
@@ -120,7 +110,6 @@ object ApiServiceModule {
 
     @KrisInformation
     @Provides
-    @JvmStatic
     @CoreApplicationScope
     fun provideRetrofitKrisInformation(okHttpClient: Lazy<OkHttpClient>, moshi: Moshi): Retrofit {
         assertNoInitMainThread()
@@ -134,7 +123,6 @@ object ApiServiceModule {
 
     @Radar
     @Provides
-    @JvmStatic
     @CoreApplicationScope
     fun provideRetrofitRadar(okHttpClient: Lazy<OkHttpClient>, moshi: Moshi): Retrofit {
         assertNoInitMainThread()

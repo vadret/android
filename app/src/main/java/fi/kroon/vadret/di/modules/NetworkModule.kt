@@ -27,14 +27,12 @@ object NetworkModule {
         }
 
     @Provides
-    @JvmStatic
     @CoreApplicationScope
     fun provideHttpLoggingInterceptor(): HttpLoggingInterceptor =
         HttpLoggingInterceptor()
             .apply { level = getLogLevel }
 
     @Provides
-    @JvmStatic
     @CoreApplicationScope
     fun provideOkHttpClient(
         httpLoggingInterceptor: HttpLoggingInterceptor

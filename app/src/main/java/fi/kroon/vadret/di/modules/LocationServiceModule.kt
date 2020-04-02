@@ -11,13 +11,12 @@ import fi.kroon.vadret.di.scope.CoreApplicationScope
 object LocationServiceModule {
 
     @Provides
-    @JvmStatic
     @CoreApplicationScope
     fun provideLocationManager(context: Context): LocationManager =
         context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
 
     @Provides
-    @JvmStatic
     @CoreApplicationScope
-    fun provideLocationProvider(locationManager: LocationManager): LocationLocalDataSource = LocationLocalDataSource(locationManager)
+    fun provideLocationProvider(locationManager: LocationManager): LocationLocalDataSource =
+        LocationLocalDataSource(locationManager)
 }

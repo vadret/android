@@ -9,7 +9,6 @@ import fi.kroon.vadret.util.Scheduler
 object SchedulerModule {
 
     @Provides
-    @JvmStatic
     @CoreApplicationScope
     fun provideSchedulers(): Scheduler = Scheduler()
 }
