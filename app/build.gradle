@@ -160,7 +160,7 @@ dependencies {
     def PICASSO_VERSION = "2.71828"
     def PREFERENCE_VERSION = "1.1.0"
     def RETROFIT_VERSION = "2.7.2"
-    def ROOM_VERSION = "2.2.2"
+    def ROOM_VERSION = "2.2.5"
     def RXANDROID_VERSION = "2.1.1"
     def RXBINDING_VERSION = "3.1.0"
     def RXJAVA_VERSION = "2.2.14"
