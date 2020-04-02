@@ -142,7 +142,7 @@ dependencies {
     def CORE_KTX_VERSION = "1.2.0"
     def CRASHLYTICS_VERSION = "2.10.1"
     def DAGGER_VERSION = "2.25.2"
-    def FRAGMENT_KTX_VERSION = "1.1.0"
+    def FRAGMENT_KTX_VERSION = "1.2.0"
     def JUNIT_VERSION = "4.13"
     def EITHER_VERSION = "1.0.1"
     def KOTLIN_STDLIB_VERSION = "1.3.71"
