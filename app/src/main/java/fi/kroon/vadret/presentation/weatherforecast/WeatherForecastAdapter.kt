@@ -45,7 +45,7 @@ class WeatherForecastAdapter @Inject constructor() : RecyclerView.Adapter<Recycl
         const val TYPE_WEATHER_FORECAST = 1
         const val TYPE_WEATHER_SPLASH = 2
         const val TYPE_WEATHER_HEADER = 3
-        const val ROTATION_DEGREE_OFFSET = -90
+        const val ROTATION_DEGREE_OFFSET = 90
     }
 
     inner class HeadlineViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -76,7 +76,7 @@ class WeatherForecastAdapter @Inject constructor() : RecyclerView.Adapter<Recycl
 
                 item.windDirection?.let {
                     itemView.windDirectionIcon.setImageDrawable(drawable)
-                    itemView.windDirectionIcon.rotation = item.windDirection.toFloat() - ROTATION_DEGREE_OFFSET
+                    itemView.windDirectionIcon.rotation = item.windDirection.toFloat() + ROTATION_DEGREE_OFFSET
                 } ?: run {
                     itemView.windDirectionIcon.toInvisible()
                 }

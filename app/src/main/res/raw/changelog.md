@@ -5,6 +5,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.2.8] -- 2020-05-08
+
+### Fixes
+
+- Actual fix for incorrect wind direction icon
+
 ## [1.2.7] -- 2019-12-16
 
 ### Fixes
@@ -176,7 +182,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Radar imagery
 - 10 day weather forecast
 
-[Unreleased]: https://github.com/vadret/android/compare/1.2.7...HEAD
+[Unreleased]: https://github.com/vadret/android/compare/1.2.8...HEAD
+[1.2.8]: https://github.com/vadret/android/compare/1.2.7...1.2.8
 [1.2.7]: https://github.com/vadret/android/compare/1.2.6...1.2.7
 [1.2.6]: https://github.com/vadret/android/compare/1.2.5...1.2.6
 [1.2.5]: https://github.com/vadret/android/compare/1.2.4...1.2.5
