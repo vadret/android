@@ -3,6 +3,7 @@ package fi.kroon.vadret.presentation.weatherforecast
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import fi.kroon.vadret.R
 import fi.kroon.vadret.presentation.weatherforecast.di.WeatherForecastFeatureScope
@@ -225,8 +226,16 @@ class WeatherForecastAdapter @Inject constructor() : RecyclerView.Adapter<Recycl
 
     fun updateList(entityList: List<IWeatherForecastModel>) {
         Timber.d("WeatherForecastAdapter> UpdateList: $entityList")
+        val diffResult: DiffUtil.DiffResult =
+            DiffUtil.calculateDiff(
+                WeatherForecastDiffUtil(
+                    oldList = list,
+                    newList = entityList
+                )
+            )
+
         list.clear()
         list.addAll(entityList)
-        notifyDataSetChanged()
+        diffResult.dispatchUpdatesTo(this)
     }
 }
