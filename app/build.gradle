@@ -43,8 +43,8 @@ android {
         applicationId "fi.kroon.vadret"
         minSdkVersion 21
         targetSdkVersion 29
-        versionCode 23
-        versionName "1.2.7"
+        versionCode 24
+        versionName "1.2.8"
         vectorDrawables.useSupportLibrary = true
         flavorDimensions "default"
         testInstrumentationRunner "androidx.top.runner.AndroidJUnitRunner"
