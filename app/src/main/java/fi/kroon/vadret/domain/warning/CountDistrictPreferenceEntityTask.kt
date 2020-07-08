@@ -7,8 +7,8 @@ import fi.kroon.vadret.util.DISTRICT_MAX
 import fi.kroon.vadret.util.extension.asRight
 import io.github.sphrak.either.Either
 import io.reactivex.Single
-import javax.inject.Inject
 import timber.log.Timber
+import javax.inject.Inject
 
 class CountDistrictPreferenceEntityTask @Inject constructor(
     private val dao: DistrictPreferenceDao

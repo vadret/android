@@ -17,11 +17,11 @@ import fi.kroon.vadret.presentation.warning.filter.model.IFilterable
 import fi.kroon.vadret.presentation.warning.filter.model.TitleModel
 import fi.kroon.vadret.util.extension.getAttribute
 import io.reactivex.subjects.PublishSubject
-import javax.inject.Inject
 import kotlinx.android.synthetic.main.warning_filter_district_chip_group.view.*
 import kotlinx.android.synthetic.main.warning_filter_feed_source_chip_group.view.*
 import kotlinx.android.synthetic.main.warning_filter_title_item.view.*
 import timber.log.Timber
+import javax.inject.Inject
 
 class WarningFilterAdapter @Inject constructor(
     private val onFeedSourceItemSelected: PublishSubject<FeedSourceOptionEntity>,

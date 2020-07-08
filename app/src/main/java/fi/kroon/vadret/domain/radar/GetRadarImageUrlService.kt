@@ -14,8 +14,8 @@ import io.github.sphrak.either.flatMap
 import io.github.sphrak.either.map
 import io.reactivex.Single
 import io.reactivex.rxkotlin.zipWith
-import javax.inject.Inject
 import timber.log.Timber
+import javax.inject.Inject
 
 class GetRadarImageUrlService @Inject constructor(
     private val getRadarImageUrlTask: GetRadarImageUrlTask,
@@ -113,8 +113,10 @@ class GetRadarImageUrlService @Inject constructor(
                 .zipWith(setRadarDiskCacheTask(data.radar))
                 .map { pair: Pair<Either<Failure, Radar>, Either<Failure, Radar>> ->
                     Timber.i("Updating cache")
-                    val (firstEither: Either<Failure, Radar>,
-                        secondEither: Either<Failure, Radar>) = pair
+                    val (
+                        firstEither: Either<Failure, Radar>,
+                        secondEither: Either<Failure, Radar>
+                    ) = pair
                     firstEither.flatMap {
                         secondEither.map {
                             data

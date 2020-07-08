@@ -10,8 +10,8 @@ import fi.kroon.vadret.util.extension.empty
 import io.github.sphrak.either.Either
 import io.github.sphrak.either.map
 import io.reactivex.Single
-import javax.inject.Inject
 import timber.log.Timber
+import javax.inject.Inject
 
 class GetWidgetAutoCompleteService @Inject constructor(
     private val autoCompleteRepository: AutoCompleteRepository

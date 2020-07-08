@@ -5,8 +5,8 @@ import fi.kroon.vadret.data.location.LocationRepository
 import fi.kroon.vadret.data.location.model.Location
 import io.github.sphrak.either.Either
 import io.reactivex.Single
-import javax.inject.Inject
 import timber.log.Timber
+import javax.inject.Inject
 
 class GetLocationAutomaticTask @Inject constructor(
     private val locationRepository: LocationRepository

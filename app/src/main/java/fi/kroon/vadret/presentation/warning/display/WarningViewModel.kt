@@ -20,8 +20,8 @@ import fi.kroon.vadret.util.extension.asObservable
 import io.github.sphrak.either.Either
 import io.reactivex.Observable
 import io.reactivex.ObservableTransformer
-import javax.inject.Inject
 import timber.log.Timber
+import javax.inject.Inject
 
 @WarningScope
 class WarningViewModel @Inject constructor(
@@ -123,24 +123,25 @@ class WarningViewModel @Inject constructor(
                              *  needed to complete aggregated feed request.
                              */
                             true -> loadLastChecked()
-                            false -> setDefaultFeedSourcePreferenceEntityService()
-                                .flatMapObservable { result: Either<Failure, Boolean> ->
-                                    result.either(
-                                        { failure: Failure ->
-                                            Timber.e("Failure: $failure")
-                                            state.asObservable()
-                                        },
-                                        { feedSourceIsAvailable: Boolean ->
-                                            when (feedSourceIsAvailable) {
-                                                true -> loadLastChecked()
-                                                false -> {
-                                                    Timber.e("This is a deeply erronous state, this should really not happen")
-                                                    state.asObservable()
+                            false ->
+                                setDefaultFeedSourcePreferenceEntityService()
+                                    .flatMapObservable { result: Either<Failure, Boolean> ->
+                                        result.either(
+                                            { failure: Failure ->
+                                                Timber.e("Failure: $failure")
+                                                state.asObservable()
+                                            },
+                                            { feedSourceIsAvailable: Boolean ->
+                                                when (feedSourceIsAvailable) {
+                                                    true -> loadLastChecked()
+                                                    false -> {
+                                                        Timber.e("This is a deeply erronous state, this should really not happen")
+                                                        state.asObservable()
+                                                    }
                                                 }
                                             }
-                                        }
-                                    )
-                                }
+                                        )
+                                    }
                         }
                     }
                 )
@@ -158,24 +159,25 @@ class WarningViewModel @Inject constructor(
                         Timber.d("DISTRICT PREFS ARE AVAILABLE: $districtPreferenceAvailable")
                         when (districtPreferenceAvailable) {
                             true -> setDefaultFeedSourcePreference()
-                            false -> setDefaultDistrictPreferenceEntityService()
-                                .flatMapObservable { result: Either<Failure, Boolean> ->
-                                    result.either(
-                                        { failure: Failure ->
-                                            Timber.e("Failure: $failure")
-                                            state.asObservable()
-                                        },
-                                        { districtPreferencesAvailable: Boolean ->
-                                            when (districtPreferencesAvailable) {
-                                                true -> setDefaultFeedSourcePreference()
-                                                false -> {
-                                                    Timber.e("This is a deeply erronous state, this should really not happen")
-                                                    state.asObservable()
+                            false ->
+                                setDefaultDistrictPreferenceEntityService()
+                                    .flatMapObservable { result: Either<Failure, Boolean> ->
+                                        result.either(
+                                            { failure: Failure ->
+                                                Timber.e("Failure: $failure")
+                                                state.asObservable()
+                                            },
+                                            { districtPreferencesAvailable: Boolean ->
+                                                when (districtPreferencesAvailable) {
+                                                    true -> setDefaultFeedSourcePreference()
+                                                    false -> {
+                                                        Timber.e("This is a deeply erronous state, this should really not happen")
+                                                        state.asObservable()
+                                                    }
                                                 }
                                             }
-                                        }
-                                    )
-                                }
+                                        )
+                                    }
                         }
                     }
                 )

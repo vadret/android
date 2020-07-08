@@ -37,8 +37,10 @@ private class TabLayoutSelectionsObservable(
         if (!checkMainThread(observer)) {
             return
         }
-        val listener = Listener(view,
-            observer)
+        val listener = Listener(
+            view,
+            observer
+        )
         observer.onSubscribe(listener)
         view.addOnTabSelectedListener(listener)
         val index = view.selectedTabPosition

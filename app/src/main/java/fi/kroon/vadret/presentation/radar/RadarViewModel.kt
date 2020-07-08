@@ -11,8 +11,8 @@ import fi.kroon.vadret.util.extension.asObservable
 import io.github.sphrak.either.Either
 import io.reactivex.Observable
 import io.reactivex.ObservableTransformer
-import javax.inject.Inject
 import timber.log.Timber
+import javax.inject.Inject
 
 @RadarFeatureScope
 class RadarViewModel @Inject constructor(

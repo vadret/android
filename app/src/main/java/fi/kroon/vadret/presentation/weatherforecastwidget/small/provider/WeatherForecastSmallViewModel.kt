@@ -19,8 +19,8 @@ import io.github.sphrak.either.Either
 import io.reactivex.Observable
 import io.reactivex.ObservableTransformer
 import io.reactivex.Single
-import javax.inject.Inject
 import timber.log.Timber
+import javax.inject.Inject
 
 @WeatherForecastSmallFeatureScope
 class WeatherForecastSmallViewModel @Inject constructor(
@@ -182,12 +182,15 @@ class WeatherForecastSmallViewModel @Inject constructor(
                     },
                     { theme: String ->
                         when (theme) {
-                            DARK_THEME -> R.layout.weather_forecast_widget_small_dark
-                                .asRight()
-                            LIGHT_THEME_NO_BACKGROUND -> R.layout.weather_forecast_widget_small_light_transparent
-                                .asRight()
-                            else -> R.layout.weather_forecast_widget_small_light
-                                .asRight()
+                            DARK_THEME ->
+                                R.layout.weather_forecast_widget_small_dark
+                                    .asRight()
+                            LIGHT_THEME_NO_BACKGROUND ->
+                                R.layout.weather_forecast_widget_small_light_transparent
+                                    .asRight()
+                            else ->
+                                R.layout.weather_forecast_widget_small_light
+                                    .asRight()
                         }
                     }
                 )

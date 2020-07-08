@@ -16,8 +16,8 @@ import fi.kroon.vadret.util.MUNICIPALITY_KEY
 import io.github.sphrak.either.Either
 import io.reactivex.Observable
 import io.reactivex.Single
-import javax.inject.Inject
 import timber.log.Timber
+import javax.inject.Inject
 
 class SetDefaultLocationInformationTask @Inject constructor(
     private val repo: WeatherForecastLocalKeyValueDataSource

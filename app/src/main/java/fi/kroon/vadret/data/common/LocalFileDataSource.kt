@@ -8,14 +8,14 @@ import fi.kroon.vadret.data.failure.Failure
 import fi.kroon.vadret.util.extension.asLeft
 import io.github.sphrak.either.Either
 import io.reactivex.Single
-import java.io.InputStream
-import java.nio.charset.Charset
-import java.nio.charset.StandardCharsets
-import javax.inject.Inject
 import org.apache.commons.csv.CSVFormat
 import org.apache.commons.csv.CSVParser
 import org.apache.commons.csv.CSVRecord
 import timber.log.Timber
+import java.io.InputStream
+import java.nio.charset.Charset
+import java.nio.charset.StandardCharsets
+import javax.inject.Inject
 
 class LocalFileDataSource @Inject constructor(
     private val context: Context
@@ -68,15 +68,17 @@ class LocalFileDataSource @Inject constructor(
                     .withIgnoreHeaderCase()
                     .withTrim()
             )
-            Either.Right(csvParser.records.map { csvRecord: CSVRecord ->
-                AutoCompleteItem(
-                    locality = csvRecord.get("locality"),
-                    municipality = csvRecord.get("municipality"),
-                    county = csvRecord.get("county"),
-                    latitude = csvRecord.get("latitude").toDouble(),
-                    longitude = csvRecord.get("longitude").toDouble()
-                )
-            }.toList()) as Either<Failure, List<AutoCompleteItem>>
+            Either.Right(
+                csvParser.records.map { csvRecord: CSVRecord ->
+                    AutoCompleteItem(
+                        locality = csvRecord.get("locality"),
+                        municipality = csvRecord.get("municipality"),
+                        county = csvRecord.get("county"),
+                        latitude = csvRecord.get("latitude").toDouble(),
+                        longitude = csvRecord.get("longitude").toDouble()
+                    )
+                }.toList()
+            ) as Either<Failure, List<AutoCompleteItem>>
         }.doOnError {
             Timber.e("$it")
         }.onErrorReturn {

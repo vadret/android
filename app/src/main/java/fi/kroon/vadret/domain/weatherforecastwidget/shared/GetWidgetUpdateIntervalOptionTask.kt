@@ -5,8 +5,8 @@ import fi.kroon.vadret.data.weatherforecastwidget.local.WidgetUpdateIntervalLoca
 import io.github.sphrak.either.Either
 import io.github.sphrak.either.map
 import io.reactivex.Single
-import javax.inject.Inject
 import timber.log.Timber
+import javax.inject.Inject
 
 class GetWidgetUpdateIntervalOptionTask @Inject constructor(
     private val local: WidgetUpdateIntervalLocalDataSource

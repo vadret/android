@@ -180,8 +180,10 @@ object SunsetUtil {
         val minute: Int = gregorianDateUTC.get(Calendar.MINUTE)
         val second: Int = gregorianDateUTC.get(Calendar.SECOND)
 
-        return (julianDay.toDouble() + (hour.toDouble() - 12) / 24 +
-            minute.toDouble() / 1440 + second.toDouble() / 86400)
+        return (
+            julianDay.toDouble() + (hour.toDouble() - 12) / 24 +
+                minute.toDouble() / 1440 + second.toDouble() / 86400
+            )
     }
 
     private fun getGregorianDate(julianDate: Double): Calendar {
@@ -255,8 +257,10 @@ object SunsetUtil {
 
         // Create the gregorian date in UTC.
         val gregorianDateUTC = Calendar
-            .getInstance(TimeZone
-            .getTimeZone("UTC"))
+            .getInstance(
+                TimeZone
+                    .getTimeZone("UTC")
+            )
         gregorianDateUTC.set(Calendar.YEAR, year)
         gregorianDateUTC.set(Calendar.MONTH, month)
         gregorianDateUTC.set(Calendar.DAY_OF_MONTH, day)
@@ -289,8 +293,10 @@ object SunsetUtil {
         val julianDate: Double = getJulianDate(day)
 
         // Calculate current Julian cycle (number of days since 2000-01-01).
-        val nStar: Double = (julianDate - JULIAN_DATE_2000_01_01.toDouble() - CONST_0009 -
-            longitude / CONST_360)
+        val nStar: Double = (
+            julianDate - JULIAN_DATE_2000_01_01.toDouble() - CONST_0009 -
+                longitude / CONST_360
+            )
         val n: Double = Math.round(nStar).toDouble()
 
         // Approximate solar noon
@@ -300,8 +306,10 @@ object SunsetUtil {
             .toRadians((357.5291 + 0.98560028 * (jStar - JULIAN_DATE_2000_01_01)) % CONST_360)
 
         // Equation of center
-        val c: Double = (1.9148 * Math.sin(m) + 0.0200 * Math.sin(2 * m) +
-            0.0003 * Math.sin(3 * m))
+        val c: Double = (
+            1.9148 * Math.sin(m) + 0.0200 * Math.sin(2 * m) +
+                0.0003 * Math.sin(3 * m)
+            )
 
         // Ecliptic longitude
         val lambda: Double = Math
@@ -345,17 +353,23 @@ object SunsetUtil {
         val latitudeRad: Double = Math.toRadians(latitude)
 
         // Hour angle
-        val omega: Double = Math.acos((Math.sin(Math.toRadians(sunAltitude)) - Math
-            .sin(latitudeRad) * Math.sin(solarEquationVariables.delta)) / (Math.cos(latitudeRad) * Math.cos(solarEquationVariables.delta)))
+        val omega: Double = Math.acos(
+            (
+                Math.sin(Math.toRadians(sunAltitude)) - Math
+                    .sin(latitudeRad) * Math.sin(solarEquationVariables.delta)
+                ) / (Math.cos(latitudeRad) * Math.cos(solarEquationVariables.delta))
+        )
 
         if (java.lang.Double.isNaN(omega)) {
             return null
         }
 
         // Sunset_DEL
-        val jset: Double = (JULIAN_DATE_2000_01_01.toDouble() +
-            CONST_0009 +
-            ((Math.toDegrees(omega) + longitude) / CONST_360 + solarEquationVariables.n + 0.0053 * Math.sin(solarEquationVariables.m) - 0.0069 * Math.sin(2 * solarEquationVariables.lambda)))
+        val jset: Double = (
+            JULIAN_DATE_2000_01_01.toDouble() +
+                CONST_0009 +
+                ((Math.toDegrees(omega) + longitude) / CONST_360 + solarEquationVariables.n + 0.0053 * Math.sin(solarEquationVariables.m) - 0.0069 * Math.sin(2 * solarEquationVariables.lambda))
+            )
 
         // Sunrise
         val jrise: Double = solarEquationVariables.jTransit - (jset - solarEquationVariables.jTransit)
@@ -391,8 +405,12 @@ object SunsetUtil {
         val latitudeRad: Double = Math.toRadians(latitude)
 
         // Hour angle
-        val omega: Double = Math.acos((Math.sin(Math.toRadians(SUN_ALTITUDE_SUNRISE_SUNSET)) - Math
-            .sin(latitudeRad) * Math.sin(solarEquationVariables.delta)) / (Math.cos(latitudeRad) * Math.cos(solarEquationVariables.delta)))
+        val omega: Double = Math.acos(
+            (
+                Math.sin(Math.toRadians(SUN_ALTITUDE_SUNRISE_SUNSET)) - Math
+                    .sin(latitudeRad) * Math.sin(solarEquationVariables.delta)
+                ) / (Math.cos(latitudeRad) * Math.cos(solarEquationVariables.delta))
+        )
 
         if (java.lang.Double.isNaN(omega)) {
             return null
@@ -588,9 +606,11 @@ object SunsetUtil {
      * @return true if at the given location and calendar, it is civil, nautical, or astronomical twilight.
      */
     private fun isTwilight(calendar: Calendar, latitude: Double, longitude: Double): Boolean {
-        return (isCivilTwilight(calendar, latitude, longitude) ||
-            isNauticalTwilight(calendar, latitude, longitude) ||
-            isAstronomicalTwilight(calendar, latitude, longitude))
+        return (
+            isCivilTwilight(calendar, latitude, longitude) ||
+                isNauticalTwilight(calendar, latitude, longitude) ||
+                isAstronomicalTwilight(calendar, latitude, longitude)
+            )
     }
 
     fun getDayPeriod(calendar: Calendar, latitude: Double, longitude: Double): DayPeriod {

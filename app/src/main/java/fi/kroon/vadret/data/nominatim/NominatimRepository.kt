@@ -17,8 +17,8 @@ import fi.kroon.vadret.util.extension.asLeft
 import fi.kroon.vadret.util.extension.asRight
 import io.github.sphrak.either.Either
 import io.reactivex.Single
-import javax.inject.Inject
 import retrofit2.Response
+import javax.inject.Inject
 
 @CoreApplicationScope
 class NominatimRepository @Inject constructor(
@@ -29,24 +29,26 @@ class NominatimRepository @Inject constructor(
 ) : IErrorHandler by errorHandler, IExceptionHandler<Failure> by exceptionHandler {
     fun get(request: NominatimOut): Single<Either<Failure, List<Nominatim>>> =
         when (networkHandler.isConnected) {
-            true -> nominatimNetDataSource.get().getNominatim(
-                city = request.city,
-                format = request.format,
-                limit = request.limit,
-                nameDetails = request.nameDetails,
-                countryCodes = request.countrycodes,
-                addressDetails = request.addressDetails
-            ).map { response: Response<List<Nominatim>> ->
-                when (response.body()) {
-                    null -> NominatimFailure
-                        .NominatimNotAvailable
-                        .asLeft()
-                    else -> {
-                        response.body()!!
-                            .asRight()
+            true ->
+                nominatimNetDataSource.get().getNominatim(
+                    city = request.city,
+                    format = request.format,
+                    limit = request.limit,
+                    nameDetails = request.nameDetails,
+                    countryCodes = request.countrycodes,
+                    addressDetails = request.addressDetails
+                ).map { response: Response<List<Nominatim>> ->
+                    when (response.body()) {
+                        null ->
+                            NominatimFailure
+                                .NominatimNotAvailable
+                                .asLeft()
+                        else -> {
+                            response.body()!!
+                                .asRight()
+                        }
                     }
                 }
-            }
             false -> getNetworkOfflineError()
         }.onErrorReturn {
             exceptionHandler(it)
@@ -55,22 +57,24 @@ class NominatimRepository @Inject constructor(
 
     fun reverse(request: NominatimReverseOut): Single<Either<Failure, Nominatim>> =
         when (networkHandler.isConnected) {
-            true -> nominatimNetDataSource.get().getNominatimReverse(
-                format = request.format,
-                latitude = request.latitude,
-                longitude = request.longitude,
-                zoom = request.zoom
-            ).map { response ->
-                when (response.body()) {
-                    null -> NominatimFailure
-                        .NominatimNotAvailable
-                        .asLeft()
-                    else -> {
-                        response.body()!!
-                            .asRight()
+            true ->
+                nominatimNetDataSource.get().getNominatimReverse(
+                    format = request.format,
+                    latitude = request.latitude,
+                    longitude = request.longitude,
+                    zoom = request.zoom
+                ).map { response ->
+                    when (response.body()) {
+                        null ->
+                            NominatimFailure
+                                .NominatimNotAvailable
+                                .asLeft()
+                        else -> {
+                            response.body()!!
+                                .asRight()
+                        }
                     }
                 }
-            }
             false -> getNetworkOfflineError()
         }.onErrorReturn {
             exceptionHandler(it)

@@ -8,9 +8,9 @@ import fi.kroon.vadret.R
 import fi.kroon.vadret.data.library.model.Library
 import fi.kroon.vadret.presentation.aboutapp.di.AboutAppFeatureScope
 import io.reactivex.subjects.PublishSubject
+import kotlinx.android.synthetic.main.about_app_library_item.view.*
 import javax.inject.Inject
 import javax.inject.Named
-import kotlinx.android.synthetic.main.about_app_library_item.view.*
 
 @AboutAppFeatureScope
 class AboutAppLibraryAdapter @Inject constructor(

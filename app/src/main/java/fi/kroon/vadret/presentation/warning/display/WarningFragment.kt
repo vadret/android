@@ -154,7 +154,8 @@ class WarningFragment : BaseFragment() {
         super.onStop()
         Timber.d("ON STOP")
         bundle?.apply {
-            putParcelable(SCROLL_POSITION_KEY,
+            putParcelable(
+                SCROLL_POSITION_KEY,
                 (warningRecyclerView.layoutManager as LinearLayoutManager)
                     .onSaveInstanceState()
             )

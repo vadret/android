@@ -10,8 +10,8 @@ import io.github.sphrak.either.flatMap
 import io.github.sphrak.either.map
 import io.reactivex.Single
 import io.reactivex.rxkotlin.zipWith
-import javax.inject.Inject
 import timber.log.Timber
+import javax.inject.Inject
 
 class GetAggregatedFeedService @Inject constructor(
     private val getAggregatedFeedTask: GetAggregatedFeedTask,

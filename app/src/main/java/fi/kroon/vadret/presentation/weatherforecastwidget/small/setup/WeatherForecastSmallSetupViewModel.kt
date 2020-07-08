@@ -24,9 +24,9 @@ import io.github.sphrak.either.Either
 import io.reactivex.Observable
 import io.reactivex.ObservableTransformer
 import io.reactivex.Single
+import timber.log.Timber
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
-import timber.log.Timber
 
 @WeatherForecastSmallSetupScope
 class WeatherForecastSmallSetupViewModel @Inject constructor(

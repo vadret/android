@@ -22,8 +22,6 @@ import fi.kroon.vadret.util.extension.empty
 import fi.kroon.vadret.util.extension.toGone
 import fi.kroon.vadret.util.extension.toInvisible
 import fi.kroon.vadret.util.extension.toVisible
-import java.util.Locale
-import javax.inject.Inject
 import kotlinx.android.synthetic.main.weather_forecast_date_item.view.*
 import kotlinx.android.synthetic.main.weather_forecast_headline_item.view.*
 import kotlinx.android.synthetic.main.weather_forecast_item.view.*
@@ -32,6 +30,8 @@ import org.threeten.bp.format.DateTimeFormatter
 import org.threeten.bp.format.FormatStyle
 import org.threeten.bp.format.TextStyle
 import timber.log.Timber
+import java.util.Locale
+import javax.inject.Inject
 
 @WeatherForecastFeatureScope
 class WeatherForecastAdapter @Inject constructor() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -213,14 +213,18 @@ class WeatherForecastAdapter @Inject constructor() : RecyclerView.Adapter<Recycl
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder.itemViewType) {
-            TYPE_WEATHER_SPLASH -> (holder as ForecastSplashViewHolder)
-                .bind(list[position] as WeatherForecastSplashItemModel)
-            TYPE_WEATHER_FORECAST -> (holder as ForecastViewHolder)
-                .bind(list[position] as WeatherForecastItemModel)
-            TYPE_WEATHER_WEEKDAY -> (holder as WeekdayViewHolder)
-                .bind(list[position] as WeatherForecastDateItemModel)
-            TYPE_WEATHER_HEADER -> (holder as HeadlineViewHolder)
-                .bind(list[position] as WeatherForecastHeadlineModel)
+            TYPE_WEATHER_SPLASH ->
+                (holder as ForecastSplashViewHolder)
+                    .bind(list[position] as WeatherForecastSplashItemModel)
+            TYPE_WEATHER_FORECAST ->
+                (holder as ForecastViewHolder)
+                    .bind(list[position] as WeatherForecastItemModel)
+            TYPE_WEATHER_WEEKDAY ->
+                (holder as WeekdayViewHolder)
+                    .bind(list[position] as WeatherForecastDateItemModel)
+            TYPE_WEATHER_HEADER ->
+                (holder as HeadlineViewHolder)
+                    .bind(list[position] as WeatherForecastHeadlineModel)
         }
     }
 

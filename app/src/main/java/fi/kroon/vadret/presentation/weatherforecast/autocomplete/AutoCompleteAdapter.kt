@@ -7,8 +7,8 @@ import androidx.recyclerview.widget.RecyclerView
 import fi.kroon.vadret.R
 import fi.kroon.vadret.data.autocomplete.model.AutoCompleteItem
 import io.reactivex.subjects.PublishSubject
-import javax.inject.Inject
 import kotlinx.android.synthetic.main.weather_forecast_auto_complete_item.view.*
+import javax.inject.Inject
 
 class AutoCompleteAdapter @Inject constructor(
     private val onAutoCompleteItemItemClickedSubject: PublishSubject<AutoCompleteItem>

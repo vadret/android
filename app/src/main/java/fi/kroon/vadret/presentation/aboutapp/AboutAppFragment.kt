@@ -15,9 +15,9 @@ import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.subjects.PublishSubject
-import javax.inject.Inject
 import kotlinx.android.synthetic.main.about_app_fragment.*
 import timber.log.Timber
+import javax.inject.Inject
 
 @AboutAppFeatureScope
 class AboutAppFragment : BaseFragment() {

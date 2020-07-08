@@ -304,14 +304,16 @@ class WeatherForecastFragment : BaseFragment() {
                     .skipInitialValue()
                     .map { searchEvent ->
                         when {
-                            searchEvent.isSubmitted -> WeatherForecastView
-                                .Event
-                                .OnSearchButtonSubmitted(searchEvent.queryText.toString())
-                            else -> WeatherForecastView
-                                .Event
-                                .OnSearchTextChanged(
-                                    searchEvent.queryText.toString()
-                                )
+                            searchEvent.isSubmitted ->
+                                WeatherForecastView
+                                    .Event
+                                    .OnSearchButtonSubmitted(searchEvent.queryText.toString())
+                            else ->
+                                WeatherForecastView
+                                    .Event
+                                    .OnSearchTextChanged(
+                                        searchEvent.queryText.toString()
+                                    )
                         }
                     }
             ).observeOn(

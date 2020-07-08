@@ -16,8 +16,8 @@ import fi.kroon.vadret.util.extension.asLeft
 import fi.kroon.vadret.util.extension.asRight
 import io.github.sphrak.either.Either
 import io.reactivex.Single
-import javax.inject.Inject
 import retrofit2.Response
+import javax.inject.Inject
 
 @CoreApplicationScope
 class RadarRepository @Inject constructor(
@@ -28,29 +28,30 @@ class RadarRepository @Inject constructor(
 ) : IErrorHandler by errorHandler, IExceptionHandler<Failure> by exceptionHandler {
     operator fun invoke(radarRequest: RadarRequest): Single<Either<Failure, Radar>> =
         when (networkHandler.isConnected) {
-            true -> with(radarRequest) {
-                radarNetDataSource
-                    .get()
-                    .getRadar(
-                        year = year,
-                        month = month,
-                        date = date,
-                        format = format,
-                        timeZone = timeZone
-                    )
-            }.map { response: Response<Radar> ->
-                when (response.body()?.files) {
-                    null -> {
-                        RadarFailure
-                            .NoRadarAvailable
-                            .asLeft()
-                    }
-                    else -> {
-                        response.body()!!
-                            .asRight()
+            true ->
+                with(radarRequest) {
+                    radarNetDataSource
+                        .get()
+                        .getRadar(
+                            year = year,
+                            month = month,
+                            date = date,
+                            format = format,
+                            timeZone = timeZone
+                        )
+                }.map { response: Response<Radar> ->
+                    when (response.body()?.files) {
+                        null -> {
+                            RadarFailure
+                                .NoRadarAvailable
+                                .asLeft()
+                        }
+                        else -> {
+                            response.body()!!
+                                .asRight()
+                        }
                     }
                 }
-            }
             false -> getNetworkOfflineError()
         }.onErrorReturn {
             exceptionHandler(it)

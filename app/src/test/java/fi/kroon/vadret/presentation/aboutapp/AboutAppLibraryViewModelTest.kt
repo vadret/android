@@ -63,7 +63,7 @@ class AboutAppLibraryViewModelTest {
             .assertComplete()
             .assertValueAt(0) { receivedState: AboutAppLibraryView.State ->
                 receivedState.renderEvent is
-                    AboutAppLibraryView.RenderEvent.DisplayLibrary
+                AboutAppLibraryView.RenderEvent.DisplayLibrary
             }
     }
 
@@ -80,7 +80,7 @@ class AboutAppLibraryViewModelTest {
             .assertComplete()
             .assertValueAt(0) { receivedState: AboutAppLibraryView.State ->
                 receivedState.renderEvent is
-                    AboutAppLibraryView.RenderEvent.OpenUrl
+                AboutAppLibraryView.RenderEvent.OpenUrl
             }
     }
 

@@ -17,9 +17,9 @@ import fi.kroon.vadret.util.extension.empty
 import fi.kroon.vadret.util.extension.getAttribute
 import fi.kroon.vadret.util.extension.toGone
 import fi.kroon.vadret.util.extension.toVisible
-import javax.inject.Inject
 import kotlinx.android.synthetic.main.warning_display_item.view.*
 import timber.log.Timber
+import javax.inject.Inject
 
 class WarningAdapter @Inject constructor() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
@@ -119,8 +119,9 @@ class WarningAdapter @Inject constructor() : RecyclerView.Adapter<RecyclerView.V
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder.itemViewType) {
-            WARNING_VIEW_TYPE -> (holder as WarningViewHolder)
-                .bind(list[position] as WarningModel)
+            WARNING_VIEW_TYPE ->
+                (holder as WarningViewHolder)
+                    .bind(list[position] as WarningModel)
         }
     }
 

@@ -8,8 +8,8 @@ import androidx.fragment.app.Fragment
 import fi.kroon.vadret.data.nominatim.model.Locality
 import fi.kroon.vadret.presentation.main.MainActivity
 import fi.kroon.vadret.util.Scheduler
-import javax.inject.Inject
 import timber.log.Timber
+import javax.inject.Inject
 
 abstract class BaseFragment : Fragment() {
 

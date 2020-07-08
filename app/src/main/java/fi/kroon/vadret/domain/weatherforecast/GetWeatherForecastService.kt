@@ -16,8 +16,8 @@ import io.github.sphrak.either.flatMap
 import io.github.sphrak.either.map
 import io.reactivex.Single
 import io.reactivex.rxkotlin.zipWith
-import javax.inject.Inject
 import timber.log.Timber
+import javax.inject.Inject
 
 class GetWeatherForecastService @Inject constructor(
     private val getWeatherForecastTask: GetWeatherForecastTask,
@@ -77,8 +77,9 @@ class GetWeatherForecastService @Inject constructor(
         either.flatMapSingle { data: Data ->
             when (data.locationMode) {
                 false -> getLocationManual(data)
-                true -> getLocationAutomatic(data)
-                    .map(::mapLocationEntityToWeatherOut)
+                true ->
+                    getLocationAutomatic(data)
+                        .map(::mapLocationEntityToWeatherOut)
             }
         }
 
@@ -211,10 +212,12 @@ class GetWeatherForecastService @Inject constructor(
             setWeatherForecastMemoryCacheTask(cacheKey, data.weather!!)
                 .zipWith(setWeatherForecastDiskCacheTask(cacheKey, data.weather))
                 .map { pair: Pair<Either<Failure, Weather>,
-                    Either<Failure, Weather>> ->
+                        Either<Failure, Weather>> ->
                     Timber.i("Updating cache")
-                    val (firstEither: Either<Failure, Weather>,
-                        secondEither: Either<Failure, Weather>) = pair
+                    val (
+                        firstEither: Either<Failure, Weather>,
+                        secondEither: Either<Failure, Weather>
+                    ) = pair
                     firstEither.flatMap { _: Weather ->
                         secondEither.map { _: Weather ->
                             data

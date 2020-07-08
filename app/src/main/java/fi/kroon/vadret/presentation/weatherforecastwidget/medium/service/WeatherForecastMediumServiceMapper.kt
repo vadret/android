@@ -43,16 +43,19 @@ object WeatherForecastMediumServiceMapper {
 
         timeSerie.parameters.forEach { parameter: Parameter ->
             when (parameter.name) {
-                "ws" -> windSpeed = parameter
-                    .values
-                    .first()
-                "t" -> temperature = parameter
-                    .values
-                    .first()
-                "Wsymb2" -> weatherIcon = parameter
-                    .values
-                    .first()
-                    .toInt()
+                "ws" ->
+                    windSpeed = parameter
+                        .values
+                        .first()
+                "t" ->
+                    temperature = parameter
+                        .values
+                        .first()
+                "Wsymb2" ->
+                    weatherIcon = parameter
+                        .values
+                        .first()
+                        .toInt()
             }
         }
 

@@ -9,8 +9,8 @@ import fi.kroon.vadret.util.DEFAULT_AUTOCOMPLETE_LIMIT
 import io.github.sphrak.either.Either
 import io.github.sphrak.either.map
 import io.reactivex.Maybe
-import javax.inject.Inject
 import timber.log.Timber
+import javax.inject.Inject
 
 class GetAutoCompleteService @Inject constructor(
     private val autoCompleteRepository: AutoCompleteRepository

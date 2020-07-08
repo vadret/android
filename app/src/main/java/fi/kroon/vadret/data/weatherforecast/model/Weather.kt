@@ -3,8 +3,8 @@ package fi.kroon.vadret.data.weatherforecast.model
 import android.os.Parcelable
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
-import java.io.Serializable
 import kotlinx.android.parcel.Parcelize
+import java.io.Serializable
 
 @Parcelize
 @JsonClass(generateAdapter = true)

@@ -4,8 +4,8 @@ import fi.kroon.vadret.data.failure.Failure
 import fi.kroon.vadret.data.weatherforecast.cache.WeatherForecastCacheDataSource
 import io.github.sphrak.either.Either
 import io.reactivex.Single
-import javax.inject.Inject
 import timber.log.Timber
+import javax.inject.Inject
 
 class ClearWeatherForecastDiskCacheTask @Inject constructor(
     private val cacheRepo: WeatherForecastCacheDataSource

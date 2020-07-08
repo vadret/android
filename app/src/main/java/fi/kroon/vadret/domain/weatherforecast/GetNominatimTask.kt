@@ -8,8 +8,8 @@ import fi.kroon.vadret.data.nominatim.model.NominatimOut
 import fi.kroon.vadret.util.extension.asLeft
 import io.github.sphrak.either.Either
 import io.reactivex.Single
-import javax.inject.Inject
 import timber.log.Timber
+import javax.inject.Inject
 
 class GetNominatimTask @Inject constructor(
     private val nominatimRepository: NominatimRepository

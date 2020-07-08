@@ -10,8 +10,8 @@ import fi.kroon.vadret.data.location.exception.LocationFailure
 import fi.kroon.vadret.util.extension.asLeft
 import fi.kroon.vadret.util.extension.asRight
 import io.github.sphrak.either.Either
-import javax.inject.Inject
 import timber.log.Timber
+import javax.inject.Inject
 
 class LocationLocalDataSource @Inject constructor(
     private val locationManager: LocationManager
@@ -32,18 +32,19 @@ class LocationLocalDataSource @Inject constructor(
                 .LocationProviderDisabled
                 .asLeft()
         }
-        else -> getLocation(
-            isNetworkLocationProviderEnabled,
-            isGPSEnabled
-        )?.let { position ->
-            Timber.d("Position aquired: $position")
-            fi.kroon.vadret.data.location.model.Location(
-                latitude = position.latitude,
-                longitude = position.longitude
-            ).asRight()
-        } ?: LocationFailure
-            .LocationNotAvailable
-            .asLeft()
+        else ->
+            getLocation(
+                isNetworkLocationProviderEnabled,
+                isGPSEnabled
+            )?.let { position ->
+                Timber.d("Position aquired: $position")
+                fi.kroon.vadret.data.location.model.Location(
+                    latitude = position.latitude,
+                    longitude = position.longitude
+                ).asRight()
+            } ?: LocationFailure
+                .LocationNotAvailable
+                .asLeft()
     }
 
     @SuppressLint("MissingPermission")

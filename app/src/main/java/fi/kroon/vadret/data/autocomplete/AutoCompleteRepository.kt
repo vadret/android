@@ -6,8 +6,8 @@ import fi.kroon.vadret.data.common.LocalFileDataSource
 import fi.kroon.vadret.data.failure.Failure
 import io.github.sphrak.either.Either
 import io.reactivex.Single
-import javax.inject.Inject
 import timber.log.Timber
+import javax.inject.Inject
 
 class AutoCompleteRepository @Inject constructor(
     private val localFileReader: LocalFileDataSource

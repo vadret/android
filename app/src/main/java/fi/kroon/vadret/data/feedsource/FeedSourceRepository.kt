@@ -14,8 +14,8 @@ import fi.kroon.vadret.util.extension.asLeft
 import fi.kroon.vadret.util.extension.asRight
 import io.github.sphrak.either.Either
 import io.reactivex.Single
-import javax.inject.Inject
 import retrofit2.Response
+import javax.inject.Inject
 
 @CoreApplicationScope
 class FeedSourceRepository @Inject constructor(

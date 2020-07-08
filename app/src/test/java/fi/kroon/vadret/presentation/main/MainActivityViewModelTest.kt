@@ -56,7 +56,7 @@ class MainActivityViewModelTest {
             .assertComplete()
             .assertValueAt(0) { receivedState: MainActivityView.State ->
                 receivedState.renderEvent is
-                    MainActivityView.RenderEvent.None
+                MainActivityView.RenderEvent.None
             }
     }
 
@@ -77,7 +77,7 @@ class MainActivityViewModelTest {
             .assertComplete()
             .assertValueAt(0) { receivedState: MainActivityView.State ->
                 receivedState.renderEvent is
-                    MainActivityView.RenderEvent.RestartActivity
+                MainActivityView.RenderEvent.RestartActivity
             }
     }
 

@@ -36,8 +36,6 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.subjects.PublishSubject
-import java.io.File
-import java.util.concurrent.TimeUnit
 import kotlinx.android.synthetic.main.radar_fragment.*
 import org.osmdroid.config.Configuration
 import org.osmdroid.config.IConfigurationProvider
@@ -49,6 +47,8 @@ import org.osmdroid.views.overlay.GroundOverlay
 import org.threeten.bp.OffsetDateTime
 import org.threeten.bp.format.DateTimeFormatter
 import timber.log.Timber
+import java.io.File
+import java.util.concurrent.TimeUnit
 
 typealias RadarFile = fi.kroon.vadret.data.radar.model.File
 

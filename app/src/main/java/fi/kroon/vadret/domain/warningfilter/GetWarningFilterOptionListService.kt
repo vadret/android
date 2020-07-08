@@ -7,8 +7,8 @@ import fi.kroon.vadret.util.extension.flatMapSingle
 import io.github.sphrak.either.Either
 import io.github.sphrak.either.map
 import io.reactivex.Single
-import javax.inject.Inject
 import timber.log.Timber
+import javax.inject.Inject
 
 class GetWarningFilterOptionListService @Inject constructor(
     private val getAppFeedSourceStateTask: GetAppFeedSourceStateTask,

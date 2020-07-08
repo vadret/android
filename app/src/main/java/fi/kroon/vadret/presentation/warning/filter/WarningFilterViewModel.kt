@@ -14,8 +14,8 @@ import fi.kroon.vadret.util.extension.asObservable
 import io.github.sphrak.either.Either
 import io.reactivex.Observable
 import io.reactivex.ObservableTransformer
-import javax.inject.Inject
 import timber.log.Timber
+import javax.inject.Inject
 
 @WarningFilterScope
 class WarningFilterViewModel @Inject constructor(
@@ -213,9 +213,9 @@ class WarningFilterViewModel @Inject constructor(
 
             state.districtOptionList.removeAt(entityIndex)
             state.districtOptionList.add(
-                    entityIndex,
-                    newDistrictOptionEntity
-                )
+                entityIndex,
+                newDistrictOptionEntity
+            )
 
             val list: List<IFilterable> = WarningFilterMapper(
                 districtOptionEntityList = state.districtOptionList,
