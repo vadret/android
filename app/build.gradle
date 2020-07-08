@@ -183,7 +183,7 @@ dependencies {
     implementation "androidx.legacy:legacy-support-v4:${KTX_VERSION}"
     implementation "androidx.navigation:navigation-fragment-ktx:${NAVIGATION_VERSION}"
     implementation "androidx.navigation:navigation-ui-ktx:${NAVIGATION_VERSION}"
-    implementation "androidx.preference:preference:${PREFERENCE_VERSION}"
+    implementation "androidx.preference:preference-ktx:${PREFERENCE_VERSION}"
     implementation "com.google.android.material:material:${MATERIAL_VERSION}"
 
     // Reactive
