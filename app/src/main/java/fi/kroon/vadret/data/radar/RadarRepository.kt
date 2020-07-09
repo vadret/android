@@ -17,6 +17,7 @@ import fi.kroon.vadret.util.extension.asRight
 import io.github.sphrak.either.Either
 import io.reactivex.Single
 import retrofit2.Response
+import timber.log.Timber
 import javax.inject.Inject
 
 @CoreApplicationScope
@@ -40,6 +41,7 @@ class RadarRepository @Inject constructor(
                             timeZone = timeZone
                         )
                 }.map { response: Response<Radar> ->
+                    Timber.d("RADAR RESPONSE : isCached: ${response.isCachedResponse}, isNetwork: ${response.isNetworkResponse}")
                     when (response.body()?.files) {
                         null -> {
                             RadarFailure
@@ -58,3 +60,6 @@ class RadarRepository @Inject constructor(
                 .asLeft()
         }
 }
+
+private val Response<Radar>.isCachedResponse: Boolean get() = (raw().networkResponse == null)
+private val Response<Radar>.isNetworkResponse: Boolean get() = (raw().networkResponse != null)
