@@ -5,9 +5,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.2.9] -- 2020-08-17
+
 ### Added
 
 - Added okhttp cache
+
+### Changed
+
+- Replaced Picasso with Coil for better performance
+- Miscellaneous 3P version bumps
 
 ## [1.2.8] -- 2020-05-08
 
@@ -190,7 +197,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Radar imagery
 - 10 day weather forecast
 
-[Unreleased]: https://github.com/vadret/android/compare/1.2.8...HEAD
+[Unreleased]: https://github.com/vadret/android/compare/1.2.9...HEAD
+[1.2.9]: https://github.com/vadret/android/compare/1.2.8...1.2.9
 [1.2.8]: https://github.com/vadret/android/compare/1.2.7...1.2.8
 [1.2.7]: https://github.com/vadret/android/compare/1.2.6...1.2.7
 [1.2.6]: https://github.com/vadret/android/compare/1.2.5...1.2.6
