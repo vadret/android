@@ -5,6 +5,7 @@ import android.content.Context
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.os.Parcelable
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -122,7 +123,7 @@ class WeatherForecastFragment : BaseFragment() {
     }
 
     private val drawable: Drawable? by lazy {
-        context?.getDrawable(R.drawable.search_item_divider)
+        ContextCompat.getDrawable(requireContext(), R.drawable.search_item_divider)
     }
 
     override fun layoutId(): Int = R.layout.weather_forecast_fragment
