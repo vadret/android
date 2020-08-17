@@ -232,14 +232,12 @@ dependencies {
     testImplementation "org.threeten:threetenbp:${THREETEN_BP_VERSION}"
 
     // Debugging, Testing, Linting, Analytics
-    debugImplementation "com.squareup.leakcanary:leakcanary-android:${LEAK_CANARY}"
-    debugImplementation "com.squareup.leakcanary:leakcanary-support-fragment:${LEAK_CANARY}"
+    debugImplementation "com.squareup.leakcanary:leakcanary-android:2.4"
     googleImplementation("com.crashlytics.sdk.android:crashlytics:${CRASHLYTICS_VERSION}@aar") {
         transitive = true
     }
     implementation "com.jakewharton.timber:timber:${TIMBER_VERSION}"
     ktlint "com.pinterest:ktlint:${KTLINT_VERSION}"
-    releaseImplementation "com.squareup.leakcanary:leakcanary-android-no-op:${LEAK_CANARY}"
     testImplementation "junit:junit:${JUNIT_VERSION}"
     testImplementation "org.assertj:assertj-core:${ASSERTJ_VERSION}"
     testImplementation "org.mockito:mockito-core:${MOCKITO_CORE_VERSION}"

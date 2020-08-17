@@ -3,7 +3,6 @@ package fi.kroon.vadret
 import android.app.Application
 import android.content.Context
 import com.jakewharton.threetenabp.AndroidThreeTen
-import com.squareup.leakcanary.LeakCanary
 import fi.kroon.vadret.di.component.CoreApplicationComponent
 import fi.kroon.vadret.di.component.DaggerCoreApplicationComponent
 import fi.kroon.vadret.di.modules.ContextModule
@@ -31,23 +30,12 @@ abstract class BaseApplication : Application() {
         cmp.inject(this)
         plantTimber()
         initThreeTenAbp()
-        initLeakCanary()
         cacheDir.delete()
     }
 
     private fun plantTimber() {
         if (BuildConfig.DEBUG) {
             Timber.plant(Timber.DebugTree())
-        }
-    }
-
-    private fun initLeakCanary() {
-        if (BuildConfig.DEBUG) {
-            if (LeakCanary.isInAnalyzerProcess(this)) {
-                Timber.d("LeakCanary is in analyzer process")
-                return
-            }
-            LeakCanary.install(this)
         }
     }
 
