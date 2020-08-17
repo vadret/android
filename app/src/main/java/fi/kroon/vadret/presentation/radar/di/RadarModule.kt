@@ -77,5 +77,4 @@ object RadarModule {
             .availableMemoryPercentage(0.25)
             .crossfade(true)
             .build()
-
 }

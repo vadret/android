@@ -45,8 +45,6 @@ import org.osmdroid.util.BoundingBox
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.CustomZoomButtonsController
 import org.osmdroid.views.overlay.GroundOverlay
-import org.threeten.bp.OffsetDateTime
-import org.threeten.bp.format.DateTimeFormatter
 import timber.log.Timber
 import java.io.File
 import java.util.concurrent.TimeUnit
@@ -436,7 +434,8 @@ class RadarFragment : BaseFragment() {
             )
             .target(
                 onStart = {
-                    _ -> Unit
+                    _ ->
+                    Unit
                 },
                 onSuccess = { result: Drawable ->
                     setOverlayImage(result.toBitmap())
