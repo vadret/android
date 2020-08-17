@@ -32,9 +32,6 @@ def getGitSha = { ->
 
 android {
     compileSdkVersion 29
-    dataBinding {
-        enabled = true
-    }
     androidExtensions {
         experimental = true
     }
