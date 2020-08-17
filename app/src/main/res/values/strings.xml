@@ -273,6 +273,6 @@
     <string name="filter_must_select_one">At least one district and feed source required.</string>
     <string name="filter_apply">Apply</string>
     <string name="filter_result_label">Filter results</string>
-    <string name="warning_display_no_warnings_issued">No warnings issued at present.</string>
+    <string name="warning_display_no_warnings_issued">No warnings issued at present</string>
 
 </resources>
