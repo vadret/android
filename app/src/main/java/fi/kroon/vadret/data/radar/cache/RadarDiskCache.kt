@@ -3,7 +3,7 @@ package fi.kroon.vadret.data.radar.cache
 import fi.kroon.vadret.data.common.BaseCache
 import fi.kroon.vadret.data.failure.Failure
 import fi.kroon.vadret.data.radar.model.Radar
-import fi.kroon.vadret.presentation.radar.di.RadarFeatureScope
+import fi.kroon.vadret.presentation.radar.di.RadarScope
 import fi.kroon.vadret.util.extension.asLeft
 import fi.kroon.vadret.util.extension.asRight
 import io.github.sphrak.either.Either
@@ -13,7 +13,7 @@ import okio.buffer
 import timber.log.Timber
 import javax.inject.Inject
 
-@RadarFeatureScope
+@RadarScope
 class RadarDiskCache @Inject constructor(
     private val cache: DiskLruCache
 ) : BaseCache() {

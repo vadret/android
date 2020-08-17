@@ -4,7 +4,7 @@ import fi.kroon.vadret.data.failure.Failure
 import fi.kroon.vadret.domain.radar.GetRadarImageUrlService
 import fi.kroon.vadret.domain.radar.GetRadarLastCheckedKeyValueTask
 import fi.kroon.vadret.domain.radar.SetRadarLastCheckedKeyValueTask
-import fi.kroon.vadret.presentation.radar.di.RadarFeatureScope
+import fi.kroon.vadret.presentation.radar.di.RadarScope
 import fi.kroon.vadret.presentation.shared.IViewModel
 import fi.kroon.vadret.util.NIL_INT
 import fi.kroon.vadret.util.extension.asObservable
@@ -14,7 +14,7 @@ import io.reactivex.ObservableTransformer
 import timber.log.Timber
 import javax.inject.Inject
 
-@RadarFeatureScope
+@RadarScope
 class RadarViewModel @Inject constructor(
     private var state: RadarView.State,
     private val getRadarImageUrlService: GetRadarImageUrlService,

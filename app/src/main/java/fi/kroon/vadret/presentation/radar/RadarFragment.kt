@@ -5,15 +5,16 @@ import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.View
+import androidx.core.graphics.drawable.toBitmap
+import coil.ImageLoader
+import coil.request.LoadRequest
 import com.jakewharton.rxbinding3.view.clicks
 import com.jakewharton.rxbinding3.widget.changes
 import com.jakewharton.rxbinding3.widget.userChanges
-import com.squareup.picasso.Picasso
-import com.squareup.picasso.Target
 import fi.kroon.vadret.BuildConfig
 import fi.kroon.vadret.R
 import fi.kroon.vadret.presentation.radar.di.RadarComponent
-import fi.kroon.vadret.presentation.radar.di.RadarFeatureScope
+import fi.kroon.vadret.presentation.radar.di.RadarScope
 import fi.kroon.vadret.presentation.shared.BaseFragment
 import fi.kroon.vadret.presentation.weatherforecast.WeatherForecastFragment
 import fi.kroon.vadret.util.DEFAULT_BOUNDINGBOX_CENTER_LATITUDE
@@ -52,7 +53,7 @@ import java.util.concurrent.TimeUnit
 
 typealias RadarFile = fi.kroon.vadret.data.radar.model.File
 
-@RadarFeatureScope
+@RadarScope
 class RadarFragment : BaseFragment() {
 
     private companion object {
@@ -67,58 +68,62 @@ class RadarFragment : BaseFragment() {
     private var bundle: Bundle? = null
     private var stateParcel: RadarView.StateParcel? = null
 
-    private val cmp: RadarComponent by lazy {
+    private val component: RadarComponent by lazy {
         appComponent()
             .radarComponentBuilder()
             .build()
     }
 
+    private val imageLoader: ImageLoader by lazy {
+        component.provideImageLoader()
+    }
+
     private val viewModel: RadarViewModel by lazy {
-        cmp.provideRadarViewModel()
+        component.provideRadarViewModel()
     }
 
     private val onViewInitialisedSubject: PublishSubject<RadarView.Event.OnViewInitialised> by lazy {
-        cmp.provideOnViewInitialised()
+        component.provideOnViewInitialised()
     }
 
     private val onFailureHandledSubject: PublishSubject<RadarView.Event.OnFailureHandled> by lazy {
-        cmp.provideOnFailureHandled()
+        component.provideOnFailureHandled()
     }
 
     private val onRadarImageDisplayedSubject: PublishSubject<RadarView.Event.OnRadarImageDisplayed> by lazy {
-        cmp.provideOnRadarImageDisplayed()
+        component.provideOnRadarImageDisplayed()
     }
 
     private val onSeekBarStoppedSubject: PublishSubject<RadarView.Event.OnSeekBarStopped> by lazy {
-        cmp.provideOnSeekBarStopped()
+        component.provideOnSeekBarStopped()
     }
 
     private val onStateParcelUpdatedSubject: PublishSubject<RadarView.Event.OnStateParcelUpdated> by lazy {
-        cmp.provideOnStateParcelUpdated()
+        component.provideOnStateParcelUpdated()
     }
 
     private val onPlayButtonStartedSubject: PublishSubject<RadarView.Event.OnPlayButtonStarted> by lazy {
-        cmp.provideOnPlayButtonStarted()
+        component.provideOnPlayButtonStarted()
     }
 
     private val onPlayButtonStoppedSubject: PublishSubject<RadarView.Event.OnPlayButtonStopped> by lazy {
-        cmp.provideOnPlayButtonStopped()
+        component.provideOnPlayButtonStopped()
     }
 
     private val onSeekBarResetSubject: PublishSubject<RadarView.Event.OnSeekBarReset> by lazy {
-        cmp.provideOnSeekBarReset()
+        component.provideOnSeekBarReset()
     }
 
     private val onPositionUpdatedSubject: PublishSubject<RadarView.Event.OnPositionUpdated> by lazy {
-        cmp.provideOnPositionUpdated()
+        component.provideOnPositionUpdated()
     }
 
     private val onSeekBarRestoredSubject: PublishSubject<RadarView.Event.OnSeekBarRestored> by lazy {
-        cmp.provideOnSeekBarRestored()
+        component.provideOnSeekBarRestored()
     }
 
     private val subscriptions: CompositeDisposable by lazy {
-        cmp.provideCompositeDisposable()
+        component.provideCompositeDisposable()
     }
 
     private val defaultTileSource = XYTileSource(
@@ -146,7 +151,7 @@ class RadarFragment : BaseFragment() {
         super.onAttach(context)
         Timber.d("-----BEGIN-----")
         Timber.d("ON ATTACH")
-        cmp.inject(this)
+        component.inject(this)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -420,37 +425,36 @@ class RadarFragment : BaseFragment() {
         )
     }
 
-    private fun displayRadarImage(file: RadarFile) =
-        Picasso
-            .get()
-            .load(
+    private fun displayRadarImage(file: RadarFile) {
+        LoadRequest
+            .Builder(requireContext())
+            .data(
                 file
                     .formats
                     .first()
                     .link
             )
-            .into(
-                object : Target {
-                    override fun onPrepareLoad(placeHolderDrawable: Drawable?) {}
-                    override fun onBitmapFailed(e: Exception?, errorDrawable: Drawable?) {
-                        Timber.e("Image loading failed.")
-                    }
-
-                    override fun onBitmapLoaded(bitmap: Bitmap?, from: Picasso.LoadedFrom?) {
-                        Timber.d("Image loaded successfully.")
-                        radarDate?.apply {
-                            text = OffsetDateTime.parse(file.formats.first().updated).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
-                        }
-                        bitmap?.let { image: Bitmap ->
-                            setOverlayImage(image)
-                        }
-                    }
+            .target(
+                onStart = {
+                    _ -> Unit
+                },
+                onSuccess = { result: Drawable ->
+                    setOverlayImage(result.toBitmap())
+                },
+                onError = { _ ->
+                    Timber.e("Image loading failed.")
                 }
             )
+            .build()
+            .apply {
+                imageLoader.execute(this)
+            }
+    }
 
     private fun setOverlayImage(bitmap: Bitmap) {
         val radarOverlay: GroundOverlay = GroundOverlay()
             .apply {
+
                 image = bitmap
                 setPosition(
                     GeoPoint(

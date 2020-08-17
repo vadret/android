@@ -1,5 +1,6 @@
 package fi.kroon.vadret.presentation.radar.di
 
+import coil.ImageLoader
 import dagger.Subcomponent
 import fi.kroon.vadret.presentation.radar.RadarFragment
 import fi.kroon.vadret.presentation.radar.RadarView
@@ -12,7 +13,7 @@ import io.reactivex.subjects.PublishSubject
         RadarModule::class
     ]
 )
-@RadarFeatureScope
+@RadarScope
 interface RadarComponent {
 
     fun inject(radarFragment: RadarFragment)
@@ -36,6 +37,7 @@ interface RadarComponent {
     fun provideOnPositionUpdated(): PublishSubject<RadarView.Event.OnPositionUpdated>
     fun provideOnSeekBarRestored(): PublishSubject<RadarView.Event.OnSeekBarRestored>
     fun provideCompositeDisposable(): CompositeDisposable
+    fun provideImageLoader(): ImageLoader
 
     @Subcomponent.Builder
     interface Builder {

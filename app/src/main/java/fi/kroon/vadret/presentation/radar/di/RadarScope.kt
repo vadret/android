@@ -4,4 +4,4 @@ import javax.inject.Scope
 
 @Scope
 @Retention
-annotation class RadarFeatureScope
+annotation class RadarScope

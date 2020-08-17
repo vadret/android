@@ -143,6 +143,7 @@ dependencies {
     def COMMONS_CSV_VERSION = "1.7"
     def CONSTRAINT_LAYOUT_VERSION = "1.1.3"
     def CORE_KTX_VERSION = "1.3.1"
+    def COIL_VERSION = "0.11.0"
     def CRASHLYTICS_VERSION = "2.10.1"
     def DAGGER_VERSION = "2.28.2"
     def FRAGMENT_KTX_VERSION = "1.2.5"
@@ -160,7 +161,6 @@ dependencies {
     def OKIO_VERSION = "2.6.0"
     def OSMDROID_VERSION = "6.1.2"
     def PERMISSIONS_DISPATCHER_VERSION = "4.7.0"
-    def PICASSO_VERSION = "2.71828"
     def PREFERENCE_VERSION = "1.1.1"
     def RETROFIT_VERSION = "2.9.0"
     def ROOM_VERSION = "2.2.5"
@@ -222,7 +222,7 @@ dependencies {
 
     // Miscellaneous
     implementation "com.afollestad:rxkprefs:${RXK_PREFS_VERSION}"
-    implementation "com.squareup.picasso:picasso:${PICASSO_VERSION}"
+    implementation "io.coil-kt:coil:${COIL_VERSION}"
     implementation "org.apache.commons:commons-csv:${COMMONS_CSV_VERSION}"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${KOTLIN_STDLIB_VERSION}"
     implementation "org.osmdroid:osmdroid-android:${OSMDROID_VERSION}"
