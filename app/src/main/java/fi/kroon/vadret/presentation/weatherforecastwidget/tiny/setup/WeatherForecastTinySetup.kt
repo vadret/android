@@ -24,7 +24,7 @@ import fi.kroon.vadret.R
 import fi.kroon.vadret.data.autocomplete.model.AutoCompleteItem
 import fi.kroon.vadret.data.failure.Failure
 import fi.kroon.vadret.data.theme.model.Theme
-import fi.kroon.vadret.presentation.weatherforecast.autocomplete.AutoCompleteAdapter
+import fi.kroon.vadret.presentation.weatherforecastwidget.shared.AutoCompleteAdapterLegacy
 import fi.kroon.vadret.presentation.weatherforecastwidget.shared.BaseAppWidgetSetup
 import fi.kroon.vadret.presentation.weatherforecastwidget.tiny.provider.WeatherForecastTinyAppWidgetProvider
 import fi.kroon.vadret.presentation.weatherforecastwidget.tiny.setup.di.WeatherForecastTinySetupComponent
@@ -142,7 +142,11 @@ class WeatherForecastTinySetup : BaseAppWidgetSetup() {
         cmp.provideOnLocationPermissionDenied()
     }
 
+<<<<<<< HEAD
     private val autoCompleteAdapter: AutoCompleteAdapter by lazy(LazyThreadSafetyMode.NONE) {
+=======
+    private val autoCompleteAdapter: AutoCompleteAdapterLegacy by lazy(LazyThreadSafetyMode.NONE) {
+>>>>>>> 4a5e7b8... fixes #209 -- replace rx2 with coroutines in weather forecast
         cmp.provideAutoCompleteAdapter()
     }
 

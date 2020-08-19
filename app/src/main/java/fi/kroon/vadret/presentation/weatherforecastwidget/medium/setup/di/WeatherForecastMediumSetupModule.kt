@@ -5,11 +5,13 @@ import android.content.Context
 import dagger.Module
 import dagger.Provides
 import fi.kroon.vadret.data.autocomplete.model.AutoCompleteItem
-import fi.kroon.vadret.presentation.weatherforecast.autocomplete.AutoCompleteAdapter
 import fi.kroon.vadret.presentation.weatherforecastwidget.medium.setup.WeatherForecastMediumSetupView
+import fi.kroon.vadret.presentation.weatherforecastwidget.shared.AutoCompleteAdapterLegacy
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.subjects.PublishSubject
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 
+@ExperimentalCoroutinesApi
 @Module
 object WeatherForecastMediumSetupModule {
 
@@ -85,8 +87,8 @@ object WeatherForecastMediumSetupModule {
     @WeatherForecastMediumSetupScope
     fun provideAutoCompleteAdapter(
         clickSubject: PublishSubject<AutoCompleteItem>
-    ): AutoCompleteAdapter =
-        AutoCompleteAdapter(clickSubject)
+    ): AutoCompleteAdapterLegacy =
+        AutoCompleteAdapterLegacy(clickSubject)
 
     @Provides
     @JvmStatic

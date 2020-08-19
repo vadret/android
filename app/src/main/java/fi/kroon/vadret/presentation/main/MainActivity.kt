@@ -1,15 +1,21 @@
 package fi.kroon.vadret.presentation.main
 
 import android.os.Bundle
+<<<<<<< HEAD
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
+=======
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.LiveData
+import androidx.navigation.NavController
+import androidx.navigation.ui.setupActionBarWithNavController
+>>>>>>> 4a5e7b8... fixes #209 -- replace rx2 with coroutines in weather forecast
 import androidx.preference.PreferenceManager
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import fi.kroon.vadret.R
 import fi.kroon.vadret.data.failure.Failure
 import fi.kroon.vadret.data.theme.model.Theme
 import fi.kroon.vadret.presentation.main.di.MainActivityComponent
-import fi.kroon.vadret.presentation.main.di.MainActivityScope
 import fi.kroon.vadret.presentation.shared.BaseActivity
 import fi.kroon.vadret.util.DEFAULT_SETTINGS
 import fi.kroon.vadret.util.Scheduler
@@ -22,7 +28,6 @@ import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.activity_main.*
 import timber.log.Timber
 
-@MainActivityScope
 class MainActivity : BaseActivity() {
 
     private val cmp: MainActivityComponent by lazy(LazyThreadSafetyMode.NONE) {
@@ -96,8 +101,8 @@ class MainActivity : BaseActivity() {
             )
         }.blockingGet()
 
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onStop() {
+        super.onStop()
         subscriptions.clear()
     }
 

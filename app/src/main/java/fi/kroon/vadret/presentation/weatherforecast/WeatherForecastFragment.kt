@@ -5,152 +5,124 @@ import android.content.Context
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.os.Parcelable
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.jakewharton.rxbinding3.appcompat.queryTextChangeEvents
-import com.jakewharton.rxbinding3.swiperefreshlayout.refreshes
-import com.jakewharton.rxbinding3.view.clicks
 import fi.kroon.vadret.R
-import fi.kroon.vadret.data.autocomplete.model.AutoCompleteItem
-import fi.kroon.vadret.presentation.shared.BaseFragment
+import fi.kroon.vadret.data.nominatim.model.Locality
+import fi.kroon.vadret.presentation.main.MainActivity
 import fi.kroon.vadret.presentation.weatherforecast.autocomplete.AutoCompleteAdapter
 import fi.kroon.vadret.presentation.weatherforecast.di.WeatherForecastComponent
-import fi.kroon.vadret.presentation.weatherforecast.di.WeatherForecastFeatureScope
+import fi.kroon.vadret.presentation.weatherforecast.di.WeatherForecastScope
 import fi.kroon.vadret.util.extension.appComponent
 import fi.kroon.vadret.util.extension.snack
 import fi.kroon.vadret.util.extension.toGone
 import fi.kroon.vadret.util.extension.toInvisible
-import fi.kroon.vadret.util.extension.toObservable
 import fi.kroon.vadret.util.extension.toVisible
-import io.reactivex.Observable
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.rxkotlin.addTo
-import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.weather_forecast_fragment.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.channels.ConflatedBroadcastChannel
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 import permissions.dispatcher.NeedsPermission
 import permissions.dispatcher.OnNeverAskAgain
 import permissions.dispatcher.OnPermissionDenied
 import permissions.dispatcher.RuntimePermissions
+import ru.ldralighieri.corbind.appcompat.queryTextChangeEvents
+import ru.ldralighieri.corbind.swiperefreshlayout.refreshes
+import ru.ldralighieri.corbind.view.clicks
 import timber.log.Timber
 
+@ExperimentalCoroutinesApi
+@FlowPreview
 @RuntimePermissions
-@WeatherForecastFeatureScope
-class WeatherForecastFragment : BaseFragment() {
+class WeatherForecastFragment : Fragment() {
 
-    companion object {
+    private companion object {
         const val STATE_PARCEL_KEY: String = "STATE_PARCEL_KEY"
         const val SCROLL_POSITION_KEY: String = "SCROLL_POSITION_KEY"
     }
 
+    private var isConfigChangeOrProcessDeath = false
     private var stateParcel: WeatherForecastView.StateParcel? = null
     private var bundle: Bundle? = null
     private var recyclerViewParcelable: Parcelable? = null
 
-    private val cmp: WeatherForecastComponent by lazy(LazyThreadSafetyMode.NONE) {
+    private val component: WeatherForecastComponent by lazy(LazyThreadSafetyMode.NONE) {
         appComponent()
             .weatherForecastComponentBuilder()
             .build()
     }
 
     private val viewModel: WeatherForecastViewModel by lazy(LazyThreadSafetyMode.NONE) {
-        cmp.provideWeatherForecastViewModel()
+        component.provideWeatherForecastViewModel()
     }
 
-    private val onViewInitialisedSubject: PublishSubject<WeatherForecastView.Event.OnViewInitialised> by lazy(LazyThreadSafetyMode.NONE) {
-        cmp.provideOnViewInitialisedSubject()
-    }
-
-    private val onLocationPermissionDeniedSubject: PublishSubject<WeatherForecastView.Event.OnLocationPermissionDenied> by lazy(LazyThreadSafetyMode.NONE) {
-        cmp.provideOnLocationPermissionDeniedSubject()
-    }
-
-    private val onLocationPermissionDeniedNeverAskAgainSubject: PublishSubject<WeatherForecastView.Event.OnLocationPermissionDeniedNeverAskAgain> by lazy(LazyThreadSafetyMode.NONE) {
-        cmp.provideOnLocationPermissionDeniedNeverAskAgainSubject()
-    }
-
-    private val onLocationPermissionGrantedSubject: PublishSubject<WeatherForecastView.Event.OnLocationPermissionGranted> by lazy(LazyThreadSafetyMode.NONE) {
-        cmp.provideOnLocationPermissionGrantedSubject()
-    }
-
-    private val onProgressBarEffectStartedSubject: PublishSubject<WeatherForecastView.Event.OnProgressBarEffectStarted> by lazy(LazyThreadSafetyMode.NONE) {
-        cmp.provideOnProgressBarEffectStarted()
-    }
-
-    private val onProgressBarEffectStoppedSubject: PublishSubject<WeatherForecastView.Event.OnProgressBarEffectStopped> by lazy(LazyThreadSafetyMode.NONE) {
-        cmp.provideOnProgressBarEffectStopped()
-    }
-
-    private val onAutoCompleteItemClickedSubject: PublishSubject<AutoCompleteItem> by lazy(LazyThreadSafetyMode.NONE) {
-        cmp.provideOnAutoCompleteItemClickedSubject()
-    }
-
-    private val onSearchViewDismissedSubject: PublishSubject<WeatherForecastView.Event.OnSearchViewDismissed> by lazy(LazyThreadSafetyMode.NONE) {
-        cmp.provideOnSearchViewDismissed()
-    }
-
-    private val onFailureHandledSubject: PublishSubject<WeatherForecastView.Event.OnFailureHandled> by lazy(LazyThreadSafetyMode.NONE) {
-        cmp.provideOnFailureHandled()
-    }
-
-    private val onWeatherListDisplayedSubject: PublishSubject<WeatherForecastView.Event.OnWeatherListDisplayed> by lazy(LazyThreadSafetyMode.NONE) {
-        cmp.provideOnWeatherListDisplayed()
-    }
-
-    private val onScrollPositionRestoredSubject: PublishSubject<WeatherForecastView.Event.OnScrollPositionRestored> by lazy(LazyThreadSafetyMode.NONE) {
-        cmp.provideOnScrollPositionRestored()
-    }
-
-    private val onStateParcelUpdatedSubject: PublishSubject<WeatherForecastView.Event.OnStateParcelUpdated> by lazy(LazyThreadSafetyMode.NONE) {
-        cmp.provideOnStateParcelUpdated()
+    private val eventChannel: ConflatedBroadcastChannel<WeatherForecastView.Event> by lazy(LazyThreadSafetyMode.NONE) {
+        component.provideEventChannel()
     }
 
     private val weatherForecastAdapter: WeatherForecastAdapter by lazy(LazyThreadSafetyMode.NONE) {
-        cmp.provideWeatherForecastAdapter()
+        component.provideWeatherForecastAdapter()
     }
 
     private val autoCompleteAdapter: AutoCompleteAdapter by lazy(LazyThreadSafetyMode.NONE) {
-        cmp.provideAutoCompleteAdapter()
-    }
-
-    private val subscriptions: CompositeDisposable by lazy(LazyThreadSafetyMode.NONE) {
-        cmp.provideCompositeDisposable()
+        component.provideAutoCompleteAdapter()
     }
 
     private val itemDecoration: DividerItemDecoration by lazy(LazyThreadSafetyMode.NONE) {
-        DividerItemDecoration(context, RecyclerView.VERTICAL)
+        DividerItemDecoration(requireContext(), RecyclerView.VERTICAL)
     }
 
     private val drawable: Drawable? by lazy(LazyThreadSafetyMode.NONE) {
         ContextCompat.getDrawable(requireContext(), R.drawable.search_item_divider)
     }
 
-    override fun layoutId(): Int = R.layout.weather_forecast_fragment
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        return inflater.inflate(R.layout.weather_forecast_fragment, container, false)
+    }
 
     override fun onAttach(context: Context) {
-        Timber.d("-----BEGIN-----")
-        Timber.d("ON ATTACH")
-        cmp.inject(this)
+        Timber.d("ON ATTACH -- WEATHER FORECAST")
         super.onAttach(context)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Timber.d("ON CREATE")
-        savedInstanceState?.let { restoredBundle ->
+        Timber.d("ON CREATE -- WEATHER FORECAST")
+        savedInstanceState?.let { _bundle: Bundle ->
             if (bundle == null) {
-                Timber.d("savedInstanceState restored: $restoredBundle")
-                bundle = restoredBundle
+                Timber.d("savedInstanceState restored: $_bundle")
+                bundle = _bundle
             }
         }
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-
-        Timber.d("onActivityCreated: $savedInstanceState")
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        Timber.d("ON VIEW CREATED -- WEATHER FORECAST")
         setup()
+
+        lifecycleScope
+            .launchWhenCreated {
+                viewModel()
+                    .flowOn(Dispatchers.IO)
+                    .collect(::render)
+
+            }
     }
 
     override fun onRequestPermissionsResult(
@@ -164,19 +136,18 @@ class WeatherForecastFragment : BaseFragment() {
 
     override fun onStop() {
         super.onStop()
-        Timber.d("ON STOP")
+        Timber.d("ON STOP -- WEATHER FORECAST")
 
         recyclerViewParcelable = (weatherForecastRecyclerView.layoutManager as LinearLayoutManager)
             .onSaveInstanceState()
+        hideActionBarLocalityName()
 
         isConfigChangeOrProcessDeath = true
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
-        Timber.d("ON DESTROY VIEW")
-
-        subscriptions.clear()
+        Timber.d("ON DESTROY VIEW -- WEATHER FORECAST")
 
         weatherForecastRecyclerView.apply {
             adapter = null
@@ -186,20 +157,17 @@ class WeatherForecastFragment : BaseFragment() {
             adapter = null
         }
 
-        hideActionBarLocalityName()
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        Timber.d("ON DESTROY")
+        Timber.d("ON DESTROY -- WEATHER FORECAST")
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        Timber.d("ON SAVE INSTANCE STATE")
+        Timber.d("ON SAVE INSTANCE STATE -- WEATHER FORECAST")
         outState.apply {
-            Timber.d("Saving instance: $stateParcel")
-            Timber.d("-----END-----")
             putParcelable(STATE_PARCEL_KEY, stateParcel)
 
             /**
@@ -224,7 +192,7 @@ class WeatherForecastFragment : BaseFragment() {
 
     override fun onResume() {
         super.onResume()
-        Timber.d("ON RESUME")
+        Timber.d("ON RESUME -- WEATHER FORECAST")
         if (isConfigChangeOrProcessDeath) {
             setupEvents()
             isConfigChangeOrProcessDeath = false
@@ -240,111 +208,78 @@ class WeatherForecastFragment : BaseFragment() {
         weatherForecastRecyclerView.apply {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = weatherForecastAdapter
+            hasFixedSize()
         }
     }
 
     private fun setupEvents() {
 
-        if (subscriptions.size() == 0) {
-            weatherForecastSearchView
-                .setOnCloseListener {
-                    onSearchViewDismissedSubject.onNext(
-                        WeatherForecastView
-                            .Event
-                            .OnSearchViewDismissed
-                    )
-                    true
-                }
+        weatherForecastSearchView
+            .setOnCloseListener {
 
-            Observable.mergeArray(
-                onViewInitialisedSubject
-                    .toObservable(),
-                onLocationPermissionGrantedSubject
-                    .toObservable(),
-                onLocationPermissionDeniedSubject
-                    .toObservable(),
-                onLocationPermissionDeniedNeverAskAgainSubject
-                    .toObservable(),
-                onSearchViewDismissedSubject
-                    .toObservable(),
-                onWeatherListDisplayedSubject
-                    .toObservable(),
-                onScrollPositionRestoredSubject
-                    .toObservable(),
-                onFailureHandledSubject
-                    .toObservable(),
-                onProgressBarEffectStartedSubject
-                    .toObservable(),
-                onProgressBarEffectStoppedSubject
-                    .toObservable(),
-                onStateParcelUpdatedSubject
-                    .toObservable(),
-                onAutoCompleteItemClickedSubject
-                    .toObservable()
-                    .map { item: AutoCompleteItem ->
-                        WeatherForecastView
-                            .Event
-                            .OnAutoCompleteItemClicked(item)
-                    },
-                weatherForecastLocationSearchButton
-                    .clicks()
-                    .map {
-                        WeatherForecastView
-                            .Event
-                            .OnSearchButtonToggled
-                    },
-                weatherForecastRefresh
-                    .refreshes()
-                    .map {
-                        WeatherForecastView
-                            .Event
-                            .OnSwipedToRefresh
-                    },
-                weatherForecastSearchView
-                    .queryTextChangeEvents()
-                    .skipInitialValue()
-                    .map { searchEvent ->
-                        when {
-                            searchEvent.isSubmitted ->
-                                WeatherForecastView
-                                    .Event
-                                    .OnSearchButtonSubmitted(searchEvent.queryText.toString())
-                            else ->
-                                WeatherForecastView
-                                    .Event
-                                    .OnSearchTextChanged(
-                                        searchEvent.queryText.toString()
-                                    )
-                        }
-                    }
-            ).observeOn(
-                scheduler.io()
-            ).compose(
-                viewModel()
-            ).observeOn(
-                scheduler.ui()
-            ).subscribe(
-                ::render
-            ).addTo(
-                subscriptions
-            )
-
-            onViewInitialisedSubject
-                .onNext(
+                eventChannel.offer(
                     WeatherForecastView
                         .Event
-                        .OnViewInitialised(
-                            stateParcel = bundle?.getParcelable(
-                                STATE_PARCEL_KEY
-                            )
-                        )
+                        .OnSearchViewDismissed
                 )
-        }
+
+                true
+            }
+
+        weatherForecastLocationSearchButton
+            .clicks()
+            .map {
+                eventChannel
+                    .offer(
+                        WeatherForecastView.Event.OnSearchButtonToggled
+                    )
+            }.launchIn(lifecycleScope)
+
+        weatherForecastRefresh
+            .refreshes()
+            .map {
+                eventChannel.offer(WeatherForecastView.Event.OnSwipedToRefresh)
+            }.launchIn(lifecycleScope)
+
+        weatherForecastSearchView
+            .queryTextChangeEvents()
+            .debounce(200)
+            .drop(1)
+            .map { searchEvent ->
+                when {
+                    searchEvent.isSubmitted -> {
+                        eventChannel.offer(
+                            WeatherForecastView
+                                .Event
+                                .OnSearchButtonSubmitted(searchEvent.queryText.toString())
+                        )
+                    }
+                    else -> {
+                        eventChannel.offer(
+                            WeatherForecastView
+                                .Event
+                                .OnSearchTextChanged(
+                                    searchEvent.queryText.toString()
+                                )
+                        )
+                    }
+                }
+            }.launchIn(lifecycleScope)
+
+        eventChannel.offer(
+            WeatherForecastView
+                .Event
+                .OnViewInitialised(
+                    stateParcel = bundle?.getParcelable(
+                        STATE_PARCEL_KEY
+                    )
+                )
+        )
     }
 
-    private fun render(viewState: WeatherForecastView.State) =
+    private suspend fun render(viewState: WeatherForecastView.State) =
         when (viewState.renderEvent) {
-            WeatherForecastView.RenderEvent.None -> Unit
+            WeatherForecastView.RenderEvent.Idle -> Unit
             WeatherForecastView.RenderEvent.RequestLocationPermission -> onRequestLocationPermission()
             WeatherForecastView.RenderEvent.StartProgressBarEffect -> startProgressBarEffect()
             WeatherForecastView.RenderEvent.StopProgressBarEffect -> stopProgressBarEffect()
@@ -364,7 +299,7 @@ class WeatherForecastFragment : BaseFragment() {
             toVisible()
         }
 
-        onProgressBarEffectStartedSubject.onNext(
+        eventChannel.offer(
             WeatherForecastView
                 .Event
                 .OnProgressBarEffectStarted
@@ -382,7 +317,7 @@ class WeatherForecastFragment : BaseFragment() {
             isRefreshing = false
         }
 
-        onProgressBarEffectStoppedSubject.onNext(
+        eventChannel.offer(
             WeatherForecastView
                 .Event
                 .OnProgressBarEffectStopped
@@ -405,7 +340,7 @@ class WeatherForecastFragment : BaseFragment() {
                 )
         }
 
-        onScrollPositionRestoredSubject.onNext(
+        eventChannel.offer(
             WeatherForecastView
                 .Event
                 .OnScrollPositionRestored
@@ -422,7 +357,7 @@ class WeatherForecastFragment : BaseFragment() {
         )
         Timber.d("updateStateParcel: $stateParcel")
 
-        onStateParcelUpdatedSubject.onNext(
+        eventChannel.offer(
             WeatherForecastView
                 .Event
                 .OnStateParcelUpdated
@@ -446,7 +381,7 @@ class WeatherForecastFragment : BaseFragment() {
             toInvisible()
         }
 
-        onSearchViewDismissedSubject.onNext(
+        eventChannel.offer(
             WeatherForecastView
                 .Event
                 .OnSearchViewDismissed
@@ -463,23 +398,20 @@ class WeatherForecastFragment : BaseFragment() {
             requestFocusFromTouch()
         }
 
-        autoCompleteRecyclerView.apply {
-            adapter = autoCompleteAdapter
-            layoutManager = LinearLayoutManager(this.context, RecyclerView.VERTICAL, false)
-
-            drawable?.let { res: Drawable ->
-                itemDecoration
-                    .setDrawable(res)
+        autoCompleteRecyclerView
+            .apply {
+                adapter = autoCompleteAdapter
+                layoutManager = LinearLayoutManager(requireContext(), RecyclerView.VERTICAL, false)
+                drawable?.let { res: Drawable ->
+                    itemDecoration
+                        .setDrawable(res)
+                }
+                addItemDecoration(itemDecoration)
+                hasFixedSize()
+                visibility = View.VISIBLE
             }
 
-            addItemDecoration(itemDecoration)
-            hasFixedSize()
-            toVisible()
-        }
-
-        weatherForecastLocationSearchButton.apply {
-            toInvisible()
-        }
+        weatherForecastLocationSearchButton.visibility = View.INVISIBLE
     }
 
     private fun displayWeatherForecast(renderEvent: WeatherForecastView.RenderEvent.DisplayWeatherForecast) {
@@ -487,7 +419,7 @@ class WeatherForecastFragment : BaseFragment() {
         weatherForecastAdapter.updateList(renderEvent.list)
         setActionBarLocalityName(renderEvent.locality)
 
-        onWeatherListDisplayedSubject.onNext(
+        eventChannel.offer(
             WeatherForecastView
                 .Event
                 .OnWeatherListDisplayed
@@ -498,40 +430,51 @@ class WeatherForecastFragment : BaseFragment() {
         onLocationPermissionGrantedWithPermissionCheck()
 
     @NeedsPermission(value = [Manifest.permission.ACCESS_FINE_LOCATION])
-    fun onLocationPermissionGranted() =
-        onLocationPermissionGrantedSubject
-            .onNext(
+    fun onLocationPermissionGranted() {
+        eventChannel
+            .offer(
                 WeatherForecastView
                     .Event
                     .OnLocationPermissionGranted
             )
+    }
 
     @OnPermissionDenied(value = [Manifest.permission.ACCESS_FINE_LOCATION])
-    fun onLocationPermissionDenied() =
-        onLocationPermissionDeniedSubject
-            .onNext(
+    fun onLocationPermissionDenied() {
+        eventChannel
+            .offer(
                 WeatherForecastView
                     .Event
                     .OnLocationPermissionDenied
             )
+    }
 
     @OnNeverAskAgain(value = [Manifest.permission.ACCESS_FINE_LOCATION])
-    fun onLocationPermissionNeverAskAgain() =
-        onLocationPermissionDeniedNeverAskAgainSubject
-            .onNext(
+    fun onLocationPermissionNeverAskAgain() {
+        eventChannel
+            .offer(
                 WeatherForecastView
                     .Event
                     .OnLocationPermissionDeniedNeverAskAgain
             )
+    }
 
-    override fun renderError(errorCode: Int) {
-        snack(errorCode)
+    private fun renderError(errorCode: Int) {
+        //TODO snack(errorCode)
         Timber.e("Rendering error code: ${getString(errorCode)}")
-        onFailureHandledSubject
-            .onNext(
+        eventChannel
+            .offer(
                 WeatherForecastView
                     .Event
                     .OnFailureHandled
             )
     }
+
+    private fun hideActionBarLocalityName() =
+        (requireActivity() as MainActivity)
+            .hideLocalityActionBar()
+
+    private fun setActionBarLocalityName(locality: Locality) =
+        (requireActivity() as MainActivity)
+            .setLocalityActionBar(locality)
 }
