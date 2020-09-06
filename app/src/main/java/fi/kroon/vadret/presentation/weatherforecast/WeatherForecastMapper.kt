@@ -166,12 +166,14 @@ object WeatherForecastMapper {
         val precipitationType: Int = 0
         var weatherIcon: Int = 0
         var weatherDescription: Int = 0
+        var precipitationMaxAmount: Double = 0.0
 
         for (param in timeSerie.parameters) {
             when (param.name) {
                 "t" -> temperature = param.values.first()
                 "ws" -> windSpeed = param.values.first()
                 "Wsymb2" -> weatherIcon = param.values.first().toInt()
+                "pmax" -> precipitationMaxAmount = param.values.first().toDouble()
             }
         }
 
@@ -188,7 +190,8 @@ object WeatherForecastMapper {
             precipitationType = precipitationType,
             windSpeed = windSpeed,
             weatherIcon = weatherIcon,
-            weatherDescription = weatherDescription
+            weatherDescription = weatherDescription,
+            precipitationMaxAmount = precipitationMaxAmount
         )
     }
 }

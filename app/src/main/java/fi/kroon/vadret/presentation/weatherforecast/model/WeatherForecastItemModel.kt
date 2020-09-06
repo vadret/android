@@ -5,6 +5,7 @@ data class WeatherForecastItemModel(
     val temperature: Double,
     val feelsLikeTemperature: String? = null,
     val precipitationType: Int,
+    val precipitationMaxAmount: Double,
     val windSpeed: Double,
     val weatherIcon: Int,
     val weatherDescription: Int

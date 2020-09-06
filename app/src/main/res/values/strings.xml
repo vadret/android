@@ -8,6 +8,7 @@
     <string name="feels_like">Feels like</string>
     <string name="unknown_area">Unknown area</string>
     <string name="risk_for_thunder">Risk for thunder</string>
+    <string name="precipitation_max">%1$s mm/h</string>
 
     <string name="wsymb2_clear_sky">Clear sky</string>
     <string name="wsymb2_nearly_clear_sky">Nearly clear sky</string>

@@ -3,6 +3,7 @@ package fi.kroon.vadret.presentation.weatherforecast
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import fi.kroon.vadret.R
@@ -73,7 +74,7 @@ class WeatherForecastAdapter @Inject constructor() : RecyclerView.Adapter<Recycl
 
                 itemView.weatherDescription.text = weatherForecastHeadline
 
-                val drawable = itemView.context.getDrawable(R.drawable.wsymb2_wind_direction_arrow)
+                val drawable = ContextCompat.getDrawable(itemView.context, R.drawable.wsymb2_wind_direction_arrow)
 
                 item.windDirection?.let {
                     itemView.windDirectionIcon.setImageDrawable(drawable)
@@ -94,8 +95,7 @@ class WeatherForecastAdapter @Inject constructor() : RecyclerView.Adapter<Recycl
                 .getDisplayName(
                     TextStyle.FULL_STANDALONE,
                     Locale.getDefault()
-                )
-                .toUpperCase()
+                ).toUpperCase()
         }
     }
 
@@ -154,29 +154,31 @@ class WeatherForecastAdapter @Inject constructor() : RecyclerView.Adapter<Recycl
     }
 
     inner class ForecastViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-
-        init {
-            itemView.setOnClickListener {
-                Timber.d("ForecastViewHolder: Item $adapterPosition clicked of ${list.size}")
-            }
-        }
-
         fun bind(item: WeatherForecastItemModel) {
-            itemView.time.text = item.time
-            itemView.temperature.text = item.temperature.toString()
-            itemView.wsymb2Description.setText(getWsymb2ResourceId(item.weatherDescription))
-            itemView.wsymb2Icon.setImageResource(getWsymb2IconResourceId(item.weatherIcon))
-            itemView.temperature_indicator_flair.setBackgroundResource(getTemperatureColorResourceId(item.temperature))
+            itemView.apply {
+                time.text = item.time
+                temperature.text = item.temperature.toString()
+                wsymb2Description.setText(getWsymb2ResourceId(item.weatherDescription))
+                wsymb2Icon.setImageResource(getWsymb2IconResourceId(item.weatherIcon))
+                temperature_indicator_flair.setBackgroundResource(getTemperatureColorResourceId(item.temperature))
 
-            item.feelsLikeTemperature?.let {
-                itemView.feelsLikeTemperature.text = item.feelsLikeTemperature
-                itemView.feelsLike.toVisible()
-                itemView.feelsLikeTemperature.toVisible()
-                itemView.feelsLikeTempUnit.toVisible()
-            } ?: run {
-                itemView.feelsLikeTemperature.toInvisible()
-                itemView.feelsLike.toInvisible()
-                itemView.feelsLikeTempUnit.toInvisible()
+                if (item.precipitationMaxAmount > 0.0) {
+                    Timber.d("RAIN: ${item.precipitationMaxAmount}")
+                    precipitationMaxAmount.text = context.getString(R.string.precipitation_max, item.precipitationMaxAmount.toString())
+                } else {
+                    precipitationMaxAmount.toInvisible()
+                }
+
+                item.feelsLikeTemperature?.let {
+                    feelsLikeTemperature.text = item.feelsLikeTemperature
+                    feelsLike.toVisible()
+                    feelsLikeTemperature.toVisible()
+                    feelsLikeTempUnit.toVisible()
+                } ?: run {
+                    feelsLikeTemperature.toInvisible()
+                    feelsLike.toInvisible()
+                    feelsLikeTempUnit.toInvisible()
+                }
             }
         }
     }
