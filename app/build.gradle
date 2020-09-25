@@ -138,7 +138,7 @@ dependencies {
     def APPCOMPAT_VERSION = "1.2.0"
     def ASSERTJ_VERSION = "3.14.0"
     def COMMONS_CSV_VERSION = "1.7"
-    def CONSTRAINT_LAYOUT_VERSION = "1.1.3"
+    def CONSTRAINT_LAYOUT_VERSION = "2.0.1"
     def CORE_KTX_VERSION = "1.3.1"
     def COIL_VERSION = "0.13.0"
     def CRASHLYTICS_VERSION = "2.10.1"
