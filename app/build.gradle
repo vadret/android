@@ -18,7 +18,7 @@ def static loadFromFile(String key, String value) {
     }
 }
 
-def isRunningOnTravis = System.getenv("CI") == "true"
+def isRunningOnCI = System.getenv("CI") == "true"
 
 def getGitSha = { ->
     def stdout = new ByteArrayOutputStream()
@@ -59,14 +59,11 @@ android {
             storePassword
         }
     }
-    if (isRunningOnTravis) {
-        /**
-         *  This is for travis-ci
-         */
+    if (isRunningOnCI) {
         signingConfigs.release.storeFile = file("../.keystore")
-        signingConfigs.release.storePassword = loadFromEnvironment("storePassword")
-        signingConfigs.release.keyAlias = loadFromEnvironment("keyAlias")
-        signingConfigs.release.keyPassword = loadFromEnvironment("keyPassword")
+        signingConfigs.release.storePassword = loadFromEnvironment("KEY_STORE_PASSWORD")
+        signingConfigs.release.keyAlias = loadFromEnvironment("KEY_ALIAS")
+        signingConfigs.release.keyPassword = loadFromEnvironment("KEY_PASSWORD")
     } else {
         signingConfigs.release.storeFile = file("../.keystore")
         signingConfigs.release.storePassword = loadFromFile("storePassword", "keystore.properties")
