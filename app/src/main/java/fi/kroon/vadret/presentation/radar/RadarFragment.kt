@@ -7,7 +7,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.core.graphics.drawable.toBitmap
 import coil.ImageLoader
-import coil.request.LoadRequest
+import coil.request.ImageRequest
 import com.jakewharton.rxbinding3.view.clicks
 import com.jakewharton.rxbinding3.widget.changes
 import com.jakewharton.rxbinding3.widget.userChanges
@@ -424,7 +424,7 @@ class RadarFragment : BaseFragment() {
     }
 
     private fun displayRadarImage(file: RadarFile) {
-        LoadRequest
+        ImageRequest
             .Builder(requireContext())
             .data(
                 file
@@ -446,7 +446,7 @@ class RadarFragment : BaseFragment() {
             )
             .build()
             .apply {
-                imageLoader.execute(this)
+                imageLoader.enqueue(this)
             }
     }
 
