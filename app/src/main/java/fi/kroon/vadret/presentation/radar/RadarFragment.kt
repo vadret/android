@@ -66,61 +66,61 @@ class RadarFragment : BaseFragment() {
     private var bundle: Bundle? = null
     private var stateParcel: RadarView.StateParcel? = null
 
-    private val component: RadarComponent by lazy {
+    private val component: RadarComponent by lazy(LazyThreadSafetyMode.NONE) {
         appComponent()
             .radarComponentBuilder()
             .build()
     }
 
-    private val imageLoader: ImageLoader by lazy {
+    private val imageLoader: ImageLoader by lazy(LazyThreadSafetyMode.NONE) {
         component.provideImageLoader()
     }
 
-    private val viewModel: RadarViewModel by lazy {
+    private val viewModel: RadarViewModel by lazy(LazyThreadSafetyMode.NONE) {
         component.provideRadarViewModel()
     }
 
-    private val onViewInitialisedSubject: PublishSubject<RadarView.Event.OnViewInitialised> by lazy {
+    private val onViewInitialisedSubject: PublishSubject<RadarView.Event.OnViewInitialised> by lazy(LazyThreadSafetyMode.NONE) {
         component.provideOnViewInitialised()
     }
 
-    private val onFailureHandledSubject: PublishSubject<RadarView.Event.OnFailureHandled> by lazy {
+    private val onFailureHandledSubject: PublishSubject<RadarView.Event.OnFailureHandled> by lazy(LazyThreadSafetyMode.NONE) {
         component.provideOnFailureHandled()
     }
 
-    private val onRadarImageDisplayedSubject: PublishSubject<RadarView.Event.OnRadarImageDisplayed> by lazy {
+    private val onRadarImageDisplayedSubject: PublishSubject<RadarView.Event.OnRadarImageDisplayed> by lazy(LazyThreadSafetyMode.NONE) {
         component.provideOnRadarImageDisplayed()
     }
 
-    private val onSeekBarStoppedSubject: PublishSubject<RadarView.Event.OnSeekBarStopped> by lazy {
+    private val onSeekBarStoppedSubject: PublishSubject<RadarView.Event.OnSeekBarStopped> by lazy(LazyThreadSafetyMode.NONE) {
         component.provideOnSeekBarStopped()
     }
 
-    private val onStateParcelUpdatedSubject: PublishSubject<RadarView.Event.OnStateParcelUpdated> by lazy {
+    private val onStateParcelUpdatedSubject: PublishSubject<RadarView.Event.OnStateParcelUpdated> by lazy(LazyThreadSafetyMode.NONE) {
         component.provideOnStateParcelUpdated()
     }
 
-    private val onPlayButtonStartedSubject: PublishSubject<RadarView.Event.OnPlayButtonStarted> by lazy {
+    private val onPlayButtonStartedSubject: PublishSubject<RadarView.Event.OnPlayButtonStarted> by lazy(LazyThreadSafetyMode.NONE) {
         component.provideOnPlayButtonStarted()
     }
 
-    private val onPlayButtonStoppedSubject: PublishSubject<RadarView.Event.OnPlayButtonStopped> by lazy {
+    private val onPlayButtonStoppedSubject: PublishSubject<RadarView.Event.OnPlayButtonStopped> by lazy(LazyThreadSafetyMode.NONE) {
         component.provideOnPlayButtonStopped()
     }
 
-    private val onSeekBarResetSubject: PublishSubject<RadarView.Event.OnSeekBarReset> by lazy {
+    private val onSeekBarResetSubject: PublishSubject<RadarView.Event.OnSeekBarReset> by lazy(LazyThreadSafetyMode.NONE) {
         component.provideOnSeekBarReset()
     }
 
-    private val onPositionUpdatedSubject: PublishSubject<RadarView.Event.OnPositionUpdated> by lazy {
+    private val onPositionUpdatedSubject: PublishSubject<RadarView.Event.OnPositionUpdated> by lazy(LazyThreadSafetyMode.NONE) {
         component.provideOnPositionUpdated()
     }
 
-    private val onSeekBarRestoredSubject: PublishSubject<RadarView.Event.OnSeekBarRestored> by lazy {
+    private val onSeekBarRestoredSubject: PublishSubject<RadarView.Event.OnSeekBarRestored> by lazy(LazyThreadSafetyMode.NONE) {
         component.provideOnSeekBarRestored()
     }
 
-    private val subscriptions: CompositeDisposable by lazy {
+    private val subscriptions: CompositeDisposable by lazy(LazyThreadSafetyMode.NONE) {
         component.provideCompositeDisposable()
     }
 

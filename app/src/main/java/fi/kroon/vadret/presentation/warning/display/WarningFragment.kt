@@ -37,61 +37,61 @@ class WarningFragment : BaseFragment() {
     private var stateParcel: WarningView.StateParcel? = null
     private var bundle: Bundle? = null
 
-    private val cmp: WarningComponent by lazy {
+    private val cmp: WarningComponent by lazy(LazyThreadSafetyMode.NONE) {
         appComponent()
             .warningComponentBuilder()
             .build()
     }
 
-    private val viewModel: WarningViewModel by lazy {
+    private val viewModel: WarningViewModel by lazy(LazyThreadSafetyMode.NONE) {
         cmp.provideWarningViewModel()
     }
 
-    private val onViewInitialisedSubject: PublishSubject<WarningView.Event.OnViewInitialised> by lazy {
+    private val onViewInitialisedSubject: PublishSubject<WarningView.Event.OnViewInitialised> by lazy(LazyThreadSafetyMode.NONE) {
         cmp.provideOnViewInitialised()
     }
 
-    private val onProgressBarEffectStartedSubject: PublishSubject<WarningView.Event.OnProgressBarEffectStarted> by lazy {
+    private val onProgressBarEffectStartedSubject: PublishSubject<WarningView.Event.OnProgressBarEffectStarted> by lazy(LazyThreadSafetyMode.NONE) {
         cmp.provideOnProgressBarEffectStarted()
     }
 
-    private val onProgressBarEffectStoppedSubject: PublishSubject<WarningView.Event.OnProgressBarEffectStopped> by lazy {
+    private val onProgressBarEffectStoppedSubject: PublishSubject<WarningView.Event.OnProgressBarEffectStopped> by lazy(LazyThreadSafetyMode.NONE) {
         cmp.provideOnProgressBarEffectStopped()
     }
 
-    private val onSwipedToRefreshSubject: PublishSubject<WarningView.Event.OnSwipedToRefresh> by lazy {
+    private val onSwipedToRefreshSubject: PublishSubject<WarningView.Event.OnSwipedToRefresh> by lazy(LazyThreadSafetyMode.NONE) {
         cmp.provideOnSwipedToRefresh()
     }
 
-    private val onWarningListDisplayedSubject: PublishSubject<WarningView.Event.OnWarningListDisplayed> by lazy {
+    private val onWarningListDisplayedSubject: PublishSubject<WarningView.Event.OnWarningListDisplayed> by lazy(LazyThreadSafetyMode.NONE) {
         cmp.provideOnWarningListDisplayed()
     }
 
-    private val onScrollPositionRestoredSubject: PublishSubject<WarningView.Event.OnScrollPositionRestored> by lazy {
+    private val onScrollPositionRestoredSubject: PublishSubject<WarningView.Event.OnScrollPositionRestored> by lazy(LazyThreadSafetyMode.NONE) {
         cmp.provideOnScrollPositionRestored()
     }
 
-    private val onStateParcelUpdatedSubject: PublishSubject<WarningView.Event.OnStateParcelUpdated> by lazy {
+    private val onStateParcelUpdatedSubject: PublishSubject<WarningView.Event.OnStateParcelUpdated> by lazy(LazyThreadSafetyMode.NONE) {
         cmp.provideOnStateParcelUpdated()
     }
 
-    private val onFailureHandledSubject: PublishSubject<WarningView.Event.OnFailureHandled> by lazy {
+    private val onFailureHandledSubject: PublishSubject<WarningView.Event.OnFailureHandled> by lazy(LazyThreadSafetyMode.NONE) {
         cmp.provideOnFailureHandled()
     }
 
-    private val onNoWarningsIssuedDisplayedSubject: PublishSubject<WarningView.Event.OnNoWarningsIssuedDisplayed> by lazy {
+    private val onNoWarningsIssuedDisplayedSubject: PublishSubject<WarningView.Event.OnNoWarningsIssuedDisplayed> by lazy(LazyThreadSafetyMode.NONE) {
         cmp.provideOnNoWarningsIssuedDisplayed()
     }
 
-    private val warningAdapter: WarningAdapter by lazy {
+    private val warningAdapter: WarningAdapter by lazy(LazyThreadSafetyMode.NONE) {
         cmp.provideWarningAdapter()
     }
 
-    private val subscriptions: CompositeDisposable by lazy {
+    private val subscriptions: CompositeDisposable by lazy(LazyThreadSafetyMode.NONE) {
         cmp.provideCompositeDisposable()
     }
 
-    private val navController: NavController by lazy {
+    private val navController: NavController by lazy(LazyThreadSafetyMode.NONE) {
         findNavController()
     }
 

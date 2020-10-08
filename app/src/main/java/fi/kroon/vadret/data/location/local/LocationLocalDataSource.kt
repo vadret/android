@@ -17,11 +17,11 @@ class LocationLocalDataSource @Inject constructor(
     private val locationManager: LocationManager
 ) {
 
-    private val isGPSEnabled: Boolean by lazy {
+    private val isGPSEnabled: Boolean by lazy(LazyThreadSafetyMode.NONE) {
         locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
     }
 
-    private val isNetworkLocationProviderEnabled: Boolean by lazy {
+    private val isNetworkLocationProviderEnabled: Boolean by lazy(LazyThreadSafetyMode.NONE) {
         locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
     }
 

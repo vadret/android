@@ -50,50 +50,50 @@ class WeatherForecastMediumAppWidgetProvider : BaseAppWidgetProvider() {
         cmp.provideWeatherForecastMediumViewModel()
     }
 
-    private val subscriptions: CompositeDisposable by lazy {
+    private val subscriptions: CompositeDisposable by lazy(LazyThreadSafetyMode.NONE) {
         cmp.provideCompositeDisposable()
     }
 
-    private val onWidgetInitialisedSubject: PublishSubject<WeatherForecastMediumView.Event.OnWidgetInitialised> by lazy {
+    private val onWidgetInitialisedSubject: PublishSubject<WeatherForecastMediumView.Event.OnWidgetInitialised> by lazy(LazyThreadSafetyMode.NONE) {
         cmp.provideOnWidgetInitialised()
     }
 
-    private val onWidgetUpdatedSubject: PublishSubject<WeatherForecastMediumView.Event.OnWidgetUpdated> by lazy {
+    private val onWidgetUpdatedSubject: PublishSubject<WeatherForecastMediumView.Event.OnWidgetUpdated> by lazy(LazyThreadSafetyMode.NONE) {
         cmp.provideOnWidgetUpdated()
     }
 
-    private val onBootCompletedSubject: PublishSubject<WeatherForecastMediumView.Event.OnBootCompleted> by lazy {
+    private val onBootCompletedSubject: PublishSubject<WeatherForecastMediumView.Event.OnBootCompleted> by lazy(LazyThreadSafetyMode.NONE) {
         cmp.provideOnBootCompleted()
     }
-    private val context: Context by lazy {
+    private val context: Context by lazy(LazyThreadSafetyMode.NONE) {
         cmp.provideContext()
     }
 
-    private val componentName: ComponentName by lazy {
+    private val componentName: ComponentName by lazy(LazyThreadSafetyMode.NONE) {
         ComponentName(context, WeatherForecastMediumAppWidgetProvider::class.java)
     }
 
-    private val alarmManager: AlarmManager by lazy {
+    private val alarmManager: AlarmManager by lazy(LazyThreadSafetyMode.NONE) {
         context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
     }
 
-    private val appWidgetIds: IntArray by lazy {
+    private val appWidgetIds: IntArray by lazy(LazyThreadSafetyMode.NONE) {
         appWidgetManager.getAppWidgetIds(componentName)
     }
 
-    private val providerIntent: Intent by lazy {
+    private val providerIntent: Intent by lazy(LazyThreadSafetyMode.NONE) {
         Intent(context, WeatherForecastMediumAppWidgetProvider::class.java)
     }
 
-    private val serviceIntent: Intent by lazy {
+    private val serviceIntent: Intent by lazy(LazyThreadSafetyMode.NONE) {
         Intent(context, WeatherForecastMediumService::class.java)
     }
 
-    private val dateTimeFormat: DateTimeFormatter by lazy {
+    private val dateTimeFormat: DateTimeFormatter by lazy(LazyThreadSafetyMode.NONE) {
         DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
     }
 
-    private val pendingIntent: PendingIntent by lazy {
+    private val pendingIntent: PendingIntent by lazy(LazyThreadSafetyMode.NONE) {
         PendingIntent
             .getBroadcast(
                 context,

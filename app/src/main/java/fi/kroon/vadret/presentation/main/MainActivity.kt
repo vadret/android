@@ -31,25 +31,25 @@ class MainActivity : BaseActivity() {
 
     private var navController: LiveData<NavController>? = null
 
-    private val cmp: MainActivityComponent by lazy {
+    private val cmp: MainActivityComponent by lazy(LazyThreadSafetyMode.NONE) {
         appComponent()
             .mainActivityComponentBuilder()
             .build()
     }
 
-    private val subscriptions: CompositeDisposable by lazy {
+    private val subscriptions: CompositeDisposable by lazy(LazyThreadSafetyMode.NONE) {
         cmp.provideCompositeDisposable()
     }
 
-    private val scheduler: Scheduler by lazy {
+    private val scheduler: Scheduler by lazy(LazyThreadSafetyMode.NONE) {
         cmp.provideScheduler()
     }
 
-    private val viewModel: MainActivityViewModel by lazy {
+    private val viewModel: MainActivityViewModel by lazy(LazyThreadSafetyMode.NONE) {
         cmp.provideMainActivityViewModel()
     }
 
-    private val onViewInitialisedSubject: PublishSubject<MainActivityView.Event.OnViewInitialised> by lazy {
+    private val onViewInitialisedSubject: PublishSubject<MainActivityView.Event.OnViewInitialised> by lazy(LazyThreadSafetyMode.NONE) {
         cmp.provideOnViewInitialised()
     }
 

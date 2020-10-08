@@ -21,11 +21,11 @@ abstract class BaseAppWidgetSetup : AppCompatActivity() {
     @Inject
     lateinit var appWidgetManager: AppWidgetManager
 
-    val initialTriggerAtMillis: Long by lazy {
+    val initialTriggerAtMillis: Long by lazy(LazyThreadSafetyMode.NONE) {
         SystemClock.elapsedRealtime() + 10_000L
     }
 
-    protected val appWidgetId: Int by lazy {
+    protected val appWidgetId: Int by lazy(LazyThreadSafetyMode.NONE) {
         intent
             ?.extras
             ?.getInt(extraAppWidgetId) ?: invalidAppWidgetId

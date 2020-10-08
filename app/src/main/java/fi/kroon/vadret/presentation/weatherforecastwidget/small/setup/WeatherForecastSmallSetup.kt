@@ -62,23 +62,23 @@ class WeatherForecastSmallSetup : BaseAppWidgetSetup() {
     @LayoutRes
     private var spinnerItemLayoutId: Int = R.layout.weather_forecast_widget_setup_spinner_item
 
-    private val itemDecoration: DividerItemDecoration by lazy {
+    private val itemDecoration: DividerItemDecoration by lazy(LazyThreadSafetyMode.NONE) {
         DividerItemDecoration(this, RecyclerView.VERTICAL)
     }
 
-    private val drawable: Drawable? by lazy {
+    private val drawable: Drawable? by lazy(LazyThreadSafetyMode.NONE) {
         getDrawable(R.drawable.search_item_divider)
     }
 
-    private val providerIntent: Intent by lazy {
+    private val providerIntent: Intent by lazy(LazyThreadSafetyMode.NONE) {
         Intent(this, WeatherForecastSmallAppWidgetProvider::class.java)
     }
 
-    private val component: ComponentName by lazy {
+    private val component: ComponentName by lazy(LazyThreadSafetyMode.NONE) {
         ComponentName(this, WeatherForecastSmallAppWidgetProvider::class.java)
     }
 
-    private val pendingIntent: PendingIntent by lazy {
+    private val pendingIntent: PendingIntent by lazy(LazyThreadSafetyMode.NONE) {
         PendingIntent
             .getBroadcast(
                 this,
@@ -88,11 +88,11 @@ class WeatherForecastSmallSetup : BaseAppWidgetSetup() {
             )
     }
 
-    private val alarmManager: AlarmManager by lazy {
+    private val alarmManager: AlarmManager by lazy(LazyThreadSafetyMode.NONE) {
         getSystemService(Context.ALARM_SERVICE) as AlarmManager
     }
 
-    private val cmp: WeatherForecastSmallSetupComponent by lazy {
+    private val cmp: WeatherForecastSmallSetupComponent by lazy(LazyThreadSafetyMode.NONE) {
         appComponent()
             .weatherForecastSmallAppWidgetSetupComponentBuilder()
             .build()
@@ -102,47 +102,47 @@ class WeatherForecastSmallSetup : BaseAppWidgetSetup() {
         cmp.provideWeatherForecastSmallSetupViewModel()
     }
 
-    private val subscriptions: CompositeDisposable by lazy {
+    private val subscriptions: CompositeDisposable by lazy(LazyThreadSafetyMode.NONE) {
         cmp.provideCompositeDisposable()
     }
 
-    private val onSetupInitialisedSubject: PublishSubject<WeatherForecastSmallSetupView.Event.OnSetupInitialised> by lazy {
+    private val onSetupInitialisedSubject: PublishSubject<WeatherForecastSmallSetupView.Event.OnSetupInitialised> by lazy(LazyThreadSafetyMode.NONE) {
         cmp.provideOnSetupInitialised()
     }
 
-    private val onConfigurationConfirmedSubject: PublishSubject<WeatherForecastSmallSetupView.Event.OnConfigurationConfirmed> by lazy {
+    private val onConfigurationConfirmedSubject: PublishSubject<WeatherForecastSmallSetupView.Event.OnConfigurationConfirmed> by lazy(LazyThreadSafetyMode.NONE) {
         cmp.provideOnConfigurationConfirmed()
     }
 
-    private val onCanceledClickedSubject: PublishSubject<WeatherForecastSmallSetupView.Event.OnCanceledClicked> by lazy {
+    private val onCanceledClickedSubject: PublishSubject<WeatherForecastSmallSetupView.Event.OnCanceledClicked> by lazy(LazyThreadSafetyMode.NONE) {
         cmp.provideOnCanceledClicked()
     }
 
-    private val onLocalitySearchEnabledSubject: PublishSubject<WeatherForecastSmallSetupView.Event.OnLocalitySearchEnabled> by lazy {
+    private val onLocalitySearchEnabledSubject: PublishSubject<WeatherForecastSmallSetupView.Event.OnLocalitySearchEnabled> by lazy(LazyThreadSafetyMode.NONE) {
         cmp.provideOnLocalitySearchEnabled()
     }
 
-    private val onLocalitySearchDisabledSubject: PublishSubject<WeatherForecastSmallSetupView.Event.OnLocalitySearchDisabled> by lazy {
+    private val onLocalitySearchDisabledSubject: PublishSubject<WeatherForecastSmallSetupView.Event.OnLocalitySearchDisabled> by lazy(LazyThreadSafetyMode.NONE) {
         cmp.provideOnLocalitySearchDisabled()
     }
 
-    private val onAutoCompleteItemClickedSubject: PublishSubject<AutoCompleteItem> by lazy {
+    private val onAutoCompleteItemClickedSubject: PublishSubject<AutoCompleteItem> by lazy(LazyThreadSafetyMode.NONE) {
         cmp.provideOnAutoCompleteItemClicked()
     }
 
-    private val onSearchViewDismissedSubject: PublishSubject<WeatherForecastSmallSetupView.Event.OnSearchViewDismissed> by lazy {
+    private val onSearchViewDismissedSubject: PublishSubject<WeatherForecastSmallSetupView.Event.OnSearchViewDismissed> by lazy(LazyThreadSafetyMode.NONE) {
         cmp.provideOnSearchViewDismissed()
     }
 
-    private val onLocalityTextUpdatedSubject: PublishSubject<WeatherForecastSmallSetupView.Event.OnLocalityTextUpdated> by lazy {
+    private val onLocalityTextUpdatedSubject: PublishSubject<WeatherForecastSmallSetupView.Event.OnLocalityTextUpdated> by lazy(LazyThreadSafetyMode.NONE) {
         cmp.provideOnLocalityTextUpdated()
     }
 
-    private val onLocationPermissionDeniedSubject: PublishSubject<WeatherForecastSmallSetupView.Event.OnLocationPermissionDenied> by lazy {
+    private val onLocationPermissionDeniedSubject: PublishSubject<WeatherForecastSmallSetupView.Event.OnLocationPermissionDenied> by lazy(LazyThreadSafetyMode.NONE) {
         cmp.provideOnLocationPermissionDenied()
     }
 
-    private val autoCompleteAdapter: AutoCompleteAdapter by lazy {
+    private val autoCompleteAdapter: AutoCompleteAdapter by lazy(LazyThreadSafetyMode.NONE) {
         cmp.provideAutoCompleteAdapter()
     }
 

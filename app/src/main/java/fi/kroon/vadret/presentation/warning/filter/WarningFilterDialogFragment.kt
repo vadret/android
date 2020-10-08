@@ -41,45 +41,45 @@ class WarningFilterDialogFragment : BottomSheetDialogFragment() {
 
     private fun layoutId(): Int = R.layout.warning_filter_dialog_fragment
 
-    private val navController: NavController by lazy {
+    private val navController: NavController by lazy(LazyThreadSafetyMode.NONE) {
         findNavController()
     }
 
-    private val cmp: WarningFilterComponent by lazy {
+    private val cmp: WarningFilterComponent by lazy(LazyThreadSafetyMode.NONE) {
         appComponent()
             .warningFilterComponentBuilder()
             .build()
     }
 
-    private val viewModel: WarningFilterViewModel by lazy {
+    private val viewModel: WarningFilterViewModel by lazy(LazyThreadSafetyMode.NONE) {
         cmp.provideWarningFilterViewModel()
     }
 
-    private val onFeedSourceItemSelectedSubject: PublishSubject<FeedSourceOptionEntity> by lazy {
+    private val onFeedSourceItemSelectedSubject: PublishSubject<FeedSourceOptionEntity> by lazy(LazyThreadSafetyMode.NONE) {
         cmp.provideOnFeedSourceItemSelectedSubject()
     }
 
-    private val onDistrictItemSelectedSubject: PublishSubject<DistrictOptionEntity> by lazy {
+    private val onDistrictItemSelectedSubject: PublishSubject<DistrictOptionEntity> by lazy(LazyThreadSafetyMode.NONE) {
         cmp.provideOnDistrictItemSelectedSubject()
     }
 
-    private val onViewInitialisedSubject: PublishSubject<WarningFilterView.Event.OnViewInitialised> by lazy {
+    private val onViewInitialisedSubject: PublishSubject<WarningFilterView.Event.OnViewInitialised> by lazy(LazyThreadSafetyMode.NONE) {
         cmp.provideOnViewInitialised()
     }
 
-    private val onFilterOptionsDisplayedSubject: PublishSubject<WarningFilterView.Event.OnFilterOptionsDisplayed> by lazy {
+    private val onFilterOptionsDisplayedSubject: PublishSubject<WarningFilterView.Event.OnFilterOptionsDisplayed> by lazy(LazyThreadSafetyMode.NONE) {
         cmp.provideOnFilterOptionsDisplayed()
     }
 
-    private val warningFilterAdapter: WarningFilterAdapter by lazy {
+    private val warningFilterAdapter: WarningFilterAdapter by lazy(LazyThreadSafetyMode.NONE) {
         cmp.provideWarningFilterAdapter()
     }
 
-    private val subscriptions: CompositeDisposable by lazy {
+    private val subscriptions: CompositeDisposable by lazy(LazyThreadSafetyMode.NONE) {
         cmp.provideCompositeDisposable()
     }
 
-    private val scheduler: Scheduler by lazy {
+    private val scheduler: Scheduler by lazy(LazyThreadSafetyMode.NONE) {
         cmp.provideScheduler()
     }
 

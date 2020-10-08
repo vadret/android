@@ -48,81 +48,81 @@ class WeatherForecastFragment : BaseFragment() {
     private var bundle: Bundle? = null
     private var recyclerViewParcelable: Parcelable? = null
 
-    private val cmp: WeatherForecastComponent by lazy {
+    private val cmp: WeatherForecastComponent by lazy(LazyThreadSafetyMode.NONE) {
         appComponent()
             .weatherForecastComponentBuilder()
             .build()
     }
 
-    private val viewModel: WeatherForecastViewModel by lazy {
+    private val viewModel: WeatherForecastViewModel by lazy(LazyThreadSafetyMode.NONE) {
         cmp.provideWeatherForecastViewModel()
     }
 
-    private val onViewInitialisedSubject: PublishSubject<WeatherForecastView.Event.OnViewInitialised> by lazy {
+    private val onViewInitialisedSubject: PublishSubject<WeatherForecastView.Event.OnViewInitialised> by lazy(LazyThreadSafetyMode.NONE) {
         cmp.provideOnViewInitialisedSubject()
     }
 
-    private val onLocationPermissionDeniedSubject: PublishSubject<WeatherForecastView.Event.OnLocationPermissionDenied> by lazy {
+    private val onLocationPermissionDeniedSubject: PublishSubject<WeatherForecastView.Event.OnLocationPermissionDenied> by lazy(LazyThreadSafetyMode.NONE) {
         cmp.provideOnLocationPermissionDeniedSubject()
     }
 
-    private val onLocationPermissionDeniedNeverAskAgainSubject: PublishSubject<WeatherForecastView.Event.OnLocationPermissionDeniedNeverAskAgain> by lazy {
+    private val onLocationPermissionDeniedNeverAskAgainSubject: PublishSubject<WeatherForecastView.Event.OnLocationPermissionDeniedNeverAskAgain> by lazy(LazyThreadSafetyMode.NONE) {
         cmp.provideOnLocationPermissionDeniedNeverAskAgainSubject()
     }
 
-    private val onLocationPermissionGrantedSubject: PublishSubject<WeatherForecastView.Event.OnLocationPermissionGranted> by lazy {
+    private val onLocationPermissionGrantedSubject: PublishSubject<WeatherForecastView.Event.OnLocationPermissionGranted> by lazy(LazyThreadSafetyMode.NONE) {
         cmp.provideOnLocationPermissionGrantedSubject()
     }
 
-    private val onProgressBarEffectStartedSubject: PublishSubject<WeatherForecastView.Event.OnProgressBarEffectStarted> by lazy {
+    private val onProgressBarEffectStartedSubject: PublishSubject<WeatherForecastView.Event.OnProgressBarEffectStarted> by lazy(LazyThreadSafetyMode.NONE) {
         cmp.provideOnProgressBarEffectStarted()
     }
 
-    private val onProgressBarEffectStoppedSubject: PublishSubject<WeatherForecastView.Event.OnProgressBarEffectStopped> by lazy {
+    private val onProgressBarEffectStoppedSubject: PublishSubject<WeatherForecastView.Event.OnProgressBarEffectStopped> by lazy(LazyThreadSafetyMode.NONE) {
         cmp.provideOnProgressBarEffectStopped()
     }
 
-    private val onAutoCompleteItemClickedSubject: PublishSubject<AutoCompleteItem> by lazy {
+    private val onAutoCompleteItemClickedSubject: PublishSubject<AutoCompleteItem> by lazy(LazyThreadSafetyMode.NONE) {
         cmp.provideOnAutoCompleteItemClickedSubject()
     }
 
-    private val onSearchViewDismissedSubject: PublishSubject<WeatherForecastView.Event.OnSearchViewDismissed> by lazy {
+    private val onSearchViewDismissedSubject: PublishSubject<WeatherForecastView.Event.OnSearchViewDismissed> by lazy(LazyThreadSafetyMode.NONE) {
         cmp.provideOnSearchViewDismissed()
     }
 
-    private val onFailureHandledSubject: PublishSubject<WeatherForecastView.Event.OnFailureHandled> by lazy {
+    private val onFailureHandledSubject: PublishSubject<WeatherForecastView.Event.OnFailureHandled> by lazy(LazyThreadSafetyMode.NONE) {
         cmp.provideOnFailureHandled()
     }
 
-    private val onWeatherListDisplayedSubject: PublishSubject<WeatherForecastView.Event.OnWeatherListDisplayed> by lazy {
+    private val onWeatherListDisplayedSubject: PublishSubject<WeatherForecastView.Event.OnWeatherListDisplayed> by lazy(LazyThreadSafetyMode.NONE) {
         cmp.provideOnWeatherListDisplayed()
     }
 
-    private val onScrollPositionRestoredSubject: PublishSubject<WeatherForecastView.Event.OnScrollPositionRestored> by lazy {
+    private val onScrollPositionRestoredSubject: PublishSubject<WeatherForecastView.Event.OnScrollPositionRestored> by lazy(LazyThreadSafetyMode.NONE) {
         cmp.provideOnScrollPositionRestored()
     }
 
-    private val onStateParcelUpdatedSubject: PublishSubject<WeatherForecastView.Event.OnStateParcelUpdated> by lazy {
+    private val onStateParcelUpdatedSubject: PublishSubject<WeatherForecastView.Event.OnStateParcelUpdated> by lazy(LazyThreadSafetyMode.NONE) {
         cmp.provideOnStateParcelUpdated()
     }
 
-    private val weatherForecastAdapter: WeatherForecastAdapter by lazy {
+    private val weatherForecastAdapter: WeatherForecastAdapter by lazy(LazyThreadSafetyMode.NONE) {
         cmp.provideWeatherForecastAdapter()
     }
 
-    private val autoCompleteAdapter: AutoCompleteAdapter by lazy {
+    private val autoCompleteAdapter: AutoCompleteAdapter by lazy(LazyThreadSafetyMode.NONE) {
         cmp.provideAutoCompleteAdapter()
     }
 
-    private val subscriptions: CompositeDisposable by lazy {
+    private val subscriptions: CompositeDisposable by lazy(LazyThreadSafetyMode.NONE) {
         cmp.provideCompositeDisposable()
     }
 
-    private val itemDecoration: DividerItemDecoration by lazy {
+    private val itemDecoration: DividerItemDecoration by lazy(LazyThreadSafetyMode.NONE) {
         DividerItemDecoration(context, RecyclerView.VERTICAL)
     }
 
-    private val drawable: Drawable? by lazy {
+    private val drawable: Drawable? by lazy(LazyThreadSafetyMode.NONE) {
         ContextCompat.getDrawable(requireContext(), R.drawable.search_item_divider)
     }
 

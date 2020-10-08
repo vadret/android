@@ -48,7 +48,7 @@ class WeatherForecastMediumService : RemoteViewsService() {
         private val timeOfDayFormat: DateTimeFormatter =
             DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT)
 
-        private val appWidgetManager: AppWidgetManager by lazy {
+        private val appWidgetManager: AppWidgetManager by lazy(LazyThreadSafetyMode.NONE) {
             cmp.provideAppWidgetManager()
         }
 
@@ -56,15 +56,15 @@ class WeatherForecastMediumService : RemoteViewsService() {
             cmp.provideWeatherForecastMediumServiceViewModel()
         }
 
-        private val onInitialisedSubject: PublishSubject<WeatherForecastMediumServiceView.Event.OnInitialised> by lazy {
+        private val onInitialisedSubject: PublishSubject<WeatherForecastMediumServiceView.Event.OnInitialised> by lazy(LazyThreadSafetyMode.NONE) {
             cmp.provideOnInitialised()
         }
 
-        private val subscriptions: CompositeDisposable by lazy {
+        private val subscriptions: CompositeDisposable by lazy(LazyThreadSafetyMode.NONE) {
             cmp.provideCompositeDisposable()
         }
 
-        private val scheduler: Scheduler by lazy {
+        private val scheduler: Scheduler by lazy(LazyThreadSafetyMode.NONE) {
             cmp.provideScheduler()
         }
 
@@ -74,7 +74,7 @@ class WeatherForecastMediumService : RemoteViewsService() {
          *  be wrong and all widgets
          *  will serve wrong data.
          */
-        private val appWidgetId: Int by lazy {
+        private val appWidgetId: Int by lazy(LazyThreadSafetyMode.NONE) {
             intent
                 ?.data
                 ?.schemeSpecificPart
