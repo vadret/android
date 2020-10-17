@@ -35,7 +35,7 @@ object WeatherForecastView {
         val forceNet: Boolean = false,
         val isInitialised: Boolean = false,
         val isSearchToggled: Boolean = false,
-        val renderEvent: RenderEvent = RenderEvent.None,
+        val renderEvent: RenderEvent = RenderEvent.Idle,
         val searchText: String = String.empty(),
         val startRefreshing: Boolean = false,
         val stopRefreshing: Boolean = false,
@@ -44,7 +44,7 @@ object WeatherForecastView {
     )
 
     sealed class RenderEvent {
-        object None : RenderEvent()
+        object Idle : RenderEvent()
         object RequestLocationPermission : RenderEvent()
         object StartProgressBarEffect : RenderEvent()
         object StopProgressBarEffect : RenderEvent()

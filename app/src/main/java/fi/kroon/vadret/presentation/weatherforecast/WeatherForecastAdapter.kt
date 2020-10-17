@@ -6,7 +6,6 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import fi.kroon.vadret.R
-import fi.kroon.vadret.presentation.weatherforecast.di.WeatherForecastFeatureScope
 import fi.kroon.vadret.presentation.weatherforecast.model.IWeatherForecastModel
 import fi.kroon.vadret.presentation.weatherforecast.model.WeatherForecastDateItemModel
 import fi.kroon.vadret.presentation.weatherforecast.model.WeatherForecastHeadlineModel
@@ -33,7 +32,6 @@ import timber.log.Timber
 import java.util.Locale
 import javax.inject.Inject
 
-@WeatherForecastFeatureScope
 class WeatherForecastAdapter @Inject constructor() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private val list: MutableList<IWeatherForecastModel> = mutableListOf()

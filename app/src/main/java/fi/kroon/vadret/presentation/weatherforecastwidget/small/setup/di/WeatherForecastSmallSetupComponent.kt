@@ -2,7 +2,7 @@ package fi.kroon.vadret.presentation.weatherforecastwidget.small.setup.di
 
 import dagger.Subcomponent
 import fi.kroon.vadret.data.autocomplete.model.AutoCompleteItem
-import fi.kroon.vadret.presentation.weatherforecast.autocomplete.AutoCompleteAdapter
+import fi.kroon.vadret.presentation.weatherforecastwidget.shared.AutoCompleteAdapterLegacy
 import fi.kroon.vadret.presentation.weatherforecastwidget.small.setup.WeatherForecastSmallSetup
 import fi.kroon.vadret.presentation.weatherforecastwidget.small.setup.WeatherForecastSmallSetupView
 import fi.kroon.vadret.presentation.weatherforecastwidget.small.setup.WeatherForecastSmallSetupViewModel
@@ -40,7 +40,7 @@ interface WeatherForecastSmallSetupComponent {
     /**
      *  Adapter
      */
-    fun provideAutoCompleteAdapter(): AutoCompleteAdapter
+    fun provideAutoCompleteAdapter(): AutoCompleteAdapterLegacy
 
     /**
      *  CompositeDisposable

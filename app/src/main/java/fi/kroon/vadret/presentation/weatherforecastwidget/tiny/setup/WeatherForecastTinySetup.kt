@@ -13,6 +13,7 @@ import android.os.Bundle
 import android.os.PersistableBundle
 import android.widget.ArrayAdapter
 import androidx.annotation.LayoutRes
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -24,7 +25,7 @@ import fi.kroon.vadret.R
 import fi.kroon.vadret.data.autocomplete.model.AutoCompleteItem
 import fi.kroon.vadret.data.failure.Failure
 import fi.kroon.vadret.data.theme.model.Theme
-import fi.kroon.vadret.presentation.weatherforecast.autocomplete.AutoCompleteAdapter
+import fi.kroon.vadret.presentation.weatherforecastwidget.shared.AutoCompleteAdapterLegacy
 import fi.kroon.vadret.presentation.weatherforecastwidget.shared.BaseAppWidgetSetup
 import fi.kroon.vadret.presentation.weatherforecastwidget.tiny.provider.WeatherForecastTinyAppWidgetProvider
 import fi.kroon.vadret.presentation.weatherforecastwidget.tiny.setup.di.WeatherForecastTinySetupComponent
@@ -67,7 +68,7 @@ class WeatherForecastTinySetup : BaseAppWidgetSetup() {
     }
 
     private val drawable: Drawable? by lazy(LazyThreadSafetyMode.NONE) {
-        getDrawable(R.drawable.search_item_divider)
+        ContextCompat.getDrawable(this, R.drawable.search_item_divider)
     }
 
     private val providerIntent: Intent by lazy(LazyThreadSafetyMode.NONE) {
@@ -142,7 +143,7 @@ class WeatherForecastTinySetup : BaseAppWidgetSetup() {
         cmp.provideOnLocationPermissionDenied()
     }
 
-    private val autoCompleteAdapter: AutoCompleteAdapter by lazy(LazyThreadSafetyMode.NONE) {
+    private val autoCompleteAdapter: AutoCompleteAdapterLegacy by lazy(LazyThreadSafetyMode.NONE) {
         cmp.provideAutoCompleteAdapter()
     }
 

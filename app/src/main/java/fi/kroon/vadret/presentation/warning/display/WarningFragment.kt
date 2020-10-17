@@ -11,7 +11,6 @@ import com.jakewharton.rxbinding3.view.clicks
 import fi.kroon.vadret.R
 import fi.kroon.vadret.presentation.shared.BaseFragment
 import fi.kroon.vadret.presentation.warning.display.di.WarningComponent
-import fi.kroon.vadret.presentation.warning.display.di.WarningScope
 import fi.kroon.vadret.presentation.warning.display.model.IWarningModel
 import fi.kroon.vadret.util.extension.appComponent
 import fi.kroon.vadret.util.extension.snack
@@ -25,7 +24,6 @@ import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.warning_display_fragment.*
 import timber.log.Timber
 
-@WarningScope
 class WarningFragment : BaseFragment() {
 
     companion object {

@@ -137,19 +137,19 @@ dependencies {
 
     def APPCOMPAT_VERSION = "1.2.0"
     def ASSERTJ_VERSION = "3.14.0"
+    def COIL_VERSION = "0.13.0"
     def COMMONS_CSV_VERSION = "1.7"
     def CONSTRAINT_LAYOUT_VERSION = "2.0.2"
+    def CORBIND_VERSION = "1.4.0"
     def CORE_KTX_VERSION = "1.3.2"
     def COROUTINES_VERSION = "1.4.0-M1"
-    def COIL_VERSION = "0.13.0"
     def CRASHLYTICS_VERSION = "2.10.1"
     def DAGGER_VERSION = "2.29.1"
-    def FRAGMENT_KTX_VERSION = "1.2.5"
+    def EITHER_VERSION = "1.2.0"
+    def FRAGMENT_VERSION = "1.3.0-beta01"
     def JUNIT_VERSION = "4.13"
-    def EITHER_VERSION = "1.1.0"
     def KOTLIN_STDLIB_VERSION = "1.4.10"
     def KTLINT_VERSION = "0.39.0"
-    def KTX_VERSION = "1.0.0"
     def MATERIAL_VERSION = "1.2.1"
     def MOCKITO_CORE_VERSION = "3.1.0"
     def MOSHI_VERSION = "1.9.2"
@@ -176,8 +176,7 @@ dependencies {
     implementation "androidx.appcompat:appcompat:${APPCOMPAT_VERSION}"
     implementation "androidx.constraintlayout:constraintlayout:${CONSTRAINT_LAYOUT_VERSION}"
     implementation "androidx.core:core-ktx:${CORE_KTX_VERSION}"
-    implementation "androidx.fragment:fragment-ktx:${FRAGMENT_KTX_VERSION}"
-    implementation "androidx.legacy:legacy-support-v4:${KTX_VERSION}"
+    implementation "androidx.fragment:fragment-ktx:${FRAGMENT_VERSION}"
     implementation "androidx.navigation:navigation-fragment-ktx:${NAVIGATION_VERSION}"
     implementation "androidx.navigation:navigation-ui-ktx:${NAVIGATION_VERSION}"
     implementation "androidx.preference:preference-ktx:${PREFERENCE_VERSION}"
@@ -185,8 +184,8 @@ dependencies {
 
     // Coroutines
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:${COROUTINES_VERSION}"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:${COROUTINES_VERSION}"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-rx2:${COROUTINES_VERSION}"
-
 
     // Reactive
     implementation "com.jakewharton.rxbinding3:rxbinding-appcompat:${RXBINDING_VERSION}"
@@ -197,6 +196,9 @@ dependencies {
     implementation "io.reactivex.rxjava2:rxandroid:${RXANDROID_VERSION}"
     implementation "io.reactivex.rxjava2:rxjava:${RXJAVA_VERSION}"
     implementation "io.reactivex.rxjava2:rxkotlin:${RXKOTLIN_VERSION}"
+    implementation "ru.ldralighieri.corbind:corbind-core:${CORBIND_VERSION}"
+    implementation "ru.ldralighieri.corbind:corbind-appcompat:${CORBIND_VERSION}"
+    implementation "ru.ldralighieri.corbind:corbind-swiperefreshlayout:${CORBIND_VERSION}"
 
     // Network
     implementation "com.squareup.okhttp3:logging-interceptor:${OKHTTP_VERSION}"

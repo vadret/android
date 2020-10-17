@@ -2,10 +2,10 @@ package fi.kroon.vadret.presentation.weatherforecastwidget.medium.setup.di
 
 import dagger.Subcomponent
 import fi.kroon.vadret.data.autocomplete.model.AutoCompleteItem
-import fi.kroon.vadret.presentation.weatherforecast.autocomplete.AutoCompleteAdapter
 import fi.kroon.vadret.presentation.weatherforecastwidget.medium.setup.WeatherForecastMediumSetup
 import fi.kroon.vadret.presentation.weatherforecastwidget.medium.setup.WeatherForecastMediumSetupView
 import fi.kroon.vadret.presentation.weatherforecastwidget.medium.setup.WeatherForecastMediumSetupViewModel
+import fi.kroon.vadret.presentation.weatherforecastwidget.shared.AutoCompleteAdapterLegacy
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.subjects.PublishSubject
 
@@ -46,7 +46,7 @@ interface WeatherForecastMediumSetupComponent {
     /**
      *  Adapter
      */
-    fun provideAutoCompleteAdapter(): AutoCompleteAdapter
+    fun provideAutoCompleteAdapter(): AutoCompleteAdapterLegacy
 
     @Subcomponent.Builder
     interface Builder {

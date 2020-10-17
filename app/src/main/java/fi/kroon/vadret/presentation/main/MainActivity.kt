@@ -9,7 +9,6 @@ import fi.kroon.vadret.R
 import fi.kroon.vadret.data.failure.Failure
 import fi.kroon.vadret.data.theme.model.Theme
 import fi.kroon.vadret.presentation.main.di.MainActivityComponent
-import fi.kroon.vadret.presentation.main.di.MainActivityScope
 import fi.kroon.vadret.presentation.shared.BaseActivity
 import fi.kroon.vadret.util.DEFAULT_SETTINGS
 import fi.kroon.vadret.util.Scheduler
@@ -22,7 +21,6 @@ import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.activity_main.*
 import timber.log.Timber
 
-@MainActivityScope
 class MainActivity : BaseActivity() {
 
     private val cmp: MainActivityComponent by lazy(LazyThreadSafetyMode.NONE) {
@@ -96,8 +94,8 @@ class MainActivity : BaseActivity() {
             )
         }.blockingGet()
 
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onStop() {
+        super.onStop()
         subscriptions.clear()
     }
 

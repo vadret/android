@@ -8,7 +8,6 @@
     android:orientation="vertical"
     tools:context="fi.kroon.vadret.presentation.main.MainActivity">
 
-
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/nav_host_fragment"
         android:name="androidx.navigation.fragment.NavHostFragment"

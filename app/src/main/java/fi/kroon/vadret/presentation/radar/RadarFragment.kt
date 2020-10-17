@@ -14,9 +14,7 @@ import com.jakewharton.rxbinding3.widget.userChanges
 import fi.kroon.vadret.BuildConfig
 import fi.kroon.vadret.R
 import fi.kroon.vadret.presentation.radar.di.RadarComponent
-import fi.kroon.vadret.presentation.radar.di.RadarScope
 import fi.kroon.vadret.presentation.shared.BaseFragment
-import fi.kroon.vadret.presentation.weatherforecast.WeatherForecastFragment
 import fi.kroon.vadret.util.DEFAULT_BOUNDINGBOX_CENTER_LATITUDE
 import fi.kroon.vadret.util.DEFAULT_BOUNDINGBOX_CENTER_LONGITUDE
 import fi.kroon.vadret.util.DEFAULT_BOUNDINGBOX_LATITUDE_MAX
@@ -51,7 +49,6 @@ import java.util.concurrent.TimeUnit
 
 typealias RadarFile = fi.kroon.vadret.data.radar.model.File
 
-@RadarScope
 class RadarFragment : BaseFragment() {
 
     private companion object {
@@ -175,7 +172,7 @@ class RadarFragment : BaseFragment() {
         outState.apply {
             Timber.d("Saving instance: $stateParcel")
             Timber.d("-----END-----")
-            putParcelable(WeatherForecastFragment.STATE_PARCEL_KEY, stateParcel)
+            putParcelable(STATE_PARCEL_KEY, stateParcel)
         }
     }
 
