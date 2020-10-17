@@ -27,7 +27,6 @@ class AboutAppViewModel @Inject constructor(
     private suspend fun reduce(event: AboutAppView.Event): Unit =
         when (event) {
             AboutAppView.Event.OnViewInitialised -> onInitialisedEvent()
-            // is AboutAppView.Event.OnTabSelected -> TODO()
         }
 
     private suspend fun onInitialisedEvent() {

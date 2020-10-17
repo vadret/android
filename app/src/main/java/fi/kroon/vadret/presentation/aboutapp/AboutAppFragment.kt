@@ -6,7 +6,6 @@ import androidx.lifecycle.lifecycleScope
 import fi.kroon.vadret.R
 import fi.kroon.vadret.presentation.aboutapp.di.AboutAppComponent
 import fi.kroon.vadret.presentation.aboutapp.di.DaggerAboutAppComponent
-import fi.kroon.vadret.util.extension.snack
 import kotlinx.android.synthetic.main.about_app_fragment.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collect
@@ -66,9 +65,4 @@ class AboutAppFragment : Fragment(R.layout.about_app_fragment) {
             AboutAppView.RenderEvent.Initialised -> Unit
             AboutAppView.RenderEvent.None -> Unit
         }
-
-    private fun renderError(errorCode: Int) {
-        Timber.e("Rendering error code: ${getString(errorCode)}")
-        snack(errorCode)
-    }
 }

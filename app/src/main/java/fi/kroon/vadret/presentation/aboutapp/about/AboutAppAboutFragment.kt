@@ -10,7 +10,6 @@ import fi.kroon.vadret.R
 import fi.kroon.vadret.data.aboutinfo.model.AboutInfo
 import fi.kroon.vadret.presentation.aboutapp.about.di.AboutAppAboutComponent
 import fi.kroon.vadret.presentation.aboutapp.about.di.DaggerAboutAppAboutComponent
-import fi.kroon.vadret.util.extension.snack
 import kotlinx.android.synthetic.main.about_app_about_fragment.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collect
@@ -84,10 +83,5 @@ class AboutAppAboutFragment : Fragment(R.layout.about_app_about_fragment) {
     private fun openUrlInBrowser(url: String) {
         val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
         requireActivity().startActivity(browserIntent)
-    }
-
-    private fun renderError(errorCode: Int) {
-        Timber.e("Rendering error code: ${getString(errorCode)}")
-        snack(errorCode)
     }
 }

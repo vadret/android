@@ -84,7 +84,6 @@ class AboutAppAboutViewModel @Inject constructor(
 
                 state.emit(stateModel)
             }
-
             // projectUrl
             item.urlResourceId != null -> {
                 val url = context.getString(item.urlResourceId)
