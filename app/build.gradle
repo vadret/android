@@ -142,7 +142,7 @@ dependencies {
     def CONSTRAINT_LAYOUT_VERSION = "2.0.2"
     def CORE_KTX_VERSION = "1.3.2"
     def COROUTINES_VERSION = "1.4.0-M1"
-    def CORBIND_VERSION = "1.4.10"
+    def CORBIND_VERSION = "1.4.0"
     def CRASHLYTICS_VERSION = "2.10.1"
     def DAGGER_VERSION = "2.29.1"
     def EITHER_VERSION = "1.2.0"
