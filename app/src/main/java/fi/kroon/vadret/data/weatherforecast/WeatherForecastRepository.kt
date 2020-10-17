@@ -10,7 +10,6 @@ import fi.kroon.vadret.data.weatherforecast.exception.WeatherForecastFailure
 import fi.kroon.vadret.data.weatherforecast.model.Weather
 import fi.kroon.vadret.data.weatherforecast.model.WeatherOut
 import fi.kroon.vadret.data.weatherforecast.net.WeatherForecastNetDataSource
-import fi.kroon.vadret.di.scope.CoreApplicationScope
 import fi.kroon.vadret.util.HTTP_200_OK
 import fi.kroon.vadret.util.HTTP_204_NO_CONTENT
 import fi.kroon.vadret.util.HTTP_400_BAD_REQUEST
@@ -27,7 +26,6 @@ import io.reactivex.Single
 import retrofit2.Response
 import javax.inject.Inject
 
-@CoreApplicationScope
 class WeatherForecastRepository @Inject constructor(
     private val weatherForecastNetDataSource: Lazy<WeatherForecastNetDataSource>,
     private val networkHandler: NetworkHandler,

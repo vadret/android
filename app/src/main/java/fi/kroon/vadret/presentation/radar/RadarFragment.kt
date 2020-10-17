@@ -1,6 +1,5 @@
 package fi.kroon.vadret.presentation.radar
 
-import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.os.Bundle
@@ -13,6 +12,7 @@ import com.jakewharton.rxbinding3.widget.changes
 import com.jakewharton.rxbinding3.widget.userChanges
 import fi.kroon.vadret.BuildConfig
 import fi.kroon.vadret.R
+import fi.kroon.vadret.presentation.radar.di.DaggerRadarComponent
 import fi.kroon.vadret.presentation.radar.di.RadarComponent
 import fi.kroon.vadret.presentation.shared.BaseFragment
 import fi.kroon.vadret.util.DEFAULT_BOUNDINGBOX_CENTER_LATITUDE
@@ -27,7 +27,8 @@ import fi.kroon.vadret.util.MAXIMUM_ZOOM_LEVEL
 import fi.kroon.vadret.util.MINIMUM_ZOOM_LEVEL
 import fi.kroon.vadret.util.RADAR_DEBOUNCE_MILLIS
 import fi.kroon.vadret.util.WIKIMEDIA_TILE_SOURCE_URL
-import fi.kroon.vadret.util.extension.appComponent
+import fi.kroon.vadret.util.extension.coreComponent
+import fi.kroon.vadret.util.extension.lazyAndroid
 import fi.kroon.vadret.util.extension.snack
 import fi.kroon.vadret.util.extension.toObservable
 import io.reactivex.Observable
@@ -35,7 +36,9 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.subjects.PublishSubject
-import kotlinx.android.synthetic.main.radar_fragment.*
+import kotlinx.android.synthetic.main.radar_fragment.radarMapView
+import kotlinx.android.synthetic.main.radar_fragment.radarPlayFab
+import kotlinx.android.synthetic.main.radar_fragment.radarSeekBar
 import org.osmdroid.config.Configuration
 import org.osmdroid.config.IConfigurationProvider
 import org.osmdroid.tileprovider.tilesource.XYTileSource
@@ -63,61 +66,85 @@ class RadarFragment : BaseFragment() {
     private var bundle: Bundle? = null
     private var stateParcel: RadarView.StateParcel? = null
 
-    private val component: RadarComponent by lazy(LazyThreadSafetyMode.NONE) {
-        appComponent()
-            .radarComponentBuilder()
-            .build()
+    private val component: RadarComponent by lazyAndroid {
+        DaggerRadarComponent
+            .factory()
+            .create(context = requireContext(), coreComponent = coreComponent)
     }
 
-    private val imageLoader: ImageLoader by lazy(LazyThreadSafetyMode.NONE) {
+    private val scheduler by lazyAndroid {
+        component.provideScheduler()
+    }
+
+    private val imageLoader: ImageLoader by lazyAndroid {
         component.provideImageLoader()
     }
 
-    private val viewModel: RadarViewModel by lazy(LazyThreadSafetyMode.NONE) {
+    private val viewModel: RadarViewModel by lazyAndroid {
         component.provideRadarViewModel()
     }
 
-    private val onViewInitialisedSubject: PublishSubject<RadarView.Event.OnViewInitialised> by lazy(LazyThreadSafetyMode.NONE) {
+    private val onViewInitialisedSubject: PublishSubject<RadarView.Event.OnViewInitialised> by lazy(
+        LazyThreadSafetyMode.NONE
+    ) {
         component.provideOnViewInitialised()
     }
 
-    private val onFailureHandledSubject: PublishSubject<RadarView.Event.OnFailureHandled> by lazy(LazyThreadSafetyMode.NONE) {
+    private val onFailureHandledSubject: PublishSubject<RadarView.Event.OnFailureHandled> by lazy(
+        LazyThreadSafetyMode.NONE
+    ) {
         component.provideOnFailureHandled()
     }
 
-    private val onRadarImageDisplayedSubject: PublishSubject<RadarView.Event.OnRadarImageDisplayed> by lazy(LazyThreadSafetyMode.NONE) {
+    private val onRadarImageDisplayedSubject: PublishSubject<RadarView.Event.OnRadarImageDisplayed> by lazy(
+        LazyThreadSafetyMode.NONE
+    ) {
         component.provideOnRadarImageDisplayed()
     }
 
-    private val onSeekBarStoppedSubject: PublishSubject<RadarView.Event.OnSeekBarStopped> by lazy(LazyThreadSafetyMode.NONE) {
+    private val onSeekBarStoppedSubject: PublishSubject<RadarView.Event.OnSeekBarStopped> by lazy(
+        LazyThreadSafetyMode.NONE
+    ) {
         component.provideOnSeekBarStopped()
     }
 
-    private val onStateParcelUpdatedSubject: PublishSubject<RadarView.Event.OnStateParcelUpdated> by lazy(LazyThreadSafetyMode.NONE) {
+    private val onStateParcelUpdatedSubject: PublishSubject<RadarView.Event.OnStateParcelUpdated> by lazy(
+        LazyThreadSafetyMode.NONE
+    ) {
         component.provideOnStateParcelUpdated()
     }
 
-    private val onPlayButtonStartedSubject: PublishSubject<RadarView.Event.OnPlayButtonStarted> by lazy(LazyThreadSafetyMode.NONE) {
+    private val onPlayButtonStartedSubject: PublishSubject<RadarView.Event.OnPlayButtonStarted> by lazy(
+        LazyThreadSafetyMode.NONE
+    ) {
         component.provideOnPlayButtonStarted()
     }
 
-    private val onPlayButtonStoppedSubject: PublishSubject<RadarView.Event.OnPlayButtonStopped> by lazy(LazyThreadSafetyMode.NONE) {
+    private val onPlayButtonStoppedSubject: PublishSubject<RadarView.Event.OnPlayButtonStopped> by lazy(
+        LazyThreadSafetyMode.NONE
+    ) {
         component.provideOnPlayButtonStopped()
     }
 
-    private val onSeekBarResetSubject: PublishSubject<RadarView.Event.OnSeekBarReset> by lazy(LazyThreadSafetyMode.NONE) {
+    private val onSeekBarResetSubject: PublishSubject<RadarView.Event.OnSeekBarReset> by lazy(
+        LazyThreadSafetyMode.NONE
+    ) {
         component.provideOnSeekBarReset()
     }
 
-    private val onPositionUpdatedSubject: PublishSubject<RadarView.Event.OnPositionUpdated> by lazy(LazyThreadSafetyMode.NONE) {
+    private val onPositionUpdatedSubject: PublishSubject<RadarView.Event.OnPositionUpdated> by lazy(
+        LazyThreadSafetyMode.NONE
+    ) {
         component.provideOnPositionUpdated()
     }
 
-    private val onSeekBarRestoredSubject: PublishSubject<RadarView.Event.OnSeekBarRestored> by lazy(LazyThreadSafetyMode.NONE) {
+    private val onSeekBarRestoredSubject: PublishSubject<RadarView.Event.OnSeekBarRestored> by lazy(
+        LazyThreadSafetyMode.NONE
+    ) {
         component.provideOnSeekBarRestored()
     }
 
-    private val subscriptions: CompositeDisposable by lazy(LazyThreadSafetyMode.NONE) {
+    private val subscriptions: CompositeDisposable by lazyAndroid {
         component.provideCompositeDisposable()
     }
 
@@ -140,13 +167,6 @@ class RadarFragment : BaseFragment() {
                 .Event
                 .OnFailureHandled
         )
-    }
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        Timber.d("-----BEGIN-----")
-        Timber.d("ON ATTACH")
-        component.inject(this)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -430,8 +450,7 @@ class RadarFragment : BaseFragment() {
                     .link
             )
             .target(
-                onStart = {
-                    _ ->
+                onStart = { _ ->
                     Unit
                 },
                 onSuccess = { result: Drawable ->

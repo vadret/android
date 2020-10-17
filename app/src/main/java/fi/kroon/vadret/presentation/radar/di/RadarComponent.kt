@@ -1,22 +1,26 @@
 package fi.kroon.vadret.presentation.radar.di
 
+import android.content.Context
 import coil.ImageLoader
-import dagger.Subcomponent
-import fi.kroon.vadret.presentation.radar.RadarFragment
+import dagger.BindsInstance
+import dagger.Component
+import fi.kroon.vadret.core.CoreComponent
 import fi.kroon.vadret.presentation.radar.RadarView
 import fi.kroon.vadret.presentation.radar.RadarViewModel
+import fi.kroon.vadret.util.Scheduler
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.subjects.PublishSubject
 
-@Subcomponent(
+@Component(
     modules = [
         RadarModule::class
+    ],
+    dependencies = [
+        CoreComponent::class
     ]
 )
 @RadarScope
 interface RadarComponent {
-
-    fun inject(radarFragment: RadarFragment)
 
     /**
      *  ViewModel
@@ -38,10 +42,14 @@ interface RadarComponent {
     fun provideOnSeekBarRestored(): PublishSubject<RadarView.Event.OnSeekBarRestored>
     fun provideCompositeDisposable(): CompositeDisposable
     fun provideImageLoader(): ImageLoader
+    fun provideScheduler(): Scheduler
 
-    @Subcomponent.Builder
-    interface Builder {
-        fun radarModule(module: RadarModule): Builder
-        fun build(): RadarComponent
+    @Component.Factory
+    interface Factory {
+        fun create(
+            @BindsInstance
+            context: Context,
+            coreComponent: CoreComponent
+        ): RadarComponent
     }
 }

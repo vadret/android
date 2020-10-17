@@ -8,11 +8,13 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import fi.kroon.vadret.R
 import fi.kroon.vadret.data.failure.Failure
 import fi.kroon.vadret.data.theme.model.Theme
+import fi.kroon.vadret.presentation.main.di.DaggerMainActivityComponent
 import fi.kroon.vadret.presentation.main.di.MainActivityComponent
 import fi.kroon.vadret.presentation.shared.BaseActivity
 import fi.kroon.vadret.util.DEFAULT_SETTINGS
 import fi.kroon.vadret.util.Scheduler
-import fi.kroon.vadret.util.extension.appComponent
+import fi.kroon.vadret.util.extension.coreComponent
+import fi.kroon.vadret.util.extension.lazyAndroid
 import fi.kroon.vadret.util.extension.toObservable
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
@@ -23,26 +25,26 @@ import timber.log.Timber
 
 class MainActivity : BaseActivity() {
 
-    private val cmp: MainActivityComponent by lazy(LazyThreadSafetyMode.NONE) {
-        appComponent()
-            .mainActivityComponentBuilder()
-            .build()
+    private val component: MainActivityComponent by lazyAndroid {
+        DaggerMainActivityComponent
+            .factory()
+            .create(context = this, coreComponent = coreComponent)
     }
 
-    private val subscriptions: CompositeDisposable by lazy(LazyThreadSafetyMode.NONE) {
-        cmp.provideCompositeDisposable()
+    private val subscriptions: CompositeDisposable by lazyAndroid {
+        component.provideCompositeDisposable()
     }
 
-    private val scheduler: Scheduler by lazy(LazyThreadSafetyMode.NONE) {
-        cmp.provideScheduler()
+    private val scheduler: Scheduler by lazyAndroid {
+        component.provideScheduler()
     }
 
-    private val viewModel: MainActivityViewModel by lazy(LazyThreadSafetyMode.NONE) {
-        cmp.provideMainActivityViewModel()
+    private val viewModel: MainActivityViewModel by lazyAndroid {
+        component.provideMainActivityViewModel()
     }
 
-    private val onViewInitialisedSubject: PublishSubject<MainActivityView.Event.OnViewInitialised> by lazy(LazyThreadSafetyMode.NONE) {
-        cmp.provideOnViewInitialised()
+    private val onViewInitialisedSubject: PublishSubject<MainActivityView.Event.OnViewInitialised> by lazyAndroid {
+        component.provideOnViewInitialised()
     }
 
     /**

@@ -10,6 +10,7 @@ import fi.kroon.vadret.R
 import fi.kroon.vadret.data.aboutinfo.model.AboutInfo
 import fi.kroon.vadret.presentation.aboutapp.about.di.AboutAppAboutComponent
 import fi.kroon.vadret.presentation.aboutapp.about.di.DaggerAboutAppAboutComponent
+import fi.kroon.vadret.util.extension.lazyAndroid
 import kotlinx.android.synthetic.main.about_app_about_fragment.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collect
@@ -25,13 +26,13 @@ class AboutAppAboutFragment : Fragment(R.layout.about_app_about_fragment) {
 
     private lateinit var aboutAppAboutAdapter: AboutAppAboutAdapter
 
-    private val component: AboutAppAboutComponent by lazy(LazyThreadSafetyMode.NONE) {
+    private val component: AboutAppAboutComponent by lazyAndroid {
         DaggerAboutAppAboutComponent
             .factory()
             .create(context = requireContext())
     }
 
-    private val viewModel: AboutAppAboutViewModel by lazy(LazyThreadSafetyMode.NONE) {
+    private val viewModel: AboutAppAboutViewModel by lazyAndroid {
         component.provideViewModel()
     }
 

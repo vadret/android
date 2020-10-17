@@ -3,6 +3,7 @@ package fi.kroon.vadret.presentation.main.di
 import dagger.Module
 import dagger.Provides
 import fi.kroon.vadret.presentation.main.MainActivityView
+import fi.kroon.vadret.util.Scheduler
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.subjects.PublishSubject
 
@@ -10,18 +11,19 @@ import io.reactivex.subjects.PublishSubject
 object MainActivityModule {
 
     @Provides
-    @JvmStatic
     @MainActivityScope
     fun provideViewState(): MainActivityView.State = MainActivityView.State()
 
     @Provides
-    @JvmStatic
     @MainActivityScope
     fun provideOnViewInitialisedSubject(): PublishSubject<MainActivityView.Event.OnViewInitialised> =
         PublishSubject.create()
 
     @Provides
-    @JvmStatic
     @MainActivityScope
     fun provideCompositeDisposable(): CompositeDisposable = CompositeDisposable()
+
+    @Provides
+    @MainActivityScope
+    fun provideSchedulers(): Scheduler = Scheduler()
 }

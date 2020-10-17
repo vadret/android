@@ -1,6 +1,9 @@
 package fi.kroon.vadret.presentation.weatherforecast.di
 
-import dagger.Subcomponent
+import android.content.Context
+import dagger.BindsInstance
+import dagger.Component
+import fi.kroon.vadret.core.CoreComponent
 import fi.kroon.vadret.presentation.weatherforecast.WeatherForecastAdapter
 import fi.kroon.vadret.presentation.weatherforecast.WeatherForecastView
 import fi.kroon.vadret.presentation.weatherforecast.WeatherForecastViewModel
@@ -9,31 +12,31 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.channels.ConflatedBroadcastChannel
 
-@ExperimentalCoroutinesApi
 @FlowPreview
-@Subcomponent(
+@ExperimentalCoroutinesApi
+@WeatherForecastScope
+@Component(
     modules = [
         WeatherForecastModule::class
+    ],
+    dependencies = [
+        CoreComponent::class
     ]
 )
-@WeatherForecastScope
 interface WeatherForecastComponent {
 
-    /**
-     *  ViewModel
-     */
     fun provideWeatherForecastViewModel(): WeatherForecastViewModel
     fun provideEventChannel(): ConflatedBroadcastChannel<WeatherForecastView.Event>
 
-    /**
-     *  Adapter
-     */
     fun provideWeatherForecastAdapter(): WeatherForecastAdapter
     fun provideAutoCompleteAdapter(): AutoCompleteAdapter
 
-    @Subcomponent.Builder
-    interface Builder {
-        fun forecastModule(module: WeatherForecastModule): Builder
-        fun build(): WeatherForecastComponent
+    @Component.Factory
+    interface Factory {
+        fun create(
+            @BindsInstance
+            context: Context,
+            coreComponent: CoreComponent
+        ): WeatherForecastComponent
     }
 }

@@ -5,9 +5,7 @@ import android.content.Context
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.os.Parcelable
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
@@ -18,8 +16,10 @@ import fi.kroon.vadret.R
 import fi.kroon.vadret.data.nominatim.model.Locality
 import fi.kroon.vadret.presentation.main.MainActivity
 import fi.kroon.vadret.presentation.weatherforecast.autocomplete.AutoCompleteAdapter
+import fi.kroon.vadret.presentation.weatherforecast.di.DaggerWeatherForecastComponent
 import fi.kroon.vadret.presentation.weatherforecast.di.WeatherForecastComponent
-import fi.kroon.vadret.util.extension.appComponent
+import fi.kroon.vadret.util.extension.coreComponent
+import fi.kroon.vadret.util.extension.lazyAndroid
 import fi.kroon.vadret.util.extension.toGone
 import fi.kroon.vadret.util.extension.toInvisible
 import fi.kroon.vadret.util.extension.toVisible
@@ -47,7 +47,7 @@ import timber.log.Timber
 @ExperimentalCoroutinesApi
 @FlowPreview
 @RuntimePermissions
-class WeatherForecastFragment : Fragment() {
+class WeatherForecastFragment : Fragment(R.layout.weather_forecast_fragment) {
 
     private companion object {
         const val STATE_PARCEL_KEY: String = "STATE_PARCEL_KEY"
@@ -59,38 +59,34 @@ class WeatherForecastFragment : Fragment() {
     private var bundle: Bundle? = null
     private var recyclerViewParcelable: Parcelable? = null
 
-    private val component: WeatherForecastComponent by lazy(LazyThreadSafetyMode.NONE) {
-        appComponent()
-            .weatherForecastComponentBuilder()
-            .build()
+    private val component: WeatherForecastComponent by lazyAndroid {
+        DaggerWeatherForecastComponent
+            .factory()
+            .create(context = requireContext(), coreComponent = coreComponent)
     }
 
-    private val viewModel: WeatherForecastViewModel by lazy(LazyThreadSafetyMode.NONE) {
+    private val viewModel: WeatherForecastViewModel by lazyAndroid {
         component.provideWeatherForecastViewModel()
     }
 
-    private val eventChannel: ConflatedBroadcastChannel<WeatherForecastView.Event> by lazy(LazyThreadSafetyMode.NONE) {
+    private val eventChannel: ConflatedBroadcastChannel<WeatherForecastView.Event> by lazyAndroid {
         component.provideEventChannel()
     }
 
-    private val weatherForecastAdapter: WeatherForecastAdapter by lazy(LazyThreadSafetyMode.NONE) {
+    private val weatherForecastAdapter: WeatherForecastAdapter by lazyAndroid {
         component.provideWeatherForecastAdapter()
     }
 
-    private val autoCompleteAdapter: AutoCompleteAdapter by lazy(LazyThreadSafetyMode.NONE) {
+    private val autoCompleteAdapter: AutoCompleteAdapter by lazyAndroid {
         component.provideAutoCompleteAdapter()
     }
 
-    private val itemDecoration: DividerItemDecoration by lazy(LazyThreadSafetyMode.NONE) {
+    private val itemDecoration: DividerItemDecoration by lazyAndroid {
         DividerItemDecoration(requireContext(), RecyclerView.VERTICAL)
     }
 
-    private val drawable: Drawable? by lazy(LazyThreadSafetyMode.NONE) {
+    private val drawable: Drawable? by lazyAndroid {
         ContextCompat.getDrawable(requireContext(), R.drawable.search_item_divider)
-    }
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.weather_forecast_fragment, container, false)
     }
 
     override fun onAttach(context: Context) {

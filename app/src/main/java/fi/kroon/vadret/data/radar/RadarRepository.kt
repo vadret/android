@@ -10,7 +10,6 @@ import fi.kroon.vadret.data.radar.exception.RadarFailure
 import fi.kroon.vadret.data.radar.model.Radar
 import fi.kroon.vadret.data.radar.model.RadarRequest
 import fi.kroon.vadret.data.radar.net.RadarNetDataSource
-import fi.kroon.vadret.di.scope.CoreApplicationScope
 import fi.kroon.vadret.util.NetworkHandler
 import fi.kroon.vadret.util.extension.asLeft
 import fi.kroon.vadret.util.extension.asRight
@@ -20,7 +19,6 @@ import retrofit2.Response
 import timber.log.Timber
 import javax.inject.Inject
 
-@CoreApplicationScope
 class RadarRepository @Inject constructor(
     private val radarNetDataSource: Lazy<RadarNetDataSource>,
     private val networkHandler: NetworkHandler,

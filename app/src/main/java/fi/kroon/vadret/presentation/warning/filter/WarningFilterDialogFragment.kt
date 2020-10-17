@@ -11,13 +11,21 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import fi.kroon.vadret.R
+import fi.kroon.vadret.presentation.warning.display.WarningFragment.Companion.RESULT_OK
+import fi.kroon.vadret.presentation.warning.display.WarningFragment.Companion.WARNING_FILTER_DIALOG_RESULT
+import fi.kroon.vadret.presentation.warning.filter.di.DaggerWarningFilterComponent
 import fi.kroon.vadret.presentation.warning.filter.di.WarningFilterComponent
 import fi.kroon.vadret.presentation.warning.filter.model.IFilterable
-import fi.kroon.vadret.util.extension.appComponent
+import fi.kroon.vadret.util.extension.coreComponent
+import fi.kroon.vadret.util.extension.lazyAndroid
+import kotlinx.android.synthetic.main.warning_filter_dialog_fragment.warningFilterApplyButton
 import kotlinx.android.synthetic.main.warning_filter_dialog_fragment.warningFilterRecyclerView
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import ru.ldralighieri.corbind.view.clicks
 import timber.log.Timber
 
 @ExperimentalCoroutinesApi
@@ -34,17 +42,17 @@ class WarningFilterDialogFragment : BottomSheetDialogFragment() {
 
     private lateinit var warningFilterAdapter: WarningFilterAdapter
 
-    private val navController: NavController by lazy(LazyThreadSafetyMode.NONE) {
+    private val navController: NavController by lazyAndroid {
         findNavController()
     }
 
-    private val component: WarningFilterComponent by lazy(LazyThreadSafetyMode.NONE) {
-        appComponent()
-            .warningFilterComponentBuilder()
-            .build()
+    private val component: WarningFilterComponent by lazyAndroid {
+        DaggerWarningFilterComponent
+            .factory()
+            .create(context = requireContext(), coreComponent = coreComponent)
     }
 
-    private val viewModel: WarningFilterViewModel by lazy(LazyThreadSafetyMode.NONE) {
+    private val viewModel: WarningFilterViewModel by lazyAndroid {
         component.provideWarningFilterViewModel()
     }
 
@@ -153,6 +161,17 @@ class WarningFilterDialogFragment : BottomSheetDialogFragment() {
     }
 
     private fun setupEvents() {
+
+        warningFilterApplyButton
+            .clicks()
+            .map {
+                viewModel.send(
+                    WarningFilterView
+                        .Event
+                        .OnFilterOptionsApplyClicked
+                )
+            }.launchIn(lifecycleScope)
+
         viewModel.send(
             WarningFilterView
                 .Event
@@ -192,6 +211,14 @@ class WarningFilterDialogFragment : BottomSheetDialogFragment() {
 
     private fun finishDialog() {
         Timber.d("FINISH DIALOG")
+
+        navController.previousBackStackEntry
+            ?.savedStateHandle
+            ?.set(
+                WARNING_FILTER_DIALOG_RESULT,
+                RESULT_OK
+            )
+
         navController.popBackStack()
     }
 

@@ -1,33 +1,19 @@
 package fi.kroon.vadret
 
 import android.app.Application
-import android.content.Context
 import com.jakewharton.threetenabp.AndroidThreeTen
-import fi.kroon.vadret.di.component.CoreApplicationComponent
-import fi.kroon.vadret.di.component.DaggerCoreApplicationComponent
-import fi.kroon.vadret.di.modules.ContextModule
-import fi.kroon.vadret.di.modules.DatabaseModule
+import fi.kroon.vadret.core.CoreComponent
+import fi.kroon.vadret.core.CoreComponentFactory
+import fi.kroon.vadret.core.CoreComponentProvider
 import timber.log.Timber
 
-abstract class BaseApplication : Application() {
+abstract class BaseApplication : Application(), CoreComponentProvider {
 
-    companion object {
-        @JvmStatic
-        fun appComponent(context: Context): CoreApplicationComponent =
-            (context.applicationContext as BaseApplication).cmp
-    }
-
-    val cmp: CoreApplicationComponent by lazy(LazyThreadSafetyMode.NONE) {
-        DaggerCoreApplicationComponent
-            .builder()
-            .contextModule(ContextModule(this))
-            .databaseModule(DatabaseModule(this))
-            .build()
-    }
+    override val coreComponent: CoreComponent
+        get() = CoreComponentFactory.getInstance(applicationContext)
 
     override fun onCreate() {
         super.onCreate()
-        cmp.inject(this)
         plantTimber()
         initThreeTenAbp()
         cacheDir.delete()

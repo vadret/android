@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import fi.kroon.vadret.R
 import fi.kroon.vadret.presentation.aboutapp.library.di.AboutAppLibraryComponent
 import fi.kroon.vadret.presentation.aboutapp.library.di.DaggerAboutAppLibraryComponent
+import fi.kroon.vadret.util.extension.lazyAndroid
 import kotlinx.android.synthetic.main.about_app_library_fragment.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collect
@@ -25,11 +26,11 @@ class AboutAppLibraryFragment : Fragment(R.layout.about_app_library_fragment) {
 
     private lateinit var aboutAppLibraryAdapter: AboutAppLibraryAdapter
 
-    private val viewModel: AboutAppLibraryViewModel by lazy(LazyThreadSafetyMode.NONE) {
+    private val viewModel: AboutAppLibraryViewModel by lazyAndroid {
         component.provideViewModel()
     }
 
-    private val component: AboutAppLibraryComponent by lazy(LazyThreadSafetyMode.NONE) {
+    private val component: AboutAppLibraryComponent by lazyAndroid {
         DaggerAboutAppLibraryComponent
             .factory()
             .create(context = requireContext())

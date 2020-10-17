@@ -8,7 +8,6 @@ import fi.kroon.vadret.data.exception.IExceptionHandler
 import fi.kroon.vadret.data.failure.Failure
 import fi.kroon.vadret.data.feedsource.model.FeedSource
 import fi.kroon.vadret.data.feedsource.net.FeedSourceNetDataSource
-import fi.kroon.vadret.di.scope.CoreApplicationScope
 import fi.kroon.vadret.util.NetworkHandler
 import fi.kroon.vadret.util.extension.asLeft
 import fi.kroon.vadret.util.extension.asRight
@@ -17,7 +16,6 @@ import io.reactivex.Single
 import retrofit2.Response
 import javax.inject.Inject
 
-@CoreApplicationScope
 class FeedSourceRepository @Inject constructor(
     private val networkHandler: NetworkHandler,
     private val feedSourceNetDataSource: Lazy<FeedSourceNetDataSource>,

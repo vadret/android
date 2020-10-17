@@ -9,9 +9,11 @@ import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import fi.kroon.vadret.R
+import fi.kroon.vadret.presentation.warning.display.di.DaggerWarningComponent
 import fi.kroon.vadret.presentation.warning.display.di.WarningComponent
 import fi.kroon.vadret.presentation.warning.display.model.IWarningModel
-import fi.kroon.vadret.util.extension.appComponent
+import fi.kroon.vadret.util.extension.coreComponent
+import fi.kroon.vadret.util.extension.lazyAndroid
 import fi.kroon.vadret.util.extension.snack
 import fi.kroon.vadret.util.extension.toGone
 import fi.kroon.vadret.util.extension.toVisible
@@ -35,6 +37,8 @@ class WarningFragment : Fragment(R.layout.warning_display_fragment) {
     companion object {
         const val STATE_PARCEL_KEY: String = "STATE_PARCEL_KEY"
         const val SCROLL_POSITION_KEY: String = "SCROLL_POSITION_KEY"
+        const val WARNING_FILTER_DIALOG_RESULT = "warning_filter_dialog_result"
+        const val RESULT_OK = "result_ok"
     }
 
     private var recyclerViewParcelable: Parcelable? = null
@@ -42,21 +46,21 @@ class WarningFragment : Fragment(R.layout.warning_display_fragment) {
     private var bundle: Bundle? = null
     private var isConfigChangeOrProcessDeath: Boolean = false
 
-    private val component: WarningComponent by lazy(LazyThreadSafetyMode.NONE) {
-        appComponent()
-            .warningComponentBuilder()
-            .build()
+    private val component: WarningComponent by lazyAndroid {
+        DaggerWarningComponent
+            .factory()
+            .create(context = requireContext(), coreComponent = coreComponent)
     }
 
-    private val warningAdapter: WarningAdapter by lazy(LazyThreadSafetyMode.NONE) {
+    private val warningAdapter: WarningAdapter by lazyAndroid {
         component.provideWarningAdapter()
     }
 
-    private val viewModel: WarningViewModel by lazy(LazyThreadSafetyMode.NONE) {
+    private val viewModel: WarningViewModel by lazyAndroid {
         component.provideWarningViewModel()
     }
 
-    private val navController: NavController by lazy(LazyThreadSafetyMode.NONE) {
+    private val navController: NavController by lazyAndroid {
         findNavController()
     }
 
@@ -86,6 +90,7 @@ class WarningFragment : Fragment(R.layout.warning_display_fragment) {
                     .viewState
                     .collect(::render)
             }
+        listenForWarningFilterDialogResult()
         setup()
     }
 
@@ -198,7 +203,7 @@ class WarningFragment : Fragment(R.layout.warning_display_fragment) {
 
     private fun navigateToFilterView() {
         navController
-            .navigate(R.id.action_warningFragment_to_warningFilterDialog)
+            .navigate(R.id.warningFilterDialog)
     }
 
     private fun displayNoWarningsIssued() {
@@ -262,5 +267,17 @@ class WarningFragment : Fragment(R.layout.warning_display_fragment) {
             .toGone()
         warningAdapter.updateList(list)
         viewModel.send(WarningView.Event.OnWarningListDisplayed)
+    }
+
+    private fun listenForWarningFilterDialogResult() {
+        navController.currentBackStackEntry
+            ?.savedStateHandle
+            ?.getLiveData<String>(WARNING_FILTER_DIALOG_RESULT)
+            ?.observe(
+                viewLifecycleOwner,
+                {
+                    viewModel.send(WarningView.Event.OnWarningFilterResult(it))
+                }
+            )
     }
 }

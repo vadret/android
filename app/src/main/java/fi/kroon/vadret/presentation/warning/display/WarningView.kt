@@ -18,6 +18,7 @@ object WarningView {
         object OnWarningListDisplayed : Event()
         object OnScrollPositionRestored : Event()
         object OnStateParcelUpdated : Event()
+        data class OnWarningFilterResult(val result: String) : Event()
     }
 
     data class State(

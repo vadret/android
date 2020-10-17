@@ -8,7 +8,6 @@ import fi.kroon.vadret.data.exception.ExceptionHandler
 import fi.kroon.vadret.data.exception.IErrorHandler
 import fi.kroon.vadret.data.exception.IExceptionHandler
 import fi.kroon.vadret.data.failure.Failure
-import fi.kroon.vadret.di.scope.CoreApplicationScope
 import fi.kroon.vadret.util.NetworkHandler
 import fi.kroon.vadret.util.extension.asLeft
 import fi.kroon.vadret.util.extension.asRight
@@ -17,7 +16,6 @@ import io.reactivex.Single
 import retrofit2.Response
 import javax.inject.Inject
 
-@CoreApplicationScope
 class AggregatedFeedRepository @Inject constructor(
     private val networkHandler: NetworkHandler,
     private val netDataSource: Lazy<AggregatedFeedNetDataSource>,

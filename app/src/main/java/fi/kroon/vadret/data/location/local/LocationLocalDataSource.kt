@@ -9,6 +9,7 @@ import fi.kroon.vadret.data.failure.Failure
 import fi.kroon.vadret.data.location.exception.LocationFailure
 import fi.kroon.vadret.util.extension.asLeft
 import fi.kroon.vadret.util.extension.asRight
+import fi.kroon.vadret.util.extension.lazyAndroid
 import io.github.sphrak.either.Either
 import timber.log.Timber
 import javax.inject.Inject
@@ -17,11 +18,11 @@ class LocationLocalDataSource @Inject constructor(
     private val locationManager: LocationManager
 ) {
 
-    private val isGPSEnabled: Boolean by lazy(LazyThreadSafetyMode.NONE) {
+    private val isGPSEnabled: Boolean by lazyAndroid {
         locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
     }
 
-    private val isNetworkLocationProviderEnabled: Boolean by lazy(LazyThreadSafetyMode.NONE) {
+    private val isNetworkLocationProviderEnabled: Boolean by lazyAndroid {
         locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
     }
 

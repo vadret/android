@@ -16,6 +16,7 @@ import fi.kroon.vadret.domain.warning.CountFeedSourcePreferenceEntityTask
 import fi.kroon.vadret.domain.warning.SetDefaultDistrictPreferenceEntityService
 import fi.kroon.vadret.domain.warning.SetDefaultFeedSourcePreferenceEntityService
 import fi.kroon.vadret.presentation.shared.IViewModel
+import fi.kroon.vadret.presentation.warning.display.WarningFragment.Companion.RESULT_OK
 import fi.kroon.vadret.presentation.warning.display.model.IWarningModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -44,7 +45,6 @@ class WarningViewModel @Inject constructor(
     private val setDefaultDistrictPreferenceEntityService: SetDefaultDistrictPreferenceEntityService,
     private val setDefaultFeedSourcePreferenceEntityService: SetDefaultFeedSourcePreferenceEntityService
 ) : ViewModel(), IViewModel {
-    // TODO IViewModel replace it?
 
     val viewState: SharedFlow<WarningView.State> get() = state.asSharedFlow()
 
@@ -54,7 +54,7 @@ class WarningViewModel @Inject constructor(
 
     private suspend fun reduce(event: WarningView.Event): Unit =
         when (event) {
-            is WarningView.Event.OnViewInitialised -> onViewInitialisedEvent(event)
+            is WarningView.Event.OnViewInitialised -> onViewInitialisedEvent(event.stateParcel)
             WarningView.Event.OnFailureHandled -> onFailureHandledEvent()
             WarningView.Event.OnProgressBarEffectStarted -> onProgressBarEffectStartedEvent()
             WarningView.Event.OnProgressBarEffectStopped -> onProgressBarEffectStoppedEvent()
@@ -64,7 +64,18 @@ class WarningViewModel @Inject constructor(
             WarningView.Event.OnStateParcelUpdated -> onStateParcelUpdatedEvent()
             WarningView.Event.OnFilterButtonToggled -> onFilterButtonToggled()
             WarningView.Event.OnNoWarningsIssuedDisplayed -> onNoWarningsIssuedDisplayed()
+            is WarningView.Event.OnWarningFilterResult -> onWarningFilterResult(event.result)
         }
+
+    private suspend fun onWarningFilterResult(result: String) {
+        if (result == RESULT_OK) {
+            stateModel = stateModel.copy(renderEvent = WarningView.RenderEvent.None)
+            onViewInitialisedEvent(null)
+        } else {
+            stateModel = stateModel.copy(renderEvent = WarningView.RenderEvent.None)
+            state.emit(stateModel)
+        }
+    }
 
     private suspend fun onNoWarningsIssuedDisplayed() =
         endLoadingWarning()
@@ -236,8 +247,8 @@ class WarningViewModel @Inject constructor(
         state.emit(stateModel)
     }
 
-    private suspend fun onViewInitialisedEvent(event: WarningView.Event.OnViewInitialised) = withContext(Dispatchers.IO) {
-        restoreStateFromStateParcel(event.stateParcel)
+    private suspend fun onViewInitialisedEvent(stateParcel: WarningView.StateParcel?) = withContext(Dispatchers.IO) {
+        restoreStateFromStateParcel(stateParcel)
         updateStateToLoadingAndRefreshing()
         preLoadingWarning()
     }

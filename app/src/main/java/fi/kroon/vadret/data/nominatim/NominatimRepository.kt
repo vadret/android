@@ -11,7 +11,6 @@ import fi.kroon.vadret.data.nominatim.model.Nominatim
 import fi.kroon.vadret.data.nominatim.model.NominatimOut
 import fi.kroon.vadret.data.nominatim.model.NominatimReverseOut
 import fi.kroon.vadret.data.nominatim.net.NominatimNetDataSource
-import fi.kroon.vadret.di.scope.CoreApplicationScope
 import fi.kroon.vadret.util.NetworkHandler
 import fi.kroon.vadret.util.extension.asLeft
 import fi.kroon.vadret.util.extension.asRight
@@ -20,7 +19,6 @@ import io.reactivex.Single
 import retrofit2.Response
 import javax.inject.Inject
 
-@CoreApplicationScope
 class NominatimRepository @Inject constructor(
     private val nominatimNetDataSource: Lazy<NominatimNetDataSource>,
     private val networkHandler: NetworkHandler,

@@ -1,12 +1,20 @@
 package fi.kroon.vadret.presentation.warning.display.di
 
-import dagger.Subcomponent
+import android.content.Context
+import dagger.BindsInstance
+import dagger.Component
+import fi.kroon.vadret.core.CoreComponent
 import fi.kroon.vadret.presentation.warning.display.WarningAdapter
 import fi.kroon.vadret.presentation.warning.display.WarningViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 
-@Subcomponent(
+@ExperimentalCoroutinesApi
+@Component(
     modules = [
         WarningModule::class
+    ],
+    dependencies = [
+        CoreComponent::class
     ]
 )
 @WarningScope
@@ -15,9 +23,12 @@ interface WarningComponent {
     fun provideWarningViewModel(): WarningViewModel
     fun provideWarningAdapter(): WarningAdapter
 
-    @Subcomponent.Builder
-    interface Builder {
-        fun warningModule(module: WarningModule): Builder
-        fun build(): WarningComponent
+    @Component.Factory
+    interface Factory {
+        fun create(
+            @BindsInstance
+            context: Context,
+            coreComponent: CoreComponent
+        ): WarningComponent
     }
 }

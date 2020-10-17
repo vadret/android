@@ -12,7 +12,6 @@ import fi.kroon.vadret.domain.weatherforecast.SetLocationInformationTask
 import fi.kroon.vadret.domain.weatherforecast.SetLocationModeTask
 import fi.kroon.vadret.domain.weatherforecast.SetWeatherForecastLastCheckedTask
 import fi.kroon.vadret.presentation.shared.IViewModel
-import fi.kroon.vadret.presentation.weatherforecast.di.WeatherForecastScope
 import fi.kroon.vadret.util.extension.empty
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -28,7 +27,6 @@ import javax.inject.Inject
 
 @FlowPreview
 @ExperimentalCoroutinesApi
-@WeatherForecastScope
 class WeatherForecastViewModel @Inject constructor(
     private var state: WeatherForecastView.State,
     private val eventChannel: ConflatedBroadcastChannel<WeatherForecastView.Event>,

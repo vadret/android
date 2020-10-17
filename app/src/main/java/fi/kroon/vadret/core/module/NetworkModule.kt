@@ -1,10 +1,11 @@
-package fi.kroon.vadret.di.modules
+package fi.kroon.vadret.core.module
 
 import android.content.Context
 import dagger.Module
 import dagger.Provides
 import fi.kroon.vadret.BuildConfig
-import fi.kroon.vadret.di.scope.CoreApplicationScope
+import fi.kroon.vadret.core.CoreScope
+import fi.kroon.vadret.data.exception.ErrorHandler
 import okhttp3.Cache
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -12,11 +13,7 @@ import java.io.File
 import java.util.concurrent.TimeUnit
 import javax.inject.Qualifier
 
-@Module(
-    includes = [
-        ContextModule::class
-    ]
-)
+@Module
 object NetworkModule {
 
     private const val DEFAULT_CONNECTION_TIMEOUT = 10000L
@@ -37,14 +34,18 @@ object NetworkModule {
         }
 
     @Provides
-    @CoreApplicationScope
+    @CoreScope
+    fun provideFailureHandler(): ErrorHandler = ErrorHandler()
+
+    @Provides
+    @CoreScope
     fun provideHttpLoggingInterceptor(): HttpLoggingInterceptor =
         HttpLoggingInterceptor()
             .apply { level = getLogLevel }
 
     @Provides
     @InternalApi
-    @CoreApplicationScope
+    @CoreScope
     fun provideCache(
         context: Context
     ): Cache = Cache(
@@ -56,7 +57,7 @@ object NetworkModule {
     )
 
     @Provides
-    @CoreApplicationScope
+    @CoreScope
     fun provideOkHttpClient(
         httpLoggingInterceptor: HttpLoggingInterceptor,
         @InternalApi
