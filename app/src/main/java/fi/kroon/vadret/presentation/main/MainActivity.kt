@@ -1,15 +1,8 @@
 package fi.kroon.vadret.presentation.main
 
 import android.os.Bundle
-<<<<<<< HEAD
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
-=======
-import androidx.fragment.app.Fragment
-import androidx.lifecycle.LiveData
-import androidx.navigation.NavController
-import androidx.navigation.ui.setupActionBarWithNavController
->>>>>>> 4a5e7b8... fixes #209 -- replace rx2 with coroutines in weather forecast
 import androidx.preference.PreferenceManager
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import fi.kroon.vadret.R
