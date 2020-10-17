@@ -26,7 +26,7 @@ jobs:
           KEY_STORE_PASSWORD: ${{ secrets.KEY_STORE_PASSWORD }}
         run: |
           ./gradlew assembleGithubRelease
-          apt-get -y install tree
+          sudo apt-get -y install tree
           tree app/build/outputs
           ls -lah app/build/
           ls -lah
