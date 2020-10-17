@@ -19,9 +19,7 @@ import fi.kroon.vadret.data.nominatim.model.Locality
 import fi.kroon.vadret.presentation.main.MainActivity
 import fi.kroon.vadret.presentation.weatherforecast.autocomplete.AutoCompleteAdapter
 import fi.kroon.vadret.presentation.weatherforecast.di.WeatherForecastComponent
-import fi.kroon.vadret.presentation.weatherforecast.di.WeatherForecastScope
 import fi.kroon.vadret.util.extension.appComponent
-import fi.kroon.vadret.util.extension.snack
 import fi.kroon.vadret.util.extension.toGone
 import fi.kroon.vadret.util.extension.toInvisible
 import fi.kroon.vadret.util.extension.toVisible
@@ -121,7 +119,6 @@ class WeatherForecastFragment : Fragment() {
                 viewModel()
                     .flowOn(Dispatchers.IO)
                     .collect(::render)
-
             }
     }
 
@@ -156,7 +153,6 @@ class WeatherForecastFragment : Fragment() {
         autoCompleteRecyclerView.apply {
             adapter = null
         }
-
     }
 
     override fun onDestroy() {
@@ -460,7 +456,7 @@ class WeatherForecastFragment : Fragment() {
     }
 
     private fun renderError(errorCode: Int) {
-        //TODO snack(errorCode)
+        // TODO snack(errorCode)
         Timber.e("Rendering error code: ${getString(errorCode)}")
         eventChannel
             .offer(
