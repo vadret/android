@@ -142,11 +142,7 @@ class WeatherForecastTinySetup : BaseAppWidgetSetup() {
         cmp.provideOnLocationPermissionDenied()
     }
 
-<<<<<<< HEAD
-    private val autoCompleteAdapter: AutoCompleteAdapter by lazy(LazyThreadSafetyMode.NONE) {
-=======
     private val autoCompleteAdapter: AutoCompleteAdapterLegacy by lazy(LazyThreadSafetyMode.NONE) {
->>>>>>> 4a5e7b8... fixes #209 -- replace rx2 with coroutines in weather forecast
         cmp.provideAutoCompleteAdapter()
     }
 
