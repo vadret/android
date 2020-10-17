@@ -23,7 +23,7 @@ class AboutAppFragment : Fragment(R.layout.about_app_fragment) {
             .create(context = requireContext())
     }
 
-    private val viewModel: AboutAppViewModel by lazy {
+    private val viewModel: AboutAppViewModel by lazy(LazyThreadSafetyMode.NONE) {
         component.provideViewModel()
     }
 
