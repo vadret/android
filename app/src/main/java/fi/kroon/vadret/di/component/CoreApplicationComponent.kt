@@ -12,7 +12,6 @@ import fi.kroon.vadret.di.modules.RxkPrefsModule
 import fi.kroon.vadret.di.modules.SchedulerModule
 import fi.kroon.vadret.di.modules.ServiceModule
 import fi.kroon.vadret.di.scope.CoreApplicationScope
-import fi.kroon.vadret.presentation.aboutapp.di.AboutAppComponent
 import fi.kroon.vadret.presentation.main.di.MainActivityComponent
 import fi.kroon.vadret.presentation.radar.di.RadarComponent
 import fi.kroon.vadret.presentation.warning.display.di.WarningComponent
@@ -47,7 +46,6 @@ interface CoreApplicationComponent {
 
     fun mainActivityComponentBuilder(): MainActivityComponent.Builder
     fun radarComponentBuilder(): RadarComponent.Builder
-    fun appAboutComponentBuilder(): AboutAppComponent.Builder
 
     fun warningComponentBuilder(): WarningComponent.Builder
     fun warningFilterComponentBuilder(): WarningFilterComponent.Builder

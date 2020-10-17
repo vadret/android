@@ -6,20 +6,12 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import fi.kroon.vadret.R
 import fi.kroon.vadret.data.library.model.Library
-import fi.kroon.vadret.presentation.aboutapp.di.AboutAppFeatureScope
-import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.about_app_library_item.view.*
-import javax.inject.Inject
-import javax.inject.Named
 
-@AboutAppFeatureScope
-class AboutAppLibraryAdapter @Inject constructor(
-    @Named("projectUrl")
-    private val onOnProjectUrlClickSubject: PublishSubject<Library>,
-    @Named("sourceUrl")
-    private val onSourceUrlClickSubject: PublishSubject<Library>,
-    @Named("licenseUrl")
-    private val onLicenseUrlClickSubject: PublishSubject<Library>
+class AboutAppLibraryAdapter constructor(
+    private val onProjectUrlClicked: (Library) -> Unit,
+    private val onSourceUrlClicked: (Library) -> Unit,
+    private val onLicenseUrlClicked: (Library) -> Unit
 ) : RecyclerView.Adapter<AboutAppLibraryAdapter.ViewHolder>() {
 
     private val list: MutableList<Library> = mutableListOf()
@@ -40,26 +32,20 @@ class AboutAppLibraryAdapter @Inject constructor(
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         init {
             itemView.apply {
-                aboutAppLibraryItemProjectUrlButton.setOnClickListener {
-                    onOnProjectUrlClickSubject
-                        .onNext(
-                            list[adapterPosition]
-                        )
-                }
+                aboutAppLibraryItemProjectUrlButton
+                    .setOnClickListener {
+                        onProjectUrlClicked(list[adapterPosition])
+                    }
 
-                aboutAppLibraryItemLicenseUrlButton.setOnClickListener {
-                    onLicenseUrlClickSubject
-                        .onNext(
-                            list[adapterPosition]
-                        )
-                }
+                aboutAppLibraryItemLicenseUrlButton
+                    .setOnClickListener {
+                        onLicenseUrlClicked(list[adapterPosition])
+                    }
 
-                aboutAppLibraryItemUrlButton.setOnClickListener {
-                    onSourceUrlClickSubject
-                        .onNext(
-                            list[adapterPosition]
-                        )
-                }
+                aboutAppLibraryItemUrlButton
+                    .setOnClickListener {
+                        onSourceUrlClicked(list[adapterPosition])
+                    }
             }
         }
 

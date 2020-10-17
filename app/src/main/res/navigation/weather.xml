@@ -8,4 +8,24 @@
         android:id="@+id/weatherForecastFragment"
         android:name="fi.kroon.vadret.presentation.weatherforecast.WeatherForecastFragment"
         android:label="@string/app_name" />
+
+    <fragment
+        android:id="@+id/radarFragment"
+        android:name="fi.kroon.vadret.presentation.radar.RadarFragment" />
+
+    <fragment
+        android:id="@+id/warningFragment"
+        android:name="fi.kroon.vadret.presentation.warning.display.WarningFragment" />
+
+    <fragment
+        android:id="@+id/aboutAppFragment"
+        android:name="fi.kroon.vadret.presentation.aboutapp.AboutAppFragment" />
+
+    <fragment
+        android:id="@+id/about"
+        android:name="fi.kroon.vadret.presentation.aboutapp.AboutAppFragment" />
+
+    <dialog
+        android:id="@+id/warningFilterDialog"
+        android:name="fi.kroon.vadret.presentation.warning.filter.WarningFilterDialogFragment" />
 </navigation>

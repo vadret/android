@@ -266,7 +266,7 @@ class WarningFragment : BaseFragment() {
 
     private fun navigateToFilterView() {
         navController
-            .navigate(R.id.warningFilterDialogFragment)
+            .navigate(R.id.warningFilterDialog)
     }
 
     private fun displayNoWarningsIssued() {

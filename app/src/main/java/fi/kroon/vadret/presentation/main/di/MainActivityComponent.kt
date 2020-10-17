@@ -1,7 +1,6 @@
 package fi.kroon.vadret.presentation.main.di
 
 import dagger.Subcomponent
-import fi.kroon.vadret.presentation.main.MainActivity
 import fi.kroon.vadret.presentation.main.MainActivityView
 import fi.kroon.vadret.presentation.main.MainActivityViewModel
 import fi.kroon.vadret.util.Scheduler
@@ -15,8 +14,6 @@ import io.reactivex.subjects.PublishSubject
 )
 @MainActivityScope
 interface MainActivityComponent {
-
-    fun inject(mainActivity: MainActivity)
 
     fun provideOnViewInitialised(): PublishSubject<MainActivityView.Event.OnViewInitialised>
     fun provideMainActivityViewModel(): MainActivityViewModel

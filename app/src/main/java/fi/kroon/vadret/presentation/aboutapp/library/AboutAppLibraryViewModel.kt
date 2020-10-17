@@ -1,72 +1,60 @@
 package fi.kroon.vadret.presentation.aboutapp.library
 
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import fi.kroon.vadret.data.failure.Failure
 import fi.kroon.vadret.data.library.model.Library
 import fi.kroon.vadret.domain.aboutapp.GetAboutLibraryTask
-import fi.kroon.vadret.util.extension.asObservable
-import io.github.sphrak.either.Either
-import io.reactivex.Observable
-import io.reactivex.ObservableTransformer
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.rx2.await
 import timber.log.Timber
 import javax.inject.Inject
 
+@ExperimentalCoroutinesApi
 class AboutAppLibraryViewModel @Inject constructor(
-    private var state: AboutAppLibraryView.State,
+    private val state: MutableSharedFlow<AboutAppLibraryView.State>,
+    private var stateModel: AboutAppLibraryView.State,
     private val getAboutLibraryTask: GetAboutLibraryTask
-) {
-    operator fun invoke(): ObservableTransformer<AboutAppLibraryView.Event, AboutAppLibraryView.State> = onEvent
+) : ViewModel() {
 
-    private val onEvent = ObservableTransformer<AboutAppLibraryView.Event,
-        AboutAppLibraryView.State> { upstream: Observable<AboutAppLibraryView.Event> ->
-        upstream.publish { shared: Observable<AboutAppLibraryView.Event> ->
-            Observable.mergeArray(
-                shared.ofType(AboutAppLibraryView.Event.OnViewInitialised::class.java),
-                shared.ofType(AboutAppLibraryView.Event.OnProjectUrlClick::class.java),
-                shared.ofType(AboutAppLibraryView.Event.OnSourceUrlClick::class.java),
-                shared.ofType(AboutAppLibraryView.Event.OnLicenseUrlClick::class.java)
-            ).compose(
-                eventToViewState
-            )
+    val viewState: SharedFlow<AboutAppLibraryView.State> get() = state.asSharedFlow()
+
+    fun send(event: AboutAppLibraryView.Event) {
+        viewModelScope.launch { reduce(event = event) }
+    }
+
+    private suspend fun reduce(event: AboutAppLibraryView.Event): Unit =
+        when (event) {
+            AboutAppLibraryView.Event.OnViewInitialised -> onViewInitialisedEvent()
+            is AboutAppLibraryView.Event.OnProjectUrlClick -> onButtonClickedEvent(event.item.projectUrl)
+            is AboutAppLibraryView.Event.OnSourceUrlClick -> onButtonClickedEvent(event.item.sourceUrl)
+            is AboutAppLibraryView.Event.OnLicenseUrlClick -> onButtonClickedEvent(event.item.licenseUrl)
         }
+
+    private suspend fun onButtonClickedEvent(url: String?) {
+        stateModel = stateModel.copy(renderEvent = AboutAppLibraryView.RenderEvent.OpenUrl(url))
+        state.emit(stateModel)
     }
 
-    private val eventToViewState = ObservableTransformer<AboutAppLibraryView.Event,
-        AboutAppLibraryView.State> { upstream: Observable<AboutAppLibraryView.Event> ->
-
-        upstream.flatMap { event: AboutAppLibraryView.Event ->
-            when (event) {
-                AboutAppLibraryView.Event.OnViewInitialised ->
-                    onViewInitialisedEvent()
-                is AboutAppLibraryView.Event.OnProjectUrlClick ->
-                    onLibraryButtonClick(event.item.projectUrl)
-                is AboutAppLibraryView.Event.OnSourceUrlClick ->
-                    onLibraryButtonClick(event.item.sourceUrl)
-                is AboutAppLibraryView.Event.OnLicenseUrlClick ->
-                    onLibraryButtonClick(event.item.licenseUrl)
-            }
-        }
-    }
-
-    private fun onLibraryButtonClick(url: String?): Observable<AboutAppLibraryView.State> {
-        state = state.copy(renderEvent = AboutAppLibraryView.RenderEvent.OpenUrl(url))
-        return state.asObservable()
-    }
-
-    private fun onViewInitialisedEvent(): Observable<AboutAppLibraryView.State> =
+    private suspend fun onViewInitialisedEvent() {
         getAboutLibraryTask()
-            .flatMapObservable { result: Either<Failure, List<Library>> ->
-                result.either(
-                    { failure: Failure ->
-                        Timber.e("failure: $failure")
-                        state = state.copy(renderEvent = AboutAppLibraryView.RenderEvent.None)
-                        state.asObservable()
-                    },
-                    { list: List<Library> ->
-                        val renderEvent: AboutAppLibraryView.RenderEvent.DisplayLibrary =
-                            AboutAppLibraryView.RenderEvent.DisplayLibrary(list)
-                        state = state.copy(renderEvent = renderEvent)
-                        state.asObservable()
-                    }
-                )
-            }
+            .await()
+            .either(
+                { failure: Failure ->
+                    Timber.e("failure: $failure")
+                    stateModel = stateModel.copy(renderEvent = AboutAppLibraryView.RenderEvent.None)
+                    state.emit(stateModel)
+                },
+                { list: List<Library> ->
+                    val renderEvent: AboutAppLibraryView.RenderEvent.DisplayLibrary =
+                        AboutAppLibraryView.RenderEvent.DisplayLibrary(list)
+                    stateModel = stateModel.copy(renderEvent = renderEvent)
+                    state.emit(stateModel)
+                }
+            )
+    }
 }

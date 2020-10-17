@@ -7,7 +7,7 @@ object AboutAppView {
 
     sealed class Event {
         object OnViewInitialised : Event()
-        class OnTabSelected(val position: Int) : Event()
+        // class OnTabSelected(val position: Int) : Event()
     }
 
     data class State(

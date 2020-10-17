@@ -3,25 +3,19 @@ package fi.kroon.vadret.presentation.aboutapp.di
 import dagger.Module
 import dagger.Provides
 import fi.kroon.vadret.presentation.aboutapp.AboutAppView
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.subjects.PublishSubject
+import fi.kroon.vadret.presentation.aboutapp.about.di.AboutAppAboutScope
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableSharedFlow
 
 @Module
+@ExperimentalCoroutinesApi
 object AboutAppModule {
 
     @Provides
-    @JvmStatic
-    @AboutAppFeatureScope
-    fun provideViewState(): AboutAppView.State = AboutAppView.State()
+    @AboutAppAboutScope
+    fun provideViewState(): MutableSharedFlow<AboutAppView.State> = MutableSharedFlow()
 
     @Provides
-    @JvmStatic
-    @AboutAppFeatureScope
-    fun provideOnInitEventSubject(): PublishSubject<AboutAppView.Event.OnViewInitialised> =
-        PublishSubject.create()
-
-    @Provides
-    @JvmStatic
-    @AboutAppFeatureScope
-    fun provideCompositeDisposable(): CompositeDisposable = CompositeDisposable()
+    @AboutAppAboutScope
+    fun provideState(): AboutAppView.State = AboutAppView.State()
 }

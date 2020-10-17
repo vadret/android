@@ -138,8 +138,9 @@ dependencies {
     def APPCOMPAT_VERSION = "1.2.0"
     def ASSERTJ_VERSION = "3.14.0"
     def COMMONS_CSV_VERSION = "1.7"
-    def CONSTRAINT_LAYOUT_VERSION = "2.0.1"
-    def CORE_KTX_VERSION = "1.3.1"
+    def CONSTRAINT_LAYOUT_VERSION = "2.0.2"
+    def CORE_KTX_VERSION = "1.3.2"
+    def COROUTINES_VERSION = "1.4.0-M1"
     def COIL_VERSION = "0.13.0"
     def CRASHLYTICS_VERSION = "2.10.1"
     def DAGGER_VERSION = "2.29.1"
@@ -152,7 +153,7 @@ dependencies {
     def MATERIAL_VERSION = "1.2.1"
     def MOCKITO_CORE_VERSION = "3.1.0"
     def MOSHI_VERSION = "1.9.2"
-    def NAVIGATION_VERSION = "2.3.0"
+    def NAVIGATION_VERSION = "2.3.1"
     def OKHTTP_VERSION = "4.2.2"
     def OKIO_VERSION = "2.6.0"
     def OSMDROID_VERSION = "6.1.2"
@@ -181,6 +182,11 @@ dependencies {
     implementation "androidx.navigation:navigation-ui-ktx:${NAVIGATION_VERSION}"
     implementation "androidx.preference:preference-ktx:${PREFERENCE_VERSION}"
     implementation "com.google.android.material:material:${MATERIAL_VERSION}"
+
+    // Coroutines
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:${COROUTINES_VERSION}"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-rx2:${COROUTINES_VERSION}"
+
 
     // Reactive
     implementation "com.jakewharton.rxbinding3:rxbinding-appcompat:${RXBINDING_VERSION}"

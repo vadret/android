@@ -4,67 +4,48 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.widget.Toast
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import fi.kroon.vadret.R
-import fi.kroon.vadret.data.library.model.Library
-import fi.kroon.vadret.presentation.aboutapp.AboutAppFragment
-import fi.kroon.vadret.presentation.aboutapp.di.AboutAppFeatureScope
-import fi.kroon.vadret.presentation.main.MainActivity
-import fi.kroon.vadret.presentation.shared.BaseFragment
-import fi.kroon.vadret.util.extension.toObservable
-import io.reactivex.Observable
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.rxkotlin.addTo
-import io.reactivex.subjects.PublishSubject
+import fi.kroon.vadret.presentation.aboutapp.library.di.AboutAppLibraryComponent
+import fi.kroon.vadret.presentation.aboutapp.library.di.DaggerAboutAppLibraryComponent
 import kotlinx.android.synthetic.main.about_app_library_fragment.*
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 import timber.log.Timber
-import javax.inject.Inject
-import javax.inject.Named
 
-@AboutAppFeatureScope
-class AboutAppLibraryFragment : BaseFragment() {
+@ExperimentalCoroutinesApi
+class AboutAppLibraryFragment : Fragment(R.layout.about_app_library_fragment) {
 
     companion object {
         fun newInstance(): AboutAppLibraryFragment = AboutAppLibraryFragment()
     }
 
-    @Inject
-    lateinit var onInitEventSubject: PublishSubject<AboutAppLibraryView.Event.OnViewInitialised>
+    private lateinit var aboutAppLibraryAdapter: AboutAppLibraryAdapter
 
-    @Inject
-    @field:[Named("projectUrl")]
-    lateinit var onOnProjectUrlClickSubject: PublishSubject<Library>
+    private val viewModel: AboutAppLibraryViewModel by lazy(LazyThreadSafetyMode.NONE) {
+        component.provideViewModel()
+    }
 
-    @Inject
-    @field:[Named("sourceUrl")]
-    lateinit var onSourceUrlClickSubject: PublishSubject<Library>
-
-    @Inject
-    @field:[Named("licenseUrl")]
-    lateinit var onLicenseUrlClickSubject: PublishSubject<Library>
-
-    @Inject
-    lateinit var viewModel: AboutAppLibraryViewModel
-
-    @Inject
-    lateinit var libraryAdapter: AboutAppLibraryAdapter
-
-    /**
-     *  [subscriptions] field is manually instantiated because it breaks
-     *  the scope otherwise due to the navigation workaround mentioned
-     *  in [MainActivity].
-     */
-    private val subscriptions: CompositeDisposable = CompositeDisposable()
-
-    override fun layoutId(): Int = R.layout.about_app_library_fragment
+    private val component: AboutAppLibraryComponent by lazy(LazyThreadSafetyMode.NONE) {
+        DaggerAboutAppLibraryComponent
+            .factory()
+            .create(context = requireContext())
+    }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        (requireActivity() as MainActivity)
-            .getFragmentByClassName<AboutAppFragment>(AboutAppFragment::class.java.name)
-            .cmp
-            .inject(this)
-        setup()
+
+        setupRecyclerView()
+        lifecycleScope
+            .launch {
+                viewModel
+                    .viewState
+                    .collect(::render)
+            }
+        viewModel.send(AboutAppLibraryView.Event.OnViewInitialised)
     }
 
     override fun onDestroyView() {
@@ -73,68 +54,29 @@ class AboutAppLibraryFragment : BaseFragment() {
         aboutAppLibraryRecyclerView.apply {
             adapter = null
         }
-        subscriptions.clear()
-    }
-
-    private fun setup() {
-        setupRecyclerView()
-        setupEvents()
     }
 
     private fun setupRecyclerView() {
-        aboutAppLibraryRecyclerView.apply {
-            layoutManager = LinearLayoutManager(requireContext())
-            adapter = libraryAdapter
-        }
-    }
-
-    private fun setupEvents() {
-        Observable.mergeArray(
-            onInitEventSubject
-                .toObservable(),
-            onOnProjectUrlClickSubject
-                .toObservable()
-                .map { entity: Library ->
-                    AboutAppLibraryView
-                        .Event
-                        .OnProjectUrlClick(entity)
-                },
-            onSourceUrlClickSubject
-                .toObservable()
-                .map { entity: Library ->
-                    AboutAppLibraryView
-                        .Event
-                        .OnSourceUrlClick(entity)
-                },
-            onLicenseUrlClickSubject
-                .toObservable()
-                .map { entity: Library ->
-                    AboutAppLibraryView
-                        .Event
-                        .OnLicenseUrlClick(entity)
-                }
-        ).observeOn(
-            scheduler.io()
-        ).compose(
-            viewModel()
-        ).observeOn(
-            scheduler.ui()
-        ).subscribe(
-            ::render
-        ).addTo(
-            subscriptions
+        aboutAppLibraryAdapter = AboutAppLibraryAdapter(
+            onProjectUrlClicked = {
+                viewModel.send(AboutAppLibraryView.Event.OnProjectUrlClick(it))
+            },
+            onSourceUrlClicked = {
+                viewModel.send(AboutAppLibraryView.Event.OnSourceUrlClick(it))
+            },
+            onLicenseUrlClicked = {
+                viewModel.send(AboutAppLibraryView.Event.OnLicenseUrlClick(it))
+            }
         )
-
-        onInitEventSubject
-            .onNext(
-                AboutAppLibraryView
-                    .Event
-                    .OnViewInitialised
-            )
+        aboutAppLibraryRecyclerView
+            .apply {
+                layoutManager = LinearLayoutManager(requireContext())
+                adapter = aboutAppLibraryAdapter
+            }
     }
 
     private fun displayLibraries(renderEvent: AboutAppLibraryView.RenderEvent.DisplayLibrary) {
-        libraryAdapter.updateList(renderEvent.list)
+        aboutAppLibraryAdapter.updateList(renderEvent.list)
     }
 
     private fun render(viewState: AboutAppLibraryView.State) =
@@ -154,16 +96,14 @@ class AboutAppLibraryFragment : BaseFragment() {
             requireActivity().startActivity(browserIntent)
         } else {
             Toast
-                .makeText(context, R.string.no_url_available, Toast.LENGTH_SHORT)
+                .makeText(requireContext(), R.string.no_url_available, Toast.LENGTH_SHORT)
                 .show()
         }
     }
 
     private fun isNotNullOrEmpty(str: String?): Boolean {
-        if (str != null && !str.isEmpty())
+        if (str != null && str.isNotEmpty())
             return true
         return false
     }
-
-    override fun renderError(errorCode: Int) {}
 }

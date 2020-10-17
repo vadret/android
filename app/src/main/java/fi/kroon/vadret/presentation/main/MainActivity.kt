@@ -1,11 +1,8 @@
 package fi.kroon.vadret.presentation.main
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.Observer
-import androidx.navigation.NavController
-import androidx.navigation.ui.setupActionBarWithNavController
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.setupWithNavController
 import androidx.preference.PreferenceManager
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import fi.kroon.vadret.R
@@ -17,7 +14,6 @@ import fi.kroon.vadret.presentation.shared.BaseActivity
 import fi.kroon.vadret.util.DEFAULT_SETTINGS
 import fi.kroon.vadret.util.Scheduler
 import fi.kroon.vadret.util.extension.appComponent
-import fi.kroon.vadret.util.extension.setupWithNavController
 import fi.kroon.vadret.util.extension.toObservable
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
@@ -28,8 +24,6 @@ import timber.log.Timber
 
 @MainActivityScope
 class MainActivity : BaseActivity() {
-
-    private var navController: LiveData<NavController>? = null
 
     private val cmp: MainActivityComponent by lazy(LazyThreadSafetyMode.NONE) {
         appComponent()
@@ -63,8 +57,6 @@ class MainActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Timber.d("ON CREATE")
-
-        cmp.inject(this)
 
         /**
          * on runtime theme needs to be applied before
@@ -121,53 +113,15 @@ class MainActivity : BaseActivity() {
     private fun setupBottomNavigationBar() {
         Timber.d("setupBottomNavigationBar")
 
-        val bottomNavigationView: BottomNavigationView = findViewById(R.id.bottomNavigationView)
-        val navGraphIds: List<Int> = listOf(
-            R.navigation.weather,
-            R.navigation.alert,
-            R.navigation.radar,
-            R.navigation.settings
-        )
-        // Setup the bottom navigation view with a list of navigation graphs
-        val controller: LiveData<NavController> = bottomNavigationView.setupWithNavController(
-            navGraphIds = navGraphIds,
-            fragmentManager = supportFragmentManager,
-            containerId = R.id.nav_host_container,
-            intent = intent
-        )
-
-        // Whenever the selected controller changes, setup the action bar.
-        controller.observe(
-            this,
-            Observer { navController ->
-                setupActionBarWithNavController(navController)
-            }
-        )
-        navController = controller
-    }
-
-    override fun onSupportNavigateUp(): Boolean {
-        return navController?.value?.navigateUp() ?: false
-    }
-
-    /**
-     * Overriding popBackStack is necessary in this case if the app is started from the deep link.
-     */
-    override fun onBackPressed() {
-        if (navController?.value?.popBackStack() != true) {
-            super.onBackPressed()
-        }
+        val navHostFragment: NavHostFragment = supportFragmentManager
+            .findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+        val navController = navHostFragment.navController
+        findViewById<BottomNavigationView>(R.id.bottomNavigationView)
+            .setupWithNavController(navController)
     }
 
     private fun setupSupportActionBar() {
         setSupportActionBar(toolBar)
-    }
-
-    inline fun <reified T : Fragment> getFragmentByClassName(className: String): T {
-        val navHostFragment: Fragment? = supportFragmentManager.findFragmentById(R.id.nav_host_container)
-        return navHostFragment?.childFragmentManager?.fragments?.filterNotNull()?.find {
-            it.javaClass.name == className
-        }!! as T
     }
 
     private fun setupPreferences() {

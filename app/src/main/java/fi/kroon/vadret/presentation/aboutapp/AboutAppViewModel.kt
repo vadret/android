@@ -1,49 +1,40 @@
 package fi.kroon.vadret.presentation.aboutapp
 
-import fi.kroon.vadret.presentation.aboutapp.di.AboutAppFeatureScope
-import fi.kroon.vadret.util.extension.asObservable
-import io.reactivex.Observable
-import io.reactivex.ObservableTransformer
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-@AboutAppFeatureScope
+@ExperimentalCoroutinesApi
 class AboutAppViewModel @Inject constructor(
-    private var state: AboutAppView.State
-) {
-    operator fun invoke(): ObservableTransformer<AboutAppView.Event,
-        AboutAppView.State> = onEvent
+    private val state: MutableSharedFlow<AboutAppView.State>,
+    private var stateModel: AboutAppView.State,
+) : ViewModel() {
 
-    private val onEvent = ObservableTransformer<AboutAppView.Event,
-        AboutAppView.State> { upstream: Observable<AboutAppView.Event> ->
+    val viewState: SharedFlow<AboutAppView.State> get() = state.asSharedFlow()
 
-        upstream.publish { shared: Observable<AboutAppView.Event> ->
-            Observable.mergeArray(
-                shared.ofType(AboutAppView.Event.OnViewInitialised::class.java)
-            ).compose(
-                eventToViewState
-            )
-        }
-    }
-
-    private val eventToViewState = ObservableTransformer<AboutAppView.Event,
-        AboutAppView.State> { upstream: Observable<AboutAppView.Event> ->
-
-        upstream.flatMap { event: AboutAppView.Event ->
-            when (event) {
-                AboutAppView.Event.OnViewInitialised ->
-                    onInitialisedEvent()
-
-                is AboutAppView.Event.OnTabSelected ->
-                    state.asObservable()
+    fun send(event: AboutAppView.Event) {
+        viewModelScope
+            .launch {
+                reduce(event = event)
             }
-        }
     }
 
-    private fun onInitialisedEvent(): Observable<AboutAppView.State> {
-        state = state.copy(
+    private suspend fun reduce(event: AboutAppView.Event): Unit =
+        when (event) {
+            AboutAppView.Event.OnViewInitialised -> onInitialisedEvent()
+            // is AboutAppView.Event.OnTabSelected -> TODO()
+        }
+
+    private suspend fun onInitialisedEvent() {
+        stateModel = stateModel.copy(
             renderEvent = AboutAppView.RenderEvent.Initialised,
             isInitialised = true
         )
-        return state.asObservable()
+        state.emit(stateModel)
     }
 }
