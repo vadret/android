@@ -24,20 +24,18 @@ jobs:
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
           KEY_STORE_PASSWORD: ${{ secrets.KEY_STORE_PASSWORD }}
-        run: ./gradlew assembleGithubRelease
+        run: |
+          ./gradlew assembleGithubRelease
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
-        run : |
-          export GIT_TAG=$(echo $GITHUB_REF | sed 's#.*refs/tags/##')
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GITHUB_REF: ${{ toJson(github.ref) }}
         with:
-          tag_name: ${{ GIT_TAG }}
-          release_name: ${{ GIT_TAG }}
+          tag_name: ${{ github.event.release.tag_name }}
+          release_name: ${{ github.event.release.tag_name }}
           body: |
-            ${{ GIT_TAG }}
+            ${{ github.event.release.tag_name }}
           draft: false
           prerelease: false
       - name: Upload release
