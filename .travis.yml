@@ -24,6 +24,7 @@ script:
 - "./gradlew :app:test"
 - "./gradlew :app:assembleGithub"
 before_install:
+  - yes | sdkmanager "platforms;android-29"
 - openssl aes-256-cbc -K $encrypted_f7c7591dbff3_key -iv $encrypted_f7c7591dbff3_iv
   -in .keystore.enc -out .keystore -d
 deploy:
