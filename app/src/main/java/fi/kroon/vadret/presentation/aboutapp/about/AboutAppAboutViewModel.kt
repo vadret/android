@@ -26,10 +26,7 @@ class AboutAppAboutViewModel @Inject constructor(
 
     val viewState: SharedFlow<AboutAppAboutView.State> get() = state.asSharedFlow()
 
-    fun send(event: AboutAppAboutView.Event) {
-        Timber.d("ABOUT ABOUT: $event")
-        viewModelScope.launch { reduce(event = event) }
-    }
+    fun send(event: AboutAppAboutView.Event) { viewModelScope.launch { reduce(event = event) } }
 
     private suspend fun reduce(event: AboutAppAboutView.Event): Unit =
         when (event) {

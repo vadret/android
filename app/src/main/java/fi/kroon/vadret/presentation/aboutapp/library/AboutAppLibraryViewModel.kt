@@ -23,9 +23,7 @@ class AboutAppLibraryViewModel @Inject constructor(
 
     val viewState: SharedFlow<AboutAppLibraryView.State> get() = state.asSharedFlow()
 
-    fun send(event: AboutAppLibraryView.Event) {
-        viewModelScope.launch { reduce(event = event) }
-    }
+    fun send(event: AboutAppLibraryView.Event) { viewModelScope.launch { reduce(event = event) } }
 
     private suspend fun reduce(event: AboutAppLibraryView.Event): Unit =
         when (event) {

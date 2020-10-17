@@ -17,12 +17,7 @@ class AboutAppViewModel @Inject constructor(
 
     val viewState: SharedFlow<AboutAppView.State> get() = state.asSharedFlow()
 
-    fun send(event: AboutAppView.Event) {
-        viewModelScope
-            .launch {
-                reduce(event = event)
-            }
-    }
+    fun send(event: AboutAppView.Event) { viewModelScope.launch { reduce(event = event) } }
 
     private suspend fun reduce(event: AboutAppView.Event): Unit =
         when (event) {
