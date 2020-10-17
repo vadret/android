@@ -7,15 +7,12 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import fi.kroon.vadret.R
 import fi.kroon.vadret.data.aboutinfo.model.AboutInfo
-import fi.kroon.vadret.presentation.aboutapp.di.AboutAppFeatureScope
+import fi.kroon.vadret.presentation.aboutapp.extension.onClickThrottled
 import fi.kroon.vadret.util.extension.toGone
-import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.about_app_about_item.view.*
-import javax.inject.Inject
 
-@AboutAppFeatureScope
-class AboutAppAboutAdapter @Inject constructor(
-    private val onAboutAppAboutInfoItemClickSubject: PublishSubject<AboutInfo>
+class AboutAppAboutAdapter constructor(
+    private val onAboutAppAboutInfoItemClicked: (AboutInfo) -> Unit
 ) : RecyclerView.Adapter<AboutAppAboutAdapter.ViewHolder>() {
 
     private val list: MutableList<AboutInfo> = mutableListOf()
@@ -38,9 +35,8 @@ class AboutAppAboutAdapter @Inject constructor(
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
         init {
-            itemView.setOnClickListener {
-                onAboutAppAboutInfoItemClickSubject
-                    .onNext(list[adapterPosition])
+            itemView.onClickThrottled {
+                onAboutAppAboutInfoItemClicked(list[adapterPosition])
             }
         }
 
@@ -63,9 +59,9 @@ class AboutAppAboutAdapter @Inject constructor(
             } ?: textView.toGone()
     }
 
-    fun updateList(list: List<AboutInfo>) {
-        this.list.clear()
-        this.list.addAll(list)
+    fun updateList(updatedList: List<AboutInfo>) {
+        list.clear()
+        list.addAll(updatedList)
         notifyDataSetChanged()
     }
 }

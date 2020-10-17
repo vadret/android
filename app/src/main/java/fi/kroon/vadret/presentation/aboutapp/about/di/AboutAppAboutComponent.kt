@@ -1,28 +1,27 @@
-package fi.kroon.vadret.presentation.aboutapp.di
+package fi.kroon.vadret.presentation.aboutapp.about.di
 
 import android.content.Context
 import dagger.BindsInstance
 import dagger.Component
-import fi.kroon.vadret.presentation.aboutapp.AboutAppViewModel
-import fi.kroon.vadret.presentation.aboutapp.about.di.AboutAppAboutScope
+import fi.kroon.vadret.presentation.aboutapp.about.AboutAppAboutViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 @ExperimentalCoroutinesApi
 @AboutAppAboutScope
 @Component(
     modules = [
-        AboutAppModule::class
+        AboutAppAboutModule::class
     ]
 )
-interface AboutAppComponent {
+interface AboutAppAboutComponent {
 
-    fun provideViewModel(): AboutAppViewModel
+    fun provideViewModel(): AboutAppAboutViewModel
 
     @Component.Factory
     interface Factory {
         fun create(
             @BindsInstance
             context: Context
-        ): AboutAppComponent
+        ): AboutAppAboutComponent
     }
 }

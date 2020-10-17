@@ -3,59 +3,49 @@ package fi.kroon.vadret.presentation.aboutapp.about
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import fi.kroon.vadret.R
 import fi.kroon.vadret.data.aboutinfo.model.AboutInfo
-import fi.kroon.vadret.presentation.aboutapp.AboutAppFragment
-import fi.kroon.vadret.presentation.aboutapp.di.AboutAppFeatureScope
-import fi.kroon.vadret.presentation.main.MainActivity
-import fi.kroon.vadret.presentation.shared.BaseFragment
-import fi.kroon.vadret.util.extension.snack
-import fi.kroon.vadret.util.extension.toObservable
-import io.reactivex.Observable
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.rxkotlin.addTo
-import io.reactivex.subjects.PublishSubject
+import fi.kroon.vadret.presentation.aboutapp.about.di.AboutAppAboutComponent
+import fi.kroon.vadret.presentation.aboutapp.about.di.DaggerAboutAppAboutComponent
 import kotlinx.android.synthetic.main.about_app_about_fragment.*
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 import timber.log.Timber
-import javax.inject.Inject
 
-@AboutAppFeatureScope
-class AboutAppAboutFragment : BaseFragment() {
-
-    @Inject
-    lateinit var onInitEventSubject: PublishSubject<AboutAppAboutView.Event.OnViewInitialised>
-
-    @Inject
-    lateinit var onAboutInfoItemClickSubject: PublishSubject<AboutInfo>
-
-    @Inject
-    lateinit var viewModel: AboutAppAboutViewModel
-
-    @Inject
-    lateinit var aboutAdapter: AboutAppAboutAdapter
-
-    @Inject
-    lateinit var subscriptions: CompositeDisposable
+@ExperimentalCoroutinesApi
+class AboutAppAboutFragment : Fragment(R.layout.about_app_about_fragment) {
 
     companion object {
         fun newInstance(): AboutAppAboutFragment = AboutAppAboutFragment()
     }
 
-    override fun layoutId(): Int = R.layout.about_app_about_fragment
+    private lateinit var aboutAppAboutAdapter: AboutAppAboutAdapter
 
-    override fun renderError(errorCode: Int) {
-        Timber.e("Rendering error code: ${getString(errorCode)}")
-        snack(errorCode)
+    private val component: AboutAppAboutComponent by lazy(LazyThreadSafetyMode.NONE) {
+        DaggerAboutAppAboutComponent
+            .factory()
+            .create(context = requireContext())
+    }
+
+    private val viewModel: AboutAppAboutViewModel by lazy(LazyThreadSafetyMode.NONE) {
+        component.provideViewModel()
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        (requireActivity() as MainActivity)
-            .getFragmentByClassName<AboutAppFragment>(AboutAppFragment::class.java.name)
-            .cmp
-            .inject(this)
-        setup()
+
+        setupRecyclerView()
+        lifecycleScope
+            .launch {
+                viewModel
+                    .viewState
+                    .collect(::render)
+            }
+        viewModel.send(AboutAppAboutView.Event.OnViewInitialised)
     }
 
     override fun onDestroyView() {
@@ -64,46 +54,16 @@ class AboutAppAboutFragment : BaseFragment() {
         aboutAppAboutInfoTextRecyclerView.apply {
             adapter = null
         }
-        subscriptions.clear()
-    }
-
-    private fun setup() {
-        setupRecyclerView()
-        setupEvents()
     }
 
     private fun setupRecyclerView() {
+        aboutAppAboutAdapter = AboutAppAboutAdapter { aboutInfo: AboutInfo ->
+            viewModel.send(AboutAppAboutView.Event.OnItemClick(aboutInfo))
+        }
         aboutAppAboutInfoTextRecyclerView.apply {
             layoutManager = LinearLayoutManager(requireContext())
-            adapter = aboutAdapter
+            adapter = aboutAppAboutAdapter
         }
-    }
-
-    private fun setupEvents() {
-        Observable.mergeArray(
-            onInitEventSubject
-                .toObservable(),
-            onAboutInfoItemClickSubject
-                .toObservable()
-                .map { entity: AboutInfo ->
-                    AboutAppAboutView
-                        .Event
-                        .OnItemClick(entity)
-                }
-        ).observeOn(
-            scheduler.io()
-        ).compose(
-            viewModel()
-        ).observeOn(
-            scheduler.ui()
-        ).subscribe(
-            ::render
-        ).addTo(subscriptions)
-
-        onInitEventSubject
-            .onNext(
-                AboutAppAboutView.Event.OnViewInitialised
-            )
     }
 
     private fun render(viewState: AboutAppAboutView.State) =
@@ -117,7 +77,7 @@ class AboutAppAboutFragment : BaseFragment() {
         }
 
     private fun displayInfo(renderEvent: AboutAppAboutView.RenderEvent.DisplayInfo) {
-        aboutAdapter.updateList(renderEvent.list)
+        aboutAppAboutAdapter.updateList(renderEvent.list)
     }
 
     private fun openUrlInBrowser(url: String) {

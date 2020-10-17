@@ -2,14 +2,12 @@ package fi.kroon.vadret.data.library.local
 
 import fi.kroon.vadret.data.failure.Failure
 import fi.kroon.vadret.data.library.model.Library
-import fi.kroon.vadret.di.scope.CoreApplicationScope
 import fi.kroon.vadret.util.extension.asRight
 import fi.kroon.vadret.util.extension.asSingle
 import io.github.sphrak.either.Either
 import io.reactivex.Single
 import javax.inject.Inject
 
-@CoreApplicationScope
 class LibraryLocalDataSource @Inject constructor() {
 
     private val bsdLicense = "BSD License"

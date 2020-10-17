@@ -6,7 +6,7 @@ object AboutAppAboutView {
 
     sealed class Event {
         object OnViewInitialised : Event()
-        class OnItemClick(val item: AboutInfo) : Event()
+        data class OnItemClick(val item: AboutInfo) : Event()
     }
 
     data class State(

@@ -8,16 +8,19 @@
     android:orientation="vertical"
     tools:context="fi.kroon.vadret.presentation.main.MainActivity">
 
-    <FrameLayout
-        android:id="@+id/nav_host_container"
+
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/nav_host_fragment"
+        android:name="androidx.navigation.fragment.NavHostFragment"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
+        app:defaultNavHost="true"
         android:background="?attr/themeBackground"
         app:layout_constraintBottom_toTopOf="@+id/bottomNavigationView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/appBar" />
+        app:layout_constraintTop_toBottomOf="@+id/appBar"
+        app:navGraph="@navigation/weather" />
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appBar"

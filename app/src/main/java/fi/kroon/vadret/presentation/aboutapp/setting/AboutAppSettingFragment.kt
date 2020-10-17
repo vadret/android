@@ -5,7 +5,7 @@ import android.os.Bundle
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import fi.kroon.vadret.R
-import fi.kroon.vadret.presentation.aboutapp.di.AboutAppFeatureScope
+import fi.kroon.vadret.presentation.aboutapp.di.AboutAppScope
 import fi.kroon.vadret.util.COUNTY_KEY
 import fi.kroon.vadret.util.DEFAULT_SETTINGS
 import fi.kroon.vadret.util.DEFAULT_VALUE
@@ -15,7 +15,7 @@ import fi.kroon.vadret.util.LONGITUDE_KEY
 import fi.kroon.vadret.util.MUNICIPALITY_KEY
 import timber.log.Timber
 
-@AboutAppFeatureScope
+@AboutAppScope
 class AboutAppSettingFragment : PreferenceFragmentCompat() {
 
     companion object {

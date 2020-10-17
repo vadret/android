@@ -3,22 +3,22 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/weather"
+        android:id="@+id/weatherForecastFragment"
         android:icon="@drawable/wsymb2_weather"
         android:title="@string/weather" />
 
     <item
-        android:id="@+id/alert"
+        android:id="@+id/warningFragment"
         android:icon="@drawable/wsymb2_warning"
         android:title="@string/warnings" />
 
     <item
-        android:id="@+id/radar"
+        android:id="@+id/radarFragment"
         android:icon="@drawable/wsymb2_radar"
         android:title="@string/radar" />
 
     <item
-        android:id="@+id/settings"
+        android:id="@+id/aboutAppFragment"
         android:icon="@drawable/wsymb2_settings"
         android:title="@string/settings" />
 

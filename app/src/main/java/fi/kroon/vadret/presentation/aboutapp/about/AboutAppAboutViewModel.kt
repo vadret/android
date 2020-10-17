@@ -1,107 +1,96 @@
 package fi.kroon.vadret.presentation.aboutapp.about
 
 import android.content.Context
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import fi.kroon.vadret.R
 import fi.kroon.vadret.data.aboutinfo.model.AboutInfo
 import fi.kroon.vadret.data.failure.Failure
 import fi.kroon.vadret.domain.aboutapp.GetAboutInfoTask
-import fi.kroon.vadret.util.extension.asObservable
-import io.github.sphrak.either.Either
-import io.reactivex.Observable
-import io.reactivex.ObservableTransformer
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.rx2.await
 import javax.inject.Inject
 
+@ExperimentalCoroutinesApi
 class AboutAppAboutViewModel @Inject constructor(
-    private var state: AboutAppAboutView.State,
+    private val state: MutableSharedFlow<AboutAppAboutView.State>,
+    private var stateModel: AboutAppAboutView.State,
     private val getAboutInfoTask: GetAboutInfoTask,
     private val context: Context
-) {
-    operator fun invoke(): ObservableTransformer<AboutAppAboutView.Event, AboutAppAboutView.State> = onEvent
+) : ViewModel() {
 
-    private val onEvent = ObservableTransformer<AboutAppAboutView.Event,
-        AboutAppAboutView.State> { upstream: Observable<AboutAppAboutView.Event> ->
-        upstream.publish { shared: Observable<AboutAppAboutView.Event> ->
-            Observable.mergeArray(
-                shared.ofType(AboutAppAboutView.Event.OnViewInitialised::class.java),
-                shared.ofType(AboutAppAboutView.Event.OnItemClick::class.java)
-            ).compose(
-                eventToViewState
-            )
+    val viewState: SharedFlow<AboutAppAboutView.State> get() = state.asSharedFlow()
+
+    fun send(event: AboutAppAboutView.Event) { viewModelScope.launch { reduce(event = event) } }
+
+    private suspend fun reduce(event: AboutAppAboutView.Event): Unit =
+        when (event) {
+            AboutAppAboutView.Event.OnViewInitialised -> onViewInitialisedEvent()
+            is AboutAppAboutView.Event.OnItemClick -> onItemClickEvent(event.item)
         }
-    }
 
-    private val eventToViewState = ObservableTransformer<AboutAppAboutView.Event,
-        AboutAppAboutView.State> { upstream: Observable<AboutAppAboutView.Event> ->
-
-        upstream.flatMap { event: AboutAppAboutView.Event ->
-            when (event) {
-                AboutAppAboutView.Event.OnViewInitialised ->
-                    onViewInitialisedEvent()
-
-                is AboutAppAboutView.Event.OnItemClick ->
-                    onItemClickEvent(event.item)
-            }
-        }
-    }
-
-    private fun onViewInitialisedEvent(): Observable<AboutAppAboutView.State> =
+    private suspend fun onViewInitialisedEvent(): Unit =
         getAboutInfoTask()
-            .flatMapObservable { result: Either<Failure, List<AboutInfo>> ->
+            .await()
+            .either(
+                { _: Failure ->
+                    stateModel = stateModel.copy(renderEvent = AboutAppAboutView.RenderEvent.None)
+                    state.emit(stateModel)
+                },
+                { list: List<AboutInfo> ->
 
-                result.either(
-                    { _: Failure ->
-                        state = state.copy(renderEvent = AboutAppAboutView.RenderEvent.None)
-                        state.asObservable()
-                    },
-                    { list: List<AboutInfo> ->
+                    val renderEvent: AboutAppAboutView.RenderEvent.DisplayInfo =
+                        AboutAppAboutView.RenderEvent.DisplayInfo(list)
 
-                        val renderEvent: AboutAppAboutView.RenderEvent.DisplayInfo =
-                            AboutAppAboutView.RenderEvent.DisplayInfo(list)
+                    stateModel = stateModel.copy(renderEvent = renderEvent)
+                    state.emit(stateModel)
+                }
+            )
 
-                        state = state.copy(renderEvent = renderEvent)
-                        state.asObservable()
-                    }
-                )
-            }
-
-    private fun onItemClickEvent(item: AboutInfo): Observable<AboutAppAboutView.State> =
+    private suspend fun onItemClickEvent(item: AboutInfo) {
         when {
-
             item.titleResourceId == R.string.changelog_row_title -> {
                 item.urlResourceId?.let {
                     val url: String = context.getString(item.urlResourceId)
-                    state = state.copy(renderEvent = AboutAppAboutView.RenderEvent.OpenUrl(url))
+                    stateModel =
+                        stateModel.copy(renderEvent = AboutAppAboutView.RenderEvent.OpenUrl(url))
                 }
-                state.asObservable()
+                state.emit(stateModel)
             }
             // release
             item.urlResourceId == R.string.app_release_page -> {
                 item.urlResourceId.let {
                     val url = context.getString(item.urlResourceId)
-                    state = state.copy(renderEvent = AboutAppAboutView.RenderEvent.OpenUrl(url))
+                    stateModel =
+                        stateModel.copy(renderEvent = AboutAppAboutView.RenderEvent.OpenUrl(url))
                 }
-                state.asObservable()
+                state.emit(stateModel)
             }
             // sourceUrl
             item.titleResourceId == R.string.source_code_row_title -> {
                 item.urlResourceId?.let {
                     val url = context.getString(item.urlResourceId)
-                    state = state.copy(renderEvent = AboutAppAboutView.RenderEvent.OpenUrl(url))
+                    stateModel =
+                        stateModel.copy(renderEvent = AboutAppAboutView.RenderEvent.OpenUrl(url))
                 }
-
-                state.asObservable()
+                state.emit(stateModel)
             }
-
             // projectUrl
             item.urlResourceId != null -> {
                 val url = context.getString(item.urlResourceId)
-                state = state.copy(renderEvent = AboutAppAboutView.RenderEvent.OpenUrl(url))
-                state.asObservable()
+                stateModel =
+                    stateModel.copy(renderEvent = AboutAppAboutView.RenderEvent.OpenUrl(url))
+                state.emit(stateModel)
             }
 
             else -> {
-                state = state.copy(renderEvent = AboutAppAboutView.RenderEvent.None)
-                state.asObservable()
+                stateModel = stateModel.copy(renderEvent = AboutAppAboutView.RenderEvent.None)
+                state.emit(stateModel)
             }
         }
+    }
 }
