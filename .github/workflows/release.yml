@@ -28,13 +28,16 @@ jobs:
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
+        run : |
+          export GIT_TAG=$(echo $GITHUB_REF | sed 's#.*refs/tags/##')
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REF: ${{ toJson(github.ref) }}
         with:
-          tag_name: ${{ github.ref }}
-          release_name: ${{ github.ref }}
+          tag_name: ${{ GIT_TAG }}
+          release_name: ${{ GIT_TAG }}
           body: |
-            ${{ github.ref }}
+            ${{ GIT_TAG }}
           draft: false
           prerelease: false
       - name: Upload release
