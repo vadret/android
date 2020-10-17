@@ -7,6 +7,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import fi.kroon.vadret.R
 import fi.kroon.vadret.data.aboutinfo.model.AboutInfo
+import fi.kroon.vadret.presentation.aboutapp.extension.onClickThrottled
 import fi.kroon.vadret.util.extension.toGone
 import kotlinx.android.synthetic.main.about_app_about_item.view.*
 
@@ -34,7 +35,7 @@ class AboutAppAboutAdapter constructor(
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
         init {
-            itemView.setOnClickListener {
+            itemView.onClickThrottled {
                 onAboutAppAboutInfoItemClicked(list[adapterPosition])
             }
         }

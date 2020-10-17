@@ -13,7 +13,6 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.rx2.await
-import timber.log.Timber
 import javax.inject.Inject
 
 @ExperimentalCoroutinesApi
@@ -78,7 +77,6 @@ class AboutAppAboutViewModel @Inject constructor(
                     stateModel =
                         stateModel.copy(renderEvent = AboutAppAboutView.RenderEvent.OpenUrl(url))
                 }
-
                 state.emit(stateModel)
             }
             // projectUrl

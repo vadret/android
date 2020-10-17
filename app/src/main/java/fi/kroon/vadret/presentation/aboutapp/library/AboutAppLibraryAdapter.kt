@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import fi.kroon.vadret.R
 import fi.kroon.vadret.data.library.model.Library
+import fi.kroon.vadret.presentation.aboutapp.extension.onClickThrottled
 import kotlinx.android.synthetic.main.about_app_library_item.view.*
 
 class AboutAppLibraryAdapter constructor(
@@ -33,17 +34,17 @@ class AboutAppLibraryAdapter constructor(
         init {
             itemView.apply {
                 aboutAppLibraryItemProjectUrlButton
-                    .setOnClickListener {
+                    .onClickThrottled {
                         onProjectUrlClicked(list[adapterPosition])
                     }
 
                 aboutAppLibraryItemLicenseUrlButton
-                    .setOnClickListener {
+                    .onClickThrottled {
                         onLicenseUrlClicked(list[adapterPosition])
                     }
 
                 aboutAppLibraryItemUrlButton
-                    .setOnClickListener {
+                    .onClickThrottled {
                         onSourceUrlClicked(list[adapterPosition])
                     }
             }
