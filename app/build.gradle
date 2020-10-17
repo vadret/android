@@ -2,7 +2,6 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
-apply plugin: 'io.fabric'
 
 def static loadFromEnvironment(String key) {
     return System.getenv(key)
@@ -45,10 +44,6 @@ android {
         vectorDrawables.useSupportLibrary = true
         flavorDimensions "default"
         testInstrumentationRunner "androidx.top.runner.AndroidJUnitRunner"
-        manifestPlaceholders = [FABRIC_API_KEY: loadFromFile("FABRIC_API_KEY", ".env")]
-        if (isRunningOnTravis) {
-            manifestPlaceholders = [FABRIC_API_KEY: loadFromEnvironment("FABRIC_API_KEY")]
-        }
         multiDexEnabled true
         javaCompileOptions {
             annotationProcessorOptions {
@@ -96,7 +91,6 @@ android {
         }
         debug {
             ext.alwaysUpdateBuildId = false
-            ext.enableCrashlytics = false
             testCoverageEnabled = true
             versionNameSuffix "debug"
             resValue "string", "app_version", "${defaultConfig.versionName}-${versionNameSuffix}-${getGitSha}"
@@ -107,12 +101,10 @@ android {
             signingConfig signingConfigs.release
         }
         fdroid {
-            ext.enableCrashlytics = false
             signingConfig fdroid.signingConfig
         }
         github {
             signingConfig signingConfigs.release
-            ext.enableCrashlytics = false
             versionNameSuffix "signed"
             resValue "string", "app_version", "${defaultConfig.versionName}-${getGitSha}-${versionNameSuffix}"
         }
@@ -271,6 +263,5 @@ tasks.register("ktlintFormat", JavaExec) {
 }
 
 repositories {
-    maven { url 'https://maven.fabric.io/public' }
     mavenCentral()
 }
