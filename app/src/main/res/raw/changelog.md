@@ -6,7 +6,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ## [1.2.10] -- 2020-10-*
-This is a maintenance release, this release
 
 ### Changed
 
@@ -16,6 +15,7 @@ This is a maintenance release, this release
 - Removed multi-stack hack for androidx navigation
 - Bump kotlin 1.4.10
 - Replaced travis-ci with Github Actions
+- Target Android SDK 30
 
 ## [1.2.9] -- 2020-08-17
 
