@@ -13,6 +13,7 @@ import android.os.Bundle
 import android.os.PersistableBundle
 import android.widget.ArrayAdapter
 import androidx.annotation.LayoutRes
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -67,7 +68,7 @@ class WeatherForecastTinySetup : BaseAppWidgetSetup() {
     }
 
     private val drawable: Drawable? by lazy(LazyThreadSafetyMode.NONE) {
-        getDrawable(R.drawable.search_item_divider)
+        ContextCompat.getDrawable(this, R.drawable.search_item_divider)
     }
 
     private val providerIntent: Intent by lazy(LazyThreadSafetyMode.NONE) {
