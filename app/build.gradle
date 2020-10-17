@@ -187,7 +187,6 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:${COROUTINES_VERSION}"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-rx2:${COROUTINES_VERSION}"
 
-
     // Reactive
     implementation "com.jakewharton.rxbinding3:rxbinding-appcompat:${RXBINDING_VERSION}"
     implementation "com.jakewharton.rxbinding3:rxbinding-material:${RXBINDING_VERSION}"
@@ -200,10 +199,6 @@ dependencies {
     implementation "ru.ldralighieri.corbind:corbind-core:${CORBIND_VERSION}"
     implementation "ru.ldralighieri.corbind:corbind-appcompat:${CORBIND_VERSION}"
     implementation "ru.ldralighieri.corbind:corbind-swiperefreshlayout:${CORBIND_VERSION}"
-
-    // Coroutines
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:${COROUTINES_VERSION}"
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-rx2:${COROUTINES_VERSION}"
 
     // Network
     implementation "com.squareup.okhttp3:logging-interceptor:${OKHTTP_VERSION}"

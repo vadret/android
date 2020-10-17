@@ -117,7 +117,7 @@ class WeatherForecastFragment : Fragment() {
         setup()
 
         lifecycleScope
-            .launchWhenCreated {
+            .launch {
                 viewModel()
                     .flowOn(Dispatchers.IO)
                     .collect(::render)
@@ -277,7 +277,7 @@ class WeatherForecastFragment : Fragment() {
         )
     }
 
-    private suspend fun render(viewState: WeatherForecastView.State) =
+    private fun render(viewState: WeatherForecastView.State) =
         when (viewState.renderEvent) {
             WeatherForecastView.RenderEvent.Idle -> Unit
             WeatherForecastView.RenderEvent.RequestLocationPermission -> onRequestLocationPermission()
