@@ -5,6 +5,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.2.10] -- 2020-10-*
+This is a maintenance release, this release
+
+### Changed
+
+- Removed RxJava2 in About feature
+- Removed RxJava2 in WeatherForecast feature
+- Removed Fabric Crashlytics
+- Removed multi-stack hack for androidx navigation
+- Bump kotlin 1.4.10
+- Replaced travis-ci with Github Actions
+
 ## [1.2.9] -- 2020-08-17
 
 ### Added
@@ -197,7 +209,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Radar imagery
 - 10 day weather forecast
 
-[Unreleased]: https://github.com/vadret/android/compare/1.2.9...HEAD
+[Unreleased]: https://github.com/vadret/android/compare/1.2.10...HEAD
+[1.2.10]: https://github.com/vadret/android/compare/1.2.9...1.2.10
 [1.2.9]: https://github.com/vadret/android/compare/1.2.8...1.2.9
 [1.2.8]: https://github.com/vadret/android/compare/1.2.7...1.2.8
 [1.2.7]: https://github.com/vadret/android/compare/1.2.6...1.2.7
