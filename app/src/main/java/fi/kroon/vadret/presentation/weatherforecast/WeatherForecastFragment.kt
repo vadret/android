@@ -133,7 +133,6 @@ class WeatherForecastFragment : Fragment(R.layout.weather_forecast_fragment) {
 
         recyclerViewParcelable = (weatherForecastRecyclerView.layoutManager as LinearLayoutManager)
             .onSaveInstanceState()
-        hideActionBarLocalityName()
 
         isConfigChangeOrProcessDeath = true
     }
@@ -149,6 +148,8 @@ class WeatherForecastFragment : Fragment(R.layout.weather_forecast_fragment) {
         autoCompleteRecyclerView.apply {
             adapter = null
         }
+
+        hideActionBarLocalityName()
     }
 
     override fun onDestroy() {
