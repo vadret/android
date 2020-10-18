@@ -1,4 +1,4 @@
-name: Vädret Android App -- Build
+name: Vädret Android App
 
 on:
   pull_request:

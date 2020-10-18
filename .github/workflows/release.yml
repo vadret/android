@@ -1,4 +1,4 @@
-name: Vädret Android App -- Github Release
+name: Vädret Android App
 
 on:
   push:
