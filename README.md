@@ -1,6 +1,7 @@
 [![github-ci](https://github.com/vadret/android/workflows/V%C3%A4dret%20Android%20App/badge.svg)](https://github.com/vadret/android/actions)
 [![ktlint](https://img.shields.io/badge/code%20style-%E2%9D%A4-FF4081.svg)](https://ktlint.github.io/)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/vadret/android/blob/master/LICENSE)
+[![CodeFactor](https://www.codefactor.io/repository/github/vadret/android/badge)](https://www.codefactor.io/repository/github/vadret/android)
 
 ![Vädret](https://raw.githubusercontent.com/vadret/android/master/assets/logo.png)
 
