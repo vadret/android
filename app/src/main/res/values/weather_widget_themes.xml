@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string-array name="weather_widget_themes">
-        <item>@string/light_key</item>
-        <item>@string/light_no_background_key</item>
-        <item>@string/dark_key</item>
-    </string-array>
-</resources>

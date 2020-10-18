@@ -17,13 +17,6 @@ import fi.kroon.vadret.presentation.radar.di.RadarComponent
 import fi.kroon.vadret.presentation.warning.display.di.WarningComponent
 import fi.kroon.vadret.presentation.warning.filter.di.WarningFilterComponent
 import fi.kroon.vadret.presentation.weatherforecast.di.WeatherForecastComponent
-import fi.kroon.vadret.presentation.weatherforecastwidget.medium.provider.di.WeatherForecastMediumComponent
-import fi.kroon.vadret.presentation.weatherforecastwidget.medium.service.di.WeatherForecastMediumServiceComponent
-import fi.kroon.vadret.presentation.weatherforecastwidget.medium.setup.di.WeatherForecastMediumSetupComponent
-import fi.kroon.vadret.presentation.weatherforecastwidget.small.provider.di.WeatherForecastSmallComponent
-import fi.kroon.vadret.presentation.weatherforecastwidget.small.setup.di.WeatherForecastSmallSetupComponent
-import fi.kroon.vadret.presentation.weatherforecastwidget.tiny.provider.di.WeatherForecastTinyComponent
-import fi.kroon.vadret.presentation.weatherforecastwidget.tiny.setup.di.WeatherForecastTinySetupComponent
 
 @CoreApplicationScope
 @Component(
@@ -51,14 +44,4 @@ interface CoreApplicationComponent {
     fun warningFilterComponentBuilder(): WarningFilterComponent.Builder
 
     fun weatherForecastComponentBuilder(): WeatherForecastComponent.Builder
-
-    fun weatherForecastTinyWidgetComponentBuilder(): WeatherForecastTinyComponent.Builder
-    fun weatherForecastTinyAppWidgetSetupComponentBuilder(): WeatherForecastTinySetupComponent.Builder
-
-    fun weatherForecastSmallWidgetComponentBuilder(): WeatherForecastSmallComponent.Builder
-    fun weatherForecastSmallAppWidgetSetupComponentBuilder(): WeatherForecastSmallSetupComponent.Builder
-
-    fun weatherForecastMediumWidgetComponentBuilder(): WeatherForecastMediumComponent.Builder
-    fun weatherForecastMediumAppWidgetSetupComponentBuilder(): WeatherForecastMediumSetupComponent.Builder
-    fun weatherForecastMediumServiceComponentBuilder(): WeatherForecastMediumServiceComponent.Builder
 }

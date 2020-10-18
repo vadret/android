@@ -18,6 +18,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Replaced travis-ci with Github Actions
 - Target Android SDK 30
 
+### Removed
+
+- Removed all widgets (see this [issue](https://github.com/vadret/android/issues/221))
+
 ## [1.2.9] -- 2020-08-17
 
 ### Added

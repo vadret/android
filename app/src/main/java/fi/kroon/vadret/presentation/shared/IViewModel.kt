@@ -9,7 +9,6 @@ import fi.kroon.vadret.data.location.exception.LocationFailure
 import fi.kroon.vadret.data.nominatim.exception.NominatimFailure
 import fi.kroon.vadret.data.radar.exception.RadarFailure
 import fi.kroon.vadret.data.weatherforecast.exception.WeatherForecastFailure
-import fi.kroon.vadret.data.weatherforecastwidget.exception.WeatherForecastWidgetFailure
 import timber.log.Timber
 
 interface IViewModel {
@@ -39,7 +38,6 @@ interface IViewModel {
             WeatherForecastFailure.NoWeatherAvailableForThisLocation -> R.string.data_not_available_at_this_location
             WeatherForecastFailure.NoWeatherAvailable -> R.string.no_weather_available
             AggregatedFeedFailure.NoAggregatedFeedAvailable -> R.string.no_alert_available
-            WeatherForecastWidgetFailure.NoLocalitySelected -> R.string.widget_must_select_a_locality
             DistrictFailure.DistrictNotAvailable -> R.string.filter_failure_districts_not_available
             else -> {
                 Timber.e("Error occured but was not properly handled: $failure")
