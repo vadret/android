@@ -1,30 +1,36 @@
 package fi.kroon.vadret.presentation.warning.display
 
-import android.content.Context
 import android.os.Bundle
 import android.os.Parcelable
+import android.view.View
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.jakewharton.rxbinding3.swiperefreshlayout.refreshes
-import com.jakewharton.rxbinding3.view.clicks
 import fi.kroon.vadret.R
-import fi.kroon.vadret.presentation.shared.BaseFragment
 import fi.kroon.vadret.presentation.warning.display.di.WarningComponent
 import fi.kroon.vadret.presentation.warning.display.model.IWarningModel
 import fi.kroon.vadret.util.extension.appComponent
 import fi.kroon.vadret.util.extension.snack
 import fi.kroon.vadret.util.extension.toGone
-import fi.kroon.vadret.util.extension.toObservable
 import fi.kroon.vadret.util.extension.toVisible
-import io.reactivex.Observable
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.rxkotlin.addTo
-import io.reactivex.subjects.PublishSubject
-import kotlinx.android.synthetic.main.warning_display_fragment.*
+import kotlinx.android.synthetic.main.warning_display_fragment.warningDisplayNoWarningsIssued
+import kotlinx.android.synthetic.main.warning_display_fragment.warningFilterButton
+import kotlinx.android.synthetic.main.warning_display_fragment.warningLoadingProgressBar
+import kotlinx.android.synthetic.main.warning_display_fragment.warningRecyclerView
+import kotlinx.android.synthetic.main.warning_display_fragment.warningSwipeRefreshView
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
+import ru.ldralighieri.corbind.swiperefreshlayout.refreshes
+import ru.ldralighieri.corbind.view.clicks
 import timber.log.Timber
 
-class WarningFragment : BaseFragment() {
+@ExperimentalCoroutinesApi
+class WarningFragment : Fragment(R.layout.warning_display_fragment) {
 
     companion object {
         const val STATE_PARCEL_KEY: String = "STATE_PARCEL_KEY"
@@ -34,81 +40,30 @@ class WarningFragment : BaseFragment() {
     private var recyclerViewParcelable: Parcelable? = null
     private var stateParcel: WarningView.StateParcel? = null
     private var bundle: Bundle? = null
+    private var isConfigChangeOrProcessDeath: Boolean = false
 
-    private val cmp: WarningComponent by lazy(LazyThreadSafetyMode.NONE) {
+    private val component: WarningComponent by lazy(LazyThreadSafetyMode.NONE) {
         appComponent()
             .warningComponentBuilder()
             .build()
     }
 
-    private val viewModel: WarningViewModel by lazy(LazyThreadSafetyMode.NONE) {
-        cmp.provideWarningViewModel()
-    }
-
-    private val onViewInitialisedSubject: PublishSubject<WarningView.Event.OnViewInitialised> by lazy(LazyThreadSafetyMode.NONE) {
-        cmp.provideOnViewInitialised()
-    }
-
-    private val onProgressBarEffectStartedSubject: PublishSubject<WarningView.Event.OnProgressBarEffectStarted> by lazy(LazyThreadSafetyMode.NONE) {
-        cmp.provideOnProgressBarEffectStarted()
-    }
-
-    private val onProgressBarEffectStoppedSubject: PublishSubject<WarningView.Event.OnProgressBarEffectStopped> by lazy(LazyThreadSafetyMode.NONE) {
-        cmp.provideOnProgressBarEffectStopped()
-    }
-
-    private val onSwipedToRefreshSubject: PublishSubject<WarningView.Event.OnSwipedToRefresh> by lazy(LazyThreadSafetyMode.NONE) {
-        cmp.provideOnSwipedToRefresh()
-    }
-
-    private val onWarningListDisplayedSubject: PublishSubject<WarningView.Event.OnWarningListDisplayed> by lazy(LazyThreadSafetyMode.NONE) {
-        cmp.provideOnWarningListDisplayed()
-    }
-
-    private val onScrollPositionRestoredSubject: PublishSubject<WarningView.Event.OnScrollPositionRestored> by lazy(LazyThreadSafetyMode.NONE) {
-        cmp.provideOnScrollPositionRestored()
-    }
-
-    private val onStateParcelUpdatedSubject: PublishSubject<WarningView.Event.OnStateParcelUpdated> by lazy(LazyThreadSafetyMode.NONE) {
-        cmp.provideOnStateParcelUpdated()
-    }
-
-    private val onFailureHandledSubject: PublishSubject<WarningView.Event.OnFailureHandled> by lazy(LazyThreadSafetyMode.NONE) {
-        cmp.provideOnFailureHandled()
-    }
-
-    private val onNoWarningsIssuedDisplayedSubject: PublishSubject<WarningView.Event.OnNoWarningsIssuedDisplayed> by lazy(LazyThreadSafetyMode.NONE) {
-        cmp.provideOnNoWarningsIssuedDisplayed()
-    }
-
     private val warningAdapter: WarningAdapter by lazy(LazyThreadSafetyMode.NONE) {
-        cmp.provideWarningAdapter()
+        component.provideWarningAdapter()
     }
 
-    private val subscriptions: CompositeDisposable by lazy(LazyThreadSafetyMode.NONE) {
-        cmp.provideCompositeDisposable()
+    private val viewModel: WarningViewModel by lazy(LazyThreadSafetyMode.NONE) {
+        component.provideWarningViewModel()
     }
 
     private val navController: NavController by lazy(LazyThreadSafetyMode.NONE) {
         findNavController()
     }
 
-    override fun layoutId(): Int = R.layout.warning_display_fragment
-
-    override fun renderError(errorCode: Int) {
+    private fun renderError(errorCode: Int) {
         snack(errorCode)
         Timber.e("Rendering error code: ${getString(errorCode)}")
-        onFailureHandledSubject
-            .onNext(
-                WarningView.Event.OnFailureHandled
-            )
-    }
-
-    override fun onAttach(context: Context) {
-        Timber.d("-----BEGIN-----")
-        Timber.d("ON ATTACH")
-        cmp.inject(this)
-        super.onAttach(context)
+        viewModel.send(WarningView.Event.OnFailureHandled)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -123,8 +78,14 @@ class WarningFragment : BaseFragment() {
         }
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        lifecycleScope
+            .launch {
+                viewModel
+                    .viewState
+                    .collect(::render)
+            }
         setup()
     }
 
@@ -164,7 +125,6 @@ class WarningFragment : BaseFragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        subscriptions.clear()
         warningRecyclerView.apply {
             adapter = null
         }
@@ -184,68 +144,42 @@ class WarningFragment : BaseFragment() {
         setupRecyclerView()
     }
 
+    private fun setupEvents() {
+
+        warningSwipeRefreshView
+            .refreshes()
+            .map {
+                viewModel.send(
+                    WarningView
+                        .Event
+                        .OnSwipedToRefresh
+                )
+            }.launchIn(lifecycleScope)
+
+        warningFilterButton
+            .clicks()
+            .map {
+                viewModel.send(
+                    WarningView
+                        .Event
+                        .OnFilterButtonToggled
+                )
+            }.launchIn(lifecycleScope)
+
+        viewModel.send(
+            WarningView.Event.OnViewInitialised(
+                stateParcel = bundle?.getParcelable(
+                    STATE_PARCEL_KEY
+                )
+            )
+        )
+    }
+
     private fun setupRecyclerView() {
         warningRecyclerView.apply {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = warningAdapter
             hasFixedSize()
-        }
-    }
-
-    private fun setupEvents() {
-        if (subscriptions.size() == 0) {
-            Observable.mergeArray(
-                onViewInitialisedSubject
-                    .toObservable(),
-                onProgressBarEffectStartedSubject
-                    .toObservable(),
-                onProgressBarEffectStoppedSubject
-                    .toObservable(),
-                onFailureHandledSubject
-                    .toObservable(),
-                onSwipedToRefreshSubject
-                    .toObservable(),
-                onWarningListDisplayedSubject
-                    .toObservable(),
-                onScrollPositionRestoredSubject
-                    .toObservable(),
-                onNoWarningsIssuedDisplayedSubject
-                    .toObservable(),
-                onStateParcelUpdatedSubject,
-                warningSwipeRefreshView
-                    .refreshes()
-                    .map {
-                        WarningView
-                            .Event
-                            .OnSwipedToRefresh
-                    },
-                warningFilterButton
-                    .clicks()
-                    .map {
-                        WarningView
-                            .Event
-                            .OnFilterButtonToggled
-                    }
-            ).observeOn(
-                scheduler.io()
-            ).compose(
-                viewModel()
-            ).observeOn(
-                scheduler.ui()
-            ).subscribe(
-                ::render
-            ).addTo(
-                subscriptions
-            )
-
-            onViewInitialisedSubject
-                .onNext(
-                    WarningView.Event.OnViewInitialised(
-                        stateParcel = bundle?.getParcelable(
-                            STATE_PARCEL_KEY
-                        )
-                    )
-                )
         }
     }
 
@@ -264,18 +198,17 @@ class WarningFragment : BaseFragment() {
 
     private fun navigateToFilterView() {
         navController
-            .navigate(R.id.warningFilterDialog)
+            .navigate(R.id.action_warningFragment_to_warningFilterDialog)
     }
 
     private fun displayNoWarningsIssued() {
         warningDisplayNoWarningsIssued.toVisible()
 
-        onNoWarningsIssuedDisplayedSubject
-            .onNext(
-                WarningView
-                    .Event
-                    .OnNoWarningsIssuedDisplayed
-            )
+        viewModel.send(
+            WarningView
+                .Event
+                .OnNoWarningsIssuedDisplayed
+        )
     }
 
     private fun startProgressBarEffect() {
@@ -284,9 +217,7 @@ class WarningFragment : BaseFragment() {
             toVisible()
         }
 
-        onProgressBarEffectStartedSubject.onNext(
-            WarningView.Event.OnProgressBarEffectStarted
-        )
+        viewModel.send(WarningView.Event.OnProgressBarEffectStarted)
     }
 
     private fun stopProgressBarEffect() {
@@ -300,9 +231,7 @@ class WarningFragment : BaseFragment() {
             isRefreshing = false
         }
 
-        onProgressBarEffectStoppedSubject.onNext(
-            WarningView.Event.OnProgressBarEffectStopped
-        )
+        viewModel.send(WarningView.Event.OnProgressBarEffectStopped)
     }
 
     private fun updateStateParcel(state: WarningView.State) {
@@ -312,9 +241,7 @@ class WarningFragment : BaseFragment() {
             stopRefreshing = state.stopRefreshing
         )
 
-        onStateParcelUpdatedSubject.onNext(
-            WarningView.Event.OnStateParcelUpdated
-        )
+        viewModel.send(WarningView.Event.OnStateParcelUpdated)
     }
 
     private fun restoreScrollPosition() {
@@ -326,9 +253,7 @@ class WarningFragment : BaseFragment() {
                 )
         }
 
-        onScrollPositionRestoredSubject.onNext(
-            WarningView.Event.OnScrollPositionRestored
-        )
+        viewModel.send(WarningView.Event.OnScrollPositionRestored)
     }
 
     private fun displayWarningList(list: MutableList<IWarningModel>) {
@@ -336,8 +261,6 @@ class WarningFragment : BaseFragment() {
         warningDisplayNoWarningsIssued
             .toGone()
         warningAdapter.updateList(list)
-        onWarningListDisplayedSubject.onNext(
-            WarningView.Event.OnWarningListDisplayed
-        )
+        viewModel.send(WarningView.Event.OnWarningListDisplayed)
     }
 }

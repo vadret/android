@@ -16,16 +16,14 @@ import fi.kroon.vadret.presentation.warning.filter.WarningFilterUtil.getChipFeed
 import fi.kroon.vadret.presentation.warning.filter.model.IFilterable
 import fi.kroon.vadret.presentation.warning.filter.model.TitleModel
 import fi.kroon.vadret.util.extension.getAttribute
-import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.warning_filter_district_chip_group.view.*
 import kotlinx.android.synthetic.main.warning_filter_feed_source_chip_group.view.*
 import kotlinx.android.synthetic.main.warning_filter_title_item.view.*
 import timber.log.Timber
-import javax.inject.Inject
 
-class WarningFilterAdapter @Inject constructor(
-    private val onFeedSourceItemSelected: PublishSubject<FeedSourceOptionEntity>,
-    private val onDistrictItemSelected: PublishSubject<DistrictOptionEntity>
+class WarningFilterAdapter constructor(
+    private val onFeedSourceItemSelected: (FeedSourceOptionEntity) -> Unit,
+    private val onDistrictItemSelected: (DistrictOptionEntity) -> Unit
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private companion object {
@@ -70,10 +68,9 @@ class WarningFilterAdapter @Inject constructor(
 
                 chip.setOnClickListener {
                     Timber.d("ITEM CLICKED ${list[adapterPosition]}")
-                    onFeedSourceItemSelected
-                        .onNext(
-                            list[adapterPosition] as FeedSourceOptionEntity
-                        )
+                    onFeedSourceItemSelected(
+                        list[adapterPosition] as FeedSourceOptionEntity
+                    )
                 }
 
                 warningFilterFeedSourceChipGroup.addView(chip)
@@ -104,10 +101,7 @@ class WarningFilterAdapter @Inject constructor(
                 chip.isChecked = entity.isEnabled
                 chip.setOnClickListener {
                     Timber.d("ITEM CLICKED ${list[adapterPosition]}")
-                    onDistrictItemSelected
-                        .onNext(
-                            list[adapterPosition] as DistrictOptionEntity
-                        )
+                    onDistrictItemSelected(list[adapterPosition] as DistrictOptionEntity)
                 }
 
                 warningFilterDistrictChipGroup.addView(chip)

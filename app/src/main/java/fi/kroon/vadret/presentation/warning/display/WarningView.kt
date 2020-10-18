@@ -8,7 +8,7 @@ import kotlinx.android.parcel.Parcelize
 object WarningView {
 
     sealed class Event {
-        class OnViewInitialised(val stateParcel: StateParcel?) : Event()
+        data class OnViewInitialised(val stateParcel: StateParcel?) : Event()
         object OnFailureHandled : Event()
         object OnNoWarningsIssuedDisplayed : Event()
         object OnProgressBarEffectStarted : Event()

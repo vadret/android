@@ -129,7 +129,7 @@
     <dimen name="warning_filter_button_text_size">16sp</dimen>
     <dimen name="warning_filter_title_text_size">20sp</dimen>
     <dimen name="warning_filter_margin_start">16dp</dimen>
-    <dimen name="warning_filter_margin_top">8dp</dimen>
+    <dimen name="warning_filter_margin_top">4dp</dimen>
     <dimen name="warning_filter_margin_bottom">4dp</dimen>
     <dimen name="warning_filter_margin">16dp</dimen>
     <dimen name="warning_filter_chip_stroke_width">1dp</dimen>

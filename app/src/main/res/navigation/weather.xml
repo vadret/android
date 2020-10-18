@@ -15,7 +15,11 @@
 
     <fragment
         android:id="@+id/warningFragment"
-        android:name="fi.kroon.vadret.presentation.warning.display.WarningFragment" />
+        android:name="fi.kroon.vadret.presentation.warning.display.WarningFragment">
+        <action
+            android:id="@+id/action_warningFragment_to_warningFilterDialog"
+            app:destination="@id/warningFilterDialog" />
+    </fragment>
 
     <fragment
         android:id="@+id/aboutAppFragment"
@@ -28,4 +32,5 @@
     <dialog
         android:id="@+id/warningFilterDialog"
         android:name="fi.kroon.vadret.presentation.warning.filter.WarningFilterDialogFragment" />
+
 </navigation>

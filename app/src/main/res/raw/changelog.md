@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Removed RxJava2 in About feature
 - Removed RxJava2 in WeatherForecast feature
+- Removed RxJava2 in Warning feature
 - Removed Fabric Crashlytics
 - Removed multi-stack hack for androidx navigation
 - Bump kotlin 1.4.10

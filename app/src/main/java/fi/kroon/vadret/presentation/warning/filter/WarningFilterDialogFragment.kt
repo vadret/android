@@ -1,33 +1,26 @@
 package fi.kroon.vadret.presentation.warning.filter
 
-import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import com.jakewharton.rxbinding3.view.clicks
 import fi.kroon.vadret.R
-import fi.kroon.vadret.data.district.model.DistrictOptionEntity
-import fi.kroon.vadret.data.feedsource.model.FeedSourceOptionEntity
 import fi.kroon.vadret.presentation.warning.filter.di.WarningFilterComponent
-import fi.kroon.vadret.presentation.warning.filter.di.WarningFilterScope
 import fi.kroon.vadret.presentation.warning.filter.model.IFilterable
-import fi.kroon.vadret.util.Scheduler
 import fi.kroon.vadret.util.extension.appComponent
-import fi.kroon.vadret.util.extension.toObservable
-import io.reactivex.Observable
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.rxkotlin.addTo
-import io.reactivex.subjects.PublishSubject
-import kotlinx.android.synthetic.main.warning_filter_dialog_fragment.*
+import kotlinx.android.synthetic.main.warning_filter_dialog_fragment.warningFilterRecyclerView
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 import timber.log.Timber
 
-@WarningFilterScope
+@ExperimentalCoroutinesApi
 class WarningFilterDialogFragment : BottomSheetDialogFragment() {
 
     private var isConfigChangeOrProcessDeath = false
@@ -39,60 +32,29 @@ class WarningFilterDialogFragment : BottomSheetDialogFragment() {
         const val SCROLL_POSITION_KEY: String = "SCROLL_POSITION_KEY"
     }
 
-    private fun layoutId(): Int = R.layout.warning_filter_dialog_fragment
+    private lateinit var warningFilterAdapter: WarningFilterAdapter
 
     private val navController: NavController by lazy(LazyThreadSafetyMode.NONE) {
         findNavController()
     }
 
-    private val cmp: WarningFilterComponent by lazy(LazyThreadSafetyMode.NONE) {
+    private val component: WarningFilterComponent by lazy(LazyThreadSafetyMode.NONE) {
         appComponent()
             .warningFilterComponentBuilder()
             .build()
     }
 
     private val viewModel: WarningFilterViewModel by lazy(LazyThreadSafetyMode.NONE) {
-        cmp.provideWarningFilterViewModel()
+        component.provideWarningFilterViewModel()
     }
 
-    private val onFeedSourceItemSelectedSubject: PublishSubject<FeedSourceOptionEntity> by lazy(LazyThreadSafetyMode.NONE) {
-        cmp.provideOnFeedSourceItemSelectedSubject()
-    }
-
-    private val onDistrictItemSelectedSubject: PublishSubject<DistrictOptionEntity> by lazy(LazyThreadSafetyMode.NONE) {
-        cmp.provideOnDistrictItemSelectedSubject()
-    }
-
-    private val onViewInitialisedSubject: PublishSubject<WarningFilterView.Event.OnViewInitialised> by lazy(LazyThreadSafetyMode.NONE) {
-        cmp.provideOnViewInitialised()
-    }
-
-    private val onFilterOptionsDisplayedSubject: PublishSubject<WarningFilterView.Event.OnFilterOptionsDisplayed> by lazy(LazyThreadSafetyMode.NONE) {
-        cmp.provideOnFilterOptionsDisplayed()
-    }
-
-    private val warningFilterAdapter: WarningFilterAdapter by lazy(LazyThreadSafetyMode.NONE) {
-        cmp.provideWarningFilterAdapter()
-    }
-
-    private val subscriptions: CompositeDisposable by lazy(LazyThreadSafetyMode.NONE) {
-        cmp.provideCompositeDisposable()
-    }
-
-    private val scheduler: Scheduler by lazy(LazyThreadSafetyMode.NONE) {
-        cmp.provideScheduler()
-    }
-
-    override fun onAttach(context: Context) {
-        Timber.d("-----BEGIN-----")
-        Timber.d("ON ATTACH")
-        cmp.inject(this)
-        super.onAttach(context)
-    }
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         Timber.d("ON CREATE VIEW")
-        return inflater.inflate(layoutId(), container, false)
+        return inflater.inflate(R.layout.warning_filter_dialog_fragment, container, false)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -106,9 +68,17 @@ class WarningFilterDialogFragment : BottomSheetDialogFragment() {
         }
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        Timber.d("ON ACTIVITY CREATED")
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        Timber.d("ON VIEW CREATED")
+
+        lifecycleScope
+            .launch {
+                viewModel
+                    .viewState
+                    .collect(::render)
+            }
+
         setup()
     }
 
@@ -137,7 +107,6 @@ class WarningFilterDialogFragment : BottomSheetDialogFragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        subscriptions.clear()
         warningFilterRecyclerView
             .apply {
                 adapter = null
@@ -159,6 +128,23 @@ class WarningFilterDialogFragment : BottomSheetDialogFragment() {
     }
 
     private fun setupRecyclerView() {
+        warningFilterAdapter = WarningFilterAdapter(
+            onFeedSourceItemSelected = {
+                viewModel.send(
+                    WarningFilterView
+                        .Event
+                        .OnFeedSourceItemSelected(it)
+                )
+            },
+            onDistrictItemSelected = {
+                viewModel.send(
+                    WarningFilterView
+                        .Event
+                        .OnDistrictItemSelected(it)
+                )
+            }
+
+        )
         warningFilterRecyclerView.apply {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = warningFilterAdapter
@@ -167,57 +153,15 @@ class WarningFilterDialogFragment : BottomSheetDialogFragment() {
     }
 
     private fun setupEvents() {
-        if (subscriptions.size() == 0) {
-            Observable.mergeArray(
-                onViewInitialisedSubject
-                    .toObservable(),
-                onFilterOptionsDisplayedSubject
-                    .toObservable(),
-                onFeedSourceItemSelectedSubject
-                    .toObservable()
-                    .map { entity: FeedSourceOptionEntity ->
-                        WarningFilterView
-                            .Event
-                            .OnFeedSourceItemSelected(entity)
-                    },
-                onDistrictItemSelectedSubject
-                    .toObservable()
-                    .map { entity: DistrictOptionEntity ->
-                        WarningFilterView
-                            .Event
-                            .OnDistrictItemSelected(entity)
-                    },
-                warningFilterApplyButton
-                    .clicks()
-                    .map {
-                        Timber.d("Clicked!")
-                        WarningFilterView
-                            .Event
-                            .OnFilterOptionsApplyClicked
-                    }
-            ).observeOn(
-                scheduler.io()
-            ).compose(
-                viewModel()
-            ).observeOn(
-                scheduler.ui()
-            ).subscribe(
-                ::render
-            ).addTo(
-                subscriptions
-            )
-
-            onViewInitialisedSubject
-                .onNext(
-                    WarningFilterView
-                        .Event
-                        .OnViewInitialised(
-                            stateParcel = bundle?.getParcelable(
-                                STATE_PARCEL_KEY
-                            )
-                        )
+        viewModel.send(
+            WarningFilterView
+                .Event
+                .OnViewInitialised(
+                    stateParcel = bundle?.getParcelable(
+                        STATE_PARCEL_KEY
+                    )
                 )
-        }
+        )
     }
 
     private fun render(viewState: WarningFilterView.State): Unit =
@@ -254,8 +198,8 @@ class WarningFilterDialogFragment : BottomSheetDialogFragment() {
     private fun displayFilterList(entityList: List<IFilterable>) {
         Timber.d("DISPLAY FILTER LIST: $entityList")
         warningFilterAdapter.updateList(entityList = entityList)
-        onFilterOptionsDisplayedSubject
-            .onNext(
+        viewModel
+            .send(
                 WarningFilterView
                     .Event
                     .OnFilterOptionsDisplayed

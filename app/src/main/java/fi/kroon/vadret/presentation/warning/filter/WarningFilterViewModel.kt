@@ -1,5 +1,7 @@
 package fi.kroon.vadret.presentation.warning.filter
 
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import fi.kroon.vadret.R
 import fi.kroon.vadret.data.district.model.DistrictOptionEntity
 import fi.kroon.vadret.data.failure.Failure
@@ -8,152 +10,142 @@ import fi.kroon.vadret.domain.districtpreference.UpdateDistrictPreferenceListTas
 import fi.kroon.vadret.domain.feedsourcepreference.UpdateFeedSourcePreferenceListTask
 import fi.kroon.vadret.domain.warningfilter.GetWarningFilterOptionListService
 import fi.kroon.vadret.presentation.shared.IViewModel
-import fi.kroon.vadret.presentation.warning.filter.di.WarningFilterScope
 import fi.kroon.vadret.presentation.warning.filter.model.IFilterable
-import fi.kroon.vadret.util.extension.asObservable
-import io.github.sphrak.either.Either
-import io.reactivex.Observable
-import io.reactivex.ObservableTransformer
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.rx2.await
+import kotlinx.coroutines.withContext
 import timber.log.Timber
 import javax.inject.Inject
 
-@WarningFilterScope
+@ExperimentalCoroutinesApi
 class WarningFilterViewModel @Inject constructor(
-    private var state: WarningFilterView.State,
+    private var stateModel: WarningFilterView.State,
+    private val state: MutableSharedFlow<WarningFilterView.State>,
     private val getWarningFilterOptionListService: GetWarningFilterOptionListService,
     private val updateDistrictPreferenceEntityTask: UpdateDistrictPreferenceListTask,
     private val updateFeedSourcePreferenceEntityTask: UpdateFeedSourcePreferenceListTask
-) : IViewModel {
+) : ViewModel(), IViewModel {
 
-    operator fun invoke(): ObservableTransformer<WarningFilterView.Event, WarningFilterView.State> = onEvent
+    val viewState: SharedFlow<WarningFilterView.State> get() = state.asSharedFlow()
 
-    private val onEvent = ObservableTransformer<WarningFilterView.Event,
-        WarningFilterView.State> { upstream: Observable<WarningFilterView.Event> ->
-        upstream.publish { shared: Observable<WarningFilterView.Event> ->
-            Observable.mergeArray(
-                shared.ofType(WarningFilterView.Event.OnViewInitialised::class.java),
-                shared.ofType(WarningFilterView.Event.OnFeedSourceItemSelected::class.java),
-                shared.ofType(WarningFilterView.Event.OnDistrictItemSelected::class.java),
-                shared.ofType(WarningFilterView.Event.OnFilterOptionsDisplayed::class.java),
-                shared.ofType(WarningFilterView.Event.OnFilterOptionsApplyClicked::class.java)
-            ).compose(
-                eventToViewState
-            )
-        }
+    fun send(event: WarningFilterView.Event) {
+        viewModelScope.launch { reduce(event = event) }
     }
 
-    private val eventToViewState =
-        ObservableTransformer<WarningFilterView.Event, WarningFilterView.State> { upstream: Observable<WarningFilterView.Event> ->
-            upstream.flatMap { event: WarningFilterView.Event ->
-                when (event) {
-                    is WarningFilterView.Event.OnViewInitialised -> onViewInitialisedEvent(event.stateParcel)
-                    is WarningFilterView.Event.OnFeedSourceItemSelected -> onFeedSourceItemSelected(event.entity)
-                    is WarningFilterView.Event.OnDistrictItemSelected -> onDistrictItemSelected(event.entity)
-                    WarningFilterView.Event.OnFilterOptionsApplyClicked -> onFilterOptionsApplyClicked()
-                    WarningFilterView.Event.OnFilterOptionsDisplayed -> onFilterOptionsDisplayed()
-                }
-            }
+    private suspend fun reduce(event: WarningFilterView.Event) =
+        when (event) {
+            is WarningFilterView.Event.OnViewInitialised -> onViewInitialisedEvent(event.stateParcel)
+            is WarningFilterView.Event.OnFeedSourceItemSelected -> onFeedSourceItemSelected(event.entity)
+            is WarningFilterView.Event.OnDistrictItemSelected -> onDistrictItemSelected(event.entity)
+            WarningFilterView.Event.OnFilterOptionsApplyClicked -> onFilterOptionsApplyClicked()
+            WarningFilterView.Event.OnFilterOptionsDisplayed -> onFilterOptionsDisplayed()
         }
 
-    private fun onViewInitialisedEvent(stateParcel: WarningFilterView.StateParcel?): Observable<WarningFilterView.State> {
+    private suspend fun onViewInitialisedEvent(stateParcel: WarningFilterView.StateParcel?) {
         restoreStateFromStateParcel(stateParcel)
-        return onViewInitialised()
+        onViewInitialised()
     }
 
-    private fun onFilterOptionsDisplayed(): Observable<WarningFilterView.State> {
+    private suspend fun onFilterOptionsDisplayed() {
         Timber.d("ON FILTER OPTIONS DISPLAYED")
-        state = state.copy(renderEvent = WarningFilterView.RenderEvent.None)
-        return state.asObservable()
+        stateModel = stateModel.copy(renderEvent = WarningFilterView.RenderEvent.None)
+        state.emit(stateModel)
     }
 
-    private fun onViewInitialised(): Observable<WarningFilterView.State> =
+    private suspend fun onViewInitialised() = withContext(Dispatchers.IO) {
         getWarningFilterOptionListService()
-            .flatMapObservable { result: Either<Failure, GetWarningFilterOptionListService.Data> ->
-                result.either(
-                    { failure: Failure ->
-                        Timber.e("Failure: $failure")
-                        state.asObservable()
-                    },
-                    { data: GetWarningFilterOptionListService.Data ->
+            .await()
+            .either(
+                { failure: Failure ->
+                    Timber.e("Failure: $failure")
+                    state.emit(stateModel)
+                },
+                { data: GetWarningFilterOptionListService.Data ->
 
-                        Timber.d("GET WARNING FILTER OPTION LIST")
-                        val list: List<IFilterable> = WarningFilterMapper(
-                            districtOptionEntityList = data.districtOptionList,
-                            feedSourceOptionEntityList = data.feedSourceOptionList
-                        )
+                    Timber.d("GET WARNING FILTER OPTION LIST")
+                    val list: List<IFilterable> = WarningFilterMapper(
+                        districtOptionEntityList = data.districtOptionList,
+                        feedSourceOptionEntityList = data.feedSourceOptionList
+                    )
 
-                        val renderEvent: WarningFilterView.RenderEvent.DisplayFilterList =
-                            WarningFilterView.RenderEvent.DisplayFilterList(list = list)
+                    val renderEvent: WarningFilterView.RenderEvent.DisplayFilterList =
+                        WarningFilterView.RenderEvent.DisplayFilterList(list = list)
 
-                        state = state.copy(
-                            renderEvent = renderEvent,
-                            districtOptionList = data.districtOptionList.toMutableList(),
-                            feedSourceOptionList = data.feedSourceOptionList.toMutableList()
-                        )
-                        state.asObservable()
-                    }
-                )
-            }
+                    stateModel = stateModel.copy(
+                        renderEvent = renderEvent,
+                        districtOptionList = data.districtOptionList.toMutableList(),
+                        feedSourceOptionList = data.feedSourceOptionList.toMutableList()
+                    )
+                    state.emit(stateModel)
+                }
+            )
+    }
 
-    private fun onFilterOptionsApplyClicked(): Observable<WarningFilterView.State> {
+    private suspend fun onFilterOptionsApplyClicked() = withContext(Dispatchers.IO) {
         Timber.d("ON APPLY FILTER CLICKED")
 
-        val enabledDistrictList: List<DistrictOptionEntity> = state.districtOptionList
+        val enabledDistrictList: List<DistrictOptionEntity> = stateModel.districtOptionList
             .filter { district: DistrictOptionEntity ->
                 district.isEnabled
             }
 
-        val enabledFeedSourceList = state.feedSourceOptionList
+        val enabledFeedSourceList = stateModel.feedSourceOptionList
             .filter { feedSource: FeedSourceOptionEntity ->
                 feedSource.isEnabled
             }
 
-        return when (enabledDistrictList.isNotEmpty() && enabledFeedSourceList.isNotEmpty()) {
+        when (enabledDistrictList.isNotEmpty() && enabledFeedSourceList.isNotEmpty()) {
             true -> updateDistrictPreferenceEntity()
             false -> renderValidationError()
         }
     }
 
-    private fun updateDistrictPreferenceEntity(): Observable<WarningFilterView.State> =
-        updateDistrictPreferenceEntityTask(entityList = state.districtOptionList)
-            .flatMapObservable { result: Either<Failure, Int> ->
-                result.either(
-                    { failure: Failure ->
-                        Timber.e("Failure: $failure")
-                        state.asObservable()
-                    },
-                    { rowCount: Int ->
-                        Timber.d("DistrictPreference updated: $rowCount")
-                        updateFeedSourcePreferenceEntity()
-                    }
-                )
-            }
-
-    private fun updateFeedSourcePreferenceEntity(): Observable<WarningFilterView.State> =
-        updateFeedSourcePreferenceEntityTask(entityList = state.feedSourceOptionList)
-            .flatMapObservable { result: Either<Failure, Int> ->
-                result.either(
-                    { failure: Failure ->
-                        Timber.e("Failure: $failure")
-                        state.asObservable()
-                    },
-                    { rowCount: Int ->
-                        Timber.d("FeedSourcePreference updated: $rowCount")
-                        state = state.copy(renderEvent = WarningFilterView.RenderEvent.FinishDialog)
-                        state.asObservable()
-                    }
-                )
-            }
-
-    private fun renderValidationError(): Observable<WarningFilterView.State> {
-        state = state.copy(renderEvent = WarningFilterView.RenderEvent.DisplayError(R.string.filter_must_select_one))
-        return state.asObservable()
+    private suspend fun updateDistrictPreferenceEntity() = withContext(Dispatchers.IO) {
+        updateDistrictPreferenceEntityTask(entityList = stateModel.districtOptionList)
+            .await()
+            .either(
+                { failure: Failure ->
+                    Timber.e("Failure: $failure")
+                    state.emit(stateModel)
+                },
+                { rowCount: Int ->
+                    Timber.d("DistrictPreference updated: $rowCount")
+                    updateFeedSourcePreferenceEntity()
+                }
+            )
     }
 
-    private fun onFeedSourceItemSelected(entity: FeedSourceOptionEntity): Observable<WarningFilterView.State> {
+    private suspend fun updateFeedSourcePreferenceEntity() = withContext(Dispatchers.IO) {
+        updateFeedSourcePreferenceEntityTask(entityList = stateModel.feedSourceOptionList)
+            .await()
+            .either(
+                { failure: Failure ->
+                    Timber.e("Failure: $failure")
+                    state.emit(stateModel)
+                },
+                { rowCount: Int ->
+                    Timber.d("FeedSourcePreference updated: $rowCount")
+                    stateModel =
+                        stateModel.copy(renderEvent = WarningFilterView.RenderEvent.FinishDialog)
+                    state.emit(stateModel)
+                }
+            )
+    }
+
+    private suspend fun renderValidationError() {
+        stateModel = stateModel.copy(renderEvent = WarningFilterView.RenderEvent.DisplayError(R.string.filter_must_select_one))
+        state.emit(stateModel)
+    }
+
+    private suspend fun onFeedSourceItemSelected(entity: FeedSourceOptionEntity) = withContext(Dispatchers.IO) {
 
         Timber.d("FEED SOURCE ITEM SELECTED: $entity")
-        val feedSourceOptionEntity: FeedSourceOptionEntity? = state
+        val feedSourceOptionEntity: FeedSourceOptionEntity? = stateModel
             .feedSourceOptionList
             .find { fields: FeedSourceOptionEntity ->
                 fields.id == entity.id
@@ -169,37 +161,37 @@ class WarningFilterViewModel @Inject constructor(
                 name = it.name
             )
 
-            val entityIndex: Int = state.feedSourceOptionList.indexOf(feedSourceOptionEntity)
+            val entityIndex: Int = stateModel.feedSourceOptionList.indexOf(feedSourceOptionEntity)
 
-            state.feedSourceOptionList.removeAt(entityIndex)
-            state.feedSourceOptionList.add(entityIndex, newFeedSourceOptionEntity)
+            stateModel.feedSourceOptionList.removeAt(entityIndex)
+            stateModel.feedSourceOptionList.add(entityIndex, newFeedSourceOptionEntity)
 
             val list: List<IFilterable> = WarningFilterMapper(
-                districtOptionEntityList = state.districtOptionList,
-                feedSourceOptionEntityList = state.feedSourceOptionList
+                districtOptionEntityList = stateModel.districtOptionList,
+                feedSourceOptionEntityList = stateModel.feedSourceOptionList
             )
 
             val renderEvent: WarningFilterView.RenderEvent =
                 WarningFilterView.RenderEvent.UpdateFilterList(list = list)
 
-            state = state.copy(renderEvent = renderEvent)
+            stateModel = stateModel.copy(renderEvent = renderEvent)
 
-            return state.asObservable()
+            state.emit(stateModel)
         }
 
-        state = state.copy(renderEvent = WarningFilterView.RenderEvent.None)
-        return state.asObservable()
+        stateModel = stateModel.copy(renderEvent = WarningFilterView.RenderEvent.None)
+        state.emit(stateModel)
     }
 
-    private fun onDistrictItemSelected(entity: DistrictOptionEntity): Observable<WarningFilterView.State> {
+    private suspend fun onDistrictItemSelected(entity: DistrictOptionEntity) = withContext(Dispatchers.IO) {
         Timber.d("DISTRICT ITEM SELECTED: $entity")
-        val districtOptionEntity: DistrictOptionEntity? = state
+        val districtOptionEntity: DistrictOptionEntity? = stateModel
             .districtOptionList
             .find { fields: DistrictOptionEntity ->
                 fields.id == entity.id
             }
 
-        val entityIndex: Int = state.districtOptionList.indexOf(districtOptionEntity)
+        val entityIndex: Int = stateModel.districtOptionList.indexOf(districtOptionEntity)
 
         districtOptionEntity?.let {
             val newDistrictOptionEntity = DistrictOptionEntity(
@@ -211,32 +203,32 @@ class WarningFilterViewModel @Inject constructor(
                 name = it.name
             )
 
-            state.districtOptionList.removeAt(entityIndex)
-            state.districtOptionList.add(
+            stateModel.districtOptionList.removeAt(entityIndex)
+            stateModel.districtOptionList.add(
                 entityIndex,
                 newDistrictOptionEntity
             )
 
             val list: List<IFilterable> = WarningFilterMapper(
-                districtOptionEntityList = state.districtOptionList,
-                feedSourceOptionEntityList = state.feedSourceOptionList
+                districtOptionEntityList = stateModel.districtOptionList,
+                feedSourceOptionEntityList = stateModel.feedSourceOptionList
             )
 
             val renderEvent: WarningFilterView.RenderEvent =
                 WarningFilterView.RenderEvent.UpdateFilterList(list = list)
 
-            state = state.copy(renderEvent = renderEvent)
+            stateModel = stateModel.copy(renderEvent = renderEvent)
 
-            return state.asObservable()
+            state.emit(stateModel)
         }
 
-        state = state.copy(renderEvent = WarningFilterView.RenderEvent.None)
-        return state.asObservable()
+        stateModel = stateModel.copy(renderEvent = WarningFilterView.RenderEvent.None)
+        state.emit(stateModel)
     }
 
     private fun restoreStateFromStateParcel(stateParcel: WarningFilterView.StateParcel?) {
         stateParcel?.run { ->
-            state = state.copy(
+            stateModel = stateModel.copy(
                 districtOptionList = districtOptionList,
                 feedSourceOptionList = feedSourceOptionList
             )
