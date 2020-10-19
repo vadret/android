@@ -20,6 +20,9 @@ A simple weather app that uses the Swedish weather service [SMHI](https://openda
 [<img src="https://f-droid.org/badge/get-it-on.png"
       alt="Get it on F-Droid"
       height="80">](https://f-droid.org/packages/fi.kroon.vadret/)
+[<img src="https://raw.githubusercontent.com/vadret/android/master/assets/get-github.png"
+      alt="Get it on Github"
+      height="80">](https://github.com/vadret/android/releases)
 
 _**Note**: While both distribution channels track the same branch, each release are signed with different keys.
 Thus you cannot install the F-droid version and upgrade via Play store unless you first uninstall the F-droid version._
