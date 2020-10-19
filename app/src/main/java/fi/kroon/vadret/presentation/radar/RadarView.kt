@@ -28,14 +28,14 @@ object RadarView {
         val seekBarMax: Int = NIL_INT,
         val seekStep: Int = 1,
         val currentSeekBarIndex: Int = NIL_INT,
-        val renderEvent: RenderEvent = RenderEvent.None,
+        val renderEvent: RenderEvent = RenderEvent.Idle,
         val wasRestoredFromStateParcel: Boolean = false
     )
 
     sealed class RenderEvent {
-        object None : RenderEvent()
+        object Idle : RenderEvent()
         object UpdateStateParcel : RenderEvent()
-        object StartSeekBar : RenderEvent()
+        data class StartSeekBar(val currentIndex: Int) : RenderEvent()
         object StopSeekBar : RenderEvent()
         object ResetSeekBar : RenderEvent()
         object RestoreSeekBarPosition : RenderEvent()

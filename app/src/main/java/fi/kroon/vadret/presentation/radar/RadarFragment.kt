@@ -255,21 +255,34 @@ class RadarFragment : Fragment(R.layout.radar_fragment) {
 
     private fun render(viewState: RadarView.State) {
         when (viewState.renderEvent) {
-            RadarView.RenderEvent.None -> Unit
+            RadarView.RenderEvent.Idle -> Unit
             RadarView.RenderEvent.UpdateStateParcel -> updateStateParcel(viewState)
             RadarView.RenderEvent.SetPlayButtonToPlaying -> setPlayButtonToPlaying()
             RadarView.RenderEvent.SetPlayButtonToStopped -> setPlayButtonToStopped()
-            RadarView.RenderEvent.StartSeekBar -> Unit // startSeekBar(viewState)
+            is RadarView.RenderEvent.StartSeekBar -> Unit //startSeekBar(viewState)
             RadarView.RenderEvent.StopSeekBar -> Unit // stopSeekBar()
             is RadarView.RenderEvent.DisplayError -> renderError(viewState.renderEvent.errorCode)
-            is RadarView.RenderEvent.DisplayRadarImage -> displayRadarImage(viewState.renderEvent.file)
-            RadarView.RenderEvent.ResetSeekBar -> resetSeekBarPosition(viewState)
-            RadarView.RenderEvent.RestoreSeekBarPosition -> restoreSeekBarPosition(viewState)
+            is RadarView.RenderEvent.DisplayRadarImage -> displayRadarImage(
+                viewState.renderEvent.file,
+                viewState.currentSeekBarIndex,
+                viewState.seekBarMax
+            )
+            RadarView.RenderEvent.ResetSeekBar -> Unit //resetSeekBarPosition(viewState)
+            RadarView.RenderEvent.RestoreSeekBarPosition -> Unit //restoreSeekBarPosition(viewState)
+        }
+    }
+
+    private fun startSeekBar(viewState: RadarView.State) {
+        //viewState.currentSeekBarIndex
+
+        radarSeekBar?.run {
+            progress = viewState.currentSeekBarIndex
+            max = viewState.seekBarMax
         }
     }
 
     private fun restoreSeekBarPosition(viewState: RadarView.State) {
-        setRadarSeekBarPosition(viewState)
+        //setRadarSeekBarPosition(viewState)
         viewModel.send(
             RadarView
                 .Event
@@ -278,7 +291,7 @@ class RadarFragment : Fragment(R.layout.radar_fragment) {
     }
 
     private fun resetSeekBarPosition(viewState: RadarView.State) {
-        setRadarSeekBarPosition(viewState)
+        //setRadarSeekBarPosition(viewState)
         Timber.d("resetSeekBarPosition")
         viewModel.send(
             RadarView
@@ -314,7 +327,13 @@ class RadarFragment : Fragment(R.layout.radar_fragment) {
         )
     }
 
-    private fun displayRadarImage(file: RadarFile) {
+    private fun displayRadarImage(file: RadarFile, currentSeekBarIndex: Int, seekBarMax: Int) {
+
+        radarSeekBar?.run {
+            progress = currentSeekBarIndex
+            max = seekBarMax
+        }
+
         ImageRequest
             .Builder(requireContext())
             .data(
@@ -338,6 +357,8 @@ class RadarFragment : Fragment(R.layout.radar_fragment) {
             .apply {
                 imageLoader.enqueue(this)
             }
+
+        viewModel.send(RadarView.Event.OnRadarImageDisplayed(currentSeekBarIndex))
     }
 
     private fun setOverlayImage(bitmap: Bitmap) {

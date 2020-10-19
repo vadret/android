@@ -9,12 +9,15 @@ import fi.kroon.vadret.domain.radar.SetRadarLastCheckedKeyValueTask
 import fi.kroon.vadret.presentation.shared.IViewModel
 import fi.kroon.vadret.util.NIL_INT
 import fi.kroon.vadret.util.extension.asObservable
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.rx2.await
+import kotlinx.coroutines.withContext
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -35,7 +38,7 @@ class RadarViewModel @Inject constructor(
 
     private suspend fun reduce(event: RadarView.Event) = when (event) {
         is RadarView.Event.OnViewInitialised -> onViewInitialisedEvent(event)
-        is RadarView.Event.OnPositionUpdated -> onPositionSeekedEvent(event.position)
+        is RadarView.Event.OnPositionUpdated -> onPositionSeekEvent(event.position)
         is RadarView.Event.OnRadarImageDisplayed -> onRadarImageDisplayed(event.position)
         RadarView.Event.OnStateParcelUpdated -> onStateParcelUpdated()
         RadarView.Event.OnFailureHandled -> onFailureHandledEvent()
@@ -43,13 +46,13 @@ class RadarViewModel @Inject constructor(
         RadarView.Event.OnPlayButtonStarted -> onPlayButtonStartedEvent()
         RadarView.Event.OnPlayButtonStopped -> onPlayButtonStoppedEvent()
         RadarView.Event.OnSeekBarStopped -> onSeekBarStopped()
-        RadarView.Event.OnSeekBarReset -> onSeekBarReset()
+        RadarView.Event.OnSeekBarReset -> Unit //onSeekBarReset()
         RadarView.Event.OnSeekBarRestored -> onSeekBarRestored()
     }
 
     private suspend fun onViewInitialisedEvent(event: RadarView.Event.OnViewInitialised) {
         restoreStateFromStateParcel(event.stateParcel)
-        stateModel = stateModel.copy(isInitialised = true, renderEvent = RadarView.RenderEvent.None)
+        stateModel = stateModel.copy(isInitialised = true, renderEvent = RadarView.RenderEvent.Idle)
         state.emit(stateModel)
     }
 
@@ -58,21 +61,10 @@ class RadarViewModel @Inject constructor(
         loadRadarImageUrl()
     }
 
-    private suspend fun restoreSeekBarIfNeeded() =
-        if (stateModel.wasRestoredFromStateParcel) {
-            stateModel = stateModel.copy(
-                renderEvent = RadarView.RenderEvent.RestoreSeekBarPosition,
-                wasRestoredFromStateParcel = false
-            )
-            state.emit(stateModel)
-        } else {
-            loadRadarImageUrl()
-        }
-
     private suspend fun onSeekBarStopped() {
         Timber.d("ON SEEKBAR STOPPED")
         stateModel = stateModel.copy(
-            renderEvent = RadarView.RenderEvent.None
+            renderEvent = RadarView.RenderEvent.Idle
         )
         state.emit(stateModel)
     }
@@ -115,11 +107,23 @@ class RadarViewModel @Inject constructor(
 
     private suspend fun onPlayButtonStartedEvent() {
         Timber.d("ON PLAY BUTTON STARTED EVENT")
-        stateModel = stateModel.copy(
-            isSeekBarRunning = true,
-            renderEvent = RadarView.RenderEvent.StartSeekBar
-        )
-        state.emit(stateModel)
+        loadRadarImageUrl()
+        // while running we emit a new state and increment while
+//        while (stateModel.isSeekBarRunning ) {
+//            stateModel = if (stateModel.currentSeekBarIndex < stateModel.seekBarMax) {
+//                stateModel.copy(
+//                    currentSeekBarIndex = stateModel.currentSeekBarIndex + 1,
+//                    renderEvent = RadarView.RenderEvent.StartSeekBar(currentIndex = stateModel.currentSeekBarIndex)
+//                )
+//            } else {
+//                stateModel.copy(
+//                    currentSeekBarIndex = 1,
+//                    renderEvent = RadarView.RenderEvent.StartSeekBar(currentIndex = stateModel.currentSeekBarIndex)
+//                )
+//            }
+//            delay(300)
+//            state.emit(stateModel)
+//        }
     }
 
     private suspend fun onPlayButtonStoppedEvent() {
@@ -131,37 +135,19 @@ class RadarViewModel @Inject constructor(
         state.emit(stateModel)
     }
 
-    private suspend fun onPositionSeekedEvent(position: Int) {
+    private fun onPositionSeekEvent(position: Int) {
         stateModel = stateModel.copy(currentSeekBarIndex = position)
-        radarPlayerHandler()
     }
 
-    private suspend fun onSeekBarReset() {
-        radarPlayerHandler()
-    }
-
-    private suspend fun radarPlayerHandler() {
-        when {
-            stateModel.isSeekBarRunning -> {
-                loadRadarImageUrl()
-            }
-            else -> {
-                stateModel = stateModel.copy(
-                    renderEvent = RadarView.RenderEvent.None
-                )
-                state.emit(stateModel)
-            }
-        }
-    }
-
-    private suspend fun loadRadarImageUrl() {
+    private suspend fun loadRadarImageUrl() = withContext(Dispatchers.IO) {
+        delay(300)
         getRadarLastCheckedKeyValueTask()
             .await()
             .either(
                 { failure: Failure ->
                     Timber.e("failure: $failure")
-                    stateModel = stateModel.copy(renderEvent = RadarView.RenderEvent.None)
-                    stateModel.asObservable()
+                    stateModel = stateModel.copy(renderEvent = RadarView.RenderEvent.Idle)
+                    state.emit(stateModel)
                 },
                 { timeStamp: Long ->
                     getRadarImageUrlService(timeStamp, stateModel.currentSeekBarIndex)
@@ -190,13 +176,13 @@ class RadarViewModel @Inject constructor(
             )
     }
 
-    private suspend fun setLastCheckedTimeStamp(timeStamp: Long) {
+    private suspend fun setLastCheckedTimeStamp(timeStamp: Long) = withContext(Dispatchers.IO) {
         setRadarLastCheckedKeyValueTask(value = timeStamp)
             .await()
             .either(
                 { failure: Failure ->
                     Timber.e("failure: $failure")
-                    stateModel = stateModel.copy(renderEvent = RadarView.RenderEvent.None)
+                    stateModel = stateModel.copy(renderEvent = RadarView.RenderEvent.Idle)
                     state.emit(stateModel)
                 },
                 {
@@ -208,36 +194,37 @@ class RadarViewModel @Inject constructor(
 
     private suspend fun onStateParcelUpdated() {
         Timber.d("ON STATE PARCEL UPDATED")
-        radarPlayerHandler()
+        //radarPlayerHandler()
     }
 
     private suspend fun onRadarImageDisplayed(newPosition: Int) {
         Timber.d("ON RADAR IMAGE DISPLAYED")
-        val currentSeekBarIndex: Int = when {
-            (newPosition < stateModel.seekBarMax) -> {
-                newPosition
-            }
-            else -> {
-                NIL_INT
-            }
+        val currentSeekBarIndex: Int = if (newPosition < stateModel.seekBarMax) {
+            newPosition + 1
+        }
+        else {
+            NIL_INT
         }
 
-        val renderEvent: RadarView.RenderEvent = when {
-            (newPosition == stateModel.seekBarMax && NIL_INT < stateModel.seekBarMax) -> {
-                stateModel = stateModel.copy(currentSeekBarIndex = NIL_INT)
-                RadarView.RenderEvent.ResetSeekBar
-            }
-            else -> {
-                RadarView.RenderEvent.UpdateStateParcel
-            }
-        }
+        stateModel = stateModel.copy(currentSeekBarIndex = currentSeekBarIndex)
 
-        stateModel = stateModel.copy(
-            renderEvent = renderEvent,
-            currentSeekBarIndex = currentSeekBarIndex
-        )
+//        val renderEvent: RadarView.RenderEvent = when {
+//            (newPosition == stateModel.seekBarMax && NIL_INT < stateModel.seekBarMax) -> {
+//                stateModel = stateModel.copy(currentSeekBarIndex = NIL_INT)
+//                RadarView.RenderEvent.ResetSeekBar
+//            }
+//            else -> {
+//                RadarView.RenderEvent.UpdateStateParcel
+//            }
+//        }
 
-        state.emit(stateModel)
+        loadRadarImageUrl()
+//        stateModel = stateModel.copy(
+//            renderEvent = renderEvent,
+//            currentSeekBarIndex = currentSeekBarIndex
+//        )
+//
+//        state.emit(stateModel)
     }
 
     private suspend fun onFailureHandledEvent() {
