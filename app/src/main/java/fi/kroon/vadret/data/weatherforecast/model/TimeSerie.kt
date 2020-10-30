@@ -1,13 +1,12 @@
 package fi.kroon.vadret.data.weatherforecast.model
 
-import com.squareup.moshi.Json
-import com.squareup.moshi.JsonClass
-import java.io.Serializable
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
-@JsonClass(generateAdapter = true)
+@Serializable
 data class TimeSerie(
-    @Json(name = "validTime")
+    @SerialName(value = "validTime")
     val validTime: String,
-    @Json(name = "parameters")
-    val parameters: List<Parameter>
-) : Serializable
+    @SerialName(value = "parameters")
+    val parameters: List<Parameter> = emptyList()
+)

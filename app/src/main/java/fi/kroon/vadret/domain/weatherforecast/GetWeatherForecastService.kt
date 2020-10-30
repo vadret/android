@@ -8,15 +8,12 @@ import fi.kroon.vadret.data.weatherforecast.model.WeatherOut
 import fi.kroon.vadret.domain.IService
 import fi.kroon.vadret.presentation.weatherforecast.WeatherForecastMapper
 import fi.kroon.vadret.presentation.weatherforecast.model.IWeatherForecastModel
-import fi.kroon.vadret.util.FIVE_MINUTES_IN_MILLIS
-import fi.kroon.vadret.util.extension.asSingle
-import fi.kroon.vadret.util.extension.flatMapSingle
 import io.github.sphrak.either.Either
 import io.github.sphrak.either.flatMap
 import io.github.sphrak.either.map
-import io.reactivex.Single
-import io.reactivex.rxkotlin.zipWith
-import timber.log.Timber
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.rx2.await
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class GetWeatherForecastService @Inject constructor(
@@ -24,11 +21,7 @@ class GetWeatherForecastService @Inject constructor(
     private val getLocationAutomaticTask: GetLocationAutomaticTask,
     private val getReverseLocalityNameTask: GetReverseLocalityNameTask,
     private val getAppLocationModeTask: GetAppLocationModeTask,
-    private val getLocationManualTask: GetLocationManualTask,
-    private val setWeatherForecastDiskCacheTask: SetWeatherForecastDiskCacheTask,
-    private val setWeatherForecastMemoryCacheTask: SetWeatherForecastMemoryCacheTask,
-    private val getWeatherForecastMemoryCacheTask: GetWeatherForecastMemoryCacheTask,
-    private val getWeatherForecastDiskCacheTask: GetWeatherForecastDiskCacheTask
+    private val getLocationManualTask: GetLocationManualTask
 ) : IService {
 
     data class Data(
@@ -43,62 +36,57 @@ class GetWeatherForecastService @Inject constructor(
     )
 
     /**
-     *  [cacheKey] Must conform to regex [a-z0-9_-]{1,120}
-     */
-    private companion object {
-        const val cacheKey: String = "weather_forecast_app_cache_key_"
-    }
-
-    /**
      *  [timeStamp]         -- Timestamp issued at time of request, used to control whether cache or network
      *  should be used.
      *  [forceNet]          -- Forces a network request regardless of value in timeStamp.
      */
-    operator fun invoke(timeStamp: Long, forceNet: Boolean): Single<Either<Failure, Data>> =
-        Single.just(Data(timeStamp = timeStamp, forceNet = forceNet))
-            .flatMap(::getLocationMode)
-            .flatMap(::getGpsLocationOrStoredLocation)
-            .flatMap(::getWeatherForecastList)
-            .flatMap(::doReverseNominatimLookupOrReturn)
-            .map(::transform)
+    suspend operator fun invoke(timeStamp: Long, forceNet: Boolean): Either<Failure, Data> =
+        withContext(Dispatchers.Default) {
+
+            val initial = Data(timeStamp = timeStamp, forceNet = forceNet)
+
+            val a = getLocationMode(initial)
+            val b = getGpsLocationOrStoredLocation(a)
+            val c = getWeatherForecastList(b)
+            val d = getWeatherForecastList(c)
+            val e = doReverseNominatimLookupOrReturn(d)
+            val f = transform(e)
+            f
+        }
 
     /**
      *  Determine if location should be derived from GPS or local storage.
      */
-    private fun getLocationMode(data: Data): Single<Either<Failure, Data>> =
+    private suspend fun getLocationMode(data: Data): Either<Failure, Data> =
         getAppLocationModeTask()
-            .map { either: Either<Failure, Boolean> ->
-                either.map { locationMode ->
-                    data.copy(locationMode = locationMode)
-                }
+            .await()
+            .map { locationMode: Boolean ->
+                data.copy(locationMode = locationMode)
             }
 
-    private fun getGpsLocationOrStoredLocation(either: Either<Failure, Data>): Single<Either<Failure, Data>> =
-        either.flatMapSingle { data: Data ->
+    private suspend fun getGpsLocationOrStoredLocation(either: Either<Failure, Data>): Either<Failure, Data> =
+        either.flatMap { data: Data ->
             when (data.locationMode) {
                 false -> getLocationManual(data)
-                true ->
-                    getLocationAutomatic(data)
-                        .map(::mapLocationEntityToWeatherOut)
+                true -> mapLocationEntityToWeatherOut(getLocationAutomatic(data))
             }
         }
 
-    private fun getLocationAutomatic(data: Data): Single<Either<Failure, Data>> =
-        getLocationAutomaticTask().map { either: Either<Failure, Location> ->
-            either.map { location: Location ->
+    private suspend fun getLocationAutomatic(data: Data): Either<Failure, Data> =
+        getLocationAutomaticTask()
+            .await()
+            .map { location: Location ->
                 data.copy(location = location)
             }
-        }
 
-    private fun getLocationManual(data: Data): Single<Either<Failure, Data>> =
+    private suspend fun getLocationManual(data: Data): Either<Failure, Data> =
         getLocationManualTask()
-            .map { either: Either<Failure, WeatherOut> ->
-                either.map { weatherOut: WeatherOut ->
-                    data.copy(
-                        weatherOut = weatherOut,
-                        localityName = weatherOut.localityName!!
-                    )
-                }
+            .await()
+            .map { weatherOut: WeatherOut ->
+                data.copy(
+                    weatherOut = weatherOut,
+                    localityName = weatherOut.localityName!!
+                )
             }
 
     /**
@@ -113,124 +101,53 @@ class GetWeatherForecastService @Inject constructor(
             data.copy(weatherOut = weatherOut)
         }
 
-    private fun getWeatherForecastList(either: Either<Failure, Data>): Single<Either<Failure, Data>> =
-        either.flatMapSingle { data: Data ->
+    private suspend fun getWeatherForecastList(either: Either<Failure, Data>): Either<Failure, Data> =
+        either.flatMap { data: Data ->
             getWeather(data)
-                .map { either: Either<Failure, Data> ->
-                    either.map { dataIn: Data ->
-                        dataIn.copy(
-                            timeStamp = currentTimeMillis
-                        )
-                    }
+                .map { dataIn: Data ->
+                    dataIn.copy(
+                        timeStamp = currentTimeMillis
+                    )
                 }
         }
 
-    private fun doReverseNominatimLookupOrReturn(either: Either<Failure, Data>): Single<Either<Failure, Data>> =
-        either.flatMapSingle { data: Data ->
+    private suspend fun doReverseNominatimLookupOrReturn(either: Either<Failure, Data>): Either<Failure, Data> =
+        either.flatMap { data: Data ->
             when (data.locationMode) {
                 true -> doReverseNominatimLookup(either)
                 false -> {
-                    either.asSingle()
+                    either
                 }
             }
         }
 
-    private fun doReverseNominatimLookup(either: Either<Failure, Data>): Single<Either<Failure, Data>> =
-        either.flatMapSingle { data: Data ->
+    private suspend fun doReverseNominatimLookup(either: Either<Failure, Data>): Either<Failure, Data> =
+        either.flatMap { data: Data ->
             val nominatimReverseOut = NominatimReverseOut(
                 latitude = data.weatherOut!!.latitude,
                 longitude = data.weatherOut.longitude
             )
-            getReverseLocalityNameTask(nominatimReverseOut).map { result ->
-                result.map { localityName: String? ->
+            getReverseLocalityNameTask(nominatimReverseOut)
+                .await()
+                .map { localityName: String? ->
                     localityName?.let {
                         data.copy(localityName = localityName)
                     } ?: data
                 }
-            }
         }
 
-    private fun getWeather(data: Data): Single<Either<Failure, Data>> =
-        with(data) {
-            when {
-                forceNet || (currentTimeMillis > (timeStamp + FIVE_MINUTES_IN_MILLIS)) -> {
-                    Timber.d("DATA: $data")
-                    getWeatherForecastTask(data.weatherOut!!)
-                        .map { either: Either<Failure, Weather> ->
-                            either.map { weather: Weather ->
-                                data.copy(weather = weather)
-                            }
-                        }.flatMap { either: Either<Failure, Data> ->
-                            updateCache(either)
-                        }
-                }
-                else -> {
-                    Single.merge(
-                        getWeatherForecastMemoryCacheTask(cacheKey)
-                            .map { either: Either<Failure, Weather> ->
-                                either.map { weather ->
-                                    data.copy(weather = weather)
-                                }
-                            },
-                        getWeatherForecastDiskCacheTask(cacheKey)
-                            .map { either: Either<Failure, Weather> ->
-                                either.map { weather ->
-                                    data.copy(weather = weather)
-                                }
-                            }
-                    ).filter { result ->
-                        result.either(
-                            {
-                                false
-                            },
-                            { data ->
-                                Timber.d("Fetched from cache: ${data.weather}")
-                                data
-                                    .weather!!
-                                    .timeSeries!!
-                                    .isNotEmpty()
-                            }
-                        )
-                    }.take(1)
-                        .switchIfEmpty(
-                            getWeatherForecastTask(data.weatherOut!!)
-                                .map { either: Either<Failure, Weather> ->
-                                    Timber.d("Cache was empty, fetching weather from network.")
-                                    either.map { weather: Weather ->
-                                        data.copy(weather = weather)
-                                    }
-                                }.flatMap { data ->
-                                    updateCache(data)
-                                }.toFlowable()
-                        ).singleOrError()
-                }
+    private suspend fun getWeather(data: Data): Either<Failure, Data> {
+        return getWeatherForecastTask(data.weatherOut!!)
+            .map { weather: Weather ->
+                data.copy(weather = weather)
             }
-        }
-
-    private fun updateCache(either: Either<Failure, Data>): Single<Either<Failure, Data>> =
-        either.flatMapSingle { data: Data ->
-            setWeatherForecastMemoryCacheTask(cacheKey, data.weather!!)
-                .zipWith(setWeatherForecastDiskCacheTask(cacheKey, data.weather))
-                .map { pair: Pair<Either<Failure, Weather>,
-                        Either<Failure, Weather>> ->
-                    Timber.i("Updating cache")
-                    val (
-                        firstEither: Either<Failure, Weather>,
-                        secondEither: Either<Failure, Weather>
-                    ) = pair
-                    firstEither.flatMap { _: Weather ->
-                        secondEither.map { _: Weather ->
-                            data
-                        }
-                    }
-                }
-        }
+    }
 
     private fun transform(either: Either<Failure, Data>): Either<Failure, Data> =
         either.map { data: Data ->
             val locationEntity = Location(data.weatherOut!!.latitude, data.weatherOut.longitude)
             val baseWeatherForecastModelList: List<IWeatherForecastModel> = WeatherForecastMapper(
-                data.weather!!.timeSeries!!,
+                data.weather!!.timeSeries,
                 locationEntity
             )
             data.copy(weatherForecastModelList = baseWeatherForecastModelList)

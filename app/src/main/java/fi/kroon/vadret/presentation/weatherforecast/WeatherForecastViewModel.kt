@@ -47,9 +47,9 @@ class WeatherForecastViewModel @Inject constructor(
                 reduce(event)
             }
 
-    private suspend fun reduce(event: WeatherForecastView.Event): WeatherForecastView.State {
+    private suspend fun reduce(event: WeatherForecastView.Event): WeatherForecastView.State = withContext(Dispatchers.IO) {
         Timber.d("event: $event")
-        return when (event) {
+        when (event) {
             is WeatherForecastView.Event.OnViewInitialised -> onViewInitialisedEvent(event.stateParcel)
             WeatherForecastView.Event.OnLocationPermissionGranted -> onLocationPermissionGrantedEvent()
             WeatherForecastView.Event.OnLocationPermissionDenied -> onLocationPermissionDeniedEvent()
@@ -357,7 +357,6 @@ class WeatherForecastViewModel @Inject constructor(
                 },
                 { timeStamp: Long ->
                     getWeatherForecastService(timeStamp, state.forceNet)
-                        .await()
                         .either(
                             { failure: Failure ->
                                 Timber.e("loadWeatherForecastFailure: $failure")

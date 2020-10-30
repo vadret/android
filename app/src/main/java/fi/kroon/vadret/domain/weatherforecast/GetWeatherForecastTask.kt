@@ -5,12 +5,11 @@ import fi.kroon.vadret.data.weatherforecast.WeatherForecastRepository
 import fi.kroon.vadret.data.weatherforecast.model.Weather
 import fi.kroon.vadret.data.weatherforecast.model.WeatherOut
 import io.github.sphrak.either.Either
-import io.reactivex.Single
 import javax.inject.Inject
 
 class GetWeatherForecastTask @Inject constructor(
-    private val repo: WeatherForecastRepository
+    private val weatherForecastRepository: WeatherForecastRepository
 ) {
-    operator fun invoke(request: WeatherOut): Single<Either<Failure, Weather>> =
-        repo(request)
+    suspend operator fun invoke(request: WeatherOut): Either<Failure, Weather> =
+        weatherForecastRepository(request = request)
 }
