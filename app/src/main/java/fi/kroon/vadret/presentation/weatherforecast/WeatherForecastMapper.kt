@@ -14,6 +14,7 @@ import fi.kroon.vadret.util.WINDCHILL_FORMULA_MINIMUM
 import fi.kroon.vadret.util.common.SunsetUtil
 import fi.kroon.vadret.util.extension.parseToLocalDate
 import fi.kroon.vadret.util.extension.toWindChill
+import org.threeten.bp.Instant
 import org.threeten.bp.OffsetDateTime
 import org.threeten.bp.ZoneId
 import java.util.Calendar
@@ -160,7 +161,7 @@ object WeatherForecastMapper {
 
     private fun getWeatherForecastItemModel(timeSerie: TimeSerie): WeatherForecastItemModel {
         var temperature: Double = 0.0
-        val time: String = OffsetDateTime.parse(timeSerie.validTime).toLocalTime().toString()
+        val time: String = Instant.parse(timeSerie.validTime).atZone(ZoneId.systemDefault()).toLocalTime().toString()
         var feelsLikeTemperature: String? = null
         var windSpeed: Double = 0.0
         val precipitationType: Int = 0
