@@ -80,7 +80,7 @@ class RadarFragment : Fragment(R.layout.radar_fragment) {
         component.provideRadarViewModel()
     }
 
-    private val defaultTileSource = XYTileSource(
+    private val defaultTileSource: XYTileSource = XYTileSource(
         A_NAME,
         A_ZOOM_MIN_LEVEL,
         A_ZOOM_MAX_LEVEL,
@@ -204,20 +204,22 @@ class RadarFragment : Fragment(R.layout.radar_fragment) {
                         )
                 )
             }.launchIn(lifecycleScope)
+
         radarSeekBar
             .changes()
             .drop(1)
             .map { position: Int ->
-                viewModel.send(
-                    RadarView
-                        .Event
-                        .OnRadarImageDisplayed(position)
-                )
+//                viewModel.send(
+//                    RadarView
+//                        .Event
+//                        .OnRadarImageDisplayed(position)
+//                )
             }.launchIn(lifecycleScope)
 
         radarPlayFab
             .clicks()
             .map {
+                Timber.d("AAAAAAAAAAAAAAA CLICKED")
                 viewModel.send(
                     RadarView
                         .Event
@@ -257,10 +259,7 @@ class RadarFragment : Fragment(R.layout.radar_fragment) {
         when (viewState.renderEvent) {
             RadarView.RenderEvent.Idle -> Unit
             RadarView.RenderEvent.UpdateStateParcel -> updateStateParcel(viewState)
-            RadarView.RenderEvent.SetPlayButtonToPlaying -> setPlayButtonToPlaying()
-            RadarView.RenderEvent.SetPlayButtonToStopped -> setPlayButtonToStopped()
-            is RadarView.RenderEvent.StartSeekBar -> Unit //startSeekBar(viewState)
-            RadarView.RenderEvent.StopSeekBar -> Unit // stopSeekBar()
+            is RadarView.RenderEvent.UpdatePlayerState -> startSeekBar(viewState.renderEvent.isPlaying)
             is RadarView.RenderEvent.DisplayError -> renderError(viewState.renderEvent.errorCode)
             is RadarView.RenderEvent.DisplayRadarImage -> displayRadarImage(
                 viewState.renderEvent.file,
@@ -269,62 +268,19 @@ class RadarFragment : Fragment(R.layout.radar_fragment) {
             )
             RadarView.RenderEvent.ResetSeekBar -> Unit //resetSeekBarPosition(viewState)
             RadarView.RenderEvent.RestoreSeekBarPosition -> Unit //restoreSeekBarPosition(viewState)
+        }.also {
+            Timber.d("EVENT: ${viewState.renderEvent}")
         }
     }
 
-    private fun startSeekBar(viewState: RadarView.State) {
-        //viewState.currentSeekBarIndex
+    private fun startSeekBar(viewState: Boolean) {
 
-        radarSeekBar?.run {
-            progress = viewState.currentSeekBarIndex
-            max = viewState.seekBarMax
+        if (viewState) {
+            radarPlayFab.setImageResource(R.drawable.ic_play_arrow_white_24dp)
+        } else {
+            radarPlayFab.setImageResource(R.drawable.ic_pause_white_24dp)
         }
-    }
 
-    private fun restoreSeekBarPosition(viewState: RadarView.State) {
-        //setRadarSeekBarPosition(viewState)
-        viewModel.send(
-            RadarView
-                .Event
-                .OnSeekBarRestored
-        )
-    }
-
-    private fun resetSeekBarPosition(viewState: RadarView.State) {
-        //setRadarSeekBarPosition(viewState)
-        Timber.d("resetSeekBarPosition")
-        viewModel.send(
-            RadarView
-                .Event
-                .OnSeekBarReset
-        )
-    }
-
-    private fun setRadarSeekBarPosition(viewState: RadarView.State) {
-        radarSeekBar?.run {
-            progress = viewState.currentSeekBarIndex
-            max = viewState.seekBarMax
-        }
-    }
-
-    private fun setPlayButtonToPlaying() {
-        radarPlayFab.setImageResource(R.drawable.ic_pause_white_24dp)
-        Timber.d("setPlayButtonToPlaying")
-        viewModel.send(
-            RadarView
-                .Event
-                .OnPlayButtonStarted
-        )
-    }
-
-    private fun setPlayButtonToStopped() {
-        radarPlayFab.setImageResource(R.drawable.ic_play_arrow_white_24dp)
-        Timber.d("setPlayButtonToStopped")
-        viewModel.send(
-            RadarView
-                .Event
-                .OnPlayButtonStopped
-        )
     }
 
     private fun displayRadarImage(file: RadarFile, currentSeekBarIndex: Int, seekBarMax: Int) {
