@@ -55,7 +55,7 @@ object WeatherForecastModule {
     fun provideRetrofitWeather(
         okHttpClient: Lazy<OkHttpClient>
     ): Retrofit {
-        // assertNoInitMainThread()
+        assertNoInitMainThread()
         return Retrofit.Builder()
             .baseUrl(SMHI_API_FORECAST_URL)
             .addConverterFactory(Json.asConverterFactory(contentType))

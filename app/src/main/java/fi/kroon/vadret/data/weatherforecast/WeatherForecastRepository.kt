@@ -1,5 +1,6 @@
 package fi.kroon.vadret.data.weatherforecast
 
+import dagger.Lazy
 import fi.kroon.vadret.data.exception.ErrorHandler
 import fi.kroon.vadret.data.exception.ExceptionHandler
 import fi.kroon.vadret.data.exception.IErrorHandler
@@ -20,7 +21,7 @@ import timber.log.Timber
 import javax.inject.Inject
 
 class WeatherForecastRepository @Inject constructor(
-    private val weatherForecastNetDataSource: WeatherForecastNetDataSource,
+    private val weatherForecastNetDataSource: Lazy<WeatherForecastNetDataSource>,
     private val networkHandler: NetworkHandler,
     private val errorHandler: ErrorHandler,
     private val exceptionHandler: ExceptionHandler
@@ -30,6 +31,7 @@ class WeatherForecastRepository @Inject constructor(
         try {
             if (networkHandler.isConnected) {
                 weatherForecastNetDataSource
+                    .get()
                     .getWeatherForecast(
                         request.category,
                         request.version,
