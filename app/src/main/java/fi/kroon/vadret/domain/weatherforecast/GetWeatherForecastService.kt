@@ -42,30 +42,28 @@ class GetWeatherForecastService @Inject constructor(
      */
     suspend operator fun invoke(timeStamp: Long, forceNet: Boolean): Either<Failure, Data> =
         withContext(Dispatchers.Default) {
-
-            val initial = Data(timeStamp = timeStamp, forceNet = forceNet)
-
-            val a = getLocationMode(initial)
-            val b = getGpsLocationOrStoredLocation(a)
-            val c = getWeatherForecastList(b)
-            val d = getWeatherForecastList(c)
-            val e = doReverseNominatimLookupOrReturn(d)
-            val f = transform(e)
-            f
+            getEmptyData(timeStamp = timeStamp, forceNet = forceNet)
+                .getLocationMode()
+                .getGpsLocationOrStoredLocation()
+                .getWeatherForecastList()
+                .doReverseNominatimLookupOrReturn()
+                .toWeatherForecastMapper()
         }
+
+    private fun getEmptyData(timeStamp: Long, forceNet: Boolean): Data = Data(timeStamp = timeStamp, forceNet = forceNet)
 
     /**
      *  Determine if location should be derived from GPS or local storage.
      */
-    private suspend fun getLocationMode(data: Data): Either<Failure, Data> =
+    private suspend fun Data.getLocationMode(): Either<Failure, Data> =
         getAppLocationModeTask()
             .await()
             .map { locationMode: Boolean ->
-                data.copy(locationMode = locationMode)
+                this.copy(locationMode = locationMode)
             }
 
-    private suspend fun getGpsLocationOrStoredLocation(either: Either<Failure, Data>): Either<Failure, Data> =
-        either.flatMap { data: Data ->
+    private suspend fun Either<Failure, Data>.getGpsLocationOrStoredLocation(): Either<Failure, Data> =
+        this.flatMap { data: Data ->
             when (data.locationMode) {
                 false -> getLocationManual(data)
                 true -> mapLocationEntityToWeatherOut(getLocationAutomatic(data))
@@ -101,8 +99,8 @@ class GetWeatherForecastService @Inject constructor(
             data.copy(weatherOut = weatherOut)
         }
 
-    private suspend fun getWeatherForecastList(either: Either<Failure, Data>): Either<Failure, Data> =
-        either.flatMap { data: Data ->
+    private suspend fun Either<Failure, Data>.getWeatherForecastList(): Either<Failure, Data> =
+        this.flatMap { data: Data ->
             getWeather(data)
                 .map { dataIn: Data ->
                     dataIn.copy(
@@ -111,12 +109,12 @@ class GetWeatherForecastService @Inject constructor(
                 }
         }
 
-    private suspend fun doReverseNominatimLookupOrReturn(either: Either<Failure, Data>): Either<Failure, Data> =
-        either.flatMap { data: Data ->
+    private suspend fun Either<Failure, Data>.doReverseNominatimLookupOrReturn(): Either<Failure, Data> =
+        this.flatMap { data: Data ->
             when (data.locationMode) {
-                true -> doReverseNominatimLookup(either)
+                true -> doReverseNominatimLookup(this)
                 false -> {
-                    either
+                    this
                 }
             }
         }
@@ -143,8 +141,8 @@ class GetWeatherForecastService @Inject constructor(
             }
     }
 
-    private fun transform(either: Either<Failure, Data>): Either<Failure, Data> =
-        either.map { data: Data ->
+    private fun Either<Failure, Data>.toWeatherForecastMapper(): Either<Failure, Data> =
+        this.map { data: Data ->
             val locationEntity = Location(data.weatherOut!!.latitude, data.weatherOut.longitude)
             val baseWeatherForecastModelList: List<IWeatherForecastModel> = WeatherForecastMapper(
                 data.weather!!.timeSeries,
