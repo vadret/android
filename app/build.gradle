@@ -237,8 +237,8 @@ dependencies {
 
     // Debugging, Testing, Linting, Analytics
     debugImplementation "com.squareup.leakcanary:leakcanary-android:2.5"
-    implementation platform('com.google.firebase:firebase-bom:26.0.0')
-    implementation 'com.google.firebase:firebase-crashlytics-ktx'
+    googleImplementation platform('com.google.firebase:firebase-bom:26.0.0')
+    googleImplementation 'com.google.firebase:firebase-crashlytics-ktx'
     implementation "com.jakewharton.timber:timber:${TIMBER_VERSION}"
     ktlint "com.pinterest:ktlint:${KTLINT_VERSION}"
     testImplementation "junit:junit:${JUNIT_VERSION}"
