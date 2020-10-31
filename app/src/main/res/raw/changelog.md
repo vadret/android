@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixes
 
-- Fixes a bug where UTC timestamp was incorrectly parsed [229](https://github.com/vadret/android/issues/229)
+- Fixes a bug where UTC timestamp was incorrectly parsed [issue/229](https://github.com/vadret/android/issues/229)
 
 ### Added
 
