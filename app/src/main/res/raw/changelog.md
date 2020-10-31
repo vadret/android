@@ -5,9 +5,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [1.2.10] -- 2020-10-31 🎃
+## [2.0.0] -- 2020-10-31 🎃
 
-This is a big maintenance release that aims to improve the maintainability of this project. A major change
+This is a major maintenance release that aims to improve the maintainability of this project. A major change
 is the removal of RxJava2 based code and rewriting it with the [Kotlin Coroutines & Flow API](https://github.com/Kotlin/kotlinx.coroutines) instead. This should mean a slight
 performance increase as well. Another big change is that widgets have been removed as per [issue/221](https://github.com/vadret/android/issues/221) since
 they did not work very well and weren't used a lot. The release includes a total of 245 files changed, 2,343 new LOC and 13,134 LOC deleted.
@@ -229,8 +229,8 @@ they did not work very well and weren't used a lot. The release includes a total
 - Radar imagery
 - 10 day weather forecast
 
-[Unreleased]: https://github.com/vadret/android/compare/1.2.10...HEAD
-[1.2.10]: https://github.com/vadret/android/compare/1.2.9...1.2.10
+[Unreleased]: https://github.com/vadret/android/compare/2.0.0...HEAD
+[2.0.0]: https://github.com/vadret/android/compare/1.2.9...2.0.0
 [1.2.9]: https://github.com/vadret/android/compare/1.2.8...1.2.9
 [1.2.8]: https://github.com/vadret/android/compare/1.2.7...1.2.8
 [1.2.7]: https://github.com/vadret/android/compare/1.2.6...1.2.7
