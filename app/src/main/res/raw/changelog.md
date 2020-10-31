@@ -14,7 +14,7 @@ they did not work very well and weren't used a lot. The release includes a total
 
 ### Fixes
 
-- Fixes a bug where UTC timestamp was incorrectly parsed to local time -- [issue/229](https://github.com/vadret/android/issues/229)
+- [issue/229](https://github.com/vadret/android/issues/229) -- Fixes a bug where UTC timestamp was incorrectly parsed to local time
 
 ### Added
 
@@ -35,7 +35,7 @@ they did not work very well and weren't used a lot. The release includes a total
 
 ### Removed
 
-- Removed all widgets -- [issue/221](https://github.com/vadret/android/issues/221)
+- [issue/221](https://github.com/vadret/android/issues/221) -- Removed all widgets
 
 ## [1.2.9] -- 2020-08-17
 
