@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.2.10] -- 2020-10-*
 
+### Fixes
+
+- Fixes a bug where UTC timestamp was incorrectly parsed [229](https://github.com/vadret/android/issues/229)
+
+### Added
+
+- Firebase Crashlytics
+
 ### Changed
 
 - Removed RxJava2 in About feature
@@ -17,6 +25,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Bump kotlin 1.4.10
 - Replaced travis-ci with Github Actions
 - Target Android SDK 30
+- Removed RxJava2 from wetfcst data layer
+- Added kotlinx serialization to wetfcst data layer
 
 ### Removed
 
