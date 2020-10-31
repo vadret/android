@@ -5,11 +5,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [1.2.10] -- 2020-10-*
+## [1.2.10] -- 2020-10-31 🎃
+
+This is a big maintenance release that aims to improve the maintainability of this project. A major change
+is the removal of RxJava2 based code and rewriting it with the [Kotlin Coroutines & Flow API](https://github.com/Kotlin/kotlinx.coroutines) instead. This should mean a slight
+performance increase as well. Another big change is that widgets have been removed as per [issue/221](https://github.com/vadret/android/issues/221) since
+they did not work very well and weren't used a lot. The release includes a total of 245 files changed, 2,343 new LOC and 13,134 LOC deleted.
 
 ### Fixes
 
-- Fixes a bug where UTC timestamp was incorrectly parsed [issue/229](https://github.com/vadret/android/issues/229)
+- Fixes a bug where UTC timestamp was incorrectly parsed to local time -- [issue/229](https://github.com/vadret/android/issues/229)
 
 ### Added
 
@@ -30,7 +35,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
-- Removed all widgets (see this [issue](https://github.com/vadret/android/issues/221))
+- Removed all widgets -- [issue/221](https://github.com/vadret/android/issues/221)
 
 ## [1.2.9] -- 2020-08-17
 
