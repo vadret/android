@@ -1,24 +1,23 @@
 package fi.kroon.vadret.data.weatherforecast.model
 
-import com.squareup.moshi.Json
-import com.squareup.moshi.JsonClass
-import java.io.Serializable
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
-@JsonClass(generateAdapter = true)
+@Serializable
 data class Parameter(
 
-    @Json(name = "name")
+    @SerialName(value = "name")
     val name: String,
 
-    @Json(name = "levelType")
+    @SerialName(value = "levelType")
     val levelType: String,
 
-    @Json(name = "level")
-    val level: String,
+    @SerialName(value = "level")
+    val level: Int,
 
-    @Json(name = "unit")
+    @SerialName(value = "unit")
     val unit: String,
 
-    @Json(name = "values")
-    val values: List<Double>
-) : Serializable
+    @SerialName(value = "values")
+    val values: List<Double> = emptyList()
+)
