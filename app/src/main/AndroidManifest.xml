@@ -11,6 +11,7 @@
         android:name="android.hardware.location.gps"
         android:required="false" />
 
+
     <application
         android:name="fi.kroon.vadret.VadretApplication"
         android:allowBackup="true"
@@ -28,6 +29,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <meta-data android:name="firebase_crashlytics_collection_enabled" android:value="false" />
 
     </application>
 </manifest>
