@@ -8,12 +8,9 @@ import fi.kroon.vadret.presentation.weatherforecast.model.WeatherForecastDateIte
 import fi.kroon.vadret.presentation.weatherforecast.model.WeatherForecastHeadlineModel
 import fi.kroon.vadret.presentation.weatherforecast.model.WeatherForecastItemModel
 import fi.kroon.vadret.presentation.weatherforecast.model.WeatherForecastSplashItemModel
-import fi.kroon.vadret.util.MPS_TO_KMPH_FACTOR
-import fi.kroon.vadret.util.WINDCHILL_FORMULA_MAXIMUM
-import fi.kroon.vadret.util.WINDCHILL_FORMULA_MINIMUM
 import fi.kroon.vadret.util.common.SunsetUtil
+import fi.kroon.vadret.util.common.WindChill
 import fi.kroon.vadret.util.extension.parseToLocalDate
-import fi.kroon.vadret.util.extension.toWindChill
 import org.threeten.bp.Instant
 import org.threeten.bp.OffsetDateTime
 import org.threeten.bp.ZoneId
@@ -140,10 +137,6 @@ object WeatherForecastMapper {
         }
         weatherDescription = weatherIcon
 
-        if (temperature < WINDCHILL_FORMULA_MAXIMUM) {
-            feelsLikeTemperature = if (windSpeed * MPS_TO_KMPH_FACTOR > WINDCHILL_FORMULA_MINIMUM) temperature.toWindChill(windSpeed) else null
-        }
-
         return WeatherForecastSplashItemModel(
             sunriseDateTime = sunriseDateTime,
             sunsetDateTime = sunsetDateTime,
@@ -151,7 +144,7 @@ object WeatherForecastMapper {
             temperature = temperature,
             windSpeed = windSpeed,
             windDirection = windDirection,
-            feelsLikeTemperature = feelsLikeTemperature,
+            feelsLikeTemperature = WindChill.calculate(temperature, windSpeed),
             weatherIcon = weatherIcon,
             weatherDescription = weatherDescription,
             precipitationCode = precipitationCode,
@@ -178,14 +171,10 @@ object WeatherForecastMapper {
 
         weatherDescription = weatherIcon
 
-        if (temperature < WINDCHILL_FORMULA_MAXIMUM) {
-            feelsLikeTemperature = if (windSpeed * MPS_TO_KMPH_FACTOR > WINDCHILL_FORMULA_MINIMUM) temperature.toWindChill(windSpeed) else null
-        }
-
         return WeatherForecastItemModel(
             temperature = temperature,
             time = time,
-            feelsLikeTemperature = feelsLikeTemperature,
+            feelsLikeTemperature = WindChill.calculate(temperature, windSpeed),
             precipitationType = precipitationType,
             windSpeed = windSpeed,
             weatherIcon = weatherIcon,

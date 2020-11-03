@@ -1,26 +1,26 @@
 package fi.kroon.vadret.common
 
-import fi.kroon.vadret.util.extension.toWindChill
+import fi.kroon.vadret.util.common.WindChill
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
 class WindChillTest {
 
     @Test
-    fun `assert toWindChill produces expected results`() {
-        val temperature = -20.0
-        val windSpeed = 1.388889 // 5km/h in m/s
+    fun `real temperature -10c and windspeed 2 is -34c`() {
+        val temperature = -10.0
+        val windSpeed = 2.0
 
-        val windChill = temperature.toWindChill(windSpeed).toDouble()
-        assertThat(windChill).isEqualTo(-24.3)
+        val windChill = WindChill.calculate(temperature, windSpeed)
+        assertThat(windChill).isEqualTo("-14.1")
     }
 
     @Test
-    fun ` toWindChill produces expected -33 degree result`() {
+    fun `real temperature -20c and windspeed is -34c`() {
         val temperature = -20.0
-        val windSpeed = 8.333333 // 30km/h in m/s
+        val windSpeed = 10.0
 
-        val windChill = temperature.toWindChill(windSpeed).toDouble()
-        assertThat(windChill).isEqualTo(-32.6)
+        val windChill = WindChill.calculate(temperature, windSpeed)
+        assertThat(windChill).isEqualTo("-33.6")
     }
 }
