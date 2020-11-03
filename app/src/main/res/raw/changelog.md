@@ -5,6 +5,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixes
+
+- Fix spelling mistake s/förnärvarande/för närvarande
+
 ## [2.0.0] -- 2020-10-31 🎃
 
 This is a major maintenance release that aims to improve the maintainability of this project. A major change
