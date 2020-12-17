@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixes
 
+- Fixed a nasty memory leak
 - Fix spelling mistake s/förnärvarande/för närvarande
 
 ## [2.0.0] -- 2020-10-31 🎃

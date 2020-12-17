@@ -141,13 +141,9 @@ class WeatherForecastFragment : Fragment(R.layout.weather_forecast_fragment) {
         super.onDestroyView()
         Timber.d("ON DESTROY VIEW -- WEATHER FORECAST")
 
-        weatherForecastRecyclerView.apply {
-            adapter = null
-        }
-
-        autoCompleteRecyclerView.apply {
-            adapter = null
-        }
+        weatherForecastRecyclerView.adapter = null
+        autoCompleteRecyclerView.adapter = null
+        weatherForecastSearchView.setOnQueryTextListener(null)
 
         hideActionBarLocalityName()
     }
