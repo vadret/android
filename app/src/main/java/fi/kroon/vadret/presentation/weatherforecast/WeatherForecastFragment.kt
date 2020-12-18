@@ -222,13 +222,13 @@ class WeatherForecastFragment : Fragment(R.layout.weather_forecast_fragment) {
                     .offer(
                         WeatherForecastView.Event.OnSearchButtonToggled
                     )
-            }.launchIn(lifecycleScope)
+            }.launchIn(viewLifecycleOwner.lifecycleScope)
 
         weatherForecastRefresh
             .refreshes()
             .map {
                 eventChannel.offer(WeatherForecastView.Event.OnSwipedToRefresh)
-            }.launchIn(lifecycleScope)
+            }.launchIn(viewLifecycleOwner.lifecycleScope)
 
         weatherForecastSearchView
             .queryTextChangeEvents()
@@ -253,7 +253,7 @@ class WeatherForecastFragment : Fragment(R.layout.weather_forecast_fragment) {
                         )
                     }
                 }
-            }.launchIn(lifecycleScope)
+            }.launchIn(viewLifecycleOwner.lifecycleScope)
 
         eventChannel.offer(
             WeatherForecastView

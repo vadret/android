@@ -164,6 +164,7 @@ dependencies {
     def THREETEN_ABP_VERSION = "1.2.1"
     def THREETEN_BP_VERSION = "1.4.0"
     def TIMBER_VERSION = "4.7.1"
+    def LIFECYCLE_VERSION = "2.2.0"
 
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
@@ -176,6 +177,11 @@ dependencies {
     implementation "androidx.navigation:navigation-ui-ktx:${NAVIGATION_VERSION}"
     implementation "androidx.preference:preference-ktx:${PREFERENCE_VERSION}"
     implementation "com.google.android.material:material:${MATERIAL_VERSION}"
+
+    // Lifecycle
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$LIFECYCLE_VERSION"
+    implementation "androidx.lifecycle:lifecycle-runtime-ktx:$LIFECYCLE_VERSION"
+    kapt "androidx.lifecycle:lifecycle-compiler:$LIFECYCLE_VERSION"
 
     // Coroutines
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:${COROUTINES_VERSION}"
