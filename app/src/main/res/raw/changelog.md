@@ -5,10 +5,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.0.1] -- 2020-12-19 🎄
+
+This is a minor release with a couple of bug fixes and small improvements. Special thanks for Micke S
+for reporting these issues.
+
 ### Fixes
 
 - Fixed a nasty memory leak
 - Fix spelling mistake s/förnärvarande/för närvarande
+
+### Changed
+
+- Windchill formula switched to match [SMHI](https://www.smhi.se/kunskapsbanken/meteorologi/vindens-kyleffekt-1.259)
 
 ## [2.0.0] -- 2020-10-31 🎃
 
@@ -234,7 +243,8 @@ they did not work very well and weren't used a lot. The release includes a total
 - Radar imagery
 - 10 day weather forecast
 
-[Unreleased]: https://github.com/vadret/android/compare/2.0.0...HEAD
+[Unreleased]: https://github.com/vadret/android/compare/2.0.1...HEAD
+[2.0.1]: https://github.com/vadret/android/compare/2.0.0...2.0.1
 [2.0.0]: https://github.com/vadret/android/compare/1.2.9...2.0.0
 [1.2.9]: https://github.com/vadret/android/compare/1.2.8...1.2.9
 [1.2.8]: https://github.com/vadret/android/compare/1.2.7...1.2.8
