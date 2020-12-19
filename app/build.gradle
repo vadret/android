@@ -2,6 +2,9 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
+apply plugin: 'kotlinx-serialization'
+apply plugin: 'com.google.gms.google-services'
+apply plugin: 'com.google.firebase.crashlytics'
 
 def static loadFromEnvironment(String key) {
     return System.getenv(key)
@@ -39,8 +42,8 @@ android {
         applicationId "fi.kroon.vadret"
         minSdkVersion 21
         targetSdkVersion 30
-        versionCode 26
-        versionName "1.2.10"
+        versionCode 27
+        versionName "2.0.0"
         vectorDrawables.useSupportLibrary = true
         flavorDimensions "default"
         testInstrumentationRunner "androidx.top.runner.AndroidJUnitRunner"
@@ -96,6 +99,9 @@ android {
     productFlavors {
         google {
             signingConfig signingConfigs.release
+            firebaseCrashlytics {
+                mappingFileUploadEnabled true
+            }
         }
         fdroid {
             signingConfig fdroid.signingConfig
@@ -131,18 +137,18 @@ dependencies {
     def CONSTRAINT_LAYOUT_VERSION = "2.0.2"
     def CORBIND_VERSION = "1.4.0"
     def CORE_KTX_VERSION = "1.3.2"
-    def COROUTINES_VERSION = "1.4.0-M1"
-    def CRASHLYTICS_VERSION = "2.10.1"
-    def DAGGER_VERSION = "2.29.1"
+    def COROUTINES_VERSION = "1.4.2"
+    def DAGGER_VERSION = "2.30.1"
     def EITHER_VERSION = "1.2.0"
     def FRAGMENT_VERSION = "1.3.0-beta01"
     def JUNIT_VERSION = "4.13"
     def KOTLIN_STDLIB_VERSION = "1.4.10"
-    def KTLINT_VERSION = "0.39.0"
+    def KOTLINX_SERIALIZATION = "1.0.1"
+    def KTLINT_VERSION = "0.40.0"
     def MATERIAL_VERSION = "1.2.1"
     def MOCKITO_CORE_VERSION = "3.1.0"
     def MOSHI_VERSION = "1.9.2"
-    def NAVIGATION_VERSION = "2.3.1"
+    def NAVIGATION_VERSION = "2.3.2"
     def OKHTTP_VERSION = "4.2.2"
     def OKIO_VERSION = "2.6.0"
     def OSMDROID_VERSION = "6.1.2"
@@ -158,6 +164,7 @@ dependencies {
     def THREETEN_ABP_VERSION = "1.2.1"
     def THREETEN_BP_VERSION = "1.4.0"
     def TIMBER_VERSION = "4.7.1"
+    def LIFECYCLE_VERSION = "2.2.0"
 
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
@@ -170,6 +177,11 @@ dependencies {
     implementation "androidx.navigation:navigation-ui-ktx:${NAVIGATION_VERSION}"
     implementation "androidx.preference:preference-ktx:${PREFERENCE_VERSION}"
     implementation "com.google.android.material:material:${MATERIAL_VERSION}"
+
+    // Lifecycle
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$LIFECYCLE_VERSION"
+    implementation "androidx.lifecycle:lifecycle-runtime-ktx:$LIFECYCLE_VERSION"
+    kapt "androidx.lifecycle:lifecycle-compiler:$LIFECYCLE_VERSION"
 
     // Coroutines
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:${COROUTINES_VERSION}"
@@ -196,6 +208,7 @@ dependencies {
     implementation "com.squareup.retrofit2:adapter-rxjava2:${RETROFIT_VERSION}"
     implementation "com.squareup.retrofit2:converter-moshi:${RETROFIT_VERSION}"
     implementation "com.squareup.retrofit2:retrofit:${RETROFIT_VERSION}"
+    implementation "com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:0.8.0"
 
     // Database
     implementation "androidx.room:room-runtime:${ROOM_VERSION}"
@@ -208,6 +221,7 @@ dependencies {
     implementation "com.squareup.moshi:moshi:${MOSHI_VERSION}"
     implementation "com.squareup.retrofit2:converter-moshi:${RETROFIT_VERSION}"
     kapt "com.squareup.moshi:moshi-kotlin-codegen:${MOSHI_VERSION}"
+    implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:${KOTLINX_SERIALIZATION}"
 
     // Dependency Injection
     implementation "com.google.dagger:dagger:${DAGGER_VERSION}"
@@ -229,9 +243,8 @@ dependencies {
 
     // Debugging, Testing, Linting, Analytics
     debugImplementation "com.squareup.leakcanary:leakcanary-android:2.5"
-    googleImplementation("com.crashlytics.sdk.android:crashlytics:${CRASHLYTICS_VERSION}@aar") {
-        transitive = true
-    }
+    googleImplementation platform('com.google.firebase:firebase-bom:26.0.0')
+    googleImplementation 'com.google.firebase:firebase-crashlytics-ktx'
     implementation "com.jakewharton.timber:timber:${TIMBER_VERSION}"
     ktlint "com.pinterest:ktlint:${KTLINT_VERSION}"
     testImplementation "junit:junit:${JUNIT_VERSION}"

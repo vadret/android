@@ -141,13 +141,9 @@ class WeatherForecastFragment : Fragment(R.layout.weather_forecast_fragment) {
         super.onDestroyView()
         Timber.d("ON DESTROY VIEW -- WEATHER FORECAST")
 
-        weatherForecastRecyclerView.apply {
-            adapter = null
-        }
-
-        autoCompleteRecyclerView.apply {
-            adapter = null
-        }
+        weatherForecastRecyclerView.adapter = null
+        autoCompleteRecyclerView.adapter = null
+        weatherForecastSearchView.setOnQueryTextListener(null)
 
         hideActionBarLocalityName()
     }
@@ -226,13 +222,13 @@ class WeatherForecastFragment : Fragment(R.layout.weather_forecast_fragment) {
                     .offer(
                         WeatherForecastView.Event.OnSearchButtonToggled
                     )
-            }.launchIn(lifecycleScope)
+            }.launchIn(viewLifecycleOwner.lifecycleScope)
 
         weatherForecastRefresh
             .refreshes()
             .map {
                 eventChannel.offer(WeatherForecastView.Event.OnSwipedToRefresh)
-            }.launchIn(lifecycleScope)
+            }.launchIn(viewLifecycleOwner.lifecycleScope)
 
         weatherForecastSearchView
             .queryTextChangeEvents()
@@ -257,7 +253,7 @@ class WeatherForecastFragment : Fragment(R.layout.weather_forecast_fragment) {
                         )
                     }
                 }
-            }.launchIn(lifecycleScope)
+            }.launchIn(viewLifecycleOwner.lifecycleScope)
 
         eventChannel.offer(
             WeatherForecastView

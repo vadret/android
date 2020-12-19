@@ -1,9 +1,7 @@
 package fi.kroon.vadret
 
 import android.content.Context
-import com.crashlytics.android.Crashlytics
-import com.crashlytics.android.core.CrashlyticsCore
-import io.fabric.sdk.android.Fabric
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 
 class VadretApplication : BaseApplication() {
 
@@ -19,9 +17,6 @@ class VadretApplication : BaseApplication() {
     }
 
     private fun initCrashlytics() {
-        val crashlyticsKit = Crashlytics.Builder()
-            .core(CrashlyticsCore.Builder().disabled(BuildConfig.DEBUG).build())
-            .build()
-        Fabric.with(this, crashlyticsKit)
+        FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(!BuildConfig.DEBUG)
     }
 }

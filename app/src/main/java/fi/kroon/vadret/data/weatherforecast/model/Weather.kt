@@ -1,25 +1,21 @@
 package fi.kroon.vadret.data.weatherforecast.model
 
-import android.os.Parcelable
-import com.squareup.moshi.Json
-import com.squareup.moshi.JsonClass
-import kotlinx.android.parcel.Parcelize
-import java.io.Serializable
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
-@Parcelize
-@JsonClass(generateAdapter = true)
+@Serializable
 data class Weather(
 
-    @Json(name = "approvedTime")
+    @SerialName(value = "approvedTime")
     val approvedTime: String,
 
-    @Json(name = "referenceTime")
+    @SerialName(value = "referenceTime")
     val referenceTime: String,
 
-    @Json(name = "geometry")
+    @SerialName(value = "geometry")
     val geometry: Geometry,
 
-    @Json(name = "timeSeries")
-    val timeSeries: List<TimeSerie>? = emptyList()
+    @SerialName(value = "timeSeries")
+    val timeSeries: List<TimeSerie> = emptyList()
 
-) : Serializable, Parcelable
+)

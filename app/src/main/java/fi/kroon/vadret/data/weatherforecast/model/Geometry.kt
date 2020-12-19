@@ -1,14 +1,12 @@
 package fi.kroon.vadret.data.weatherforecast.model
 
-import com.squareup.moshi.Json
-import com.squareup.moshi.JsonClass
-import java.io.Serializable
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
-@JsonClass(generateAdapter = true)
+@Serializable
 data class Geometry(
-    @Json(name = "type")
+    @SerialName(value = "type")
     val type: String = "Point",
-    @Json(name = "coordinates")
+    @SerialName(value = "coordinates")
     val coordinates: List<List<Double>>
-
-) : Serializable
+)
