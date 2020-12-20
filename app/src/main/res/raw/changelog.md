@@ -5,6 +5,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.0.2] -- 2020-12-20 🛠️
+
+### Changed
+
+- Migrate WeatherForecast to SharedFlow API
+
+### Fixes
+
+- `autoCompleteAdapter` race condition leading to NPE
+
 ## [2.0.1] -- 2020-12-19 🎄
 
 This is a minor release with a couple of bug fixes and small improvements. Special thanks for Micke S
@@ -243,7 +253,8 @@ they did not work very well and weren't used a lot. The release includes a total
 - Radar imagery
 - 10 day weather forecast
 
-[Unreleased]: https://github.com/vadret/android/compare/2.0.1...HEAD
+[Unreleased]: https://github.com/vadret/android/compare/2.0.2...HEAD
+[2.0.2]: https://github.com/vadret/android/compare/2.0.1...2.0.2
 [2.0.1]: https://github.com/vadret/android/compare/2.0.0...2.0.1
 [2.0.0]: https://github.com/vadret/android/compare/1.2.9...2.0.0
 [1.2.9]: https://github.com/vadret/android/compare/1.2.8...1.2.9

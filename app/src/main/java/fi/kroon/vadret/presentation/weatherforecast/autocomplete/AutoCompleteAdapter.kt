@@ -8,13 +8,9 @@ import fi.kroon.vadret.R
 import fi.kroon.vadret.data.autocomplete.model.AutoCompleteItem
 import fi.kroon.vadret.presentation.weatherforecast.WeatherForecastView
 import kotlinx.android.synthetic.main.weather_forecast_auto_complete_item.view.*
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.channels.ConflatedBroadcastChannel
-import javax.inject.Inject
 
-@ExperimentalCoroutinesApi
-class AutoCompleteAdapter @Inject constructor(
-    private val eventChannel: ConflatedBroadcastChannel<WeatherForecastView.Event>
+class AutoCompleteAdapter constructor(
+    private val callback: AutoCompleteAdapterCallback
 ) : RecyclerView.Adapter<AutoCompleteAdapter.ViewHolder>() {
 
     private val list: MutableList<AutoCompleteItem> = mutableListOf()
@@ -23,8 +19,8 @@ class AutoCompleteAdapter @Inject constructor(
 
         init {
             itemView.setOnClickListener {
-                eventChannel
-                    .offer(
+                callback
+                    .onAutoCompleteItemClicked(
                         WeatherForecastView
                             .Event
                             .OnAutoCompleteItemClicked(list[adapterPosition])

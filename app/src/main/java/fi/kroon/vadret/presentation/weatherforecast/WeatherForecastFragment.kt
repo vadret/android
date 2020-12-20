@@ -1,7 +1,6 @@
 package fi.kroon.vadret.presentation.weatherforecast
 
 import android.Manifest
-import android.content.Context
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.os.Parcelable
@@ -16,6 +15,7 @@ import fi.kroon.vadret.R
 import fi.kroon.vadret.data.nominatim.model.Locality
 import fi.kroon.vadret.presentation.main.MainActivity
 import fi.kroon.vadret.presentation.weatherforecast.autocomplete.AutoCompleteAdapter
+import fi.kroon.vadret.presentation.weatherforecast.autocomplete.AutoCompleteAdapterCallback
 import fi.kroon.vadret.presentation.weatherforecast.di.DaggerWeatherForecastComponent
 import fi.kroon.vadret.presentation.weatherforecast.di.WeatherForecastComponent
 import fi.kroon.vadret.util.extension.coreComponent
@@ -23,15 +23,16 @@ import fi.kroon.vadret.util.extension.lazyAndroid
 import fi.kroon.vadret.util.extension.toGone
 import fi.kroon.vadret.util.extension.toInvisible
 import fi.kroon.vadret.util.extension.toVisible
-import kotlinx.android.synthetic.main.weather_forecast_fragment.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.android.synthetic.main.weather_forecast_fragment.autoCompleteRecyclerView
+import kotlinx.android.synthetic.main.weather_forecast_fragment.weatherForecastLoadingProgressBar
+import kotlinx.android.synthetic.main.weather_forecast_fragment.weatherForecastLocationSearchButton
+import kotlinx.android.synthetic.main.weather_forecast_fragment.weatherForecastRecyclerView
+import kotlinx.android.synthetic.main.weather_forecast_fragment.weatherForecastRefresh
+import kotlinx.android.synthetic.main.weather_forecast_fragment.weatherForecastSearchView
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.channels.ConflatedBroadcastChannel
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.drop
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -44,8 +45,6 @@ import ru.ldralighieri.corbind.swiperefreshlayout.refreshes
 import ru.ldralighieri.corbind.view.clicks
 import timber.log.Timber
 
-@ExperimentalCoroutinesApi
-@FlowPreview
 @RuntimePermissions
 class WeatherForecastFragment : Fragment(R.layout.weather_forecast_fragment) {
 
@@ -65,20 +64,22 @@ class WeatherForecastFragment : Fragment(R.layout.weather_forecast_fragment) {
             .create(context = requireContext(), coreComponent = coreComponent)
     }
 
-    private val viewModel: WeatherForecastViewModel by lazyAndroid {
+    private val viewModel: WeatherForecastViewModel by lazy {
         component.provideWeatherForecastViewModel()
     }
 
-    private val eventChannel: ConflatedBroadcastChannel<WeatherForecastView.Event> by lazyAndroid {
-        component.provideEventChannel()
-    }
-
-    private val weatherForecastAdapter: WeatherForecastAdapter by lazyAndroid {
+    private val weatherForecastAdapter: WeatherForecastAdapter by lazy {
         component.provideWeatherForecastAdapter()
     }
 
-    private val autoCompleteAdapter: AutoCompleteAdapter by lazyAndroid {
-        component.provideAutoCompleteAdapter()
+    private val autoCompleteAdapter: AutoCompleteAdapter by lazy {
+        AutoCompleteAdapter(
+            callback = object : AutoCompleteAdapterCallback {
+                override fun onAutoCompleteItemClicked(event: WeatherForecastView.Event.OnAutoCompleteItemClicked) {
+                    viewModel.send(event = event)
+                }
+            }
+        )
     }
 
     private val itemDecoration: DividerItemDecoration by lazyAndroid {
@@ -87,11 +88,6 @@ class WeatherForecastFragment : Fragment(R.layout.weather_forecast_fragment) {
 
     private val drawable: Drawable? by lazyAndroid {
         ContextCompat.getDrawable(requireContext(), R.drawable.search_item_divider)
-    }
-
-    override fun onAttach(context: Context) {
-        Timber.d("ON ATTACH -- WEATHER FORECAST")
-        super.onAttach(context)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -108,14 +104,26 @@ class WeatherForecastFragment : Fragment(R.layout.weather_forecast_fragment) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         Timber.d("ON VIEW CREATED -- WEATHER FORECAST")
-        setup()
 
         lifecycleScope
             .launch {
-                viewModel()
-                    .flowOn(Dispatchers.IO)
+                viewModel
+                    .viewState
                     .collect(::render)
             }
+
+        setupRecyclerView()
+        setupEvents()
+
+        viewModel.send(
+            WeatherForecastView
+                .Event
+                .OnViewInitialised(
+                    stateParcel = bundle?.getParcelable(
+                        STATE_PARCEL_KEY
+                    )
+                )
+        )
     }
 
     override fun onRequestPermissionsResult(
@@ -130,16 +138,15 @@ class WeatherForecastFragment : Fragment(R.layout.weather_forecast_fragment) {
     override fun onStop() {
         super.onStop()
         Timber.d("ON STOP -- WEATHER FORECAST")
-
-        recyclerViewParcelable = (weatherForecastRecyclerView.layoutManager as LinearLayoutManager)
-            .onSaveInstanceState()
-
         isConfigChangeOrProcessDeath = true
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         Timber.d("ON DESTROY VIEW -- WEATHER FORECAST")
+
+        recyclerViewParcelable = (weatherForecastRecyclerView.layoutManager as LinearLayoutManager)
+            .onSaveInstanceState()
 
         weatherForecastRecyclerView.adapter = null
         autoCompleteRecyclerView.adapter = null
@@ -188,11 +195,6 @@ class WeatherForecastFragment : Fragment(R.layout.weather_forecast_fragment) {
         }
     }
 
-    private fun setup() {
-        setupEvents()
-        setupRecyclerView()
-    }
-
     private fun setupRecyclerView() {
         weatherForecastRecyclerView.apply {
             layoutManager = LinearLayoutManager(requireContext())
@@ -201,12 +203,13 @@ class WeatherForecastFragment : Fragment(R.layout.weather_forecast_fragment) {
         }
     }
 
+    @OptIn(FlowPreview::class)
     private fun setupEvents() {
 
         weatherForecastSearchView
             .setOnCloseListener {
 
-                eventChannel.offer(
+                viewModel.send(
                     WeatherForecastView
                         .Event
                         .OnSearchViewDismissed
@@ -218,8 +221,8 @@ class WeatherForecastFragment : Fragment(R.layout.weather_forecast_fragment) {
         weatherForecastLocationSearchButton
             .clicks()
             .map {
-                eventChannel
-                    .offer(
+                viewModel
+                    .send(
                         WeatherForecastView.Event.OnSearchButtonToggled
                     )
             }.launchIn(viewLifecycleOwner.lifecycleScope)
@@ -227,7 +230,7 @@ class WeatherForecastFragment : Fragment(R.layout.weather_forecast_fragment) {
         weatherForecastRefresh
             .refreshes()
             .map {
-                eventChannel.offer(WeatherForecastView.Event.OnSwipedToRefresh)
+                viewModel.send(WeatherForecastView.Event.OnSwipedToRefresh)
             }.launchIn(viewLifecycleOwner.lifecycleScope)
 
         weatherForecastSearchView
@@ -237,14 +240,14 @@ class WeatherForecastFragment : Fragment(R.layout.weather_forecast_fragment) {
             .map { searchEvent ->
                 when {
                     searchEvent.isSubmitted -> {
-                        eventChannel.offer(
+                        viewModel.send(
                             WeatherForecastView
                                 .Event
                                 .OnSearchButtonSubmitted(searchEvent.queryText.toString())
                         )
                     }
                     else -> {
-                        eventChannel.offer(
+                        viewModel.send(
                             WeatherForecastView
                                 .Event
                                 .OnSearchTextChanged(
@@ -254,16 +257,6 @@ class WeatherForecastFragment : Fragment(R.layout.weather_forecast_fragment) {
                     }
                 }
             }.launchIn(viewLifecycleOwner.lifecycleScope)
-
-        eventChannel.offer(
-            WeatherForecastView
-                .Event
-                .OnViewInitialised(
-                    stateParcel = bundle?.getParcelable(
-                        STATE_PARCEL_KEY
-                    )
-                )
-        )
     }
 
     private fun render(viewState: WeatherForecastView.State) =
@@ -275,8 +268,12 @@ class WeatherForecastFragment : Fragment(R.layout.weather_forecast_fragment) {
             WeatherForecastView.RenderEvent.EnableSearchView -> enableSearchView()
             WeatherForecastView.RenderEvent.RestoreScrollPosition -> restoreScrollPosition()
             is WeatherForecastView.RenderEvent.DisableSearchView -> disableSearchView(viewState.renderEvent)
-            is WeatherForecastView.RenderEvent.DisplayAutoComplete -> displayAutoCompleteList(viewState.renderEvent)
-            is WeatherForecastView.RenderEvent.DisplayWeatherForecast -> displayWeatherForecast(viewState.renderEvent)
+            is WeatherForecastView.RenderEvent.DisplayAutoComplete -> displayAutoCompleteList(
+                viewState.renderEvent
+            )
+            is WeatherForecastView.RenderEvent.DisplayWeatherForecast -> displayWeatherForecast(
+                viewState.renderEvent
+            )
             is WeatherForecastView.RenderEvent.DisplayError -> renderError(viewState.renderEvent.errorCode)
             WeatherForecastView.RenderEvent.UpdateStateParcel -> updateStateParcel(viewState)
         }
@@ -288,7 +285,7 @@ class WeatherForecastFragment : Fragment(R.layout.weather_forecast_fragment) {
             toVisible()
         }
 
-        eventChannel.offer(
+        viewModel.send(
             WeatherForecastView
                 .Event
                 .OnProgressBarEffectStarted
@@ -306,7 +303,7 @@ class WeatherForecastFragment : Fragment(R.layout.weather_forecast_fragment) {
             isRefreshing = false
         }
 
-        eventChannel.offer(
+        viewModel.send(
             WeatherForecastView
                 .Event
                 .OnProgressBarEffectStopped
@@ -329,7 +326,7 @@ class WeatherForecastFragment : Fragment(R.layout.weather_forecast_fragment) {
                 )
         }
 
-        eventChannel.offer(
+        viewModel.send(
             WeatherForecastView
                 .Event
                 .OnScrollPositionRestored
@@ -346,7 +343,7 @@ class WeatherForecastFragment : Fragment(R.layout.weather_forecast_fragment) {
         )
         Timber.d("updateStateParcel: $stateParcel")
 
-        eventChannel.offer(
+        viewModel.send(
             WeatherForecastView
                 .Event
                 .OnStateParcelUpdated
@@ -370,7 +367,7 @@ class WeatherForecastFragment : Fragment(R.layout.weather_forecast_fragment) {
             toInvisible()
         }
 
-        eventChannel.offer(
+        viewModel.send(
             WeatherForecastView
                 .Event
                 .OnSearchViewDismissed
@@ -408,7 +405,7 @@ class WeatherForecastFragment : Fragment(R.layout.weather_forecast_fragment) {
         weatherForecastAdapter.updateList(renderEvent.list)
         setActionBarLocalityName(renderEvent.locality)
 
-        eventChannel.offer(
+        viewModel.send(
             WeatherForecastView
                 .Event
                 .OnWeatherListDisplayed
@@ -420,8 +417,8 @@ class WeatherForecastFragment : Fragment(R.layout.weather_forecast_fragment) {
 
     @NeedsPermission(value = [Manifest.permission.ACCESS_FINE_LOCATION])
     fun onLocationPermissionGranted() {
-        eventChannel
-            .offer(
+        viewModel
+            .send(
                 WeatherForecastView
                     .Event
                     .OnLocationPermissionGranted
@@ -430,8 +427,8 @@ class WeatherForecastFragment : Fragment(R.layout.weather_forecast_fragment) {
 
     @OnPermissionDenied(value = [Manifest.permission.ACCESS_FINE_LOCATION])
     fun onLocationPermissionDenied() {
-        eventChannel
-            .offer(
+        viewModel
+            .send(
                 WeatherForecastView
                     .Event
                     .OnLocationPermissionDenied
@@ -440,8 +437,8 @@ class WeatherForecastFragment : Fragment(R.layout.weather_forecast_fragment) {
 
     @OnNeverAskAgain(value = [Manifest.permission.ACCESS_FINE_LOCATION])
     fun onLocationPermissionNeverAskAgain() {
-        eventChannel
-            .offer(
+        viewModel
+            .send(
                 WeatherForecastView
                     .Event
                     .OnLocationPermissionDeniedNeverAskAgain
@@ -451,8 +448,8 @@ class WeatherForecastFragment : Fragment(R.layout.weather_forecast_fragment) {
     private fun renderError(errorCode: Int) {
         // TODO snack(errorCode)
         Timber.e("Rendering error code: ${getString(errorCode)}")
-        eventChannel
-            .offer(
+        viewModel
+            .send(
                 WeatherForecastView
                     .Event
                     .OnFailureHandled

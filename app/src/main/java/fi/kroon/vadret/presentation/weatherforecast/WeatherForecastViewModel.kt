@@ -1,5 +1,7 @@
 package fi.kroon.vadret.presentation.weatherforecast
 
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import fi.kroon.vadret.data.autocomplete.model.AutoCompleteItem
 import fi.kroon.vadret.data.failure.Failure
 import fi.kroon.vadret.data.nominatim.model.Locality
@@ -14,22 +16,16 @@ import fi.kroon.vadret.domain.weatherforecast.SetWeatherForecastLastCheckedTask
 import fi.kroon.vadret.presentation.shared.IViewModel
 import fi.kroon.vadret.util.extension.empty
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.channels.ConflatedBroadcastChannel
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.asFlow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.rx2.await
 import kotlinx.coroutines.withContext
 import timber.log.Timber
 import javax.inject.Inject
 
-@FlowPreview
-@ExperimentalCoroutinesApi
 class WeatherForecastViewModel @Inject constructor(
     private var state: WeatherForecastView.State,
-    private val eventChannel: ConflatedBroadcastChannel<WeatherForecastView.Event>,
     private val setDefaultLocationInformationTask: SetDefaultLocationInformationTask,
     private val getWeatherForecastService: GetWeatherForecastService,
     private val getAutoCompleteService: GetAutoCompleteService,
@@ -38,16 +34,19 @@ class WeatherForecastViewModel @Inject constructor(
     private val getAppLocationModeTask: GetAppLocationModeTask,
     private val setWeatherForecastLastCheckedTask: SetWeatherForecastLastCheckedTask,
     private val getWeatherForecastLastCheckedTask: GetWeatherForecastLastCheckedTask
-) : IViewModel {
+) : IViewModel, ViewModel() {
 
-    operator fun invoke(): Flow<WeatherForecastView.State> =
-        eventChannel
-            .asFlow()
-            .map { event: WeatherForecastView.Event ->
-                reduce(event)
-            }
+    fun send(event: WeatherForecastView.Event) {
+        viewModelScope.launch {
+            reduce(event = event)
+        }
+    }
 
-    private suspend fun reduce(event: WeatherForecastView.Event): WeatherForecastView.State = withContext(Dispatchers.IO) {
+    private val mutState: MutableSharedFlow<WeatherForecastView.State> = MutableSharedFlow()
+
+    val viewState = mutState.asSharedFlow()
+
+    private suspend fun reduce(event: WeatherForecastView.Event) = withContext(Dispatchers.IO) {
         Timber.d("event: $event")
         when (event) {
             is WeatherForecastView.Event.OnViewInitialised -> onViewInitialisedEvent(event.stateParcel)
@@ -69,7 +68,7 @@ class WeatherForecastViewModel @Inject constructor(
         }
     }
 
-    private suspend fun onViewInitialisedEvent(stateParcel: WeatherForecastView.StateParcel?): WeatherForecastView.State =
+    private suspend fun onViewInitialisedEvent(stateParcel: WeatherForecastView.StateParcel?) =
         withContext(Dispatchers.IO) {
             getAppLocationModeTask()
                 .await()
@@ -82,7 +81,7 @@ class WeatherForecastViewModel @Inject constructor(
                             .DisplayError(errorCode)
 
                         state = state.copy(renderEvent = renderEvent)
-                        state
+                        mutState.emit(state)
                     },
                     { locationMode: Boolean ->
                         restoreStateFromStateParcel(stateParcel)
@@ -109,24 +108,24 @@ class WeatherForecastViewModel @Inject constructor(
         }
     }
 
-    private fun onStateParcelUpdatedEvent(): WeatherForecastView.State {
+    private suspend fun onStateParcelUpdatedEvent() {
         state = state.copy(renderEvent = WeatherForecastView.RenderEvent.Idle)
-        return state
+        mutState.emit(state)
     }
 
-    private fun onWeatherListDisplayed(): WeatherForecastView.State =
+    private suspend fun onWeatherListDisplayed() =
         endLoadingWeatherForecast()
 
-    private suspend fun onProgressBarEffectStartedEvent(): WeatherForecastView.State =
+    private suspend fun onProgressBarEffectStartedEvent() =
         preLoadingWeatherForecast()
 
-    private fun onProgressBarEffectStoppedEvent(): WeatherForecastView.State =
+    private suspend fun onProgressBarEffectStoppedEvent() =
         endLoadingWeatherForecast()
 
-    private fun onScrollPositionRestored(): WeatherForecastView.State =
+    private suspend fun onScrollPositionRestored() =
         endLoadingWeatherForecast()
 
-    private suspend fun preLoadingWeatherForecast(): WeatherForecastView.State =
+    private suspend fun preLoadingWeatherForecast() =
         withContext(Dispatchers.IO) {
             when {
                 state.isSearchToggled -> {
@@ -139,7 +138,7 @@ class WeatherForecastViewModel @Inject constructor(
                         searchText = String.empty(),
                         isSearchToggled = false
                     )
-                    state
+                    mutState.emit(state)
                 }
                 state.startRefreshing -> {
                     state = state.copy(
@@ -147,7 +146,7 @@ class WeatherForecastViewModel @Inject constructor(
                         startRefreshing = false,
                         stopRefreshing = true
                     )
-                    state
+                    mutState.emit(state)
                 }
                 else -> {
                     Timber.d("preLoadingWeatherForecast ended")
@@ -159,7 +158,7 @@ class WeatherForecastViewModel @Inject constructor(
             }
         }
 
-    private fun endLoadingWeatherForecast(): WeatherForecastView.State =
+    private suspend fun endLoadingWeatherForecast() =
         when {
             state.isSearchToggled -> {
                 state = state.copy(
@@ -168,91 +167,91 @@ class WeatherForecastViewModel @Inject constructor(
                         .DisableSearchView(text = String.empty()),
                     isSearchToggled = false
                 )
-                state
+                mutState.emit(state)
             }
             state.wasRestoredFromStateParcel -> {
                 state = state.copy(
                     renderEvent = WeatherForecastView.RenderEvent.RestoreScrollPosition,
                     wasRestoredFromStateParcel = false
                 )
-                state
+                mutState.emit(state)
             }
             state.stopRefreshing -> {
                 state = state.copy(
                     renderEvent = WeatherForecastView.RenderEvent.StopProgressBarEffect,
                     stopRefreshing = false
                 )
-                state
+                mutState.emit(state)
             }
             else -> {
                 Timber.d("endLoadingWeatherForecast ended.")
                 updateStateParcel()
-                state
+                mutState.emit(state)
             }
         }
 
-    private fun onFailureHandled(): WeatherForecastView.State {
+    private suspend fun onFailureHandled() {
         Timber.e("onFailureHandled")
-        return endLoadingWeatherForecast()
+        endLoadingWeatherForecast()
     }
 
-    private suspend fun onSwipedToRefreshEvent(): WeatherForecastView.State {
+    private suspend fun onSwipedToRefreshEvent() {
         Timber.d("onSwipedToRefreshEvent")
         state = state.copy(forceNet = true)
         updateStateToRefreshing()
-        return preLoadingWeatherForecast()
+        preLoadingWeatherForecast()
     }
 
-    private fun onRequestLocationPermission(): WeatherForecastView.State {
+    private suspend fun onRequestLocationPermission() {
         Timber.d("onRequestLocationPermission")
         state = state.copy(
             renderEvent = WeatherForecastView.RenderEvent.RequestLocationPermission
         )
-        return state
+        mutState.emit(state)
     }
 
-    private fun updateStateParcel(): WeatherForecastView.State {
+    private suspend fun updateStateParcel() {
         state = state.copy(
             renderEvent = WeatherForecastView.RenderEvent.UpdateStateParcel,
             startRefreshing = false,
             stopRefreshing = false,
             forceNet = false
         )
-        return state
+        mutState.emit(state)
     }
 
-    private suspend fun onSearchViewDismissedEvent(): WeatherForecastView.State =
+    private suspend fun onSearchViewDismissedEvent() =
         preLoadingWeatherForecast()
 
-    private suspend fun onAutoCompleteItemClickedEvent(autoCompleteItem: AutoCompleteItem): WeatherForecastView.State =
+    private suspend fun onAutoCompleteItemClickedEvent(autoCompleteItem: AutoCompleteItem) =
         enableGpsLocationModeTask(false)
             .await()
             .either(
                 {
                     Timber.e("$it")
-                    state
+                    mutState.emit(state)
                 },
                 {
                     updateLocationInformation(autoCompleteItem = autoCompleteItem)
                 }
             )
 
-    private suspend fun updateLocationInformation(autoCompleteItem: AutoCompleteItem): WeatherForecastView.State =
+    private suspend fun updateLocationInformation(autoCompleteItem: AutoCompleteItem) =
         setLocationInformationTask(autoCompleteItem)
             .await()
             ?.either(
                 {
                     Timber.e("$it")
-                    state
+                    mutState.emit(state)
                 },
                 {
                     state = state.copy(forceNet = true)
                     updateStateToRefreshing()
                     preLoadingWeatherForecast()
                 }
-            ) ?: state
+            )
 
-    private suspend fun onSearchTextChanged(searchText: String): WeatherForecastView.State =
+    private suspend fun onSearchTextChanged(searchText: String) =
         getAutoCompleteService(searchText)
             .await()
             ?.either(
@@ -261,7 +260,7 @@ class WeatherForecastViewModel @Inject constructor(
                     val renderEvent: WeatherForecastView.RenderEvent.DisplayError = WeatherForecastView.RenderEvent.DisplayError(errorCode)
 
                     state = state.copy(renderEvent = renderEvent)
-                    state
+                    mutState.emit(state)
                 },
                 { data: GetAutoCompleteService.Data ->
                     val renderEvent: WeatherForecastView.RenderEvent.DisplayAutoComplete =
@@ -276,21 +275,22 @@ class WeatherForecastViewModel @Inject constructor(
                         renderEvent = renderEvent,
                         searchText = searchText
                     )
-                    state
+                    mutState.emit(state)
                 }
-            ) ?: state
+            )
 
-    private suspend fun onSearchButtonSubmittedEvent(query: String): WeatherForecastView.State =
+    private suspend fun onSearchButtonSubmittedEvent(query: String) =
         getAutoCompleteService(query)
             .await()
             ?.either(
                 { failure: Failure ->
                     Timber.e("getAutoCompleteService failed: $failure")
                     val errorCode: Int = getErrorCode(failure)
-                    val renderEvent: WeatherForecastView.RenderEvent.DisplayError = WeatherForecastView.RenderEvent.DisplayError(errorCode)
+                    val renderEvent: WeatherForecastView.RenderEvent.DisplayError =
+                        WeatherForecastView.RenderEvent.DisplayError(errorCode)
 
                     state = state.copy(renderEvent = renderEvent)
-                    state
+                    mutState.emit(state)
                 },
                 { data: GetAutoCompleteService.Data ->
                     Timber.d("Submit triggered: ${data.newFilteredList.first()}")
@@ -298,17 +298,17 @@ class WeatherForecastViewModel @Inject constructor(
                         .await()
                         .either(
                             {
-                                state
+                                mutState.emit(state)
                             },
                             {
                                 setLocationInformation(data.newFilteredList.first())
-                                state
+                                mutState.emit(state)
                             }
                         )
                 }
-            ) ?: state
+            )
 
-    private suspend fun setLocationInformation(autoCompleteItem: AutoCompleteItem): WeatherForecastView.State =
+    private suspend fun setLocationInformation(autoCompleteItem: AutoCompleteItem) =
         setLocationInformationTask(autoCompleteItem)
             .await()
             .either(
@@ -326,7 +326,7 @@ class WeatherForecastViewModel @Inject constructor(
                 }
             )
 
-    private suspend fun setDefaultLocationInformation(): WeatherForecastView.State =
+    private suspend fun setDefaultLocationInformation() =
         setDefaultLocationInformationTask()
             .await()
             .either(
@@ -336,7 +336,7 @@ class WeatherForecastViewModel @Inject constructor(
                     val renderEvent = WeatherForecastView.RenderEvent.DisplayError(errorCode)
 
                     state = state.copy(renderEvent = renderEvent)
-                    state
+                    mutState.emit(state)
                 },
                 {
                     preLoadingWeatherForecast()
@@ -347,13 +347,13 @@ class WeatherForecastViewModel @Inject constructor(
      *  On location mode setting updated. Which happens after
      *  location permission is successfully granted.
      */
-    private suspend fun loadWeatherForecast(): WeatherForecastView.State =
+    private suspend fun loadWeatherForecast() =
         getWeatherForecastLastCheckedTask()
             .await()
             .either(
                 { failure: Failure ->
                     Timber.e("Failure: $failure")
-                    state
+                    mutState.emit(state)
                 },
                 { timeStamp: Long ->
                     getWeatherForecastService(timeStamp, state.forceNet)
@@ -365,7 +365,7 @@ class WeatherForecastViewModel @Inject constructor(
                                     WeatherForecastView.RenderEvent.DisplayError(errorCode)
 
                                 state = state.copy(renderEvent = renderEvent)
-                                state
+                                mutState.emit(state)
                             },
                             { data: GetWeatherForecastService.Data ->
 
@@ -384,45 +384,45 @@ class WeatherForecastViewModel @Inject constructor(
                 }
             )
 
-    private suspend fun updateLastChecked(timeStamp: Long): WeatherForecastView.State =
+    private suspend fun updateLastChecked(timeStamp: Long) =
         setWeatherForecastLastCheckedTask(value = timeStamp)
             .await()
             .either(
                 { failure: Failure ->
                     Timber.e("Failure: $failure")
-                    state
+                    mutState.emit(state)
                 },
                 {
                     Timber.d("LAST CHECKED UPDATED")
-                    state
+                    mutState.emit(state)
                 }
             )
 
-    private fun onSearchButtonToggledEvent(): WeatherForecastView.State {
+    private suspend fun onSearchButtonToggledEvent() {
         state = state.copy(
             renderEvent = WeatherForecastView.RenderEvent.EnableSearchView,
             isSearchToggled = true
         )
-        return state
+        mutState.emit(state)
     }
 
-    private fun updateStateToLoadingAndRefreshing(): WeatherForecastView.State {
+    private suspend fun updateStateToLoadingAndRefreshing() {
         Timber.d("updateStateToLoadingAndRefreshing")
         state = state.copy(
             startRefreshing = state.wasRestoredFromStateParcel.not()
         )
-        return state
+        mutState.emit(state)
     }
 
-    private fun updateStateToRefreshing(): WeatherForecastView.State {
+    private suspend fun updateStateToRefreshing() {
         Timber.d("updateStateToRefreshing")
         state = state.copy(
             startRefreshing = true
         )
-        return state
+        mutState.emit(state)
     }
 
-    private suspend fun onLocationPermissionGrantedEvent(): WeatherForecastView.State =
+    private suspend fun onLocationPermissionGrantedEvent() =
         enableGpsLocationModeTask(true)
             .await()
             ?.either(
@@ -432,16 +432,16 @@ class WeatherForecastViewModel @Inject constructor(
                     val renderEvent = WeatherForecastView.RenderEvent.DisplayError(errorCode)
 
                     state = state.copy(renderEvent = renderEvent)
-                    state
+                    mutState.emit(state)
                 },
                 {
                     Timber.d("Location mode updated to true -- proceeding to fetch weather.")
                     updateStateToLoadingAndRefreshing()
                     preLoadingWeatherForecast()
                 }
-            ) ?: state
+            )
 
-    private suspend fun onLocationPermissionDeniedEvent(): WeatherForecastView.State =
+    private suspend fun onLocationPermissionDeniedEvent() =
         getAppLocationModeTask()
             .await()
             .either(
@@ -453,7 +453,7 @@ class WeatherForecastViewModel @Inject constructor(
                         .DisplayError(errorCode)
 
                     state = state.copy(renderEvent = renderEvent)
-                    state
+                    mutState.emit(state)
                 },
                 { locationMode: Boolean ->
                     updateStateToLoadingAndRefreshing()
@@ -464,7 +464,7 @@ class WeatherForecastViewModel @Inject constructor(
                 }
             )
 
-    private suspend fun onLocationPermissionDeniedNeverAskAgainEvent(): WeatherForecastView.State =
+    private suspend fun onLocationPermissionDeniedNeverAskAgainEvent() =
         enableGpsLocationModeTask(false)
             .await()
             .either(
@@ -474,7 +474,7 @@ class WeatherForecastViewModel @Inject constructor(
                     val renderEvent: WeatherForecastView.RenderEvent.DisplayError = WeatherForecastView.RenderEvent.DisplayError(errorCode)
 
                     state = state.copy(renderEvent = renderEvent)
-                    state
+                    mutState.emit(state)
                 },
                 {
                     Timber.d("Location mode updated, proceeding to fetch weather.")

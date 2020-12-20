@@ -19,7 +19,6 @@ import fi.kroon.vadret.util.Scheduler
 import fi.kroon.vadret.util.extension.assertNoInitMainThread
 import fi.kroon.vadret.util.extension.delegatingCallFactory
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.channels.ConflatedBroadcastChannel
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType
@@ -37,18 +36,13 @@ object WeatherForecastModule {
 
     @Provides
     @WeatherForecastScope
-    fun provideEventChannel(): ConflatedBroadcastChannel<WeatherForecastView.Event> =
-        ConflatedBroadcastChannel()
-
-    @Provides
-    @WeatherForecastScope
     fun provideViewState(): WeatherForecastView.State = WeatherForecastView.State()
 
     @Provides
     @WeatherForecastScope
     fun provideSchedulers(): Scheduler = Scheduler()
 
-    @ExperimentalSerializationApi
+    @OptIn(ExperimentalSerializationApi::class)
     @WeatherQualifier
     @Provides
     @WeatherForecastScope
