@@ -28,19 +28,16 @@ object RadarView {
         val seekBarMax: Int = NIL_INT,
         val seekStep: Int = 1,
         val currentSeekBarIndex: Int = NIL_INT,
-        val renderEvent: RenderEvent = RenderEvent.None,
+        val renderEvent: RenderEvent = RenderEvent.Idle,
         val wasRestoredFromStateParcel: Boolean = false
     )
 
     sealed class RenderEvent {
-        object None : RenderEvent()
+        object Idle : RenderEvent()
         object UpdateStateParcel : RenderEvent()
-        object StartSeekBar : RenderEvent()
-        object StopSeekBar : RenderEvent()
+        data class UpdatePlayerState(val isPlaying: Boolean) : RenderEvent()
         object ResetSeekBar : RenderEvent()
         object RestoreSeekBarPosition : RenderEvent()
-        object SetPlayButtonToStopped : RenderEvent()
-        object SetPlayButtonToPlaying : RenderEvent()
         class DisplayRadarImage(val file: File) : RenderEvent()
         class DisplayError(@StringRes val errorCode: Int) : RenderEvent()
     }

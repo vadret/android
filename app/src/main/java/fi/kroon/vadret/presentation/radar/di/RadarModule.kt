@@ -18,68 +18,24 @@ import fi.kroon.vadret.util.common.IDateTimeUtil
 import fi.kroon.vadret.util.extension.assertNoInitMainThread
 import fi.kroon.vadret.util.extension.delegatingCallFactory
 import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.subjects.PublishSubject
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableSharedFlow
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.moshi.MoshiConverterFactory
 
 @Module
+@ExperimentalCoroutinesApi
 object RadarModule {
 
     @Provides
     @RadarScope
-    fun provideOnViewInitialisedSubject(): PublishSubject<RadarView.Event.OnViewInitialised> =
-        PublishSubject.create()
-
-    @Provides
-    @RadarScope
-    fun provideOnPlayButtonStartedSubject(): PublishSubject<RadarView.Event.OnPlayButtonStarted> =
-        PublishSubject.create()
-
-    @Provides
-    @RadarScope
-    fun provideOnPlayButtonStoppedSubject(): PublishSubject<RadarView.Event.OnPlayButtonStopped> =
-        PublishSubject.create()
-
-    @Provides
-    @RadarScope
-    fun provideOnFailureHandledSubject(): PublishSubject<RadarView.Event.OnFailureHandled> =
-        PublishSubject.create()
-
-    @Provides
-    @RadarScope
-    fun provideOnRadarImageDisplayedSubject(): PublishSubject<RadarView.Event.OnRadarImageDisplayed> =
-        PublishSubject.create()
-
-    @Provides
-    @RadarScope
-    fun provideOnSeekBarResetSubject(): PublishSubject<RadarView.Event.OnSeekBarReset> =
-        PublishSubject.create()
-
-    @Provides
-    @RadarScope
-    fun provideOnSeekBarStoppedSubject(): PublishSubject<RadarView.Event.OnSeekBarStopped> =
-        PublishSubject.create()
-
-    @Provides
-    @RadarScope
-    fun provideOnStateParcelUpdatedSubject(): PublishSubject<RadarView.Event.OnStateParcelUpdated> =
-        PublishSubject.create()
-
-    @Provides
-    @RadarScope
-    fun provideOnPositionUpdatedSubject(): PublishSubject<RadarView.Event.OnPositionUpdated> =
-        PublishSubject.create()
-
-    @Provides
-    @RadarScope
-    fun provideOnSeekBarRestoredSubject(): PublishSubject<RadarView.Event.OnSeekBarRestored> =
-        PublishSubject.create()
-
-    @Provides
-    @RadarScope
     fun provideViewState(): RadarView.State = RadarView.State()
+
+    @Provides
+    @RadarScope
+    fun provideSharedFlowState(): MutableSharedFlow<RadarView.State> = MutableSharedFlow()
 
     @Provides
     @RadarScope
