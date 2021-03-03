@@ -152,7 +152,7 @@ dependencies {
     def OKHTTP_VERSION = "4.2.2"
     def OKIO_VERSION = "2.6.0"
     def OSMDROID_VERSION = "6.1.2"
-    def PERMISSIONS_DISPATCHER_VERSION = "4.7.0"
+    def PERMISSIONS_DISPATCHER_VERSION = "4.8.0"
     def PREFERENCE_VERSION = "1.1.1"
     def RETROFIT_VERSION = "2.9.0"
     def ROOM_VERSION = "2.2.6"
