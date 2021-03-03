@@ -132,7 +132,7 @@ dependencies {
 
     def APPCOMPAT_VERSION = "1.2.0"
     def ASSERTJ_VERSION = "3.14.0"
-    def COIL_VERSION = "0.13.0"
+    def COIL_VERSION = "1.1.1"
     def COMMONS_CSV_VERSION = "1.7"
     def CONSTRAINT_LAYOUT_VERSION = "2.0.4"
     def CORBIND_VERSION = "1.4.0"
