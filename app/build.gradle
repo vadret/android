@@ -242,7 +242,7 @@ dependencies {
     testImplementation "org.threeten:threetenbp:${THREETEN_BP_VERSION}"
 
     // Debugging, Testing, Linting, Analytics
-    debugImplementation "com.squareup.leakcanary:leakcanary-android:2.5"
+    debugImplementation "com.squareup.leakcanary:leakcanary-android:2.6"
     googleImplementation platform('com.google.firebase:firebase-bom:26.0.0')
     googleImplementation 'com.google.firebase:firebase-crashlytics-ktx'
     implementation "com.jakewharton.timber:timber:${TIMBER_VERSION}"
