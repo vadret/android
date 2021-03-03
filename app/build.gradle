@@ -164,7 +164,7 @@ dependencies {
     def THREETEN_ABP_VERSION = "1.2.1"
     def THREETEN_BP_VERSION = "1.4.0"
     def TIMBER_VERSION = "4.7.1"
-    def LIFECYCLE_VERSION = "2.2.0"
+    def LIFECYCLE_VERSION = "2.3.0"
 
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
