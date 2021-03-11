@@ -1,13 +1,15 @@
 package fi.kroon.vadret.presentation.warning.filter
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.chip.Chip
 import fi.kroon.vadret.R
 import fi.kroon.vadret.data.district.model.DistrictOptionEntity
 import fi.kroon.vadret.data.feedsource.model.FeedSourceOptionEntity
+import fi.kroon.vadret.databinding.WarningFilterDistrictChipGroupBinding
+import fi.kroon.vadret.databinding.WarningFilterFeedSourceChipGroupBinding
+import fi.kroon.vadret.databinding.WarningFilterTitleItemBinding
 import fi.kroon.vadret.presentation.shared.IViewHolder
 import fi.kroon.vadret.presentation.warning.filter.WarningFilterUtil.getChipDistrictBackgroundColor
 import fi.kroon.vadret.presentation.warning.filter.WarningFilterUtil.getChipDistrictStrokeColor
@@ -16,9 +18,6 @@ import fi.kroon.vadret.presentation.warning.filter.WarningFilterUtil.getChipFeed
 import fi.kroon.vadret.presentation.warning.filter.model.IFilterable
 import fi.kroon.vadret.presentation.warning.filter.model.TitleModel
 import fi.kroon.vadret.util.extension.getAttribute
-import kotlinx.android.synthetic.main.warning_filter_district_chip_group.view.*
-import kotlinx.android.synthetic.main.warning_filter_feed_source_chip_group.view.*
-import kotlinx.android.synthetic.main.warning_filter_title_item.view.*
 import timber.log.Timber
 
 class WarningFilterAdapter constructor(
@@ -34,23 +33,23 @@ class WarningFilterAdapter constructor(
 
     private val list: MutableList<IFilterable> = mutableListOf()
 
-    inner class TitleViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView), IViewHolder {
+    inner class TitleViewHolder(private val itemBinding: WarningFilterTitleItemBinding) : RecyclerView.ViewHolder(itemBinding.root), IViewHolder {
         override fun bind(entity: IFilterable) {
             entity as TitleModel
 
             Timber.d("TITLE_VIEW_TYPE VIEW HOLDER")
-            with(itemView) {
-                warningFilterTitleText.text = context.getString(entity.resId)
+            with(itemBinding) {
+                warningFilterTitleText.text = root.context.getString(entity.resId)
             }
         }
     }
 
-    inner class FeedSourceViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView), IViewHolder {
+    inner class FeedSourceViewHolder(private val itemBinding: WarningFilterFeedSourceChipGroupBinding) : RecyclerView.ViewHolder(itemBinding.root), IViewHolder {
 
         override fun bind(entity: IFilterable) {
             entity as FeedSourceOptionEntity
 
-            with(itemView) {
+            with(itemBinding) {
                 warningFilterFeedSourceChipGroup.removeAllViews()
                 val chip = Chip(warningFilterFeedSourceChipGroup.context)
                 chip.text = entity.name
@@ -78,12 +77,12 @@ class WarningFilterAdapter constructor(
         }
     }
 
-    inner class DistrictViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView), IViewHolder {
+    inner class DistrictViewHolder(private val itemBinding: WarningFilterDistrictChipGroupBinding) : RecyclerView.ViewHolder(itemBinding.root), IViewHolder {
 
         override fun bind(entity: IFilterable) {
             entity as DistrictOptionEntity
 
-            with(itemView) {
+            with(itemBinding) {
                 warningFilterDistrictChipGroup.removeAllViews()
                 val chip = Chip(warningFilterDistrictChipGroup.context)
 
@@ -112,19 +111,28 @@ class WarningFilterAdapter constructor(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder =
         when (viewType) {
             TITLE_VIEW_TYPE -> TitleViewHolder(
-                LayoutInflater
-                    .from(parent.context)
-                    .inflate(R.layout.warning_filter_title_item, parent, false)
+                WarningFilterTitleItemBinding
+                    .inflate(
+                        LayoutInflater.from(parent.context),
+                        parent,
+                        false
+                    )
             )
             FEED_SOURCE_VIEW_TYPE -> FeedSourceViewHolder(
-                LayoutInflater
-                    .from(parent.context)
-                    .inflate(R.layout.warning_filter_feed_source_chip_group, parent, false)
+                WarningFilterFeedSourceChipGroupBinding
+                    .inflate(
+                        LayoutInflater.from(parent.context),
+                        parent,
+                        false
+                    )
             )
             else -> DistrictViewHolder(
-                LayoutInflater
-                    .from(parent.context)
-                    .inflate(R.layout.warning_filter_district_chip_group, parent, false)
+                WarningFilterDistrictChipGroupBinding
+                    .inflate(
+                        LayoutInflater.from(parent.context),
+                        parent,
+                        false
+                    )
             )
         }
 

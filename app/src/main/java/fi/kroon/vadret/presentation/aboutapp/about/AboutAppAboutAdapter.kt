@@ -1,15 +1,13 @@
 package fi.kroon.vadret.presentation.aboutapp.about
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import fi.kroon.vadret.R
 import fi.kroon.vadret.data.aboutinfo.model.AboutInfo
+import fi.kroon.vadret.databinding.AboutAppAboutItemBinding
 import fi.kroon.vadret.presentation.aboutapp.extension.onClickThrottled
 import fi.kroon.vadret.util.extension.toGone
-import kotlinx.android.synthetic.main.about_app_about_item.view.*
 
 class AboutAppAboutAdapter constructor(
     private val onAboutAppAboutInfoItemClicked: (AboutInfo) -> Unit
@@ -19,10 +17,9 @@ class AboutAppAboutAdapter constructor(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder =
         ViewHolder(
-            LayoutInflater
-                .from(parent.context)
+            AboutAppAboutItemBinding
                 .inflate(
-                    R.layout.about_app_about_item,
+                    LayoutInflater.from(parent.context),
                     parent,
                     false
                 )
@@ -32,23 +29,25 @@ class AboutAppAboutAdapter constructor(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) = holder.bind(list[position])
 
-    inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    inner class ViewHolder(
+        private val itemBinding: AboutAppAboutItemBinding
+    ) : RecyclerView.ViewHolder(itemBinding.root) {
 
         init {
-            itemView.onClickThrottled {
+            itemBinding.root.onClickThrottled {
                 onAboutAppAboutInfoItemClicked(list[adapterPosition])
             }
         }
 
         fun bind(entity: AboutInfo) {
-            itemView.apply {
+            itemBinding.apply {
                 with(entity) {
                     iconResourceId?.let { id ->
                         aboutAppAboutInfoItemIconImageView.setImageResource(id)
                     }
 
-                    setTextOrMakeGone(itemView.aboutAppLibraryItemTitleTextView, titleResourceId)
-                    setTextOrMakeGone(itemView.aboutAppAboutInfoItemHintTextView, hintResourceId)
+                    setTextOrMakeGone(itemBinding.aboutAppLibraryItemTitleTextView, titleResourceId)
+                    setTextOrMakeGone(itemBinding.aboutAppAboutInfoItemHintTextView, hintResourceId)
                 }
             }
         }

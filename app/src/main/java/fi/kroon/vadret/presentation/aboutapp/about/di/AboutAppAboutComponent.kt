@@ -4,9 +4,7 @@ import android.content.Context
 import dagger.BindsInstance
 import dagger.Component
 import fi.kroon.vadret.presentation.aboutapp.about.AboutAppAboutViewModel
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 
-@ExperimentalCoroutinesApi
 @AboutAppAboutScope
 @Component(
     modules = [

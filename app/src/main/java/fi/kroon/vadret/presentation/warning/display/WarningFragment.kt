@@ -2,13 +2,16 @@ package fi.kroon.vadret.presentation.warning.display
 
 import android.os.Bundle
 import android.os.Parcelable
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import fi.kroon.vadret.R
+import fi.kroon.vadret.databinding.WarningFragmentBinding
 import fi.kroon.vadret.presentation.warning.display.di.DaggerWarningComponent
 import fi.kroon.vadret.presentation.warning.display.di.WarningComponent
 import fi.kroon.vadret.presentation.warning.display.model.IWarningModel
@@ -17,22 +20,16 @@ import fi.kroon.vadret.util.extension.lazyAndroid
 import fi.kroon.vadret.util.extension.snack
 import fi.kroon.vadret.util.extension.toGone
 import fi.kroon.vadret.util.extension.toVisible
-import kotlinx.android.synthetic.main.warning_display_fragment.warningDisplayNoWarningsIssued
-import kotlinx.android.synthetic.main.warning_display_fragment.warningFilterButton
-import kotlinx.android.synthetic.main.warning_display_fragment.warningLoadingProgressBar
-import kotlinx.android.synthetic.main.warning_display_fragment.warningRecyclerView
-import kotlinx.android.synthetic.main.warning_display_fragment.warningSwipeRefreshView
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.onEach
 import ru.ldralighieri.corbind.swiperefreshlayout.refreshes
 import ru.ldralighieri.corbind.view.clicks
 import timber.log.Timber
 
 @ExperimentalCoroutinesApi
-class WarningFragment : Fragment(R.layout.warning_display_fragment) {
+class WarningFragment : Fragment() {
 
     companion object {
         const val STATE_PARCEL_KEY: String = "STATE_PARCEL_KEY"
@@ -41,6 +38,8 @@ class WarningFragment : Fragment(R.layout.warning_display_fragment) {
         const val RESULT_OK = "result_ok"
     }
 
+    private var _binding: WarningFragmentBinding? = null
+    private val binding: WarningFragmentBinding get() = _binding!!
     private var recyclerViewParcelable: Parcelable? = null
     private var stateParcel: WarningView.StateParcel? = null
     private var bundle: Bundle? = null
@@ -82,14 +81,23 @@ class WarningFragment : Fragment(R.layout.warning_display_fragment) {
         }
     }
 
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        _binding = WarningFragmentBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        lifecycleScope
-            .launch {
-                viewModel
-                    .viewState
-                    .collect(::render)
-            }
+
+        viewModel
+            .viewState
+            .onEach(::render)
+            .launchIn(viewLifecycleOwner.lifecycleScope)
+
         listenForWarningFilterDialogResult()
         setup()
     }
@@ -104,7 +112,7 @@ class WarningFragment : Fragment(R.layout.warning_display_fragment) {
 
             recyclerViewParcelable?.run {
                 putParcelable(SCROLL_POSITION_KEY, this)
-            } ?: warningRecyclerView?.layoutManager?.run {
+            } ?: binding.warningRecyclerView.layoutManager?.run {
                 putParcelable(
                     SCROLL_POSITION_KEY,
                     (this as LinearLayoutManager)
@@ -120,7 +128,7 @@ class WarningFragment : Fragment(R.layout.warning_display_fragment) {
         bundle?.apply {
             putParcelable(
                 SCROLL_POSITION_KEY,
-                (warningRecyclerView.layoutManager as LinearLayoutManager)
+                (binding.warningRecyclerView.layoutManager as LinearLayoutManager)
                     .onSaveInstanceState()
             )
         }
@@ -130,9 +138,10 @@ class WarningFragment : Fragment(R.layout.warning_display_fragment) {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        warningRecyclerView.apply {
+        binding.warningRecyclerView.apply {
             adapter = null
         }
+        _binding = null
     }
 
     override fun onResume() {
@@ -151,7 +160,7 @@ class WarningFragment : Fragment(R.layout.warning_display_fragment) {
 
     private fun setupEvents() {
 
-        warningSwipeRefreshView
+        binding.warningSwipeRefreshView
             .refreshes()
             .map {
                 viewModel.send(
@@ -161,7 +170,7 @@ class WarningFragment : Fragment(R.layout.warning_display_fragment) {
                 )
             }.launchIn(lifecycleScope)
 
-        warningFilterButton
+        binding.warningFilterButton
             .clicks()
             .map {
                 viewModel.send(
@@ -181,7 +190,7 @@ class WarningFragment : Fragment(R.layout.warning_display_fragment) {
     }
 
     private fun setupRecyclerView() {
-        warningRecyclerView.apply {
+        binding.warningRecyclerView.apply {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = warningAdapter
             hasFixedSize()
@@ -207,7 +216,7 @@ class WarningFragment : Fragment(R.layout.warning_display_fragment) {
     }
 
     private fun displayNoWarningsIssued() {
-        warningDisplayNoWarningsIssued.toVisible()
+        binding.warningDisplayNoWarningsIssued.toVisible()
 
         viewModel.send(
             WarningView
@@ -218,7 +227,7 @@ class WarningFragment : Fragment(R.layout.warning_display_fragment) {
 
     private fun startProgressBarEffect() {
         Timber.d("START PROGRESS BAR")
-        warningLoadingProgressBar.apply {
+        binding.warningLoadingProgressBar.apply {
             toVisible()
         }
 
@@ -228,11 +237,8 @@ class WarningFragment : Fragment(R.layout.warning_display_fragment) {
     private fun stopProgressBarEffect() {
         Timber.d("STOP PROGRESS BAR")
 
-        warningLoadingProgressBar.apply {
-            toGone()
-        }
-
-        warningSwipeRefreshView.apply {
+        binding.warningLoadingProgressBar.toGone()
+        binding.warningSwipeRefreshView.apply {
             isRefreshing = false
         }
 
@@ -252,7 +258,7 @@ class WarningFragment : Fragment(R.layout.warning_display_fragment) {
     private fun restoreScrollPosition() {
         Timber.d("restoreScrollPosition")
         bundle?.run {
-            (warningRecyclerView.layoutManager as LinearLayoutManager)
+            (binding.warningRecyclerView.layoutManager as LinearLayoutManager)
                 .onRestoreInstanceState(
                     getParcelable(SCROLL_POSITION_KEY)
                 )
@@ -263,7 +269,7 @@ class WarningFragment : Fragment(R.layout.warning_display_fragment) {
 
     private fun displayWarningList(list: MutableList<IWarningModel>) {
         Timber.d("DISPLAY WARNING LIST")
-        warningDisplayNoWarningsIssued
+        binding.warningDisplayNoWarningsIssued
             .toGone()
         warningAdapter.updateList(list)
         viewModel.send(WarningView.Event.OnWarningListDisplayed)

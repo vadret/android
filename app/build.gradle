@@ -1,7 +1,7 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
+apply plugin: 'kotlin-parcelize'
 apply plugin: 'kotlinx-serialization'
 apply plugin: 'com.google.gms.google-services'
 apply plugin: 'com.google.firebase.crashlytics'
@@ -33,10 +33,8 @@ def getGitSha = { ->
 }
 
 android {
+
     compileSdkVersion 30
-    androidExtensions {
-        experimental = true
-    }
     buildToolsVersion '30.0.3'
     defaultConfig {
         applicationId "fi.kroon.vadret"
@@ -121,6 +119,9 @@ android {
     }
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_11.toString()
+    }
+    buildFeatures {
+        viewBinding true
     }
 }
 

@@ -1,11 +1,11 @@
 package fi.kroon.vadret.presentation.warning.display
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.StringRes
 import androidx.recyclerview.widget.RecyclerView
 import fi.kroon.vadret.R
+import fi.kroon.vadret.databinding.WarningDisplayItemBinding
 import fi.kroon.vadret.presentation.warning.display.WarningUtil.getChipFeedSourceBackgroundColor
 import fi.kroon.vadret.presentation.warning.display.WarningUtil.getChipFeedSourceStrokeColor
 import fi.kroon.vadret.presentation.warning.display.model.IWarningModel
@@ -17,7 +17,6 @@ import fi.kroon.vadret.util.extension.empty
 import fi.kroon.vadret.util.extension.getAttribute
 import fi.kroon.vadret.util.extension.toGone
 import fi.kroon.vadret.util.extension.toVisible
-import kotlinx.android.synthetic.main.warning_display_item.view.*
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -29,13 +28,13 @@ class WarningAdapter @Inject constructor() : RecyclerView.Adapter<RecyclerView.V
 
     private val list: MutableList<IWarningModel> = mutableListOf()
 
-    inner class WarningViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    inner class WarningViewHolder(private val itemBinding: WarningDisplayItemBinding) : RecyclerView.ViewHolder(itemBinding.root) {
 
         fun bind(entity: IWarningModel) {
             entity as WarningModel
 
             Timber.d("RENDER: $entity")
-            with(itemView) {
+            with(itemBinding) {
                 warningDisplayTitle.text = entity.headline
 
                 if (entity.preamble != String.empty()) {
@@ -92,23 +91,14 @@ class WarningAdapter @Inject constructor() : RecyclerView.Adapter<RecyclerView.V
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WarningViewHolder =
         when (viewType) {
             WARNING_VIEW_TYPE -> WarningViewHolder(
-                LayoutInflater
-                    .from(parent.context)
+                WarningDisplayItemBinding
                     .inflate(
-                        R.layout.warning_display_item,
+                        LayoutInflater.from(parent.context),
                         parent,
                         false
                     )
             )
-            else -> WarningViewHolder(
-                LayoutInflater
-                    .from(parent.context)
-                    .inflate(
-                        R.layout.warning_display_item,
-                        parent,
-                        false
-                    )
-            )
+            else -> throw IllegalStateException("invalid view type $viewType")
         }
 
     override fun getItemViewType(position: Int): Int =

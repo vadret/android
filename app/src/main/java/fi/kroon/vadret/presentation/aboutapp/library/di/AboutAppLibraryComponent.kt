@@ -4,9 +4,7 @@ import android.content.Context
 import dagger.BindsInstance
 import dagger.Component
 import fi.kroon.vadret.presentation.aboutapp.library.AboutAppLibraryViewModel
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 
-@ExperimentalCoroutinesApi
 @AboutAppLibraryScope
 @Component(
     modules = [

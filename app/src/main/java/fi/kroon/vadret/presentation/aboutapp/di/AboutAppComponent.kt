@@ -5,9 +5,7 @@ import dagger.BindsInstance
 import dagger.Component
 import fi.kroon.vadret.presentation.aboutapp.AboutAppViewModel
 import fi.kroon.vadret.presentation.aboutapp.about.di.AboutAppAboutScope
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 
-@ExperimentalCoroutinesApi
 @AboutAppAboutScope
 @Component(
     modules = [

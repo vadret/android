@@ -7,7 +7,6 @@ import fi.kroon.vadret.R
 import fi.kroon.vadret.data.aboutinfo.model.AboutInfo
 import fi.kroon.vadret.data.failure.Failure
 import fi.kroon.vadret.domain.aboutapp.GetAboutInfoTask
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -15,7 +14,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.rx2.await
 import javax.inject.Inject
 
-@ExperimentalCoroutinesApi
 class AboutAppAboutViewModel @Inject constructor(
     private val state: MutableSharedFlow<AboutAppAboutView.State>,
     private var stateModel: AboutAppAboutView.State,

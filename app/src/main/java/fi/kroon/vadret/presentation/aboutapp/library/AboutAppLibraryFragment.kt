@@ -3,22 +3,26 @@ package fi.kroon.vadret.presentation.aboutapp.library
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import fi.kroon.vadret.R
+import fi.kroon.vadret.databinding.AboutAppLibraryFragmentBinding
 import fi.kroon.vadret.presentation.aboutapp.library.di.AboutAppLibraryComponent
 import fi.kroon.vadret.presentation.aboutapp.library.di.DaggerAboutAppLibraryComponent
 import fi.kroon.vadret.util.extension.lazyAndroid
-import kotlinx.android.synthetic.main.about_app_library_fragment.*
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import timber.log.Timber
 
-@ExperimentalCoroutinesApi
 class AboutAppLibraryFragment : Fragment(R.layout.about_app_library_fragment) {
+
+    private var _binding: AboutAppLibraryFragmentBinding? = null
+    private val binding: AboutAppLibraryFragmentBinding get() = _binding!!
 
     companion object {
         fun newInstance(): AboutAppLibraryFragment = AboutAppLibraryFragment()
@@ -36,25 +40,35 @@ class AboutAppLibraryFragment : Fragment(R.layout.about_app_library_fragment) {
             .create(context = requireContext())
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        _binding = AboutAppLibraryFragmentBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         setupRecyclerView()
-        lifecycleScope
-            .launch {
-                viewModel
-                    .viewState
-                    .collect(::render)
-            }
+
+        viewModel
+            .viewState
+            .onEach(::render)
+            .launchIn(viewLifecycleOwner.lifecycleScope)
+
         viewModel.send(AboutAppLibraryView.Event.OnViewInitialised)
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         Timber.d("ON DESTROY VIEW")
-        aboutAppLibraryRecyclerView.apply {
+        binding.aboutAppLibraryRecyclerView.apply {
             adapter = null
         }
+        _binding = null
     }
 
     private fun setupRecyclerView() {
@@ -69,7 +83,7 @@ class AboutAppLibraryFragment : Fragment(R.layout.about_app_library_fragment) {
                 viewModel.send(AboutAppLibraryView.Event.OnLicenseUrlClick(it))
             }
         )
-        aboutAppLibraryRecyclerView
+        binding.aboutAppLibraryRecyclerView
             .apply {
                 layoutManager = LinearLayoutManager(requireContext())
                 adapter = aboutAppLibraryAdapter

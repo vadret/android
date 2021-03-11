@@ -1,20 +1,23 @@
 package fi.kroon.vadret.presentation.aboutapp
 
 import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
-import fi.kroon.vadret.R
+import fi.kroon.vadret.databinding.AboutAppFragmentBinding
 import fi.kroon.vadret.presentation.aboutapp.di.AboutAppComponent
 import fi.kroon.vadret.presentation.aboutapp.di.DaggerAboutAppComponent
 import fi.kroon.vadret.util.extension.lazyAndroid
-import kotlinx.android.synthetic.main.about_app_fragment.*
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import timber.log.Timber
 
-@ExperimentalCoroutinesApi
-class AboutAppFragment : Fragment(R.layout.about_app_fragment) {
+class AboutAppFragment : Fragment() {
+
+    private var _binding: AboutAppFragmentBinding? = null
+    private val binding: AboutAppFragmentBinding get() = _binding!!
 
     private lateinit var aboutAppFragmentPagerAdapter: AboutAppFragmentPagerAdapter
 
@@ -28,15 +31,22 @@ class AboutAppFragment : Fragment(R.layout.about_app_fragment) {
         component.provideViewModel()
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        _binding = AboutAppFragmentBinding.inflate(inflater, container, false)
+        return binding.root
+    }
 
-        lifecycleScope
-            .launch {
-                viewModel
-                    .viewState
-                    .collect(::render)
-            }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        viewModel
+            .viewState
+            .onEach(::render)
+            .launchIn(viewLifecycleOwner.lifecycleScope)
 
         setupRecyclerView()
     }
@@ -44,9 +54,8 @@ class AboutAppFragment : Fragment(R.layout.about_app_fragment) {
     override fun onDestroyView() {
         super.onDestroyView()
         Timber.d("ON VIEW DESTROY")
-        aboutAppViewPager?.apply {
-            adapter = null
-        }
+        binding.aboutAppViewPager.adapter = null
+        _binding = null
     }
 
     private fun setupRecyclerView() {
@@ -54,10 +63,9 @@ class AboutAppFragment : Fragment(R.layout.about_app_fragment) {
             childFragmentManager,
             requireContext()
         )
-        aboutAppViewPager?.adapter = aboutAppFragmentPagerAdapter
-
-        aboutAppTabLayout?.apply {
-            setupWithViewPager(aboutAppViewPager)
+        binding.apply {
+            aboutAppViewPager.adapter = aboutAppFragmentPagerAdapter
+            aboutAppTabLayout.setupWithViewPager(aboutAppViewPager)
         }
     }
 
