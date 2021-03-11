@@ -151,7 +151,7 @@ dependencies {
     def NAVIGATION_VERSION = "2.3.4"
     def OKHTTP_VERSION = "4.2.2"
     def OKIO_VERSION = "2.6.0"
-    def OSMDROID_VERSION = "6.1.2"
+    def OSMDROID_VERSION = "6.1.10"
     def PERMISSIONS_DISPATCHER_VERSION = "4.8.0"
     def PREFERENCE_VERSION = "1.1.1"
     def RETROFIT_VERSION = "2.9.0"
