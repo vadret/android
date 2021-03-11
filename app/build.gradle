@@ -232,7 +232,7 @@ dependencies {
     implementation "com.afollestad:rxkprefs:${RXK_PREFS_VERSION}"
     implementation "io.coil-kt:coil:${COIL_VERSION}"
     implementation "org.apache.commons:commons-csv:${COMMONS_CSV_VERSION}"
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${KOTLIN_STDLIB_VERSION}"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${KOTLIN_STDLIB_VERSION}"
     implementation "org.osmdroid:osmdroid-android:${OSMDROID_VERSION}"
     implementation "io.github.sphrak:either:${EITHER_VERSION}"
     implementation "org.permissionsdispatcher:permissionsdispatcher:${PERMISSIONS_DISPATCHER_VERSION}"
