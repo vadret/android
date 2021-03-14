@@ -8,7 +8,7 @@ import fi.kroon.vadret.data.nominatim.model.Locality
 import fi.kroon.vadret.presentation.weatherforecast.model.IWeatherForecastModel
 import fi.kroon.vadret.util.AUTOMATIC_LOCATION_MODE_KEY
 import fi.kroon.vadret.util.extension.empty
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 
 object WeatherForecastView {
 

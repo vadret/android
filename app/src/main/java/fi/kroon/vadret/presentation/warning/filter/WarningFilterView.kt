@@ -4,7 +4,7 @@ import android.os.Parcelable
 import fi.kroon.vadret.data.district.model.DistrictOptionEntity
 import fi.kroon.vadret.data.feedsource.model.FeedSourceOptionEntity
 import fi.kroon.vadret.presentation.warning.filter.model.IFilterable
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 
 object WarningFilterView {
 
