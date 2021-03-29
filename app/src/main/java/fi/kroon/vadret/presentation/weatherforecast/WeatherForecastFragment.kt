@@ -111,13 +111,14 @@ class WeatherForecastFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         Timber.d("ON VIEW CREATED -- WEATHER FORECAST")
 
+        setupRecyclerView()
+
         viewModel
             .viewState
             .onEach(::render)
             .launchIn(viewLifecycleOwner.lifecycleScope)
 
-        setupRecyclerView()
-        setupEvents()
+        setupListeners()
 
         viewModel.send(
             WeatherForecastView
@@ -199,7 +200,7 @@ class WeatherForecastFragment : Fragment() {
         super.onResume()
         Timber.d("ON RESUME -- WEATHER FORECAST")
         if (isConfigChangeOrProcessDeath) {
-            setupEvents()
+            setupListeners()
             isConfigChangeOrProcessDeath = false
         }
     }
@@ -212,7 +213,7 @@ class WeatherForecastFragment : Fragment() {
         }
     }
 
-    private fun setupEvents() {
+    private fun setupListeners() {
 
         binding.weatherForecastSearchView
             .setOnCloseListener {
