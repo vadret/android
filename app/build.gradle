@@ -145,7 +145,7 @@ dependencies {
     def JUNIT_VERSION = "4.13"
     def KOTLIN_STDLIB_VERSION = "1.4.32"
     def KOTLINX_SERIALIZATION = "1.1.0"
-    def KTLINT_VERSION = "0.40.0"
+    def KTLINT_VERSION = "0.41.0"
     def MATERIAL_VERSION = "1.3.0"
     def MOCKITO_CORE_VERSION = "3.1.0"
     def MOSHI_VERSION = "1.9.2"
