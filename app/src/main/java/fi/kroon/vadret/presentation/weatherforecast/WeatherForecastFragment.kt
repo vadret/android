@@ -185,7 +185,7 @@ class WeatherForecastFragment : Fragment() {
              */
             recyclerViewParcelable?.run {
                 putParcelable(SCROLL_POSITION_KEY, this)
-            } ?: binding.weatherForecastRecyclerView.layoutManager?.run {
+            } ?: _binding?.weatherForecastRecyclerView?.layoutManager?.run {
                 putParcelable(
                     SCROLL_POSITION_KEY,
                     (this as LinearLayoutManager)

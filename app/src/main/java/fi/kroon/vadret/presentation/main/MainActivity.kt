@@ -63,8 +63,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         Timber.d("ON CREATE")
 
-        binding = MainActivityBinding.inflate(layoutInflater)
-        setContentView(binding.root)
         /**
          * on runtime theme needs to be applied before
          * setContentView has run. But we cant run
@@ -73,6 +71,8 @@ class MainActivity : AppCompatActivity() {
          */
         preSetupEvents()
 
+        binding = MainActivityBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         setupSupportActionBar()
 
         if (savedInstanceState == null) {
