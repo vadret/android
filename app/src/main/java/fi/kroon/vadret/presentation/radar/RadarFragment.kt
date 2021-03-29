@@ -3,8 +3,11 @@ package fi.kroon.vadret.presentation.radar
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import androidx.core.graphics.drawable.toBitmap
+import androidx.fragment.app.Fragment
 import coil.ImageLoader
 import coil.request.ImageRequest
 import com.jakewharton.rxbinding3.view.clicks
@@ -12,9 +15,9 @@ import com.jakewharton.rxbinding3.widget.changes
 import com.jakewharton.rxbinding3.widget.userChanges
 import fi.kroon.vadret.BuildConfig
 import fi.kroon.vadret.R
+import fi.kroon.vadret.databinding.RadarFragmentBinding
 import fi.kroon.vadret.presentation.radar.di.DaggerRadarComponent
 import fi.kroon.vadret.presentation.radar.di.RadarComponent
-import fi.kroon.vadret.presentation.shared.BaseFragment
 import fi.kroon.vadret.util.DEFAULT_BOUNDINGBOX_CENTER_LATITUDE
 import fi.kroon.vadret.util.DEFAULT_BOUNDINGBOX_CENTER_LONGITUDE
 import fi.kroon.vadret.util.DEFAULT_BOUNDINGBOX_LATITUDE_MAX
@@ -36,9 +39,6 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.subjects.PublishSubject
-import kotlinx.android.synthetic.main.radar_fragment.radarMapView
-import kotlinx.android.synthetic.main.radar_fragment.radarPlayFab
-import kotlinx.android.synthetic.main.radar_fragment.radarSeekBar
 import org.osmdroid.config.Configuration
 import org.osmdroid.config.IConfigurationProvider
 import org.osmdroid.tileprovider.tilesource.XYTileSource
@@ -52,7 +52,7 @@ import java.util.concurrent.TimeUnit
 
 typealias RadarFile = fi.kroon.vadret.data.radar.model.File
 
-class RadarFragment : BaseFragment() {
+class RadarFragment : Fragment() {
 
     private companion object {
         const val A_NAME = "wikimedia"
@@ -62,9 +62,12 @@ class RadarFragment : BaseFragment() {
         const val STATE_PARCEL_KEY = "STATE_PARCEL_KEY"
     }
 
+    private var _binding: RadarFragmentBinding? = null
+    private val binding: RadarFragmentBinding get() = _binding!!
     private lateinit var disposable: Disposable
     private var bundle: Bundle? = null
     private var stateParcel: RadarView.StateParcel? = null
+    private var isConfigChangeOrProcessDeath = false
 
     private val component: RadarComponent by lazyAndroid {
         DaggerRadarComponent
@@ -157,9 +160,7 @@ class RadarFragment : BaseFragment() {
         arrayOf(WIKIMEDIA_TILE_SOURCE_URL)
     )
 
-    override fun layoutId(): Int = R.layout.radar_fragment
-
-    override fun renderError(errorCode: Int) {
+    private fun renderError(errorCode: Int) {
         snack(errorCode)
         Timber.e("Rendering error code: ${getString(errorCode)}")
         onFailureHandledSubject.onNext(
@@ -180,10 +181,19 @@ class RadarFragment : BaseFragment() {
         }
     }
 
-    override fun onStop() {
-        super.onStop()
-        Timber.d("ON STOP")
-        isConfigChangeOrProcessDeath = true
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        _binding = RadarFragmentBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        setupRadarMapView()
+        setupEvents()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -196,6 +206,12 @@ class RadarFragment : BaseFragment() {
         }
     }
 
+    override fun onStop() {
+        super.onStop()
+        Timber.d("ON STOP")
+        isConfigChangeOrProcessDeath = true
+    }
+
     private fun setupMapViewConfiguration() {
         Timber.d("setupMapViewConfiguration")
         val configuration: IConfigurationProvider = Configuration.getInstance()
@@ -206,15 +222,9 @@ class RadarFragment : BaseFragment() {
         }
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        setupRadarMapView()
-        setupEvents()
-    }
-
     override fun onResume() {
         super.onResume()
-        radarMapView.onResume()
+        binding.radarMapView.onResume()
         if (isConfigChangeOrProcessDeath) {
             setupEvents()
             isConfigChangeOrProcessDeath = false
@@ -222,15 +232,16 @@ class RadarFragment : BaseFragment() {
     }
 
     override fun onPause() {
-        radarMapView.onPause()
+        binding.radarMapView.onPause()
         super.onPause()
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
-        radarMapView.onDetach()
+        binding.radarMapView.onDetach()
         disposeSeekBar()
         subscriptions.clear()
+        _binding = null
     }
 
     private fun disposeSeekBar() {
@@ -241,7 +252,7 @@ class RadarFragment : BaseFragment() {
 
     private fun setupRadarMapView() {
         Timber.d("setupRadarMapView")
-        radarMapView.apply {
+        binding.radarMapView.apply {
             setTileSource(defaultTileSource)
             isTilesScaledToDpi = true
             setMultiTouchControls(true)
@@ -290,7 +301,7 @@ class RadarFragment : BaseFragment() {
                     .toObservable(),
                 onPlayButtonStoppedSubject
                     .toObservable(),
-                radarSeekBar
+                binding.radarSeekBar
                     .userChanges()
                     .throttleFirst(RADAR_DEBOUNCE_MILLIS, TimeUnit.MILLISECONDS)
                     .map { position: Int ->
@@ -300,7 +311,7 @@ class RadarFragment : BaseFragment() {
                                 position
                             )
                     },
-                radarSeekBar
+                binding.radarSeekBar
                     .changes()
                     .skipInitialValue()
                     .map { position: Int ->
@@ -308,7 +319,7 @@ class RadarFragment : BaseFragment() {
                             .Event
                             .OnRadarImageDisplayed(position)
                     },
-                radarPlayFab
+                binding.radarPlayFab
                     .clicks()
                     .map {
                         RadarView
@@ -393,14 +404,14 @@ class RadarFragment : BaseFragment() {
     }
 
     private fun setRadarSeekBarPosition(viewState: RadarView.State) {
-        radarSeekBar?.run {
+        binding.radarSeekBar.run {
             progress = viewState.currentSeekBarIndex
             max = viewState.seekBarMax
         }
     }
 
     private fun setPlayButtonToPlaying() {
-        radarPlayFab.setImageResource(R.drawable.ic_pause_white_24dp)
+        binding.radarPlayFab.setImageResource(R.drawable.ic_pause_white_24dp)
         Timber.d("setPlayButtonToPlaying")
         onPlayButtonStartedSubject.onNext(
             RadarView
@@ -410,7 +421,7 @@ class RadarFragment : BaseFragment() {
     }
 
     private fun setPlayButtonToStopped() {
-        radarPlayFab.setImageResource(R.drawable.ic_play_arrow_white_24dp)
+        binding.radarPlayFab.setImageResource(R.drawable.ic_play_arrow_white_24dp)
         Timber.d("setPlayButtonToStopped")
         onPlayButtonStoppedSubject.onNext(
             RadarView
@@ -424,7 +435,7 @@ class RadarFragment : BaseFragment() {
             RADAR_DEBOUNCE_MILLIS,
             TimeUnit.MILLISECONDS
         ).map { _ ->
-            radarSeekBar?.run {
+            binding.radarSeekBar.run {
                 progress += state.seekStep
                 max = state.seekBarMax
             }
@@ -483,7 +494,7 @@ class RadarFragment : BaseFragment() {
                 )
             }
 
-        radarMapView?.apply {
+        binding.radarMapView.apply {
             overlays.clear()
             overlayManager.add(radarOverlay)
             invalidate()

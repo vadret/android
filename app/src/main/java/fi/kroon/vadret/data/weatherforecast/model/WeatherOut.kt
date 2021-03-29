@@ -4,7 +4,7 @@ import android.os.Parcelable
 import fi.kroon.vadret.util.PMP3G_CATEGORY
 import fi.kroon.vadret.util.POINT_GEOTYPE
 import fi.kroon.vadret.util.SMHI_BASE_API_VERSION
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class WeatherOut(

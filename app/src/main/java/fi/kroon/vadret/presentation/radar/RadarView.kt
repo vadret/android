@@ -4,7 +4,7 @@ import android.os.Parcelable
 import androidx.annotation.StringRes
 import fi.kroon.vadret.data.radar.model.File
 import fi.kroon.vadret.util.NIL_INT
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 
 object RadarView {
 

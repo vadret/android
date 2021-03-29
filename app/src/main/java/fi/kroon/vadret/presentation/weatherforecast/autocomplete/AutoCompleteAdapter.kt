@@ -1,13 +1,11 @@
 package fi.kroon.vadret.presentation.weatherforecast.autocomplete
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import fi.kroon.vadret.R
 import fi.kroon.vadret.data.autocomplete.model.AutoCompleteItem
+import fi.kroon.vadret.databinding.WeatherForecastAutoCompleteItemBinding
 import fi.kroon.vadret.presentation.weatherforecast.WeatherForecastView
-import kotlinx.android.synthetic.main.weather_forecast_auto_complete_item.view.*
 
 class AutoCompleteAdapter constructor(
     private val callback: AutoCompleteAdapterCallback
@@ -15,32 +13,32 @@ class AutoCompleteAdapter constructor(
 
     private val list: MutableList<AutoCompleteItem> = mutableListOf()
 
-    inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    inner class ViewHolder(private val itemBinding: WeatherForecastAutoCompleteItemBinding) : RecyclerView.ViewHolder(itemBinding.root) {
 
         init {
-            itemView.setOnClickListener {
-                callback
-                    .onAutoCompleteItemClicked(
-                        WeatherForecastView
-                            .Event
-                            .OnAutoCompleteItemClicked(list[adapterPosition])
-                    )
-            }
+            itemBinding.root
+                .setOnClickListener {
+                    callback
+                        .onAutoCompleteItemClicked(
+                            WeatherForecastView
+                                .Event
+                                .OnAutoCompleteItemClicked(list[adapterPosition])
+                        )
+                }
         }
 
         fun bind(autoCompleteItem: AutoCompleteItem) {
             val description = "${autoCompleteItem.municipality}, ${autoCompleteItem.county}"
-            itemView.municipalityCounty.text = description
-            itemView.city.text = autoCompleteItem.locality
+            itemBinding.municipalityCounty.text = description
+            itemBinding.city.text = autoCompleteItem.locality
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder =
         ViewHolder(
-            LayoutInflater
-                .from(parent.context)
+            WeatherForecastAutoCompleteItemBinding
                 .inflate(
-                    R.layout.weather_forecast_auto_complete_item,
+                    LayoutInflater.from(parent.context),
                     parent,
                     false
                 )

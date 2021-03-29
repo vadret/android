@@ -1,38 +1,39 @@
 package fi.kroon.vadret.presentation.aboutapp.library
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import fi.kroon.vadret.R
 import fi.kroon.vadret.data.library.model.Library
+import fi.kroon.vadret.databinding.AboutAppLibraryItemBinding
 import fi.kroon.vadret.presentation.aboutapp.extension.onClickThrottled
-import kotlinx.android.synthetic.main.about_app_library_item.view.*
 
 class AboutAppLibraryAdapter constructor(
     private val onProjectUrlClicked: (Library) -> Unit,
     private val onSourceUrlClicked: (Library) -> Unit,
     private val onLicenseUrlClicked: (Library) -> Unit
-) : RecyclerView.Adapter<AboutAppLibraryAdapter.ViewHolder>() {
+) : RecyclerView.Adapter<AboutAppLibraryAdapter.AboutAppLibraryViewHolder>() {
 
     private val list: MutableList<Library> = mutableListOf()
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder =
-        ViewHolder(
-            LayoutInflater
-                .from(parent.context)
-                .inflate(R.layout.about_app_library_item, parent, false)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AboutAppLibraryViewHolder =
+        AboutAppLibraryViewHolder(
+            AboutAppLibraryItemBinding
+                .inflate(
+                    LayoutInflater.from(parent.context),
+                    parent,
+                    false
+                )
         )
 
     override fun getItemCount(): Int = list.size
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: AboutAppLibraryViewHolder, position: Int) {
         holder.bind(list[position])
     }
 
-    inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    inner class AboutAppLibraryViewHolder(private val itemBinding: AboutAppLibraryItemBinding) : RecyclerView.ViewHolder(itemBinding.root) {
         init {
-            itemView.apply {
+            itemBinding.apply {
                 aboutAppLibraryItemProjectUrlButton
                     .onClickThrottled {
                         onProjectUrlClicked(list[adapterPosition])
@@ -51,7 +52,7 @@ class AboutAppLibraryAdapter constructor(
         }
 
         fun bind(library: Library) {
-            itemView.apply {
+            itemBinding.apply {
                 aboutAppLibraryItemTitleTextView.text = library.title
                 aboutAppLibraryItemDescriptionTextView.text = library.description
             }

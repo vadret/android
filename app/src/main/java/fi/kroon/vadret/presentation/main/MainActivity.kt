@@ -1,29 +1,34 @@
 package fi.kroon.vadret.presentation.main
 
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import androidx.preference.PreferenceManager
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import fi.kroon.vadret.R
 import fi.kroon.vadret.data.failure.Failure
+import fi.kroon.vadret.data.nominatim.model.Locality
 import fi.kroon.vadret.data.theme.model.Theme
+import fi.kroon.vadret.databinding.MainActivityBinding
 import fi.kroon.vadret.presentation.main.di.DaggerMainActivityComponent
 import fi.kroon.vadret.presentation.main.di.MainActivityComponent
-import fi.kroon.vadret.presentation.shared.BaseActivity
 import fi.kroon.vadret.util.DEFAULT_SETTINGS
 import fi.kroon.vadret.util.Scheduler
 import fi.kroon.vadret.util.extension.coreComponent
 import fi.kroon.vadret.util.extension.lazyAndroid
+import fi.kroon.vadret.util.extension.toGone
 import fi.kroon.vadret.util.extension.toObservable
+import fi.kroon.vadret.util.extension.toVisible
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.subjects.PublishSubject
-import kotlinx.android.synthetic.main.activity_main.*
 import timber.log.Timber
 
-class MainActivity : BaseActivity() {
+class MainActivity : AppCompatActivity() {
+
+    private lateinit var binding: MainActivityBinding
 
     private val component: MainActivityComponent by lazyAndroid {
         DaggerMainActivityComponent
@@ -66,7 +71,8 @@ class MainActivity : BaseActivity() {
          */
         preSetupEvents()
 
-        setContentView(R.layout.activity_main)
+        binding = MainActivityBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         setupSupportActionBar()
 
         if (savedInstanceState == null) {
@@ -96,18 +102,20 @@ class MainActivity : BaseActivity() {
             )
         }.blockingGet()
 
-    override fun onStop() {
-        super.onStop()
-        subscriptions.clear()
-    }
-
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
         // Now that BottomNavigationBar has restored its instance state
         // and its selectedItemId, we can proceed with setting up the
         // BottomNavigationBar with Navigation
-        Timber.d("ON RESTORE INSTANCE STATE")
+        //
+        // This is needed in order to apply themes from settings.
+
         setupBottomNavigationBar()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        subscriptions.clear()
     }
 
     private fun setupBottomNavigationBar() {
@@ -121,7 +129,7 @@ class MainActivity : BaseActivity() {
     }
 
     private fun setupSupportActionBar() {
-        setSupportActionBar(toolBar)
+        setSupportActionBar(binding.toolBar)
     }
 
     private fun setupPreferences() {
@@ -175,7 +183,16 @@ class MainActivity : BaseActivity() {
         recreate()
     }
 
-    override fun renderError(errorCode: Int) {
+    private fun renderError(errorCode: Int) {
         Timber.e("Rendering error code: ${getString(errorCode)}")
+    }
+
+    fun hideLocalityActionBar() = binding.currentLocationName.toGone()
+
+    fun setLocalityActionBar(locality: Locality) {
+        locality.name?.let {
+            binding.currentLocationName.text = locality.name
+        } ?: binding.currentLocationName.setText(R.string.unknown_area)
+        binding.currentLocationName.toVisible()
     }
 }

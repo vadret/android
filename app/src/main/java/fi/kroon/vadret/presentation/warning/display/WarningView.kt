@@ -3,7 +3,7 @@ package fi.kroon.vadret.presentation.warning.display
 import android.os.Parcelable
 import androidx.annotation.StringRes
 import fi.kroon.vadret.presentation.warning.display.model.IWarningModel
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 
 object WarningView {
 

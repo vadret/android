@@ -5,7 +5,6 @@ import androidx.lifecycle.viewModelScope
 import fi.kroon.vadret.data.failure.Failure
 import fi.kroon.vadret.data.library.model.Library
 import fi.kroon.vadret.domain.aboutapp.GetAboutLibraryTask
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -14,7 +13,6 @@ import kotlinx.coroutines.rx2.await
 import timber.log.Timber
 import javax.inject.Inject
 
-@ExperimentalCoroutinesApi
 class AboutAppLibraryViewModel @Inject constructor(
     private val state: MutableSharedFlow<AboutAppLibraryView.State>,
     private var stateModel: AboutAppLibraryView.State,

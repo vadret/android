@@ -1,7 +1,7 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
+apply plugin: 'kotlin-parcelize'
 apply plugin: 'kotlinx-serialization'
 apply plugin: 'com.google.gms.google-services'
 apply plugin: 'com.google.firebase.crashlytics'
@@ -33,17 +33,15 @@ def getGitSha = { ->
 }
 
 android {
+
     compileSdkVersion 30
-    androidExtensions {
-        experimental = true
-    }
-    buildToolsVersion '29.0.3'
+    buildToolsVersion '30.0.3'
     defaultConfig {
         applicationId "fi.kroon.vadret"
         minSdkVersion 21
         targetSdkVersion 30
-        versionCode 29
-        versionName "2.0.2"
+        versionCode 30
+        versionName "2.0.3"
         vectorDrawables.useSupportLibrary = true
         flavorDimensions "default"
         testInstrumentationRunner "androidx.top.runner.AndroidJUnitRunner"
@@ -116,11 +114,14 @@ android {
         abortOnError false
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
     }
     kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_1_8.toString()
+        jvmTarget = JavaVersion.VERSION_11.toString()
+    }
+    buildFeatures {
+        viewBinding true
     }
 }
 
@@ -132,39 +133,39 @@ dependencies {
 
     def APPCOMPAT_VERSION = "1.2.0"
     def ASSERTJ_VERSION = "3.14.0"
-    def COIL_VERSION = "0.13.0"
+    def COIL_VERSION = "1.1.1"
     def COMMONS_CSV_VERSION = "1.7"
-    def CONSTRAINT_LAYOUT_VERSION = "2.0.2"
-    def CORBIND_VERSION = "1.4.0"
+    def CONSTRAINT_LAYOUT_VERSION = "2.0.4"
+    def CORBIND_VERSION = "1.5.0"
     def CORE_KTX_VERSION = "1.3.2"
-    def COROUTINES_VERSION = "1.4.2"
-    def DAGGER_VERSION = "2.30.1"
+    def COROUTINES_VERSION = "1.4.3"
+    def DAGGER_VERSION = "2.33"
     def EITHER_VERSION = "1.2.0"
-    def FRAGMENT_VERSION = "1.3.0-beta01"
+    def FRAGMENT_VERSION = "1.3.2"
     def JUNIT_VERSION = "4.13"
-    def KOTLIN_STDLIB_VERSION = "1.4.10"
-    def KOTLINX_SERIALIZATION = "1.0.1"
-    def KTLINT_VERSION = "0.40.0"
-    def MATERIAL_VERSION = "1.2.1"
+    def KOTLIN_STDLIB_VERSION = "1.4.32"
+    def KOTLINX_SERIALIZATION = "1.1.0"
+    def KTLINT_VERSION = "0.41.0"
+    def MATERIAL_VERSION = "1.3.0"
     def MOCKITO_CORE_VERSION = "3.1.0"
     def MOSHI_VERSION = "1.9.2"
-    def NAVIGATION_VERSION = "2.3.2"
+    def NAVIGATION_VERSION = "2.3.4"
     def OKHTTP_VERSION = "4.2.2"
     def OKIO_VERSION = "2.6.0"
-    def OSMDROID_VERSION = "6.1.2"
-    def PERMISSIONS_DISPATCHER_VERSION = "4.7.0"
+    def OSMDROID_VERSION = "6.1.10"
+    def PERMISSIONS_DISPATCHER_VERSION = "4.8.0"
     def PREFERENCE_VERSION = "1.1.1"
     def RETROFIT_VERSION = "2.9.0"
-    def ROOM_VERSION = "2.2.5"
+    def ROOM_VERSION = "2.2.6"
     def RXANDROID_VERSION = "2.1.1"
     def RXBINDING_VERSION = "3.1.0"
     def RXJAVA_VERSION = "2.2.19"
     def RXKOTLIN_VERSION = "2.4.0"
     def RXK_PREFS_VERSION = "1.2.5"
     def THREETEN_ABP_VERSION = "1.2.1"
-    def THREETEN_BP_VERSION = "1.4.0"
+    def THREETEN_BP_VERSION = "1.5.0"
     def TIMBER_VERSION = "4.7.1"
-    def LIFECYCLE_VERSION = "2.2.0"
+    def LIFECYCLE_VERSION = "2.3.0"
 
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
@@ -181,7 +182,7 @@ dependencies {
     // Lifecycle
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$LIFECYCLE_VERSION"
     implementation "androidx.lifecycle:lifecycle-runtime-ktx:$LIFECYCLE_VERSION"
-    kapt "androidx.lifecycle:lifecycle-compiler:$LIFECYCLE_VERSION"
+    kapt "androidx.lifecycle:lifecycle-common-java8:$LIFECYCLE_VERSION"
 
     // Coroutines
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:${COROUTINES_VERSION}"
@@ -231,7 +232,7 @@ dependencies {
     implementation "com.afollestad:rxkprefs:${RXK_PREFS_VERSION}"
     implementation "io.coil-kt:coil:${COIL_VERSION}"
     implementation "org.apache.commons:commons-csv:${COMMONS_CSV_VERSION}"
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${KOTLIN_STDLIB_VERSION}"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${KOTLIN_STDLIB_VERSION}"
     implementation "org.osmdroid:osmdroid-android:${OSMDROID_VERSION}"
     implementation "io.github.sphrak:either:${EITHER_VERSION}"
     implementation "org.permissionsdispatcher:permissionsdispatcher:${PERMISSIONS_DISPATCHER_VERSION}"
@@ -242,7 +243,7 @@ dependencies {
     testImplementation "org.threeten:threetenbp:${THREETEN_BP_VERSION}"
 
     // Debugging, Testing, Linting, Analytics
-    debugImplementation "com.squareup.leakcanary:leakcanary-android:2.5"
+    debugImplementation "com.squareup.leakcanary:leakcanary-android:2.6"
     googleImplementation platform('com.google.firebase:firebase-bom:26.0.0')
     googleImplementation 'com.google.firebase:firebase-crashlytics-ktx'
     implementation "com.jakewharton.timber:timber:${TIMBER_VERSION}"

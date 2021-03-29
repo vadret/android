@@ -3,22 +3,26 @@ package fi.kroon.vadret.presentation.aboutapp.about
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import fi.kroon.vadret.R
 import fi.kroon.vadret.data.aboutinfo.model.AboutInfo
+import fi.kroon.vadret.databinding.AboutAppAboutFragmentBinding
 import fi.kroon.vadret.presentation.aboutapp.about.di.AboutAppAboutComponent
 import fi.kroon.vadret.presentation.aboutapp.about.di.DaggerAboutAppAboutComponent
 import fi.kroon.vadret.util.extension.lazyAndroid
-import kotlinx.android.synthetic.main.about_app_about_fragment.*
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import timber.log.Timber
 
-@ExperimentalCoroutinesApi
 class AboutAppAboutFragment : Fragment(R.layout.about_app_about_fragment) {
+
+    private var _binding: AboutAppAboutFragmentBinding? = null
+    private val binding: AboutAppAboutFragmentBinding get() = _binding!!
 
     companion object {
         fun newInstance(): AboutAppAboutFragment = AboutAppAboutFragment()
@@ -36,32 +40,43 @@ class AboutAppAboutFragment : Fragment(R.layout.about_app_about_fragment) {
         component.provideViewModel()
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        _binding = AboutAppAboutFragmentBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         setupRecyclerView()
-        lifecycleScope
-            .launch {
-                viewModel
-                    .viewState
-                    .collect(::render)
-            }
+
+        viewModel
+            .viewState
+            .onEach(::render)
+            .launchIn(viewLifecycleOwner.lifecycleScope)
+
         viewModel.send(AboutAppAboutView.Event.OnViewInitialised)
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         Timber.d("ON DESTROY VIEW")
-        aboutAppAboutInfoTextRecyclerView.apply {
-            adapter = null
-        }
+        binding.aboutAppAboutInfoTextRecyclerView
+            .apply {
+                adapter = null
+            }
+        _binding = null
     }
 
     private fun setupRecyclerView() {
         aboutAppAboutAdapter = AboutAppAboutAdapter { aboutInfo: AboutInfo ->
             viewModel.send(AboutAppAboutView.Event.OnItemClick(aboutInfo))
         }
-        aboutAppAboutInfoTextRecyclerView.apply {
+        binding.aboutAppAboutInfoTextRecyclerView.apply {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = aboutAppAboutAdapter
         }

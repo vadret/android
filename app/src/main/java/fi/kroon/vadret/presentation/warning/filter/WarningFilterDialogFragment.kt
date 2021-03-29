@@ -10,7 +10,7 @@ import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import fi.kroon.vadret.R
+import fi.kroon.vadret.databinding.WarningFilterDialogFragmentBinding
 import fi.kroon.vadret.presentation.warning.display.WarningFragment.Companion.RESULT_OK
 import fi.kroon.vadret.presentation.warning.display.WarningFragment.Companion.WARNING_FILTER_DIALOG_RESULT
 import fi.kroon.vadret.presentation.warning.filter.di.DaggerWarningFilterComponent
@@ -18,13 +18,10 @@ import fi.kroon.vadret.presentation.warning.filter.di.WarningFilterComponent
 import fi.kroon.vadret.presentation.warning.filter.model.IFilterable
 import fi.kroon.vadret.util.extension.coreComponent
 import fi.kroon.vadret.util.extension.lazyAndroid
-import kotlinx.android.synthetic.main.warning_filter_dialog_fragment.warningFilterApplyButton
-import kotlinx.android.synthetic.main.warning_filter_dialog_fragment.warningFilterRecyclerView
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.onEach
 import ru.ldralighieri.corbind.view.clicks
 import timber.log.Timber
 
@@ -34,6 +31,8 @@ class WarningFilterDialogFragment : BottomSheetDialogFragment() {
     private var isConfigChangeOrProcessDeath = false
     private var stateParcel: WarningFilterView.StateParcel? = null
     private var bundle: Bundle? = null
+    private var _binding: WarningFilterDialogFragmentBinding? = null
+    private val binding: WarningFilterDialogFragmentBinding get() = _binding!!
 
     private companion object {
         const val STATE_PARCEL_KEY: String = "STATE_PARCEL_WARNING_FILTER_KEY"
@@ -56,15 +55,6 @@ class WarningFilterDialogFragment : BottomSheetDialogFragment() {
         component.provideWarningFilterViewModel()
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        Timber.d("ON CREATE VIEW")
-        return inflater.inflate(R.layout.warning_filter_dialog_fragment, container, false)
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Timber.d("ON CREATE")
@@ -76,16 +66,24 @@ class WarningFilterDialogFragment : BottomSheetDialogFragment() {
         }
     }
 
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        Timber.d("ON CREATE VIEW")
+        _binding = WarningFilterDialogFragmentBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         Timber.d("ON VIEW CREATED")
 
-        lifecycleScope
-            .launch {
-                viewModel
-                    .viewState
-                    .collect(::render)
-            }
+        viewModel
+            .viewState
+            .onEach(::render)
+            .launchIn(viewLifecycleOwner.lifecycleScope)
 
         setup()
     }
@@ -106,7 +104,7 @@ class WarningFilterDialogFragment : BottomSheetDialogFragment() {
         bundle?.apply {
             putParcelable(
                 SCROLL_POSITION_KEY,
-                (warningFilterRecyclerView.layoutManager as LinearLayoutManager)
+                (binding.warningFilterRecyclerView.layoutManager as LinearLayoutManager)
                     .onSaveInstanceState()
             )
         }
@@ -115,10 +113,11 @@ class WarningFilterDialogFragment : BottomSheetDialogFragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        warningFilterRecyclerView
+        binding.warningFilterRecyclerView
             .apply {
                 adapter = null
             }
+        _binding = null
     }
 
     override fun onResume() {
@@ -153,7 +152,7 @@ class WarningFilterDialogFragment : BottomSheetDialogFragment() {
             }
 
         )
-        warningFilterRecyclerView.apply {
+        binding.warningFilterRecyclerView.apply {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = warningFilterAdapter
             hasFixedSize()
@@ -162,7 +161,7 @@ class WarningFilterDialogFragment : BottomSheetDialogFragment() {
 
     private fun setupEvents() {
 
-        warningFilterApplyButton
+        binding.warningFilterApplyButton
             .clicks()
             .map {
                 viewModel.send(
