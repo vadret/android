@@ -102,6 +102,17 @@ class MainActivity : AppCompatActivity() {
             )
         }.blockingGet()
 
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+        // Now that BottomNavigationBar has restored its instance state
+        // and its selectedItemId, we can proceed with setting up the
+        // BottomNavigationBar with Navigation
+        //
+        // This is needed in order to apply themes from settings.
+
+        setupBottomNavigationBar()
+    }
+
     override fun onStop() {
         super.onStop()
         subscriptions.clear()
