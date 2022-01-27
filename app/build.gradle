@@ -140,7 +140,7 @@ dependencies {
     def COROUTINES_VERSION = "1.4.2"
     def DAGGER_VERSION = "2.30.1"
     def EITHER_VERSION = "1.2.0"
-    def FRAGMENT_VERSION = "1.3.0-beta01"
+    def FRAGMENT_VERSION = "1.5.0-alpha01"
     def JUNIT_VERSION = "4.13"
     def KOTLIN_STDLIB_VERSION = "1.4.10"
     def KOTLINX_SERIALIZATION = "1.0.1"
