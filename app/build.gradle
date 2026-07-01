@@ -152,7 +152,7 @@ dependencies {
     def OKHTTP_VERSION = "4.2.2"
     def OKIO_VERSION = "2.6.0"
     def OSMDROID_VERSION = "6.1.2"
-    def PERMISSIONS_DISPATCHER_VERSION = "4.7.0"
+    def PERMISSIONS_DISPATCHER_VERSION = "4.8.0"
     def PREFERENCE_VERSION = "1.1.1"
     def RETROFIT_VERSION = "2.9.0"
     def ROOM_VERSION = "2.2.5"
@@ -234,8 +234,8 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${KOTLIN_STDLIB_VERSION}"
     implementation "org.osmdroid:osmdroid-android:${OSMDROID_VERSION}"
     implementation "io.github.sphrak:either:${EITHER_VERSION}"
-    implementation "org.permissionsdispatcher:permissionsdispatcher:${PERMISSIONS_DISPATCHER_VERSION}"
-    kapt "org.permissionsdispatcher:permissionsdispatcher-processor:${PERMISSIONS_DISPATCHER_VERSION}"
+    implementation "com.github.permissions-dispatcher:permissionsdispatcher:${PERMISSIONS_DISPATCHER_VERSION}"
+    kapt "com.github.permissions-dispatcher:permissionsdispatcher-processor:${PERMISSIONS_DISPATCHER_VERSION}"
 
     // Datetime
     implementation "com.jakewharton.threetenabp:threetenabp:${THREETEN_ABP_VERSION}"
@@ -274,4 +274,13 @@ tasks.register("ktlintFormat", JavaExec) {
 
 repositories {
     mavenCentral()
+}
+
+// The google-services plugin is applied unconditionally but only the google
+// flavor actually uses Firebase. Disable the processing task for all other
+// flavors so contributors can build without a google-services.json file.
+tasks.configureEach { task ->
+    if (task.name ==~ /process(Fdroid|Github).*GoogleServices/) {
+        task.enabled = false
+    }
 }
