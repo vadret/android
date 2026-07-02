@@ -130,10 +130,6 @@ class WeatherForecastAdapter @Inject constructor() : RecyclerView.Adapter<Recycl
             val humidityPercentString = "${item.humidityPercent}$percentSymbol"
             itemView.humidityPercent.text = humidityPercentString
 
-            item.precipitationCode?.let { precipitationCodeInt: Int ->
-                itemView.precipitationCode.setText(getPrecipitationResourceId(precipitationCodeInt))
-            } ?: itemView.precipitationCode.toGone()
-
             if (item.sunriseDateTime != null && item.sunsetDateTime != null) {
                 val format = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT)
                 itemView.sunriseDateTime.text = item.sunriseDateTime.toLocalTime().format(format)
@@ -143,10 +139,9 @@ class WeatherForecastAdapter @Inject constructor() : RecyclerView.Adapter<Recycl
                 itemView.sunsetDateTime.setText(R.string.sun_wont_set_today)
             }
 
-            item.precipitationCode?.let { intCode ->
-                if (intCode > 0) {
-                    itemView.precipitationCode.setText(getPrecipitationResourceId(intCode))
-                }
+            item.precipitationCode?.takeIf { it > 0 }?.let { intCode ->
+                itemView.precipitationCode.setText(getPrecipitationResourceId(intCode))
+                itemView.precipitationCode.toVisible()
             } ?: itemView.precipitationCode.toGone()
         }
     }
@@ -172,9 +167,9 @@ class WeatherForecastAdapter @Inject constructor() : RecyclerView.Adapter<Recycl
                 itemView.feelsLikeTemperature.toVisible()
                 itemView.feelsLikeTempUnit.toVisible()
             } ?: run {
-                itemView.feelsLikeTemperature.toInvisible()
-                itemView.feelsLike.toInvisible()
-                itemView.feelsLikeTempUnit.toInvisible()
+                itemView.feelsLikeTemperature.toGone()
+                itemView.feelsLike.toGone()
+                itemView.feelsLikeTempUnit.toGone()
             }
         }
     }

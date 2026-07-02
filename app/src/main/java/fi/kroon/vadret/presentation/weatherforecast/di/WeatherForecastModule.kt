@@ -33,6 +33,7 @@ import retrofit2.converter.moshi.MoshiConverterFactory
 object WeatherForecastModule {
 
     private val contentType: MediaType = "application/json".toMediaType()
+    private val json: Json = Json { ignoreUnknownKeys = true }
 
     @Provides
     @WeatherForecastScope
@@ -52,7 +53,7 @@ object WeatherForecastModule {
         assertNoInitMainThread()
         return Retrofit.Builder()
             .baseUrl(SMHI_API_FORECAST_URL)
-            .addConverterFactory(Json.asConverterFactory(contentType))
+            .addConverterFactory(json.asConverterFactory(contentType))
             .delegatingCallFactory(okHttpClient)
             .build()
     }

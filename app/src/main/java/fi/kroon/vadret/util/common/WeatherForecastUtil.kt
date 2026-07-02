@@ -21,15 +21,25 @@ object WeatherForecastUtil {
     const val TWELVE_HOURS_AS_MILLIS = 43_200_000L
     const val TWENTY_FOUR_HOURS_AS_MILLIS = 86_400_000L
 
+    /**
+     * predominant_precipitation_type_at_surface, ECMWF GRIB param 260015
+     * https://codes.ecmwf.int/grib/param-db/260015
+     */
     fun getPrecipitationResourceId(prSort: Int): Int =
         when (prSort) {
             0 -> R.string.prsort_no_precipitation
-            1 -> R.string.prsort_snow
-            2 -> R.string.prsort_snow_and_rain
-            3 -> R.string.prsort_rain
-            4 -> R.string.prsort_drizzle
-            5 -> R.string.prsort_freezing_rain
-            6 -> R.string.prsort_freezing_drizzle
+            1 -> R.string.prsort_rain
+            2 -> R.string.prsort_thunderstorm
+            3 -> R.string.prsort_freezing_rain
+            4 -> R.string.prsort_mixed_ice
+            5 -> R.string.prsort_snow
+            6 -> R.string.prsort_wet_snow
+            7 -> R.string.prsort_snow_and_rain
+            8 -> R.string.prsort_ice_pellets
+            9 -> R.string.prsort_graupel
+            10 -> R.string.prsort_hail
+            11 -> R.string.prsort_drizzle
+            12 -> R.string.prsort_freezing_drizzle
             else -> R.string.prsort_no_precipitation
         }
 
