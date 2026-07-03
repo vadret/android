@@ -1,10 +1,11 @@
 package fi.kroon.vadret.util
 
 // SMHI API REQUEST PARAMS
-const val PMP3G_CATEGORY = "pmp3g"
+const val SNOW1G_CATEGORY = "snow1g"
 const val POINT_GEOTYPE = "point"
 const val DEFAULT_TIME_ZONE = "GMT"
 const val SMHI_BASE_API_VERSION = 2
+const val SNOW1G_API_VERSION = 1
 
 // NOMINATIM API REQEUST PARAMS
 const val NOMINATIM_DATA_FORMAT = "json"

@@ -92,6 +92,12 @@
     <string name="prsort_drizzle">Drizzle</string>
     <string name="prsort_freezing_rain">Freezing rain</string>
     <string name="prsort_freezing_drizzle">Freezing drizzle</string>
+    <string name="prsort_thunderstorm">Thunderstorm</string>
+    <string name="prsort_mixed_ice">Mixed/ice</string>
+    <string name="prsort_wet_snow">Wet snow</string>
+    <string name="prsort_ice_pellets">Ice pellets</string>
+    <string name="prsort_graupel">Graupel</string>
+    <string name="prsort_hail">Hail</string>
 
     <string name="io_exception" translatable="false">IOException</string>
     <string name="network_failure">Network Failure</string>
