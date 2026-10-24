@@ -1,91 +1,58 @@
 package fi.kroon.vadret.location.local
 
-import android.content.SharedPreferences
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.withContext
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
+import androidx.datastore.preferences.core.doublePreferencesKey
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.stringPreferencesKey
+import kotlinx.coroutines.flow.first
 
-private const val AUTOMATIC_KEY = "AUTOMATIC_LOCATION_MODE"
-private const val LOCALITY_KEY = "LOCALITY"
-private const val MUNICIPALITY_KEY = "MUNICIPALITY"
-private const val COUNTY_KEY = "COUNTY"
-private const val LATITUDE_KEY = "LATITUDE"
-private const val LONGITUDE_KEY = "LONGITUDE"
+private val isAutomaticKey: Preferences.Key<Boolean> = booleanPreferencesKey(name = "is_automatic_location")
+private val localityKey: Preferences.Key<String> = stringPreferencesKey(name = "locality")
+private val municipalityKey: Preferences.Key<String> = stringPreferencesKey(name = "municipality")
+private val countyKey: Preferences.Key<String> = stringPreferencesKey(name = "county")
+private val latitudeKey: Preferences.Key<Double> = doublePreferencesKey(name = "latitude")
+private val longitudeKey: Preferences.Key<Double> = doublePreferencesKey(name = "longitude")
 
-/**
- *  Until the user picks a place the forecast follows the
- *  device, and falls back to Stockholm without location access.
- */
 private const val DEFAULT_IS_AUTOMATIC = true
 private const val DEFAULT_LOCALITY = "Stockholm"
 private const val DEFAULT_MUNICIPALITY = "Stockholm"
 private const val DEFAULT_COUNTY = "Stockholm"
-private const val DEFAULT_LATITUDE = "59.3293"
-private const val DEFAULT_LONGITUDE = "18.0686"
+private const val DEFAULT_LATITUDE = 59.3293
+private const val DEFAULT_LONGITUDE = 18.0686
 
 internal class DefaultStoredLocationLocalDataSource(
-    private val sharedPreferences: SharedPreferences,
-    private val coroutineDispatcher: CoroutineDispatcher
+    private val dataStore: DataStore<Preferences>
 ) : StoredLocationLocalDataSource {
 
     override suspend fun isAutomatic(): Boolean =
-        withContext(context = coroutineDispatcher) {
-            sharedPreferences.getBoolean(AUTOMATIC_KEY, DEFAULT_IS_AUTOMATIC)
-        }
+        dataStore.data.first()[isAutomaticKey] ?: DEFAULT_IS_AUTOMATIC
 
     override suspend fun setAutomatic(isAutomatic: Boolean) {
-        withContext(context = coroutineDispatcher) {
-            sharedPreferences
-                .edit()
-                .putBoolean(AUTOMATIC_KEY, isAutomatic)
-                .apply()
+        dataStore.edit { preferences ->
+            preferences[isAutomaticKey] = isAutomatic
         }
     }
 
-    override suspend fun getStoredLocation(): StoredLocationEntity =
-        withContext(context = coroutineDispatcher) {
-            StoredLocationEntity(
-                locality = readString(
-                    key = LOCALITY_KEY,
-                    defaultValue = DEFAULT_LOCALITY
-                ),
-                municipality = readString(
-                    key = MUNICIPALITY_KEY,
-                    defaultValue = DEFAULT_MUNICIPALITY
-                ),
-                county = readString(
-                    key = COUNTY_KEY,
-                    defaultValue = DEFAULT_COUNTY
-                ),
-                latitude = readString(
-                    key = LATITUDE_KEY,
-                    defaultValue = DEFAULT_LATITUDE
-                ),
-                longitude = readString(
-                    key = LONGITUDE_KEY,
-                    defaultValue = DEFAULT_LONGITUDE
-                )
-            )
-        }
+    override suspend fun getStoredLocation(): StoredLocationEntity {
+        val preferences: Preferences = dataStore.data.first()
+        return StoredLocationEntity(
+            locality = preferences[localityKey] ?: DEFAULT_LOCALITY,
+            municipality = preferences[municipalityKey] ?: DEFAULT_MUNICIPALITY,
+            county = preferences[countyKey] ?: DEFAULT_COUNTY,
+            latitude = preferences[latitudeKey] ?: DEFAULT_LATITUDE,
+            longitude = preferences[longitudeKey] ?: DEFAULT_LONGITUDE
+        )
+    }
 
-    /**
-     *  One edit, so the place is never stored half way.
-     */
     override suspend fun setStoredLocation(storedLocationEntity: StoredLocationEntity) {
-        withContext(context = coroutineDispatcher) {
-            sharedPreferences
-                .edit()
-                .putString(LOCALITY_KEY, storedLocationEntity.locality)
-                .putString(MUNICIPALITY_KEY, storedLocationEntity.municipality)
-                .putString(COUNTY_KEY, storedLocationEntity.county)
-                .putString(LATITUDE_KEY, storedLocationEntity.latitude)
-                .putString(LONGITUDE_KEY, storedLocationEntity.longitude)
-                .apply()
+        dataStore.edit { preferences ->
+            preferences[localityKey] = storedLocationEntity.locality
+            preferences[municipalityKey] = storedLocationEntity.municipality
+            preferences[countyKey] = storedLocationEntity.county
+            preferences[latitudeKey] = storedLocationEntity.latitude
+            preferences[longitudeKey] = storedLocationEntity.longitude
         }
     }
-
-    private fun readString(
-        key: String,
-        defaultValue: String
-    ): String =
-        sharedPreferences.getString(key, defaultValue) ?: defaultValue
 }

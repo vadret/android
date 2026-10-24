@@ -17,14 +17,8 @@ import fi.kroon.vadret.warningfilter.remote.DistrictDto
 import fi.kroon.vadret.warningfilter.remote.DistrictRemoteDataSource
 import io.github.sphrak.either.Either
 
-/**
- *  Stockholms län, selected until the user picks other districts.
- */
 private const val DEFAULT_DISTRICT_ID = 1
 
-/**
- *  Every feed source is shown until the user turns it off.
- */
 private const val DEFAULT_FEED_SOURCE_IS_ENABLED = true
 
 internal class DefaultWarningFilterRepository(
@@ -58,10 +52,6 @@ internal class DefaultWarningFilterRepository(
             )
         }.catch { exception: Exception -> exception.toFailure() }
 
-    /**
-     *  Inserting ignores districts already stored, so two
-     *  first loads at once cannot store them twice.
-     */
     private suspend fun storeDistrictsOnce() {
         if (warningFilterLocalDataSource.countDistricts() == 0) {
             val districtDtos: List<DistrictDto> = districtRemoteDataSource.getDistricts()

@@ -94,8 +94,8 @@ class SettingsViewModelTest {
         Dispatchers.resetMain()
     }
 
-    private fun viewModel(): SettingsViewModel =
-        SettingsViewModel(
+    private fun viewModel(): SettingsViewModel {
+        val settingsViewModel = SettingsViewModel(
             getSettingsTask = DefaultGetSettingsTask(
                 locationRepository = locationRepository,
                 themeRepository = themeRepository
@@ -105,6 +105,9 @@ class SettingsViewModelTest {
             getLibrariesTask = DefaultGetLibrariesTask(libraryRepository = FakeLibraryRepository()),
             coroutineDispatcher = testDispatcher
         )
+        settingsViewModel.onEvent(event = SettingsEvent.OnStart)
+        return settingsViewModel
+    }
 
     @Test
     fun `settings and libraries are loaded`() = testScope.runTest {

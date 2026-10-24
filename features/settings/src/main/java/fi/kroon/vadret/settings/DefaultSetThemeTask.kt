@@ -4,9 +4,8 @@ import fi.kroon.vadret.common.Failure
 import fi.kroon.vadret.theme.ThemeRepository
 import fi.kroon.vadret.theme.model.Theme
 import io.github.sphrak.either.Either
-import javax.inject.Inject
 
-internal class DefaultSetThemeTask @Inject constructor(
+internal class DefaultSetThemeTask(
     private val themeRepository: ThemeRepository
 ) : SetThemeTask {
 

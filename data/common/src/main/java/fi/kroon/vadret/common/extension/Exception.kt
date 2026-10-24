@@ -10,11 +10,6 @@ import kotlinx.serialization.SerializationException
 import java.io.IOException
 import java.net.UnknownHostException
 
-/**
- *  The error code every API call shares, null when this is not a
- *  network failure. A body that is not the JSON expected, such as a
- *  captive portal's login page, is an invalid response.
- */
 fun Exception.networkErrorCode(): ErrorCode? =
     when (this) {
         is ResponseException -> response.status.value.toHttpErrorCode()
@@ -26,9 +21,6 @@ fun Exception.networkErrorCode(): ErrorCode? =
         else -> null
     }
 
-/**
- *  For failures a module expects, logged without the stack trace.
- */
 fun Exception.toKnownFailure(
     errorCode: ErrorCode,
     logger: Logger
@@ -42,9 +34,6 @@ fun Exception.toUnknownFailure(logger: Logger): Failure {
     return Failure.unknown()
 }
 
-/**
- *  A network failure when it is one, otherwise unknown.
- */
 fun Exception.toNetworkFailure(logger: Logger): Failure {
     val errorCode: ErrorCode? = networkErrorCode()
     return if (errorCode != null) {

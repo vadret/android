@@ -38,11 +38,6 @@ private val firstTailEasing = CubicBezierEasing(a = 0.4f, b = 0f, c = 1f, d = 1f
 private val secondHeadEasing = CubicBezierEasing(a = 0f, b = 0f, c = 0.65f, d = 1f)
 private val secondTailEasing = CubicBezierEasing(a = 0.1f, b = 0f, c = 0.45f, d = 1f)
 
-/**
- *  The loading bar of the view based app: flat, square ended and
- *  with two segments sweeping over a faint track, unlike the
- *  rounded Material 3 indicator with its gap and stop dot.
- */
 @Composable
 fun VadretProgressBar(
     modifier: Modifier = Modifier,
@@ -109,10 +104,6 @@ private fun InfiniteTransition.animateSegmentEdge(
         label = "VadretProgressBarSegment"
     )
 
-/**
- *  [head] and [tail] are fractions of the width, the
- *  segment is hidden until its head has left the tail behind.
- */
 private fun DrawScope.drawSegment(
     head: Float,
     tail: Float,

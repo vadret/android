@@ -4,9 +4,6 @@ import androidx.room3.ColumnInfo
 import androidx.room3.Entity
 import androidx.room3.PrimaryKey
 
-/**
- *  [code] is SMHI's, such as SWE_COUNTIES.
- */
 @Entity(tableName = "district")
 internal data class DistrictEntity(
     @PrimaryKey

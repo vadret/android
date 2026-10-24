@@ -4,9 +4,6 @@ import fi.kroon.vadret.aggregatedfeed.model.AggregatedFeed
 import fi.kroon.vadret.forecastwarning.model.WarningItem
 import kotlin.time.Instant
 
-/**
- *  SMHI lists areas as "a,b,c".
- */
 private val commaWithoutSpace = Regex(pattern = ",(?=\\S)")
 
 private const val COMMA_WITH_SPACE = ", "

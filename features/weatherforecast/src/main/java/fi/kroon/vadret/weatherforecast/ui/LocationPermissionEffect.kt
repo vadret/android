@@ -12,19 +12,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.platform.LocalContext
 
-/**
- *  Android 12 and later ignore a request for fine location
- *  on its own, so coarse is asked for alongside it.
- */
 private val locationPermissions: Array<String> = arrayOf(
     Manifest.permission.ACCESS_FINE_LOCATION,
     Manifest.permission.ACCESS_COARSE_LOCATION
 )
 
-/**
- *  Requests location access while [isRequested] is true and
- *  reports whether any location access was granted.
- */
 @Composable
 internal fun LocationPermissionEffect(
     isRequested: Boolean,

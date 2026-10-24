@@ -10,10 +10,6 @@ import kotlinx.coroutines.CoroutineDispatcher
 
 interface AutoCompleteRepository {
 
-    /**
-     *  At most [limit] places whose name starts with [prefix],
-     *  ignoring case, in the alphabetical order of the bundled list.
-     */
     suspend fun search(
         prefix: String,
         limit: Int

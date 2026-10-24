@@ -4,10 +4,6 @@ import fi.kroon.vadret.autocomplete.model.AutoCompleteItem
 
 sealed interface WeatherForecastEvent {
 
-    /**
-     *  Sent each time the screen is shown, the location
-     *  mode may have changed in settings meanwhile.
-     */
     data object OnShown : WeatherForecastEvent
     data object OnRefresh : WeatherForecastEvent
     data object OnErrorShown : WeatherForecastEvent

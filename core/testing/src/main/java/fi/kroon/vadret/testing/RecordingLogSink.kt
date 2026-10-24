@@ -4,9 +4,6 @@ import fi.kroon.vadret.logging.LogLevel
 import fi.kroon.vadret.logging.LogSink
 import java.util.concurrent.CopyOnWriteArrayList
 
-/**
- *  Keeps every line so tests can assert what was logged.
- */
 class RecordingLogSink : LogSink {
 
     private val recordedLines: CopyOnWriteArrayList<LogLine> = CopyOnWriteArrayList()

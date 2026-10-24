@@ -9,9 +9,6 @@ import kotlin.time.Instant
 
 private val logger: Logger = LoggerFactory.getLogger(tag = "fi.kroon.vadret.aggregatedfeed")
 
-/**
- *  Null for a source this version no longer knows.
- */
 internal fun AggregatedFeedEntity.toAggregatedFeed(): AggregatedFeed? {
     val feedSource: FeedSource? = FeedSource.entries.firstOrNull { feedSource: FeedSource -> feedSource.name == source }
     if (feedSource == null) {

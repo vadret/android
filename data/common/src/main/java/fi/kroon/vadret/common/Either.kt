@@ -5,11 +5,6 @@ import io.github.sphrak.either.extension.asLeft
 import io.github.sphrak.either.extension.asRight
 import kotlin.coroutines.cancellation.CancellationException
 
-/**
- *  Runs [block] and keeps what it throws for [catch] to turn into
- *  an error value. Cancellation is rethrown so structured
- *  concurrency keeps working.
- */
 inline fun <R> either(block: () -> R): Either<Exception, R> =
     try {
         block().asRight()

@@ -17,9 +17,6 @@ internal class DefaultRadarLocalDataSource(
     private val coroutineDispatcher: CoroutineDispatcher
 ) : RadarLocalDataSource {
 
-    /**
-     *  An entry written by an older version is a cache miss.
-     */
     override suspend fun getRadar(): RadarCacheEntity? =
         withContext(context = coroutineDispatcher) {
             val text: String? = diskCache.read(key = CACHE_KEY)

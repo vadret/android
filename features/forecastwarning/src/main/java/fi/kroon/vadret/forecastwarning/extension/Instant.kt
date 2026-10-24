@@ -10,9 +10,6 @@ import kotlin.time.Instant
 
 private const val TWO = 2
 
-/**
- *  How long before [now] this was published, in words.
- */
 internal fun Instant.toElapsedTime(now: Instant): ElapsedTime {
     val elapsed: Duration = now - this
     return when {

@@ -8,6 +8,6 @@ internal fun StoredLocation.toStoredLocationEntity(): StoredLocationEntity =
         locality = locality,
         municipality = municipality,
         county = county,
-        latitude = latitude.toString(),
-        longitude = longitude.toString()
+        latitude = latitude,
+        longitude = longitude
     )

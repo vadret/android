@@ -1,11 +1,8 @@
 package fi.kroon.vadret.weatherforecast.model
 
-/**
- *  @param overview the headline and summary of the current hour,
- *  hidden while searching.
- *  @param days a header per local date followed by its hours.
- */
+import kotlinx.collections.immutable.ImmutableList
+
 data class WeatherForecast(
-    val overview: List<WeatherForecastRow>,
-    val days: List<WeatherForecastRow>
+    val overview: ImmutableList<WeatherForecastRow>,
+    val days: ImmutableList<WeatherForecastRow>
 )

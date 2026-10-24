@@ -9,10 +9,6 @@ import kotlin.math.roundToLong
 import kotlin.math.sin
 import kotlin.time.Instant
 
-/**
- *  Sunrise and sunset from the sunrise equation,
- *  see https://en.wikipedia.org/wiki/Sunrise_equation
- */
 internal object SunsetUtil {
 
     private const val SUN_ALTITUDE_SUNRISE_SUNSET: Double = -0.833
@@ -24,10 +20,6 @@ internal object SunsetUtil {
     private const val DEGREES_IN_HALF_CIRCLE: Double = 180.0
     private const val MILLISECONDS_IN_DAY: Double = 86_400_000.0
 
-    /**
-     *  Null when the sun does not rise or set that day, as in
-     *  polar night and midnight sun.
-     */
     fun getSunriseSunset(
         day: Instant,
         latitude: Double,

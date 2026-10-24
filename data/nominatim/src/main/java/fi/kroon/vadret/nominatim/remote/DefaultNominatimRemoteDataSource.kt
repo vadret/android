@@ -8,9 +8,6 @@ import io.ktor.client.request.parameter
 
 private const val RESPONSE_FORMAT = "json"
 
-/**
- *  Zoom 16 resolves to streets, so the address names the town or village.
- */
 private const val CITY_ZOOM_LEVEL = 16
 
 internal class DefaultNominatimRemoteDataSource(

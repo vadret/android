@@ -9,9 +9,6 @@ private const val HTTP_INTERNAL_SERVER_ERROR = 500
 private const val HTTP_SERVICE_UNAVAILABLE = 503
 private const val HTTP_GATEWAY_TIMEOUT = 504
 
-/**
- *  For an HTTP status code the server answered with.
- */
 internal fun Int.toHttpErrorCode(): ErrorCode =
     when (this) {
         HTTP_BAD_REQUEST -> ErrorCode.HTTP_BAD_REQUEST

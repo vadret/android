@@ -15,6 +15,7 @@ import fi.kroon.vadret.testing.LogLine
 import fi.kroon.vadret.testing.withRecordedLogs
 import io.github.sphrak.either.Either
 import kotlinx.coroutines.test.runTest
+import java.io.IOException
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -30,8 +31,8 @@ private class FakeStoredLocationLocalDataSource(
         locality = "Stockholm",
         municipality = "Stockholm",
         county = "Stockholm",
-        latitude = "59.3293",
-        longitude = "18.0686"
+        latitude = 59.3293,
+        longitude = 18.0686
     )
 ) : StoredLocationLocalDataSource {
     override suspend fun isAutomatic(): Boolean = isAutomatic
@@ -45,6 +46,13 @@ private class FakeStoredLocationLocalDataSource(
     override suspend fun setStoredLocation(storedLocationEntity: StoredLocationEntity) {
         this.storedLocationEntity = storedLocationEntity
     }
+}
+
+private class BrokenStoredLocationLocalDataSource : StoredLocationLocalDataSource {
+    override suspend fun isAutomatic(): Boolean = throw IOException("corrupt")
+    override suspend fun setAutomatic(isAutomatic: Boolean) = throw IOException("corrupt")
+    override suspend fun getStoredLocation(): StoredLocationEntity = throw IOException("corrupt")
+    override suspend fun setStoredLocation(storedLocationEntity: StoredLocationEntity) = throw IOException("corrupt")
 }
 
 class DefaultLocationRepositoryTest {
@@ -139,21 +147,16 @@ class DefaultLocationRepositoryTest {
     }
 
     @Test
-    fun `a stored coordinate that is not a number is broken storage`() = runTest {
-        val storedLocationLocalDataSource = FakeStoredLocationLocalDataSource(
-            storedLocationEntity = StoredLocationEntity(
-                locality = "Kiruna",
-                municipality = "Kiruna",
-                county = "Norrbotten",
-                latitude = "north",
-                longitude = "20.2253"
-            )
+    fun `storage that cannot be read is a storage failure`() = runTest {
+        val locationRepository: LocationRepository = DefaultLocationRepository(
+            deviceLocationLocalDataSource = FakeDeviceLocationLocalDataSource(getLocation = { error("unused") }),
+            storedLocationLocalDataSource = BrokenStoredLocationLocalDataSource()
         )
 
         withRecordedLogs {
             assertEquals(
                 expected = Either.Left(a = Failure(errorCode = ErrorCode.STORAGE_FAILED)),
-                actual = repository(storedLocationLocalDataSource = storedLocationLocalDataSource).getStoredLocation()
+                actual = locationRepository.getStoredLocation()
             )
         }
     }

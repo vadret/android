@@ -33,6 +33,7 @@ import androidx.core.graphics.drawable.toBitmap
 import fi.kroon.vadret.core.R
 import fi.kroon.vadret.settings.model.AboutRow
 import fi.kroon.vadret.ui.VadretTheme
+import kotlinx.collections.immutable.ImmutableList
 
 private const val ABOUT_ROW_CONTENT_TYPE = "about-row"
 private const val HEADER_CONTENT_TYPE = "header"
@@ -41,7 +42,7 @@ private val rowIconSize = 24.dp
 
 @Composable
 internal fun AboutPage(
-    aboutRows: List<AboutRow>,
+    aboutRows: ImmutableList<AboutRow>,
     modifier: Modifier = Modifier
 ) {
     LazyColumn(

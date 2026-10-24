@@ -14,10 +14,6 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 
-/**
- *  LocationManager is a framework class without an interface,
- *  so it is the one dependency here that is mocked.
- */
 class DefaultDeviceLocationLocalDataSourceTest {
 
     private val testScope = TestScope(StandardTestDispatcher())

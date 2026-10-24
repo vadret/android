@@ -12,10 +12,6 @@ import kotlin.coroutines.cancellation.CancellationException
 
 private val logger: Logger = LoggerFactory.getLogger(tag = "fi.kroon.vadret.autocomplete")
 
-/**
- *  A missing file, a column the CSV lacks and a coordinate that
- *  is not a number all mean the bundled places could not be read.
- */
 internal fun Exception.toFailure(): Failure =
     when (this) {
         is CancellationException -> throw this

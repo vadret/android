@@ -165,12 +165,12 @@ internal class DefaultLibraryInMemoryDataSource : LibraryInMemoryDataSource {
             license = APACHE_2
         ),
         Library(
-            author = "Google Inc.",
-            title = "Dagger2",
-            description = "A fast dependency injector for Android and Java.",
-            projectUrl = "https://google.github.io/dagger/",
-            sourceUrl = "https://github.com/google/dagger",
-            licenseUrl = "https://github.com/google/dagger/blob/master/LICENSE.txt",
+            author = "Kotzilla",
+            title = "Koin",
+            description = "A pragmatic dependency injection framework for Kotlin.",
+            projectUrl = "https://insert-koin.io/",
+            sourceUrl = "https://github.com/InsertKoinIO/koin",
+            licenseUrl = "https://github.com/InsertKoinIO/koin/blob/main/LICENSE",
             license = APACHE_2
         ),
         Library(

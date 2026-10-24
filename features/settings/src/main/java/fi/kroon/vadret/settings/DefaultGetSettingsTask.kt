@@ -8,9 +8,8 @@ import fi.kroon.vadret.theme.model.Theme
 import io.github.sphrak.either.Either
 import io.github.sphrak.either.flatMap
 import io.github.sphrak.either.map
-import javax.inject.Inject
 
-internal class DefaultGetSettingsTask @Inject constructor(
+internal class DefaultGetSettingsTask(
     private val locationRepository: LocationRepository,
     private val themeRepository: ThemeRepository
 ) : GetSettingsTask {

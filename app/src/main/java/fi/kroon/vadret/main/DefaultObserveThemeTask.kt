@@ -5,9 +5,8 @@ import fi.kroon.vadret.theme.ThemeRepository
 import fi.kroon.vadret.theme.model.Theme
 import io.github.sphrak.either.Either
 import kotlinx.coroutines.flow.Flow
-import javax.inject.Inject
 
-internal class DefaultObserveThemeTask @Inject constructor(
+internal class DefaultObserveThemeTask(
     private val themeRepository: ThemeRepository
 ) : ObserveThemeTask {
 

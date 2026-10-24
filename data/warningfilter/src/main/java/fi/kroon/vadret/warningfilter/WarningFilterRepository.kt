@@ -15,25 +15,14 @@ private const val DATABASE_NAME = "vadret.db"
 
 interface WarningFilterRepository {
 
-    /**
-     *  The districts, in alphabetical order, and the feed sources warnings can be
-     *  shown for. The districts are fetched from SMHI the first time.
-     */
     suspend fun getWarningFilter(): Either<Failure, WarningFilter>
 
-    /**
-     *  Replaces the whole selection at once.
-     */
     suspend fun setWarningFilter(
         enabledDistrictIds: Set<Int>,
         enabledFeedSources: Set<FeedSource>
     ): Either<Failure, Unit>
 }
 
-/**
- *  Build one per process, it owns the database. [httpClient] is
- *  only created on first use, never on the main thread.
- */
 fun WarningFilterRepository(
     context: Context,
     httpClient: Lazy<HttpClient>
@@ -46,7 +35,6 @@ fun WarningFilterRepository(
                     context = context,
                     name = DATABASE_NAME
                 )
-                // Only the selection is lost, the districts are fetched again.
                 .fallbackToDestructiveMigration(dropAllTables = true)
                 .build()
         )

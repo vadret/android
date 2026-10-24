@@ -12,9 +12,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import fi.kroon.vadret.core.R
 
-/**
- *  [trailingText] shows the place the weather is for.
- */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun VadretTopAppBar(

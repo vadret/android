@@ -8,18 +8,12 @@ import io.ktor.client.HttpClient
 
 interface NominatimRepository {
 
-    /**
-     *  The name of the place at the coordinates, from OpenStreetMap.
-     */
     suspend fun getLocality(
         latitude: Double,
         longitude: Double
     ): Either<Failure, Locality>
 }
 
-/**
- *  [httpClient] is only created on first use, never on the main thread.
- */
 fun NominatimRepository(httpClient: Lazy<HttpClient>): NominatimRepository =
     DefaultNominatimRepository(
         nominatimRemoteDataSource = DefaultNominatimRemoteDataSource(httpClient = httpClient)

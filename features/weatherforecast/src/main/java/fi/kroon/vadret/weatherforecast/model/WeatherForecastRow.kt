@@ -4,19 +4,10 @@ import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 
-/**
- *  One row of the forecast list, already formatted for display.
- */
 sealed interface WeatherForecastRow {
 
     val key: String
 
-    /**
-     *  Reads as "Overcast with mostly moderate south wind."
-     *
-     *  @param windArrowRotation degrees to turn the wind arrow,
-     *  null when there is no wind direction.
-     */
     data class Headline(
         @StringRes
         val descriptionResourceId: Int,
@@ -29,9 +20,6 @@ sealed interface WeatherForecastRow {
         override val key: String = "headline"
     }
 
-    /**
-     *  @param sunriseText null when the sun does not rise today.
-     */
     data class Summary(
         val sunriseText: String?,
         val sunsetText: String?,

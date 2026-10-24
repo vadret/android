@@ -20,12 +20,13 @@ import androidx.compose.ui.res.stringResource
 import fi.kroon.vadret.core.R
 import fi.kroon.vadret.library.model.Library
 import fi.kroon.vadret.ui.VadretTheme
+import kotlinx.collections.immutable.ImmutableList
 
 private const val LIBRARY_CONTENT_TYPE = "library"
 
 @Composable
 internal fun LibrariesPage(
-    libraries: List<Library>,
+    libraries: ImmutableList<Library>,
     modifier: Modifier = Modifier
 ) {
     LazyColumn(

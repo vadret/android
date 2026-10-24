@@ -12,10 +12,6 @@ import kotlin.coroutines.cancellation.CancellationException
 
 private val logger: Logger = LoggerFactory.getLogger(tag = "fi.kroon.vadret.weatherforecast")
 
-/**
- *  SMHI answers 404 for coordinates outside the area it forecasts,
- *  and an unreadable time is a response it should not have sent.
- */
 internal fun Exception.toFailure(): Failure =
     when {
         this is CancellationException -> throw this

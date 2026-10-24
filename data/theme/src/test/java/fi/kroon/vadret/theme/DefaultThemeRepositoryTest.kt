@@ -1,10 +1,12 @@
 package fi.kroon.vadret.theme
 
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.stringPreferencesKey
 import fi.kroon.vadret.common.ErrorCode
 import fi.kroon.vadret.common.Failure
 import fi.kroon.vadret.logging.LogLevel
-import fi.kroon.vadret.testing.FakeSharedPreferences
 import fi.kroon.vadret.testing.LogLine
+import fi.kroon.vadret.testing.testPreferencesDataStore
 import fi.kroon.vadret.testing.withRecordedLogs
 import fi.kroon.vadret.theme.local.DefaultThemeLocalDataSource
 import fi.kroon.vadret.theme.local.ThemeLocalDataSource
@@ -15,7 +17,6 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
@@ -23,68 +24,60 @@ import java.io.IOException
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-private const val THEME_KEY = "APP_THEME_MODE"
-
-private class BrokenThemeLocalDataSource : ThemeLocalDataSource {
-    override suspend fun getTheme(): String? = throw IOException("disk full")
-    override fun observeTheme(): Flow<String?> = flow { throw IOException("disk full") }
-    override suspend fun setTheme(value: String) = throw IOException("disk full")
+private class FailingThemeLocalDataSource(
+    private val exception: Exception
+) : ThemeLocalDataSource {
+    override suspend fun getTheme(): String? = throw exception
+    override fun observeTheme(): Flow<String?> = flow { throw exception }
+    override suspend fun setTheme(value: String) = throw exception
 }
 
 class DefaultThemeRepositoryTest {
 
-    private val testScope = TestScope(StandardTestDispatcher())
-    private val sharedPreferences = FakeSharedPreferences()
-    private val themeRepository: ThemeRepository = DefaultThemeRepository(
-        themeLocalDataSource = DefaultThemeLocalDataSource(
-            sharedPreferences = sharedPreferences,
-            coroutineDispatcher = StandardTestDispatcher(testScope.testScheduler)
-        )
-    )
+    private fun TestScope.themeRepository(): Pair<ThemeRepository, ThemeLocalDataSource> {
+        val themeLocalDataSource = DefaultThemeLocalDataSource(dataStore = testPreferencesDataStore(scope = backgroundScope))
+        return DefaultThemeRepository(themeLocalDataSource = themeLocalDataSource) to themeLocalDataSource
+    }
 
     @Test
-    fun `nothing stored is the light theme`() = testScope.runTest {
+    fun `nothing stored is the light theme`() = runTest {
+        val (themeRepository: ThemeRepository, _) = themeRepository()
+
         assertEquals(expected = Either.Right(b = Theme.LIGHT), actual = themeRepository.getTheme())
     }
 
     @Test
-    fun `values written by the old preference screen are read`() = testScope.runTest {
-        val expected: Map<String, Theme> = mapOf(
-            "Light" to Theme.LIGHT,
-            "Light (No background)" to Theme.LIGHT,
-            "Dark" to Theme.DARK,
-            "AMOLED" to Theme.AMOLED
-        )
+    fun `every theme reads back as it was set`() = runTest {
+        val (themeRepository: ThemeRepository, _) = themeRepository()
 
-        val actual: Map<String, Either<Failure, Theme>> = expected.keys.associateWith { value: String ->
-            sharedPreferences.edit().putString(THEME_KEY, value).apply()
+        val themes: List<Either<Failure, Theme>> = Theme.entries.map { theme: Theme ->
+            themeRepository.setTheme(theme = theme)
             themeRepository.getTheme()
         }
 
-        assertEquals(
-            expected = expected.mapValues { (_, theme: Theme) -> Either.Right(b = theme) },
-            actual = actual
-        )
+        assertEquals(expected = Theme.entries.map { theme: Theme -> Either.Right(b = theme) }, actual = themes)
     }
 
     @Test
-    fun `a set theme is stored as the old preference value`() = testScope.runTest {
-        val stored: List<String?> = Theme.entries.map { theme: Theme ->
-            themeRepository.setTheme(theme = theme)
-            sharedPreferences.getString(THEME_KEY, null)
-        }
+    fun `an unknown stored value is the light theme`() = runTest {
+        val dataStore = testPreferencesDataStore(scope = backgroundScope)
+        dataStore.edit { preferences -> preferences[stringPreferencesKey(name = "theme")] = "Light (No background)" }
+        val themeRepository: ThemeRepository = DefaultThemeRepository(themeLocalDataSource = DefaultThemeLocalDataSource(dataStore = dataStore))
 
-        assertEquals(expected = listOf("Light", "Dark", "AMOLED"), actual = stored)
+        assertEquals(expected = Either.Right(b = Theme.LIGHT), actual = themeRepository.getTheme())
     }
 
     @Test
-    fun `observing emits the stored theme and then each change`() = testScope.runTest {
+    fun `observing emits the stored theme and then each change`() = runTest {
+        val (themeRepository: ThemeRepository, _) = themeRepository()
         val emitted = mutableListOf<Either<Failure, Theme>>()
         val job = launch {
             themeRepository.observeTheme().take(count = 3).toList(destination = emitted)
         }
         advanceUntilIdle()
 
+        themeRepository.setTheme(theme = Theme.DARK)
+        advanceUntilIdle()
         themeRepository.setTheme(theme = Theme.DARK)
         advanceUntilIdle()
         themeRepository.setTheme(theme = Theme.AMOLED)
@@ -95,28 +88,41 @@ class DefaultThemeRepositoryTest {
             expected = listOf(Either.Right(b = Theme.LIGHT), Either.Right(b = Theme.DARK), Either.Right(b = Theme.AMOLED)),
             actual = emitted
         )
-        assertEquals(expected = 0, actual = sharedPreferences.listenerCount)
     }
 
     @Test
-    fun `a failing store is an unknown failure and logged as an error`() = testScope.runTest {
-        val brokenRepository: ThemeRepository = DefaultThemeRepository(themeLocalDataSource = BrokenThemeLocalDataSource())
+    fun `storage that cannot be read or written is a storage failure`() = runTest {
+        val themeRepository: ThemeRepository = DefaultThemeRepository(
+            themeLocalDataSource = FailingThemeLocalDataSource(exception = IOException("disk full"))
+        )
 
         withRecordedLogs { recordingLogSink ->
             val results: List<Either<Failure, Any>> = listOf(
-                brokenRepository.getTheme(),
-                brokenRepository.setTheme(theme = Theme.DARK),
-                brokenRepository.observeTheme().toList().single()
+                themeRepository.getTheme(),
+                themeRepository.setTheme(theme = Theme.DARK),
+                themeRepository.observeTheme().toList().single()
             )
 
             assertEquals(
-                expected = List(size = 3) { Either.Left(a = Failure(errorCode = ErrorCode.UNKNOWN)) },
+                expected = List(size = 3) { Either.Left(a = Failure(errorCode = ErrorCode.STORAGE_FAILED)) },
                 actual = results
             )
             assertEquals(
-                expected = List(size = 3) { "fi.kroon.vadret.theme" to LogLevel.ERROR },
+                expected = List(size = 3) { "fi.kroon.vadret.theme" to LogLevel.WARN },
                 actual = recordingLogSink.lines.map { line: LogLine -> line.tag to line.level }
             )
+        }
+    }
+
+    @Test
+    fun `anything else is unknown and logged as an error`() = runTest {
+        val themeRepository: ThemeRepository = DefaultThemeRepository(
+            themeLocalDataSource = FailingThemeLocalDataSource(exception = IllegalStateException("bug"))
+        )
+
+        withRecordedLogs { recordingLogSink ->
+            assertEquals(expected = Either.Left(a = Failure.unknown()), actual = themeRepository.getTheme())
+            assertEquals(expected = LogLevel.ERROR, actual = recordingLogSink.lines.single().level)
         }
     }
 }

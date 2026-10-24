@@ -16,11 +16,6 @@ private const val COUNTY_COLUMN = "county"
 private const val LATITUDE_COLUMN = "latitude"
 private const val LONGITUDE_COLUMN = "longitude"
 
-/**
- *  The places are read once, every search after that is in memory.
- *
- *  @param openPlaces opens the bundled CSV of places.
- */
 internal class DefaultAutoCompleteLocalDataSource(
     private val openPlaces: () -> InputStream,
     private val coroutineDispatcher: CoroutineDispatcher

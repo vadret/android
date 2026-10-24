@@ -45,8 +45,8 @@ class WarningViewModelTest {
         Dispatchers.resetMain()
     }
 
-    private fun viewModel(): WarningViewModel =
-        WarningViewModel(
+    private fun viewModel(): WarningViewModel {
+        val warningViewModel = WarningViewModel(
             getWarningsTask = DefaultGetWarningsTask(
                 warningFilterRepository = warningFilterRepository,
                 aggregatedFeedRepository = aggregatedFeedRepository
@@ -56,6 +56,32 @@ class WarningViewModelTest {
             clock = FixedClock(now = Instant.parse(input = "2026-10-24T08:30:00Z")),
             coroutineDispatcher = testDispatcher
         )
+        warningViewModel.onEvent(event = WarningEvent.OnStart)
+        return warningViewModel
+    }
+
+    @Test
+    fun `nothing loads until the screen starts the view model, and only once`() = testScope.runTest {
+        val warningViewModel = WarningViewModel(
+            getWarningsTask = DefaultGetWarningsTask(
+                warningFilterRepository = warningFilterRepository,
+                aggregatedFeedRepository = aggregatedFeedRepository
+            ),
+            getWarningFilterTask = DefaultGetWarningFilterTask(warningFilterRepository = warningFilterRepository),
+            setWarningFilterTask = DefaultSetWarningFilterTask(warningFilterRepository = warningFilterRepository),
+            clock = FixedClock(now = Instant.parse(input = "2026-10-24T08:30:00Z")),
+            coroutineDispatcher = testDispatcher
+        )
+        advanceUntilIdle()
+        val requestsBeforeStart: Int = aggregatedFeedRepository.requests.size
+
+        warningViewModel.onEvent(event = WarningEvent.OnStart)
+        warningViewModel.onEvent(event = WarningEvent.OnStart)
+        advanceUntilIdle()
+
+        assertEquals(expected = 0, actual = requestsBeforeStart)
+        assertEquals(expected = 1, actual = aggregatedFeedRepository.requests.size)
+    }
 
     @Test
     fun `warnings are shown once loaded`() = testScope.runTest {

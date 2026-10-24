@@ -16,10 +16,6 @@ import kotlin.time.Instant
 
 private val logger: Logger = LoggerFactory.getLogger(tag = "fi.kroon.vadret.radar")
 
-/**
- *  SMHI writes the time an image is valid for as
- *  "2026-10-24 14:05", in UTC.
- */
 private val validFormat = LocalDateTime.Format {
     date(format = LocalDate.Formats.ISO)
     char(value = ' ')
@@ -28,9 +24,6 @@ private val validFormat = LocalDateTime.Format {
     minute()
 }
 
-/**
- *  Files without an image or a readable time are skipped.
- */
 internal fun RadarDto.toRadarCacheEntity(
     fetchedAt: Instant,
     date: LocalDate

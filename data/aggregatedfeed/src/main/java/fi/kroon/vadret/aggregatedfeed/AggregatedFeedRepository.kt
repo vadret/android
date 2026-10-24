@@ -14,12 +14,6 @@ import kotlin.time.Clock
 
 interface AggregatedFeedRepository {
 
-    /**
-     *  SMHI warnings affecting [districtIds] together with Krisinformation news
-     *  and VMAs, from the enabled [feedSources] and newest first. The feed comes
-     *  from the cache when it was fetched for the same sources and districts in
-     *  the last five minutes, unless [isRefresh] asks for a new one.
-     */
     suspend fun getAggregatedFeed(
         feedSources: Set<FeedSource>,
         districtIds: Set<Int>,
@@ -27,9 +21,6 @@ interface AggregatedFeedRepository {
     ): Either<Failure, List<AggregatedFeed>>
 }
 
-/**
- *  [httpClient] is only created on first use, never on the main thread.
- */
 fun AggregatedFeedRepository(
     httpClient: Lazy<HttpClient>,
     diskCache: DiskCache,

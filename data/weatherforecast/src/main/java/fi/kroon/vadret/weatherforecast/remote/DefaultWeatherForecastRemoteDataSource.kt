@@ -7,9 +7,6 @@ import io.ktor.client.request.get
 import java.math.BigDecimal
 import java.math.RoundingMode
 
-/**
- *  SMHI rejects coordinates with more than six decimals.
- */
 private const val COORDINATE_DECIMALS = 6
 
 internal class DefaultWeatherForecastRemoteDataSource(

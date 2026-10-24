@@ -7,6 +7,7 @@ import fi.kroon.vadret.testing.FixedClock
 import fi.kroon.vadret.weatherforecast.model.SearchState
 import io.github.sphrak.either.extension.asLeft
 import io.github.sphrak.either.extension.asRight
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -127,7 +128,7 @@ class WeatherForecastViewModelTest {
         advanceUntilIdle()
 
         assertEquals(expected = listOf("Ki" to 10), actual = autoCompleteRepository.searches)
-        assertEquals(expected = SearchState(query = "Ki", suggestions = listOf(kiruna)), actual = weatherForecastViewModel.state.value.search)
+        assertEquals(expected = SearchState(query = "Ki", suggestions = persistentListOf(kiruna)), actual = weatherForecastViewModel.state.value.search)
     }
 
     @Test
@@ -137,7 +138,7 @@ class WeatherForecastViewModelTest {
         advanceUntilIdle()
 
         assertTrue(actual = autoCompleteRepository.searches.isEmpty())
-        assertEquals(expected = SearchState(query = " ", suggestions = emptyList()), actual = weatherForecastViewModel.state.value.search)
+        assertEquals(expected = SearchState(query = " ", suggestions = persistentListOf()), actual = weatherForecastViewModel.state.value.search)
     }
 
     @Test

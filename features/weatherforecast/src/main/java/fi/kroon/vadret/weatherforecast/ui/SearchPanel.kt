@@ -29,10 +29,6 @@ import fi.kroon.vadret.ui.VadretTheme
 import fi.kroon.vadret.weatherforecast.WeatherForecastEvent
 import fi.kroon.vadret.weatherforecast.model.SearchState
 
-/**
- *  Searching for the start of a place name, submitting
- *  picks the first suggestion.
- */
 @Composable
 internal fun SearchPanel(
     search: SearchState,

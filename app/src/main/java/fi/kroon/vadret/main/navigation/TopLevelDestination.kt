@@ -18,9 +18,6 @@ data object RadarKey : NavKey
 @Serializable
 data object SettingsKey : NavKey
 
-/**
- *  The tabs of the bottom bar, in order.
- */
 internal enum class TopLevelDestination(
     val key: NavKey,
     @DrawableRes

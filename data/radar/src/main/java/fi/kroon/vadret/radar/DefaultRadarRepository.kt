@@ -19,10 +19,6 @@ import kotlin.time.Duration
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Instant
 
-/**
- *  SMHI adds an image every five minutes, so a radar
- *  fetched within the last fifteen is still current.
- */
 private val cacheLifetime: Duration = 15.minutes
 
 internal class DefaultRadarRepository(
@@ -53,10 +49,6 @@ internal class DefaultRadarRepository(
         }
     }
 
-    /**
-     *  A radar without images is fetched again, the first
-     *  image of a day can be minutes late.
-     */
     private fun RadarCacheEntity.isCurrent(
         now: Instant,
         today: LocalDate

@@ -17,9 +17,6 @@ internal interface DistrictDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insert(districtEntities: List<DistrictEntity>)
 
-    /**
-     *  Every district not in [enabledDistrictIds] is turned off.
-     */
     @Query(value = "UPDATE district SET is_enabled = id IN (:enabledDistrictIds)")
     suspend fun setEnabled(enabledDistrictIds: List<Int>)
 }

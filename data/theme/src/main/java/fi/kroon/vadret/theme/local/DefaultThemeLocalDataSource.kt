@@ -1,48 +1,31 @@
 package fi.kroon.vadret.theme.local
 
-import android.content.SharedPreferences
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.channels.awaitClose
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.stringPreferencesKey
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 
-private const val THEME_KEY = "APP_THEME_MODE"
+private val themeKey: Preferences.Key<String> = stringPreferencesKey(name = "theme")
 
 internal class DefaultThemeLocalDataSource(
-    private val sharedPreferences: SharedPreferences,
-    private val coroutineDispatcher: CoroutineDispatcher
+    private val dataStore: DataStore<Preferences>
 ) : ThemeLocalDataSource {
 
     override suspend fun getTheme(): String? =
-        withContext(context = coroutineDispatcher) {
-            readTheme()
-        }
+        dataStore.data.first()[themeKey]
 
     override fun observeTheme(): Flow<String?> =
-        callbackFlow {
-            val listener = SharedPreferences.OnSharedPreferenceChangeListener { _, changedKey: String? ->
-                if (changedKey == THEME_KEY) {
-                    trySend(element = readTheme())
-                }
-            }
-            sharedPreferences.registerOnSharedPreferenceChangeListener(listener)
-            send(element = readTheme())
-            awaitClose {
-                sharedPreferences.unregisterOnSharedPreferenceChangeListener(listener)
-            }
-        }.flowOn(context = coroutineDispatcher)
+        dataStore.data
+            .map { preferences: Preferences -> preferences[themeKey] }
+            .distinctUntilChanged()
 
     override suspend fun setTheme(value: String) {
-        withContext(context = coroutineDispatcher) {
-            sharedPreferences
-                .edit()
-                .putString(THEME_KEY, value)
-                .apply()
+        dataStore.edit { preferences ->
+            preferences[themeKey] = value
         }
     }
-
-    private fun readTheme(): String? =
-        sharedPreferences.getString(THEME_KEY, null)
 }

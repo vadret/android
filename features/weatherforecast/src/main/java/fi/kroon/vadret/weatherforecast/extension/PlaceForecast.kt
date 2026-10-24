@@ -8,6 +8,8 @@ import fi.kroon.vadret.weatherforecast.util.SunriseSunset
 import fi.kroon.vadret.weatherforecast.util.SunsetUtil
 import fi.kroon.vadret.weatherforecast.util.WeatherForecastUtil
 import fi.kroon.vadret.weatherforecast.util.WindChill
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
@@ -26,9 +28,6 @@ private const val WEEKDAY_PATTERN = "EEEE"
 private const val DAY_KEY_PREFIX = "day-"
 private const val HOUR_KEY_PREFIX = "hour-"
 
-/**
- *  The wind arrow drawable points east.
- */
 private const val WIND_ARROW_ROTATION_OFFSET = 90f
 private const val NO_PRECIPITATION = 0
 
@@ -38,18 +37,14 @@ private val hourFormat = LocalTime.Format {
     minute()
 }
 
-/**
- *  The overview shows the first forecast, the days list every forecast
- *  grouped by date in [timeZone]. SMHI's times are in UTC.
- */
 internal fun PlaceForecast.toWeatherForecast(
     now: Instant,
     timeZone: TimeZone,
     locale: Locale
 ): WeatherForecast {
     val first: Forecast = forecasts.firstOrNull() ?: return WeatherForecast(
-        overview = emptyList(),
-        days = emptyList()
+        overview = persistentListOf(),
+        days = persistentListOf()
     )
     val javaTimeZone: JavaTimeZone = JavaTimeZone.getTimeZone(timeZone.id)
     val dateFormat: DateFormat = DateFormat.getDateInstance(DateFormat.LONG, locale)
@@ -59,7 +54,7 @@ internal fun PlaceForecast.toWeatherForecast(
         format.timeZone = javaTimeZone
     }
     return WeatherForecast(
-        overview = listOf(
+        overview = persistentListOf(
             first.toHeadline(),
             first.toSummary(
                 sunriseSunset = SunsetUtil.getSunriseSunset(
@@ -75,7 +70,7 @@ internal fun PlaceForecast.toWeatherForecast(
             locale = locale,
             dateFormat = dateFormat,
             weekdayFormat = weekdayFormat
-        )
+        ).toImmutableList()
     )
 }
 

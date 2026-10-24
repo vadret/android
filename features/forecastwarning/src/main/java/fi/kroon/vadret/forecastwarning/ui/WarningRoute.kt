@@ -27,11 +27,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import fi.kroon.vadret.core.R
+import fi.kroon.vadret.di.koinViewModel
 import fi.kroon.vadret.forecastwarning.WarningEvent
 import fi.kroon.vadret.forecastwarning.WarningState
 import fi.kroon.vadret.forecastwarning.WarningViewModel
-import fi.kroon.vadret.forecastwarning.di.WarningDependencies
-import fi.kroon.vadret.forecastwarning.di.warningViewModel
 import fi.kroon.vadret.forecastwarning.model.WarningFilterState
 import fi.kroon.vadret.forecastwarning.model.WarningItem
 import fi.kroon.vadret.ui.VadretProgressBar
@@ -40,16 +39,12 @@ import fi.kroon.vadret.ui.VadretTopAppBar
 
 private const val WARNING_CONTENT_TYPE = "warning"
 
-/**
- *  Keeps the last card clear of the filter button.
- */
 private val floatingActionButtonClearance = 88.dp
 
 @Composable
 fun WarningRoute(
-    warningDependencies: WarningDependencies,
     modifier: Modifier = Modifier,
-    viewModel: WarningViewModel = warningViewModel(warningDependencies = warningDependencies)
+    viewModel: WarningViewModel = koinViewModel()
 ) {
     val state: WarningState by viewModel.state.collectAsStateWithLifecycle()
     WarningScreen(
@@ -67,6 +62,9 @@ fun WarningScreen(
     modifier: Modifier = Modifier
 ) {
     val snackbarHostState: SnackbarHostState = remember { SnackbarHostState() }
+    LaunchedEffect(Unit) {
+        onEvent(WarningEvent.OnStart)
+    }
     val errorMessageResourceId: Int? = state.errorMessageResourceId
     if (errorMessageResourceId != null) {
         val message: String = stringResource(id = errorMessageResourceId)

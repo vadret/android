@@ -12,9 +12,6 @@ import kotlin.coroutines.cancellation.CancellationException
 
 private val logger: Logger = LoggerFactory.getLogger(tag = "fi.kroon.vadret.radar")
 
-/**
- *  SMHI answers 404 for a day it has no radar for.
- */
 internal fun Exception.toFailure(): Failure =
     when {
         this is CancellationException -> throw this

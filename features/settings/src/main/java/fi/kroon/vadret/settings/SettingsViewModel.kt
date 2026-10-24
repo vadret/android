@@ -6,19 +6,15 @@ import fi.kroon.vadret.common.Failure
 import fi.kroon.vadret.library.model.Library
 import fi.kroon.vadret.theme.model.Theme
 import io.github.sphrak.either.extension.onResult
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import javax.inject.Inject
+import java.util.concurrent.atomic.AtomicBoolean
 
-/**
- *  Failures are logged where they happen. The settings stay
- *  as they were shown, there is nothing the user can retry.
- */
-class SettingsViewModel @Inject internal constructor(
+class SettingsViewModel internal constructor(
     private val getSettingsTask: GetSettingsTask,
     private val setLocationModeTask: SetLocationModeTask,
     private val setThemeTask: SetThemeTask,
@@ -26,26 +22,31 @@ class SettingsViewModel @Inject internal constructor(
     private val coroutineDispatcher: CoroutineDispatcher
 ) : ViewModel() {
 
-    private val mutableState: MutableStateFlow<SettingsState> = MutableStateFlow(value = SettingsState())
-    val state: StateFlow<SettingsState> = mutableState.asStateFlow()
+    val state: StateFlow<SettingsState>
+        field = MutableStateFlow(value = SettingsState())
 
-    init {
-        viewModelScope.launch(context = coroutineDispatcher) {
-            loadSettings()
-            loadLibraries()
-        }
-    }
+    private val isStarted: AtomicBoolean = AtomicBoolean(false)
 
     fun onEvent(event: SettingsEvent) {
         when (event) {
+            SettingsEvent.OnStart -> onStart()
             is SettingsEvent.OnLocationModeToggled -> onLocationModeToggled(isAutomaticLocation = event.isAutomaticLocation)
-            SettingsEvent.OnThemeRowClicked -> mutableState.update { state: SettingsState ->
+            SettingsEvent.OnThemeRowClicked -> state.update { state: SettingsState ->
                 state.copy(isThemeDialogVisible = true)
             }
-            SettingsEvent.OnThemeDialogDismissed -> mutableState.update { state: SettingsState ->
+            SettingsEvent.OnThemeDialogDismissed -> state.update { state: SettingsState ->
                 state.copy(isThemeDialogVisible = false)
             }
             is SettingsEvent.OnThemeSelected -> onThemeSelected(theme = event.theme)
+        }
+    }
+
+    private fun onStart() {
+        if (isStarted.compareAndSet(false, true)) {
+            viewModelScope.launch(context = coroutineDispatcher) {
+                loadSettings()
+                loadLibraries()
+            }
         }
     }
 
@@ -53,7 +54,7 @@ class SettingsViewModel @Inject internal constructor(
         getSettingsTask().onResult(
             onError = { _: Failure -> },
             onSuccess = { settings: Settings ->
-                mutableState.update { state: SettingsState ->
+                state.update { state: SettingsState ->
                     state.copy(settings = settings)
                 }
             }
@@ -64,8 +65,8 @@ class SettingsViewModel @Inject internal constructor(
         getLibrariesTask().onResult(
             onError = { },
             onSuccess = { libraries: List<Library> ->
-                mutableState.update { state: SettingsState ->
-                    state.copy(libraries = libraries)
+                state.update { state: SettingsState ->
+                    state.copy(libraries = libraries.toImmutableList())
                 }
             }
         )
@@ -81,7 +82,7 @@ class SettingsViewModel @Inject internal constructor(
     }
 
     private fun onThemeSelected(theme: Theme) {
-        mutableState.update { state: SettingsState ->
+        state.update { state: SettingsState ->
             state.copy(isThemeDialogVisible = false)
         }
         viewModelScope.launch(context = coroutineDispatcher) {

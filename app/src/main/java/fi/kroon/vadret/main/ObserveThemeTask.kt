@@ -7,8 +7,5 @@ import kotlinx.coroutines.flow.Flow
 
 internal interface ObserveThemeTask {
 
-    /**
-     *  The theme chosen in settings, then every change to it.
-     */
     operator fun invoke(): Flow<Either<Failure, Theme>>
 }

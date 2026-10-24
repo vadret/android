@@ -1,5 +1,3 @@
-// Shared configuration for every Android library module.
-// AGP itself comes from the root build script classpath.
 pluginManager.apply('com.android.library')
 
 def libs = extensions.getByType(VersionCatalogsExtension).named('libs')

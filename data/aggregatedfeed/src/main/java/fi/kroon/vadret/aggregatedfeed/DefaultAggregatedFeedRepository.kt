@@ -88,9 +88,6 @@ internal class DefaultAggregatedFeedRepository(
         }
     }
 
-    /**
-     *  A VMA can also be listed as news, so items are unique by identifier.
-     */
     private suspend fun fetchItems(
         feedSources: Set<FeedSource>,
         districtIds: Set<Int>
@@ -120,9 +117,6 @@ internal class DefaultAggregatedFeedRepository(
             .getWarnings()
             .flatMap { smhiWarningDto: SmhiWarningDto -> smhiWarningDto.toAggregatedFeedEntities(districtIds = districtIds) }
 
-    /**
-     *  National news is returned whatever the counties.
-     */
     private suspend fun getKrisinformation(districtIds: Set<Int>): List<AggregatedFeedEntity> {
         val counties: String = districtIds
             .sorted()
@@ -132,10 +126,6 @@ internal class DefaultAggregatedFeedRepository(
             .mapNotNull { krisinformationFeedDto: KrisinformationFeedDto -> krisinformationFeedDto.toAggregatedFeedEntity() }
     }
 
-    /**
-     *  The VMA feed was empty while this was written, so its payload
-     *  is unverified. A failure here should not hide news and warnings.
-     */
     private suspend fun getVmas(counties: String): List<KrisinformationFeedDto> =
         try {
             krisinformationRemoteDataSource.getVmas(counties = counties)

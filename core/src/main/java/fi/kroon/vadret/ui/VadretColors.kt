@@ -3,10 +3,6 @@ package fi.kroon.vadret.ui
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color
 
-/**
- *  Colors that carry meaning in the app beyond the Material
- *  roles, such as which source a warning came from.
- */
 @Immutable
 data class VadretColors(
     val districtLand: Color = Color(color = 0xFFCDE7CA),

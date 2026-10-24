@@ -11,6 +11,10 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import fi.kroon.vadret.radar.projection.RADAR_EAST_LONGITUDE
+import fi.kroon.vadret.radar.projection.RADAR_NORTH_LATITUDE
+import fi.kroon.vadret.radar.projection.RADAR_SOUTH_LATITUDE
+import fi.kroon.vadret.radar.projection.RADAR_WEST_LONGITUDE
 import org.osmdroid.config.Configuration
 import org.osmdroid.config.IConfigurationProvider
 import org.osmdroid.tileprovider.tilesource.XYTileSource
@@ -21,17 +25,6 @@ import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.GroundOverlay
 import java.io.File
 
-/**
- *  The area SMHI's composite radar image covers.
- */
-private const val RADAR_LATITUDE_MAX = 70.0481652870767
-private const val RADAR_LATITUDE_MIN = 53.6813981284917
-private const val RADAR_LONGITUDE_MAX = 29.7811924432583
-private const val RADAR_LONGITUDE_MIN = 5.2849968932444
-
-/**
- *  Sweden fills the screen at this zoom.
- */
 private const val CENTER_LATITUDE = 58.62
 private const val CENTER_LONGITUDE = 15.57
 private const val INITIAL_ZOOM_LEVEL = 6.0
@@ -46,10 +39,6 @@ private const val TILE_SIZE_PIXELS = 256
 private const val OSMDROID_DIRECTORY = "osmdroid"
 private const val TILE_CACHE_DIRECTORY = "tile"
 
-/**
- *  osmdroid has no Compose version, so its view is hosted here.
- *  [overlay] covers the area SMHI radar images are drawn for.
- */
 @Composable
 internal fun RadarMap(
     overlay: Bitmap?,
@@ -60,8 +49,8 @@ internal fun RadarMap(
     val groundOverlay: GroundOverlay = remember {
         GroundOverlay().apply {
             setPosition(
-                GeoPoint(RADAR_LATITUDE_MAX, RADAR_LONGITUDE_MIN),
-                GeoPoint(RADAR_LATITUDE_MIN, RADAR_LONGITUDE_MAX)
+                GeoPoint(RADAR_NORTH_LATITUDE, RADAR_WEST_LONGITUDE),
+                GeoPoint(RADAR_SOUTH_LATITUDE, RADAR_EAST_LONGITUDE)
             )
         }
     }
@@ -122,10 +111,10 @@ private fun createMapView(context: Context): MapView {
         controller.setZoom(INITIAL_ZOOM_LEVEL)
         setScrollableAreaLimitDouble(
             BoundingBox(
-                RADAR_LATITUDE_MAX,
-                RADAR_LONGITUDE_MAX,
-                RADAR_LATITUDE_MIN,
-                RADAR_LONGITUDE_MIN
+                RADAR_NORTH_LATITUDE,
+                RADAR_EAST_LONGITUDE,
+                RADAR_SOUTH_LATITUDE,
+                RADAR_WEST_LONGITUDE
             )
         )
     }

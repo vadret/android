@@ -1,25 +1,23 @@
 package fi.kroon.vadret
 
 import android.app.Application
-import fi.kroon.vadret.di.AppComponent
-import fi.kroon.vadret.di.DaggerAppComponent
+import fi.kroon.vadret.di.appModules
 import fi.kroon.vadret.logging.LogLevel
 import fi.kroon.vadret.logging.LogcatSink
 import fi.kroon.vadret.logging.LoggerFactory
+import org.koin.core.KoinApplication
+import org.koin.dsl.koinApplication
 
 private const val LOGCAT_SINK_NAME = "logcat"
 
 abstract class BaseApplication : Application() {
 
-    internal val appComponent: AppComponent by lazy {
-        DaggerAppComponent
-            .factory()
-            .create(context = this)
+    internal val koinApplication: KoinApplication by lazy {
+        koinApplication {
+            modules(modules = appModules(context = this@BaseApplication))
+        }
     }
 
-    /**
-     *  Release builds log nothing.
-     */
     override fun onCreate() {
         super.onCreate()
         if (BuildConfig.DEBUG) {

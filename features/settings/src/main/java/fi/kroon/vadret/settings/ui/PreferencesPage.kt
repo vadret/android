@@ -188,9 +188,6 @@ private fun automaticLocationSummaryResourceId(isAutomaticLocation: Boolean): In
         R.string.gps_is_not_being_used
     }
 
-/**
- *  The stored place is only used while GPS is off.
- */
 private fun locationAlpha(isAutomaticLocation: Boolean): Float =
     if (isAutomaticLocation) {
         DISABLED_ALPHA

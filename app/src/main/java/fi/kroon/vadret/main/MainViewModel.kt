@@ -12,19 +12,14 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
-import javax.inject.Inject
 
 private const val STOP_TIMEOUT_MILLIS = 5_000L
 
-class MainViewModel @Inject internal constructor(
+class MainViewModel internal constructor(
     observeThemeTask: ObserveThemeTask,
     coroutineDispatcher: CoroutineDispatcher
 ) : ViewModel() {
 
-    /**
-     *  Null until the stored theme is read, so the app never flashes
-     *  the wrong theme on start. A theme that cannot be read is light.
-     */
     val theme: StateFlow<Theme?> = observeThemeTask()
         .map { result: Either<Failure, Theme> ->
             result.onResult(

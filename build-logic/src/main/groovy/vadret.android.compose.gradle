@@ -1,4 +1,3 @@
-// Jetpack Compose for any module that renders UI. The compiler plugin follows the Kotlin version.
 pluginManager.apply('org.jetbrains.kotlin.plugin.compose')
 
 def libs = extensions.getByType(VersionCatalogsExtension).named('libs')

@@ -16,11 +16,6 @@ private const val MESSAGE_LEVEL = "MESSAGE"
 private const val PREAMBLE_SEPARATOR = " - "
 private const val PARAGRAPH_SEPARATOR = "\n\n"
 
-/**
- *  Each warning area becomes its own item, kept when it
- *  affects any of [districtIds]. Areas with an unreadable
- *  publish time are skipped.
- */
 internal fun SmhiWarningDto.toAggregatedFeedEntities(districtIds: Set<Int>): List<AggregatedFeedEntity> =
     warningAreas
         .orEmpty()
@@ -51,9 +46,6 @@ private fun SmhiWarningDto.toAggregatedFeedEntity(smhiWarningAreaDto: SmhiWarnin
     )
 }
 
-/**
- *  Messages are not warnings, so they are not called one.
- */
 private fun SmhiWarningDto.headline(smhiWarningAreaDto: SmhiWarningAreaDto): String =
     if (smhiWarningAreaDto.warningLevel.code == MESSAGE_LEVEL) {
         "${smhiWarningAreaDto.warningLevel.sv}: ${event.sv}"
@@ -61,9 +53,6 @@ private fun SmhiWarningDto.headline(smhiWarningAreaDto: SmhiWarningAreaDto): Str
         "${smhiWarningAreaDto.warningLevel.sv} varning: ${event.sv}"
     }
 
-/**
- *  The event description often just repeats the event.
- */
 private fun SmhiWarningDto.preamble(smhiWarningAreaDto: SmhiWarningAreaDto): String {
     val eventDescription: String = smhiWarningAreaDto.eventDescription.sv
     return if (eventDescription == event.sv) {

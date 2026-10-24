@@ -35,9 +35,6 @@ private class FakeGetRadarTask(
     override suspend fun invoke(): Either<Failure, Radar> = result
 }
 
-/**
- *  Bitmap is a framework class, so each loaded image is a mock.
- */
 private class FakeRadarImageLoader : RadarImageLoader {
 
     val loadedUrls = mutableListOf<String>()
@@ -81,12 +78,15 @@ class RadarViewModelTest {
         Dispatchers.resetMain()
     }
 
-    private fun viewModel(): RadarViewModel =
-        RadarViewModel(
+    private fun viewModel(): RadarViewModel {
+        val radarViewModel = RadarViewModel(
             getRadarTask = getRadarTask,
             radarImageLoader = radarImageLoader,
             coroutineDispatcher = testDispatcher
         )
+        radarViewModel.onEvent(event = RadarEvent.OnStart)
+        return radarViewModel
+    }
 
     @Test
     fun `the newest frame is shown once loaded`() = testScope.runTest {

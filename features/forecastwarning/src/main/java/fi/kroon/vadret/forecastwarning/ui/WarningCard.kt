@@ -72,9 +72,6 @@ internal fun WarningCard(
     }
 }
 
-/**
- *  A label only, the card itself is not interactive.
- */
 @Composable
 private fun SourceChip(
     source: FeedSource,

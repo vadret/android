@@ -9,17 +9,17 @@ import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import fi.kroon.vadret.core.R
+import fi.kroon.vadret.di.koinViewModel
 import fi.kroon.vadret.settings.SettingsEvent
 import fi.kroon.vadret.settings.SettingsState
 import fi.kroon.vadret.settings.SettingsViewModel
-import fi.kroon.vadret.settings.di.SettingsDependencies
-import fi.kroon.vadret.settings.di.settingsViewModel
 import fi.kroon.vadret.ui.VadretTopAppBar
 import kotlinx.coroutines.launch
 
@@ -31,9 +31,8 @@ private enum class SettingsPage(val titleResourceId: Int) {
 
 @Composable
 fun SettingsRoute(
-    settingsDependencies: SettingsDependencies,
     modifier: Modifier = Modifier,
-    viewModel: SettingsViewModel = settingsViewModel(settingsDependencies = settingsDependencies)
+    viewModel: SettingsViewModel = koinViewModel()
 ) {
     val state: SettingsState by viewModel.state.collectAsStateWithLifecycle()
     SettingsScreen(
@@ -51,6 +50,9 @@ fun SettingsScreen(
 ) {
     val pagerState: PagerState = rememberPagerState(pageCount = { SettingsPage.entries.size })
     val coroutineScope = rememberCoroutineScope()
+    LaunchedEffect(Unit) {
+        onEvent(SettingsEvent.OnStart)
+    }
 
     Column(modifier = modifier.fillMaxSize()) {
         VadretTopAppBar()

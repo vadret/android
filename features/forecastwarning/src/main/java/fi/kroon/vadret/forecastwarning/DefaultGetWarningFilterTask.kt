@@ -4,9 +4,8 @@ import fi.kroon.vadret.common.Failure
 import fi.kroon.vadret.warningfilter.WarningFilterRepository
 import fi.kroon.vadret.warningfilter.model.WarningFilter
 import io.github.sphrak.either.Either
-import javax.inject.Inject
 
-internal class DefaultGetWarningFilterTask @Inject constructor(
+internal class DefaultGetWarningFilterTask(
     private val warningFilterRepository: WarningFilterRepository
 ) : GetWarningFilterTask {
 

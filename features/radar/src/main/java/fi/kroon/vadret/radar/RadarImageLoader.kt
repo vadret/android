@@ -6,8 +6,5 @@ import io.github.sphrak.either.Either
 
 internal interface RadarImageLoader {
 
-    /**
-     *  A software bitmap, osmdroid draws it on its own canvas.
-     */
     suspend fun load(imageUrl: String): Either<Failure, Bitmap>
 }

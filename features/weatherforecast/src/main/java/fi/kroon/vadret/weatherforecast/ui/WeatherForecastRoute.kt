@@ -26,16 +26,16 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import fi.kroon.vadret.core.R
+import fi.kroon.vadret.di.koinViewModel
 import fi.kroon.vadret.ui.VadretProgressBar
 import fi.kroon.vadret.ui.VadretTheme
 import fi.kroon.vadret.ui.VadretTopAppBar
 import fi.kroon.vadret.weatherforecast.WeatherForecastEvent
 import fi.kroon.vadret.weatherforecast.WeatherForecastState
 import fi.kroon.vadret.weatherforecast.WeatherForecastViewModel
-import fi.kroon.vadret.weatherforecast.di.WeatherForecastDependencies
-import fi.kroon.vadret.weatherforecast.di.weatherForecastViewModel
 import fi.kroon.vadret.weatherforecast.model.SearchState
 import fi.kroon.vadret.weatherforecast.model.WeatherForecastRow
+import kotlinx.collections.immutable.ImmutableList
 
 private const val SEARCH_KEY = "search"
 private const val HEADLINE_CONTENT_TYPE = "headline"
@@ -43,16 +43,12 @@ private const val SUMMARY_CONTENT_TYPE = "summary"
 private const val DAY_CONTENT_TYPE = "day"
 private const val HOUR_CONTENT_TYPE = "hour"
 
-/**
- *  Keeps the last card clear of the search button.
- */
 private val floatingActionButtonClearance = 88.dp
 
 @Composable
 fun WeatherForecastRoute(
-    weatherForecastDependencies: WeatherForecastDependencies,
     modifier: Modifier = Modifier,
-    viewModel: WeatherForecastViewModel = weatherForecastViewModel(weatherForecastDependencies = weatherForecastDependencies)
+    viewModel: WeatherForecastViewModel = koinViewModel()
 ) {
     val state: WeatherForecastState by viewModel.state.collectAsStateWithLifecycle()
     WeatherForecastScreen(
@@ -146,7 +142,7 @@ fun WeatherForecastScreen(
     }
 }
 
-private fun LazyListScope.forecastRows(rows: List<WeatherForecastRow>) {
+private fun LazyListScope.forecastRows(rows: ImmutableList<WeatherForecastRow>) {
     items(
         items = rows,
         key = { row: WeatherForecastRow -> row.key },

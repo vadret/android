@@ -3,9 +3,6 @@ package fi.kroon.vadret.aggregatedfeed.local
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
-/**
- *  @param source the name of a [fi.kroon.vadret.aggregatedfeed.model.FeedSource].
- */
 @Serializable
 internal data class AggregatedFeedEntity(
     @SerialName(value = "identifier")

@@ -8,10 +8,6 @@ private val logger: Logger = LoggerFactory.getLogger(tag = "fi.kroon.vadret.weat
 
 internal object WeatherForecastUtil {
 
-    /**
-     * predominant_precipitation_type_at_surface, ECMWF GRIB param 260015
-     * https://codes.ecmwf.int/grib/param-db/260015
-     */
     fun getPrecipitationResourceId(prSort: Int): Int =
         when (prSort) {
             0 -> R.string.prsort_no_precipitation

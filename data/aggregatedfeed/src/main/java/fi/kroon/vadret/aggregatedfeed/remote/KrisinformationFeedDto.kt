@@ -3,9 +3,6 @@ package fi.kroon.vadret.aggregatedfeed.remote
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
-/**
- *  A news item or VMA from Krisinformation's v3 API.
- */
 @Serializable
 internal data class KrisinformationFeedDto(
     @SerialName(value = "identifier")

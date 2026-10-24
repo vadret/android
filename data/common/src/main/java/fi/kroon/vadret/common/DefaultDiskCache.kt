@@ -5,11 +5,6 @@ import java.io.IOException
 
 private const val TEMPORARY_FILE_SUFFIX = ".tmp"
 
-/**
- *  Writes go through a temporary file that is renamed into
- *  place, so a crash or a concurrent write never leaves a
- *  half written entry behind.
- */
 internal class DefaultDiskCache(
     private val directory: File
 ) : DiskCache {

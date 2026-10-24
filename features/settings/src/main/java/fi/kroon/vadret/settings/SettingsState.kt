@@ -3,11 +3,10 @@ package fi.kroon.vadret.settings
 import fi.kroon.vadret.core.R
 import fi.kroon.vadret.library.model.Library
 import fi.kroon.vadret.settings.model.AboutRow
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 
-/**
- *  The about page is the same for everyone.
- */
-private val defaultAboutRows: List<AboutRow> = listOf(
+private val defaultAboutRows: ImmutableList<AboutRow> = persistentListOf(
     AboutRow(
         iconResourceId = R.drawable.ic_info_outline,
         titleResourceId = R.string.version_row_title,
@@ -36,7 +35,7 @@ private val defaultAboutRows: List<AboutRow> = listOf(
 
 data class SettingsState(
     val settings: Settings? = null,
-    val libraries: List<Library> = emptyList(),
-    val aboutRows: List<AboutRow> = defaultAboutRows,
+    val libraries: ImmutableList<Library> = persistentListOf(),
+    val aboutRows: ImmutableList<AboutRow> = defaultAboutRows,
     val isThemeDialogVisible: Boolean = false
 )

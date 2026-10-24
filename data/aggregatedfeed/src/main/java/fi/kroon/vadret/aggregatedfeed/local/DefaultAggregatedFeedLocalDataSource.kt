@@ -17,9 +17,6 @@ internal class DefaultAggregatedFeedLocalDataSource(
     private val coroutineDispatcher: CoroutineDispatcher
 ) : AggregatedFeedLocalDataSource {
 
-    /**
-     *  An entry written by an older version is a cache miss.
-     */
     override suspend fun getAggregatedFeed(): AggregatedFeedCacheEntity? =
         withContext(context = coroutineDispatcher) {
             val text: String? = diskCache.read(key = CACHE_KEY)

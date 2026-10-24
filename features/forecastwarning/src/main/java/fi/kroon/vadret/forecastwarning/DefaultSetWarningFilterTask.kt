@@ -4,9 +4,8 @@ import fi.kroon.vadret.aggregatedfeed.model.FeedSource
 import fi.kroon.vadret.common.Failure
 import fi.kroon.vadret.warningfilter.WarningFilterRepository
 import io.github.sphrak.either.Either
-import javax.inject.Inject
 
-internal class DefaultSetWarningFilterTask @Inject constructor(
+internal class DefaultSetWarningFilterTask(
     private val warningFilterRepository: WarningFilterRepository
 ) : SetWarningFilterTask {
 

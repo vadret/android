@@ -1,7 +1,5 @@
 package fi.kroon.vadret.weatherforecast.di
 
-import dagger.Binds
-import dagger.Module
 import fi.kroon.vadret.weatherforecast.DefaultGetLocationModeTask
 import fi.kroon.vadret.weatherforecast.DefaultGetWeatherForecastTask
 import fi.kroon.vadret.weatherforecast.DefaultSearchPlacesTask
@@ -12,22 +10,17 @@ import fi.kroon.vadret.weatherforecast.GetWeatherForecastTask
 import fi.kroon.vadret.weatherforecast.SearchPlacesTask
 import fi.kroon.vadret.weatherforecast.SelectPlaceTask
 import fi.kroon.vadret.weatherforecast.SetLocationModeTask
+import fi.kroon.vadret.weatherforecast.WeatherForecastViewModel
+import org.koin.core.module.Module
+import org.koin.core.module.dsl.bind
+import org.koin.core.module.dsl.factoryOf
+import org.koin.dsl.module
 
-@Module
-internal interface WeatherForecastModule {
-
-    @Binds
-    fun bindGetLocationModeTask(defaultGetLocationModeTask: DefaultGetLocationModeTask): GetLocationModeTask
-
-    @Binds
-    fun bindGetWeatherForecastTask(defaultGetWeatherForecastTask: DefaultGetWeatherForecastTask): GetWeatherForecastTask
-
-    @Binds
-    fun bindSearchPlacesTask(defaultSearchPlacesTask: DefaultSearchPlacesTask): SearchPlacesTask
-
-    @Binds
-    fun bindSelectPlaceTask(defaultSelectPlaceTask: DefaultSelectPlaceTask): SelectPlaceTask
-
-    @Binds
-    fun bindSetLocationModeTask(defaultSetLocationModeTask: DefaultSetLocationModeTask): SetLocationModeTask
+val weatherForecastModule: Module = module {
+    factoryOf(::DefaultGetLocationModeTask) { bind<GetLocationModeTask>() }
+    factoryOf(::DefaultGetWeatherForecastTask) { bind<GetWeatherForecastTask>() }
+    factoryOf(::DefaultSearchPlacesTask) { bind<SearchPlacesTask>() }
+    factoryOf(::DefaultSelectPlaceTask) { bind<SelectPlaceTask>() }
+    factoryOf(::DefaultSetLocationModeTask) { bind<SetLocationModeTask>() }
+    factoryOf(::WeatherForecastViewModel)
 }

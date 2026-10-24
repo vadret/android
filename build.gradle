@@ -18,8 +18,6 @@ allprojects {
     repositories {
         google()
         mavenCentral()
-        // Either is published to GitHub Packages, which needs a token with read:packages
-        // in the GitHubPackagesUsername and GitHubPackagesPassword gradle properties
         maven {
             name = "GitHubPackages"
             url = "https://maven.pkg.github.com/sphrak/Either"
@@ -28,7 +26,6 @@ allprojects {
                 includeGroup "io.github.sphrak"
             }
         }
-        // Either releases are published to the local maven repository before they are deployed
         mavenLocal {
             content {
                 includeGroup "io.github.sphrak"
@@ -51,7 +48,6 @@ dependencies {
     ktlint libs.ktlint
 }
 
-// ktlint 0.41 does not run on JDK 16+
 def ktlintLauncher = javaToolchains.launcherFor {
     languageVersion = JavaLanguageVersion.of(11)
 }

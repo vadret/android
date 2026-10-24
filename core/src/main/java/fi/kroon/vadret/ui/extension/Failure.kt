@@ -5,9 +5,6 @@ import fi.kroon.vadret.common.ErrorCode
 import fi.kroon.vadret.common.Failure
 import fi.kroon.vadret.core.R
 
-/**
- *  Several codes share a message, the user can act on them the same way.
- */
 @StringRes
 fun Failure.messageResourceId(): Int =
     when (errorCode) {

@@ -3,10 +3,6 @@ package fi.kroon.vadret.warningfilter.remote
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
-/**
- *  A warning area from SMHI's IBWW metadata. [code] tells
- *  counties from sea districts.
- */
 @Serializable
 internal data class DistrictDto(
     @SerialName(value = "id")

@@ -1,4 +1,3 @@
-// Feature modules: library defaults plus the Compose UI stack every feature uses.
 pluginManager.apply('vadret.android.library')
 pluginManager.apply('vadret.android.compose')
 

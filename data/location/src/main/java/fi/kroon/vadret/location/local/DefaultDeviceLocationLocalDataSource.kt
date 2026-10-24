@@ -8,10 +8,6 @@ import fi.kroon.vadret.location.exception.LocationProviderDisabledException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 
-/**
- *  The network provider answers faster and indoors,
- *  so it is asked before GPS.
- */
 internal class DefaultDeviceLocationLocalDataSource(
     private val locationManager: LocationManager,
     private val coroutineDispatcher: CoroutineDispatcher
@@ -39,10 +35,6 @@ internal class DefaultDeviceLocationLocalDataSource(
             )
         }
 
-    /**
-     *  The caller asks for location access before using the
-     *  device location, a missing permission throws.
-     */
     @SuppressLint("MissingPermission")
     private fun lastKnownLocation(provider: String): Location? =
         locationManager.getLastKnownLocation(provider)

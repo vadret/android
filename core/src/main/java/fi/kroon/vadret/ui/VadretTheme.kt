@@ -21,17 +21,10 @@ private val LocalVadretSpacing = staticCompositionLocalOf { VadretSpacing() }
 
 private val accent = Color(color = 0xFF6779CA)
 
-/**
- *  Cards use the medium shape and have nearly square corners.
- */
 private val vadretShapes = Shapes(medium = RoundedCornerShape(size = 2.dp))
 
 private val baseTypography = Typography()
 
-/**
- *  Text without the letter spacing Material 3 adds,
- *  as in the view based app this replaced.
- */
 private val vadretTypography = Typography(
     bodyLarge = baseTypography.bodyLarge.copy(letterSpacing = 0.sp),
     bodyMedium = baseTypography.bodyMedium.copy(letterSpacing = 0.sp),
@@ -92,10 +85,6 @@ private val amoledScheme: ColorScheme = darkColorScheme(
     surfaceContainerLow = Color(color = 0xFF141414)
 )
 
-/**
- *  The three themes the settings screen offers, with the
- *  colors of the original View based themes.
- */
 @Composable
 fun VadretTheme(
     theme: Theme,
@@ -114,9 +103,6 @@ fun VadretTheme(
     }
 }
 
-/**
- *  Read from composables the same way as [MaterialTheme].
- */
 object VadretTheme {
 
     val colorScheme: ColorScheme

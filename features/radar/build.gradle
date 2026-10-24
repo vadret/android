@@ -1,6 +1,5 @@
 plugins {
     id 'vadret.android.feature'
-    id 'com.google.devtools.ksp'
 }
 
 android {
@@ -15,13 +14,12 @@ dependencies {
     implementation libs.androidx.annotation
     implementation libs.coil.core
     implementation libs.coil.network.ktor
-    implementation libs.dagger.runtime
     implementation libs.either
+    implementation libs.koin.core
+    implementation libs.kotlinx.collections.immutable
     implementation libs.kotlinx.datetime
     implementation libs.ktor.client.core
     implementation libs.osmdroid
-
-    ksp libs.dagger.compiler
 
     testImplementation project(':core:testing')
 }

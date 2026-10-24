@@ -3,9 +3,6 @@ package fi.kroon.vadret.weatherforecast.util
 import java.util.Locale
 import kotlin.math.pow
 
-/**
- *  The formula only holds for these winds and temperatures.
- */
 private val windSpeedRange: ClosedFloatingPointRange<Double> = 2.0..35.0
 private val temperatureRange: ClosedFloatingPointRange<Double> = -40.0..10.0
 
@@ -18,13 +15,6 @@ private const val ONE_DECIMAL = "%.1f"
 
 internal object WindChill {
 
-    /**
-     *  How cold it feels, one decimal, or null when the wind or temperature
-     *  is outside what the formula covers. With v in m/s and T in Celsius,
-     *  T_eff = 13.12 + 0.6215 * T - 13.956 * v^0.16 + 0.48669 * T * v^0.16
-     *
-     *  Formula: https://www.smhi.se/kunskapsbanken/meteorologi/vindens-kyleffekt-1.259
-     */
     fun calculate(
         temperatureCelcius: Double,
         windSpeedMeterPerSecond: Double

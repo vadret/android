@@ -10,9 +10,8 @@ import fi.kroon.vadret.warningfilter.model.FeedSourceOption
 import fi.kroon.vadret.warningfilter.model.WarningFilter
 import io.github.sphrak.either.Either
 import io.github.sphrak.either.flatMap
-import javax.inject.Inject
 
-internal class DefaultGetWarningsTask @Inject constructor(
+internal class DefaultGetWarningsTask(
     private val warningFilterRepository: WarningFilterRepository,
     private val aggregatedFeedRepository: AggregatedFeedRepository
 ) : GetWarningsTask {

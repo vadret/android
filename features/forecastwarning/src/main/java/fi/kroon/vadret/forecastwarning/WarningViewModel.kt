@@ -10,30 +10,26 @@ import fi.kroon.vadret.forecastwarning.extension.toWarningFilterState
 import fi.kroon.vadret.forecastwarning.extension.toWarningItem
 import fi.kroon.vadret.forecastwarning.model.WarningFilterState
 import fi.kroon.vadret.forecastwarning.model.WarningItem
+import fi.kroon.vadret.ui.extension.launchReplacing
 import fi.kroon.vadret.ui.extension.messageResourceId
 import fi.kroon.vadret.warningfilter.model.DistrictOption
 import fi.kroon.vadret.warningfilter.model.FeedSourceOption
 import fi.kroon.vadret.warningfilter.model.WarningFilter
 import io.github.sphrak.either.extension.onResult
-import io.github.sphrak.either.map
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import javax.inject.Inject
+import java.util.concurrent.atomic.AtomicBoolean
+import java.util.concurrent.atomic.AtomicReference
 import kotlin.time.Clock
 import kotlin.time.Instant
 
-/**
- *  Jobs are started and cancelled on the main thread only, the work
- *  itself runs on [coroutineDispatcher]. Edits to the filter run one
- *  at a time and in order, so applying always sees the last toggle.
- */
-class WarningViewModel @Inject internal constructor(
+class WarningViewModel internal constructor(
     private val getWarningsTask: GetWarningsTask,
     private val getWarningFilterTask: GetWarningFilterTask,
     private val setWarningFilterTask: SetWarningFilterTask,
@@ -41,25 +37,22 @@ class WarningViewModel @Inject internal constructor(
     private val coroutineDispatcher: CoroutineDispatcher
 ) : ViewModel() {
 
-    private val mutableState: MutableStateFlow<WarningState> = MutableStateFlow(value = WarningState())
-    val state: StateFlow<WarningState> = mutableState.asStateFlow()
+    val state: StateFlow<WarningState>
+        field = MutableStateFlow(value = WarningState())
 
     private val filterDispatcher: CoroutineDispatcher = coroutineDispatcher.limitedParallelism(parallelism = 1)
-
-    private var loadJob: Job? = null
-
-    init {
-        load(isRefresh = false)
-    }
+    private val isStarted: AtomicBoolean = AtomicBoolean(false)
+    private val loadJob: AtomicReference<Job?> = AtomicReference(null)
 
     fun onEvent(event: WarningEvent) {
         when (event) {
+            WarningEvent.OnStart -> onStart()
             WarningEvent.OnRefresh -> onRefresh()
-            WarningEvent.OnErrorShown -> mutableState.update { state: WarningState ->
+            WarningEvent.OnErrorShown -> state.update { state: WarningState ->
                 state.copy(errorMessageResourceId = null)
             }
             WarningEvent.OnFilterButtonClicked -> onFilterButtonClicked()
-            WarningEvent.OnFilterDismissed -> mutableState.update { state: WarningState ->
+            WarningEvent.OnFilterDismissed -> state.update { state: WarningState ->
                 state.copy(filter = null)
             }
             WarningEvent.OnFilterApplied -> onFilterApplied()
@@ -72,32 +65,41 @@ class WarningViewModel @Inject internal constructor(
         }
     }
 
+    private fun onStart() {
+        if (isStarted.compareAndSet(false, true)) {
+            load(isRefresh = false)
+        }
+    }
+
     private fun onRefresh() {
-        mutableState.update { state: WarningState ->
+        state.update { state: WarningState ->
             state.copy(isRefreshing = true)
         }
         load(isRefresh = true)
     }
 
     private fun load(isRefresh: Boolean) {
-        loadJob?.cancel()
-        loadJob = viewModelScope.launch {
-            withContext(context = coroutineDispatcher) {
-                val now: Instant = clock.now()
-                getWarningsTask(isRefresh = isRefresh)
-                    .map { aggregatedFeedList: List<AggregatedFeed> ->
-                        aggregatedFeedList.map { aggregatedFeed: AggregatedFeed -> aggregatedFeed.toWarningItem(now = now) }
+        viewModelScope.launchReplacing(
+            currentJob = loadJob,
+            context = coroutineDispatcher
+        ) {
+            val now: Instant = clock.now()
+            getWarningsTask(isRefresh = isRefresh)
+                .onResult(
+                    onError = { failure: Failure -> displayError(failure = failure) },
+                    onSuccess = { aggregatedFeedList: List<AggregatedFeed> ->
+                        displayWarnings(
+                            warnings = aggregatedFeedList
+                                .map { aggregatedFeed: AggregatedFeed -> aggregatedFeed.toWarningItem(now = now) }
+                                .toImmutableList()
+                        )
                     }
-                    .onResult(
-                        onError = { failure: Failure -> displayError(failure = failure) },
-                        onSuccess = { warnings: List<WarningItem> -> displayWarnings(warnings = warnings) }
-                    )
-            }
+                )
         }
     }
 
-    private fun displayWarnings(warnings: List<WarningItem>) {
-        mutableState.update { state: WarningState ->
+    private fun displayWarnings(warnings: ImmutableList<WarningItem>) {
+        state.update { state: WarningState ->
             state.copy(
                 warnings = warnings,
                 isLoading = false,
@@ -108,7 +110,7 @@ class WarningViewModel @Inject internal constructor(
     }
 
     private fun displayError(failure: Failure) {
-        mutableState.update { state: WarningState ->
+        state.update { state: WarningState ->
             state.copy(
                 isLoading = false,
                 isRefreshing = false,
@@ -122,12 +124,12 @@ class WarningViewModel @Inject internal constructor(
             getWarningFilterTask()
                 .onResult(
                     onError = { failure: Failure ->
-                        mutableState.update { state: WarningState ->
+                        state.update { state: WarningState ->
                             state.copy(errorMessageResourceId = failure.messageResourceId())
                         }
                     },
                     onSuccess = { warningFilter: WarningFilter ->
-                        mutableState.update { state: WarningState ->
+                        state.update { state: WarningState ->
                             state.copy(filter = warningFilter.toWarningFilterState())
                         }
                     }
@@ -137,7 +139,7 @@ class WarningViewModel @Inject internal constructor(
 
     private fun updateFilter(transform: (WarningFilterState) -> WarningFilterState) {
         viewModelScope.launch(context = filterDispatcher) {
-            mutableState.update { state: WarningState ->
+            state.update { state: WarningState ->
                 val filter: WarningFilterState? = state.filter
                 if (filter != null) {
                     state.copy(filter = transform(filter))
@@ -148,27 +150,16 @@ class WarningViewModel @Inject internal constructor(
         }
     }
 
-    /**
-     *  The stored feed was fetched for the old filter, so
-     *  loading after a change fetches a new one.
-     */
     private fun onFilterApplied() {
-        viewModelScope.launch {
-            val isApplied: Boolean = withContext(context = filterDispatcher) {
-                applyFilter()
-            }
-            if (isApplied) {
+        viewModelScope.launch(context = filterDispatcher) {
+            if (applyFilter()) {
                 load(isRefresh = false)
             }
         }
     }
 
-    /**
-     *  Nothing is stored unless at least one district
-     *  and one feed source stay selected.
-     */
     private suspend fun applyFilter(): Boolean {
-        val filter: WarningFilterState = mutableState.value.filter ?: return false
+        val filter: WarningFilterState = state.value.filter ?: return false
         val enabledDistrictIds: Set<Int> = filter.districts
             .filter { districtOption: DistrictOption -> districtOption.isEnabled }
             .map { districtOption: DistrictOption -> districtOption.districtId }
@@ -196,7 +187,7 @@ class WarningViewModel @Inject internal constructor(
                 false
             },
             onSuccess = {
-                mutableState.update { state: WarningState ->
+                state.update { state: WarningState ->
                     state.copy(
                         filter = null,
                         isRefreshing = true
@@ -211,32 +202,36 @@ class WarningViewModel @Inject internal constructor(
         filter: WarningFilterState,
         errorMessageResourceId: Int
     ) {
-        mutableState.update { state: WarningState ->
+        state.update { state: WarningState ->
             state.copy(filter = filter.copy(errorMessageResourceId = errorMessageResourceId))
         }
     }
 
     private fun WarningFilterState.toggle(feedSource: FeedSource): WarningFilterState =
         copy(
-            feedSources = feedSources.map { feedSourceOption: FeedSourceOption ->
-                if (feedSourceOption.feedSource == feedSource) {
-                    feedSourceOption.copy(isEnabled = !feedSourceOption.isEnabled)
-                } else {
-                    feedSourceOption
+            feedSources = feedSources
+                .map { feedSourceOption: FeedSourceOption ->
+                    if (feedSourceOption.feedSource == feedSource) {
+                        feedSourceOption.copy(isEnabled = !feedSourceOption.isEnabled)
+                    } else {
+                        feedSourceOption
+                    }
                 }
-            },
+                .toImmutableList(),
             errorMessageResourceId = null
         )
 
     private fun WarningFilterState.toggle(districtId: Int): WarningFilterState =
         copy(
-            districts = districts.map { districtOption: DistrictOption ->
-                if (districtOption.districtId == districtId) {
-                    districtOption.copy(isEnabled = !districtOption.isEnabled)
-                } else {
-                    districtOption
+            districts = districts
+                .map { districtOption: DistrictOption ->
+                    if (districtOption.districtId == districtId) {
+                        districtOption.copy(isEnabled = !districtOption.isEnabled)
+                    } else {
+                        districtOption
+                    }
                 }
-            },
+                .toImmutableList(),
             errorMessageResourceId = null
         )
 }

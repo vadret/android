@@ -15,9 +15,6 @@ private val timeFormat = LocalTime.Format {
     minute()
 }
 
-/**
- *  One frame per image, labelled with the local time it shows.
- */
 internal fun Radar.toRadarFrames(timeZone: TimeZone): List<RadarFrame> =
     images.map { radarImage: RadarImage ->
         RadarFrame(

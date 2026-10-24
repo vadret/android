@@ -6,13 +6,15 @@ android {
     namespace 'fi.kroon.vadret.testing'
 }
 
-// Only ever a testImplementation dependency, never shipped.
 dependencies {
     implementation project(':core:logging')
     implementation project(':data:common')
 
+    implementation libs.coroutines.core
+    implementation libs.datastore.preferences.core
     implementation libs.ktor.client.content.negotiation
     implementation libs.ktor.client.core
     implementation libs.ktor.client.mock
     implementation libs.ktor.serialization.kotlinx.json
+    implementation libs.okio
 }

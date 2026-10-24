@@ -12,16 +12,9 @@ import kotlin.time.Clock
 
 interface RadarRepository {
 
-    /**
-     *  Today's radar images, from the cache when they were
-     *  fetched less than fifteen minutes ago.
-     */
     suspend fun getRadar(): Either<Failure, Radar>
 }
 
-/**
- *  [httpClient] is only created on first use, never on the main thread.
- */
 fun RadarRepository(
     httpClient: Lazy<HttpClient>,
     diskCache: DiskCache,

@@ -1,6 +1,5 @@
 plugins {
     id 'com.android.application'
-    id 'com.google.devtools.ksp'
     id 'kotlinx-serialization'
     id 'vadret.android.compose'
 }
@@ -37,7 +36,7 @@ android {
         minSdk libs.versions.android.minSdk.get().toInteger()
         targetSdk libs.versions.android.targetSdk.get().toInteger()
         versionCode 30
-        versionName "3.0.0alpha01"
+        versionName "3.0.0alpha02"
         vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner "androidx.top.runner.AndroidJUnitRunner"
         multiDexEnabled true
@@ -77,7 +76,7 @@ android {
         release {
             minifyEnabled true
             shrinkResources true
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt')
             resValue "string", "app_version", "${defaultConfig.versionName}"
         }
         debug {
@@ -88,7 +87,6 @@ android {
     }
     flavorDimensions = ["default"]
     productFlavors {
-        // unsigned, F-Droid signs its own builds
         fdroid {}
         github {
             signingConfig signingConfigs.release
@@ -110,10 +108,8 @@ android {
 }
 
 dependencies {
-
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
-    // Modules
     implementation project(':core')
     implementation project(':core:logging')
     implementation project(':data:aggregatedfeed')
@@ -133,17 +129,16 @@ dependencies {
 
     // Android
     implementation libs.androidx.activity.compose
-    implementation libs.lifecycle.viewmodel.navigation3
-    implementation libs.navigation3.runtime
-    implementation libs.navigation3.ui
     implementation libs.coroutines.core
     implementation libs.either
     implementation libs.kotlinx.serialization.json
     implementation libs.ktor.client.core
+    implementation libs.lifecycle.viewmodel.navigation3
+    implementation libs.navigation3.runtime
+    implementation libs.navigation3.ui
 
     // Dependency Injection
-    implementation libs.dagger.runtime
-    ksp libs.dagger.compiler
+    implementation libs.koin.core
 
     // Debugging, Testing, Linting, Analytics
     debugImplementation libs.leakcanary
@@ -151,7 +146,7 @@ dependencies {
     testImplementation libs.coroutines.test
     testImplementation libs.kotlin.test
     testImplementation libs.kotlin.test.junit
-
+    testImplementation libs.mockk
 }
 
 repositories {

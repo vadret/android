@@ -6,9 +6,6 @@ internal interface WarningFilterLocalDataSource {
     suspend fun insertDistricts(districtEntities: List<DistrictEntity>)
     suspend fun getFeedSourcePreferences(): List<FeedSourcePreferenceEntity>
 
-    /**
-     *  Both parts of the filter are written in one transaction.
-     */
     suspend fun setWarningFilter(
         enabledDistrictIds: List<Int>,
         feedSourcePreferenceEntities: List<FeedSourcePreferenceEntity>

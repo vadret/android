@@ -26,7 +26,6 @@ import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
-import fi.kroon.vadret.di.AppComponent
 import fi.kroon.vadret.forecastwarning.ui.WarningRoute
 import fi.kroon.vadret.main.navigation.RadarKey
 import fi.kroon.vadret.main.navigation.SettingsKey
@@ -40,16 +39,8 @@ import fi.kroon.vadret.weatherforecast.ui.WeatherForecastRoute
 
 private val navigationIconSize = 24.dp
 
-/**
- *  Weather is always at the bottom of the back stack and at
- *  most one other tab sits on top of it, so back from any
- *  tab leads to the weather and back from there leaves the app.
- */
 @Composable
-internal fun VadretApp(
-    appComponent: AppComponent,
-    modifier: Modifier = Modifier
-) {
+internal fun VadretApp(modifier: Modifier = Modifier) {
     val backStack: NavBackStack<NavKey> = rememberNavBackStack(WeatherKey)
     val currentKey: NavKey? = backStack.lastOrNull()
 
@@ -100,10 +91,10 @@ internal fun VadretApp(
                 rememberViewModelStoreNavEntryDecorator()
             ),
             entryProvider = entryProvider {
-                entry<WeatherKey> { WeatherForecastRoute(weatherForecastDependencies = appComponent) }
-                entry<WarningKey> { WarningRoute(warningDependencies = appComponent) }
-                entry<RadarKey> { RadarRoute(radarDependencies = appComponent) }
-                entry<SettingsKey> { SettingsRoute(settingsDependencies = appComponent) }
+                entry<WeatherKey> { WeatherForecastRoute() }
+                entry<WarningKey> { WarningRoute() }
+                entry<RadarKey> { RadarRoute() }
+                entry<SettingsKey> { SettingsRoute() }
             },
             modifier = Modifier
                 .padding(paddingValues = innerPadding)

@@ -10,7 +10,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Slider
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
@@ -25,27 +24,22 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import fi.kroon.vadret.core.R
+import fi.kroon.vadret.di.koinViewModel
 import fi.kroon.vadret.radar.RadarEvent
 import fi.kroon.vadret.radar.RadarState
 import fi.kroon.vadret.radar.RadarViewModel
-import fi.kroon.vadret.radar.di.RadarDependencies
-import fi.kroon.vadret.radar.di.radarViewModel
 import fi.kroon.vadret.radar.model.RadarFrame
 import fi.kroon.vadret.ui.VadretProgressBar
 import fi.kroon.vadret.ui.VadretTheme
 import fi.kroon.vadret.ui.VadretTopAppBar
 import kotlin.math.roundToInt
 
-/**
- *  Lets the map show through behind the slider.
- */
 private const val CONTROLS_ALPHA = 0.85f
 
 @Composable
 fun RadarRoute(
-    radarDependencies: RadarDependencies,
     modifier: Modifier = Modifier,
-    viewModel: RadarViewModel = radarViewModel(radarDependencies = radarDependencies)
+    viewModel: RadarViewModel = koinViewModel()
 ) {
     val state: RadarState by viewModel.state.collectAsStateWithLifecycle()
     RadarScreen(
@@ -62,6 +56,9 @@ fun RadarScreen(
     modifier: Modifier = Modifier
 ) {
     val snackbarHostState: SnackbarHostState = remember { SnackbarHostState() }
+    LaunchedEffect(Unit) {
+        onEvent(RadarEvent.OnStart)
+    }
     val errorMessageResourceId: Int? = state.errorMessageResourceId
     if (errorMessageResourceId != null) {
         val message: String = stringResource(id = errorMessageResourceId)
@@ -134,7 +131,7 @@ private fun PlaybackControls(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.padding(horizontal = VadretTheme.spacing.medium)
             ) {
-                Slider(
+                RadarSlider(
                     value = state.index.toFloat(),
                     onValueChange = { value: Float -> onEvent(RadarEvent.OnIndexChanged(index = value.roundToInt())) },
                     valueRange = 0f..state.frames.lastIndex.coerceAtLeast(minimumValue = 1).toFloat(),

@@ -8,13 +8,11 @@ import fi.kroon.vadret.location.exception.LocationNotAvailableException
 import fi.kroon.vadret.location.exception.LocationProviderDisabledException
 import fi.kroon.vadret.logging.Logger
 import fi.kroon.vadret.logging.LoggerFactory
+import java.io.IOException
 import kotlin.coroutines.cancellation.CancellationException
 
 private val logger: Logger = LoggerFactory.getLogger(tag = "fi.kroon.vadret.location")
 
-/**
- *  A stored coordinate that is not a number counts as broken storage.
- */
 internal fun Exception.toFailure(): Failure =
     when (this) {
         is CancellationException -> throw this
@@ -30,7 +28,7 @@ internal fun Exception.toFailure(): Failure =
             errorCode = ErrorCode.LOCATION_PERMISSION_MISSING,
             logger = logger
         )
-        is NumberFormatException -> toKnownFailure(
+        is IOException -> toKnownFailure(
             errorCode = ErrorCode.STORAGE_FAILED,
             logger = logger
         )

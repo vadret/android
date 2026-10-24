@@ -13,9 +13,8 @@ import io.github.sphrak.either.extension.asRight
 import io.github.sphrak.either.extension.onResult
 import io.github.sphrak.either.flatMap
 import io.github.sphrak.either.map
-import javax.inject.Inject
 
-internal class DefaultGetWeatherForecastTask @Inject constructor(
+internal class DefaultGetWeatherForecastTask(
     private val locationRepository: LocationRepository,
     private val weatherForecastRepository: WeatherForecastRepository,
     private val nominatimRepository: NominatimRepository
@@ -75,10 +74,6 @@ internal class DefaultGetWeatherForecastTask @Inject constructor(
             longitude = longitude
         )
 
-    /**
-     *  The forecast is shown without a place name rather
-     *  than not at all when the place cannot be named.
-     */
     private suspend fun getPlaceName(location: Location): String? =
         nominatimRepository
             .getLocality(

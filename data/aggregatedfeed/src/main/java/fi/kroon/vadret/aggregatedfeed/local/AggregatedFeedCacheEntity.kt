@@ -3,9 +3,6 @@ package fi.kroon.vadret.aggregatedfeed.local
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
-/**
- *  The feed with the filter it was fetched for, both lists sorted.
- */
 @Serializable
 internal data class AggregatedFeedCacheEntity(
     @SerialName(value = "fetched_at_epoch_millis")

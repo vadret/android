@@ -11,9 +11,6 @@ internal interface FeedSourcePreferenceDao {
     @Query(value = "SELECT feed_source, is_enabled FROM feed_source_preference")
     suspend fun getAll(): List<FeedSourcePreferenceEntity>
 
-    /**
-     *  Nothing refers to these rows, so replacing one is the same as updating it.
-     */
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun upsert(feedSourcePreferenceEntities: List<FeedSourcePreferenceEntity>)
 }
