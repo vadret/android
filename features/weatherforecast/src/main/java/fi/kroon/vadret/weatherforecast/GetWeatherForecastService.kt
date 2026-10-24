@@ -11,7 +11,6 @@ import io.github.sphrak.either.Either
 import io.github.sphrak.either.flatMap
 import io.github.sphrak.either.map
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.rx2.await
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -56,7 +55,6 @@ class GetWeatherForecastService @Inject constructor(
      */
     private suspend fun Data.getLocationMode(): Either<Failure, Data> =
         getAppLocationModeTask()
-            .await()
             .map { locationMode: Boolean ->
                 this.copy(locationMode = locationMode)
             }
@@ -71,14 +69,12 @@ class GetWeatherForecastService @Inject constructor(
 
     private suspend fun getLocationAutomatic(data: Data): Either<Failure, Data> =
         getLocationAutomaticTask()
-            .await()
             .map { location: Location ->
                 data.copy(location = location)
             }
 
     private suspend fun getLocationManual(data: Data): Either<Failure, Data> =
         getLocationManualTask()
-            .await()
             .map { weatherOut: WeatherOut ->
                 data.copy(
                     weatherOut = weatherOut,
@@ -125,7 +121,6 @@ class GetWeatherForecastService @Inject constructor(
                 longitude = data.weatherOut.longitude
             )
             getReverseLocalityNameTask(nominatimReverseOut)
-                .await()
                 .map { localityName: String? ->
                     localityName?.let {
                         data.copy(localityName = localityName)

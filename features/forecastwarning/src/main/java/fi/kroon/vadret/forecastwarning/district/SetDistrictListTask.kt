@@ -7,17 +7,16 @@ import fi.kroon.vadret.data.district.model.DistrictEntity
 import fi.kroon.vadret.data.failure.Failure
 import fi.kroon.vadret.util.extension.asRight
 import io.github.sphrak.either.Either
-import io.reactivex.Single
 import javax.inject.Inject
 
 class SetDistrictListTask @Inject constructor(
     private val dao: DistrictDao
 ) {
-    operator fun invoke(districtList: List<District>): Single<Either<Failure, List<Long>>> {
+    suspend operator fun invoke(districtList: List<District>): Either<Failure, List<Long>> {
         val districtEntityList: List<DistrictEntity> = DistrictEntityMapper(districtList)
         return dao
             .insert(entityList = districtEntityList)
-            .map { ids: List<Long> ->
+            .let { ids: List<Long> ->
                 ids.asRight()
             }
     }

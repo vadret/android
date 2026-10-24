@@ -21,17 +21,14 @@ dependencies {
     implementation libs.corbind.appcompat
     implementation libs.corbind.core
     implementation libs.corbind.swiperefreshlayout
-    implementation libs.coroutines.rx2
     implementation libs.dagger.runtime
     implementation libs.kotlinx.serialization.json
     implementation libs.moshi.core
     implementation libs.okhttp.core
     implementation libs.permissionsdispatcher.runtime
-    implementation libs.retrofit.adapter.rxjava2
     implementation libs.retrofit.converter.kotlinx.serialization
     implementation libs.retrofit.converter.moshi
     implementation libs.retrofit.core
-    implementation libs.rxkotlin
     implementation libs.timber
 
     ksp libs.dagger.compiler

@@ -5,10 +5,13 @@ import fi.kroon.vadret.theme.GetThemeModeTask
 import fi.kroon.vadret.theme.ObserveThemeChangeTask
 import fi.kroon.vadret.util.DARK_THEME
 import fi.kroon.vadret.util.LIGHT_THEME
-import fi.kroon.vadret.util.extension.asObservable
 import fi.kroon.vadret.util.extension.asRight
 import io.github.sphrak.either.Either
-import io.reactivex.Observable
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.test.runTest
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -40,49 +43,44 @@ class MainActivityViewModelTest {
     }
 
     @Test
-    fun `send initialise event and receive render event none`() {
+    fun `send initialise event and receive render event none`() = runTest {
 
         doReturn(getResultEither(LIGHT_THEME))
             .`when`(mockObserveThemeChangeTask)
             .invoke()
 
-        MainActivityView
-            .Event
-            .OnViewInitialised
-            .asObservable()
-            .compose(testMainActivityViewModel())
-            .test()
-            .assertNoErrors()
-            .assertComplete()
-            .assertValueAt(0) { receivedState: MainActivityView.State ->
-                receivedState.renderEvent is
-                MainActivityView.RenderEvent.None
-            }
+        assertTrue(
+            testMainActivityViewModel
+                .viewState
+                .first()
+                .let { receivedState: MainActivityView.State ->
+                    receivedState.renderEvent is
+                    MainActivityView.RenderEvent.None
+                }
+        )
     }
 
     @Test
-    fun `send initialise event and receive render event restart activity on non default theme`() {
+    fun `send initialise event and receive render event restart activity on non default theme`() = runTest {
 
         doReturn(getResultEither(DARK_THEME))
             .`when`(mockObserveThemeChangeTask)
             .invoke()
 
-        MainActivityView
-            .Event
-            .OnViewInitialised
-            .asObservable()
-            .compose(testMainActivityViewModel())
-            .test()
-            .assertNoErrors()
-            .assertComplete()
-            .assertValueAt(0) { receivedState: MainActivityView.State ->
-                receivedState.renderEvent is
-                MainActivityView.RenderEvent.RestartActivity
-            }
+        assertTrue(
+            testMainActivityViewModel
+                .viewState
+                .first()
+                .let { receivedState: MainActivityView.State ->
+                    receivedState.renderEvent is
+                    MainActivityView.RenderEvent.RestartActivity
+                }
+        )
     }
 
-    private fun getResultEither(theme: String): Observable<Either<Failure, String>> =
-        theme
-            .asRight()
-            .asObservable()
+    private fun getResultEither(theme: String): Flow<Either<Failure, String>> =
+        flowOf(
+            theme
+                .asRight()
+        )
 }

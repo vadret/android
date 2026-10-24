@@ -6,10 +6,9 @@ import fi.kroon.vadret.data.failure.Failure
 import fi.kroon.vadret.forecastwarning.district.GetAllDistrictTask
 import fi.kroon.vadret.forecastwarning.districtpreference.SetDistrictPreferenceListTask
 import fi.kroon.vadret.util.APP_WARNING_FILTER_KEY
-import fi.kroon.vadret.util.extension.flatMapSingle
 import io.github.sphrak.either.Either
+import io.github.sphrak.either.flatMap
 import io.github.sphrak.either.map
-import io.reactivex.Single
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -27,14 +26,13 @@ class SetDefaultDistrictPreferenceEntityService @Inject constructor(
         const val DEFAULT_DISTRICT_ID = 1
     }
 
-    operator fun invoke(): Single<Either<Failure, Boolean>> =
-        Single.just(Data())
-            .flatMap(::buildDistrictPreferenceList)
-            .flatMap(::setDistrictPreferenceList)
+    suspend operator fun invoke(): Either<Failure, Boolean> =
+        buildDistrictPreferenceList(Data())
+            .let { setDistrictPreferenceList(it) }
 
-    private fun buildDistrictPreferenceList(data: Data): Single<Either<Failure, Data>> =
+    private suspend fun buildDistrictPreferenceList(data: Data): Either<Failure, Data> =
         getAllDistrictTask()
-            .map { result: Either<Failure, List<DistrictEntity>> ->
+            .let { result: Either<Failure, List<DistrictEntity>> ->
                 result.map { ids: List<DistrictEntity> ->
                     ids.forEach { district: DistrictEntity ->
 
@@ -50,10 +48,10 @@ class SetDefaultDistrictPreferenceEntityService @Inject constructor(
                 }
             }
 
-    private fun setDistrictPreferenceList(either: Either<Failure, Data>): Single<Either<Failure, Boolean>> = either
-        .flatMapSingle { data: Data ->
+    private suspend fun setDistrictPreferenceList(either: Either<Failure, Data>): Either<Failure, Boolean> = either
+        .flatMap { data: Data ->
             setDistrictPreferenceListTask(data.districtPreferenceList)
-                .map { result: Either<Failure, List<Long>> ->
+                .let { result: Either<Failure, List<Long>> ->
                     result.map { ids: List<Long> ->
                         Timber.d("INSERTED DISTRICT: $ids")
                         true

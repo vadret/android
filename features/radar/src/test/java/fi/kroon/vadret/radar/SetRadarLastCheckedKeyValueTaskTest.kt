@@ -5,9 +5,9 @@ import fi.kroon.vadret.data.failure.Failure
 import fi.kroon.vadret.data.radar.local.RadarLocalKeyValueDataSource
 import fi.kroon.vadret.util.LAST_CHECKED_RADAR_KEY
 import fi.kroon.vadret.util.extension.asRight
-import fi.kroon.vadret.util.extension.asSingle
 import io.github.sphrak.either.Either
-import io.reactivex.Single
+import kotlinx.coroutines.test.runTest
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -33,22 +33,21 @@ class SetRadarLastCheckedKeyValueTaskTest {
     }
 
     @Test
-    fun `set radar last checked successfully and retrieve unit as result`() {
+    fun `set radar last checked successfully and retrieve unit as result`() = runTest {
         doReturn(getEitherUnit())
             .`when`(mockRadarLocalKeyValueDataSource)
             .putLong(key = LAST_CHECKED_RADAR_KEY, value = timeStamp)
 
-        testSetRadarLastCheckedKeyValueTask(value = timeStamp)
-            .test()
-            .assertNoErrors()
-            .assertComplete()
-            .assertValueAt(0) {
-                it is Either.Right && it.b == Unit
-            }
+        assertTrue(
+            testSetRadarLastCheckedKeyValueTask(value = timeStamp)
+                .let {
+                    it is Either.Right && it.b == Unit
+                }
+        )
     }
 
     @Test
-    fun `set radar last checked and fail with local key value error`() {
+    fun `set radar last checked and fail with local key value error`() = runTest {
 
         doReturn(
             errorHandler.getLocalKeyValueWriteError<String, Long>(
@@ -58,20 +57,18 @@ class SetRadarLastCheckedKeyValueTaskTest {
         ).`when`(mockRadarLocalKeyValueDataSource)
             .putLong(key = LAST_CHECKED_RADAR_KEY, value = timeStamp)
 
-        testSetRadarLastCheckedKeyValueTask(value = timeStamp)
-            .test()
-            .assertNoErrors()
-            .assertComplete()
-            .assertValueAt(0) {
-                it is Either.Left &&
-                    it.a is Failure.LocalKeyValueWriteError &&
-                    (it.a as Failure.LocalKeyValueWriteError).message ==
-                    "error: failed writing '1563292476031'. key was not recognized: 'LAST_CHECKED_RADAR'"
-            }
+        assertTrue(
+            testSetRadarLastCheckedKeyValueTask(value = timeStamp)
+                .let {
+                    it is Either.Left &&
+                        it.a is Failure.LocalKeyValueWriteError &&
+                        (it.a as Failure.LocalKeyValueWriteError).message ==
+                        "error: failed writing '1563292476031'. key was not recognized: 'LAST_CHECKED_RADAR'"
+                }
+        )
     }
 
-    private fun getEitherUnit(): Single<Either<Failure, Unit>> =
+    private fun getEitherUnit(): Either<Failure, Unit> =
         Unit
             .asRight()
-            .asSingle()
 }

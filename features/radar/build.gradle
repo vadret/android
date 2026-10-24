@@ -14,15 +14,13 @@ dependencies {
     implementation libs.androidx.annotation
     implementation libs.androidx.collection
     implementation libs.coil
+    implementation libs.corbind.core
     implementation libs.dagger.runtime
     implementation libs.moshi.core
     implementation libs.okhttp.core
     implementation libs.osmdroid
-    implementation libs.retrofit.adapter.rxjava2
     implementation libs.retrofit.converter.moshi
     implementation libs.retrofit.core
-    implementation libs.rxbinding.core
-    implementation libs.rxkotlin
     implementation libs.timber
 
     ksp libs.dagger.compiler

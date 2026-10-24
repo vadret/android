@@ -6,14 +6,13 @@ import fi.kroon.vadret.data.districtpreference.model.DistrictPreferenceEntity
 import fi.kroon.vadret.data.failure.Failure
 import fi.kroon.vadret.util.extension.asRight
 import io.github.sphrak.either.Either
-import io.reactivex.Single
 import timber.log.Timber
 import javax.inject.Inject
 
 class UpdateDistrictPreferenceListTask @Inject constructor(
     private val dao: DistrictPreferenceDao
 ) {
-    operator fun invoke(entityList: List<DistrictOptionEntity>): Single<Either<Failure, Int>> {
+    suspend operator fun invoke(entityList: List<DistrictOptionEntity>): Either<Failure, Int> {
 
         val newEntityList: List<DistrictPreferenceEntity> =
             entityList.map { districtOptionEntity: DistrictOptionEntity ->
@@ -29,7 +28,7 @@ class UpdateDistrictPreferenceListTask @Inject constructor(
         Timber.d("NEW ENTITY LIST: $newEntityList")
 
         return dao.update(entityList = newEntityList)
-            .map { updatedRowCount: Int ->
+            .let { updatedRowCount: Int ->
                 Timber.d("updated row count: $updatedRowCount")
                 updatedRowCount.asRight()
             }

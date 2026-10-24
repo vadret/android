@@ -4,11 +4,9 @@ import fi.kroon.vadret.data.failure.Failure
 import fi.kroon.vadret.data.feedsource.model.FeedSource
 import fi.kroon.vadret.data.feedsource.model.FeedSourceEntity
 import fi.kroon.vadret.forecastwarning.CountFeedSourceEntityTask
-import fi.kroon.vadret.util.extension.asSingle
-import fi.kroon.vadret.util.extension.flatMapSingle
 import io.github.sphrak.either.Either
+import io.github.sphrak.either.flatMap
 import io.github.sphrak.either.map
-import io.reactivex.Single
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -24,16 +22,15 @@ class GetFeedSourceNetService @Inject constructor(
         val feedSourceIsAvailable: Boolean = false
     )
 
-    operator fun invoke(): Single<Either<Failure, Boolean>> =
-        Single.just(Data())
-            .flatMap(::getFeedSourceAvailabilityStatus)
-            .flatMap(::checkDistrictAvailability)
-            .flatMap(::setFeedSourceEntityList)
-            .map(::transform)
+    suspend operator fun invoke(): Either<Failure, Boolean> =
+        getFeedSourceAvailabilityStatus(Data())
+            .let { checkDistrictAvailability(it) }
+            .let { setFeedSourceEntityList(it) }
+            .let { transform(it) }
 
-    private fun getFeedSourceAvailabilityStatus(data: Data): Single<Either<Failure, Data>> =
+    private suspend fun getFeedSourceAvailabilityStatus(data: Data): Either<Failure, Data> =
         countFeedSourceEntityTask()
-            .map { either: Either<Failure, Boolean> ->
+            .let { either: Either<Failure, Boolean> ->
                 either.map { feedSourceIsAvailable: Boolean ->
                     data.copy(
                         feedSourceIsAvailable = feedSourceIsAvailable
@@ -41,18 +38,18 @@ class GetFeedSourceNetService @Inject constructor(
                 }
             }
 
-    private fun checkDistrictAvailability(either: Either<Failure, Data>): Single<Either<Failure, Data>> =
-        either.flatMapSingle { data: Data ->
+    private suspend fun checkDistrictAvailability(either: Either<Failure, Data>): Either<Failure, Data> =
+        either.flatMap { data: Data ->
             when (data.feedSourceIsAvailable) {
                 false -> getFeedSourceNet(either)
-                true -> either.asSingle()
+                true -> either
             }
         }
 
-    private fun getFeedSourceNet(either: Either<Failure, Data>): Single<Either<Failure, Data>> =
-        either.flatMapSingle { data: Data ->
+    private suspend fun getFeedSourceNet(either: Either<Failure, Data>): Either<Failure, Data> =
+        either.flatMap { data: Data ->
             getFeedSourceNetTask()
-                .map { result: Either<Failure, List<FeedSource>> ->
+                .let { result: Either<Failure, List<FeedSource>> ->
                     result.map { feedSourceList: List<FeedSource> ->
                         Timber.d("GET DISTRICT VIEW NET")
                         feedSourceList.forEach {
@@ -63,10 +60,10 @@ class GetFeedSourceNetService @Inject constructor(
                 }
         }
 
-    private fun setFeedSourceEntityList(either: Either<Failure, Data>): Single<Either<Failure, Data>> =
-        either.flatMapSingle { data: Data ->
+    private suspend fun setFeedSourceEntityList(either: Either<Failure, Data>): Either<Failure, Data> =
+        either.flatMap { data: Data ->
             setFeedSourceListTask(data.feedSourceList)
-                .map { result: Either<Failure, List<Long>> ->
+                .let { result: Either<Failure, List<Long>> ->
                     result.map { ids: List<Long> ->
                         Timber.d("IDS: $ids")
                         data.copy(feedSourceIsAvailable = true)

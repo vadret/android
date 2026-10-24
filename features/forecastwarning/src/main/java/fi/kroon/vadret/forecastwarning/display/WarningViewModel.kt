@@ -26,7 +26,6 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.rx2.await
 import kotlinx.coroutines.withContext
 import timber.log.Timber
 import javax.inject.Inject
@@ -112,7 +111,6 @@ class WarningViewModel @Inject constructor(
 
     private suspend fun setDefaultFeedSourcePreference() = withContext(Dispatchers.IO) {
         countFeedSourcePreferenceEntityTask()
-            .await()
             .onResult(
                 { failure: Failure ->
                     displayError(failure)
@@ -131,7 +129,6 @@ class WarningViewModel @Inject constructor(
                         true -> loadLastChecked()
                         false ->
                             setDefaultFeedSourcePreferenceEntityService()
-                                .await()
                                 .onResult(
                                     { failure: Failure ->
                                         displayError(failure)
@@ -153,7 +150,6 @@ class WarningViewModel @Inject constructor(
 
     private suspend fun setDefaultDistrictPreference() = withContext(Dispatchers.IO) {
         countDistrictPreferenceEntityTask()
-            .await()
             .onResult(
                 { failure: Failure ->
                     displayError(failure)
@@ -164,7 +160,6 @@ class WarningViewModel @Inject constructor(
                         true -> setDefaultFeedSourcePreference()
                         false ->
                             setDefaultDistrictPreferenceEntityService()
-                                .await()
                                 .onResult(
                                     { failure: Failure ->
                                         displayError(failure)
@@ -254,7 +249,6 @@ class WarningViewModel @Inject constructor(
 
     private suspend fun loadLastChecked() = withContext(Dispatchers.IO) {
         getAggregatedFeedLastCheckedTask()
-            .await()
             .onResult(
                 { failure: Failure ->
                     displayError(failure)
@@ -267,7 +261,6 @@ class WarningViewModel @Inject constructor(
 
     private suspend fun loadDistrictIds(timeStamp: Long) = withContext(Dispatchers.IO) {
         getEnabledDistrictPreferenceIdsTask()
-            .await()
             .onResult(
                 { failure: Failure ->
                     displayError(failure)
@@ -286,7 +279,6 @@ class WarningViewModel @Inject constructor(
         districtIds: List<Int>
     ) = withContext(Dispatchers.IO) {
         getEnabledFeedSourcePreferenceIdsTask()
-            .await()
             .onResult(
                 { failure: Failure ->
                     displayError(failure)
@@ -311,7 +303,7 @@ class WarningViewModel @Inject constructor(
             forceNet = stateModel.forceNet,
             districtIds = districtIds,
             feedSourceIds = feedSourceIds
-        ).await()
+        )
             .onResult(
                 { failure: Failure ->
                     displayError(failure)
@@ -332,7 +324,6 @@ class WarningViewModel @Inject constructor(
                     stateModel = stateModel.copy(renderEvent = renderEvent)
 
                     setAggregatedFeedLastCheckedTask(data.timeStamp)
-                        .await()
                         .onResult(
                             { failure: Failure ->
                                 Timber.e("failure: $failure")
@@ -348,7 +339,6 @@ class WarningViewModel @Inject constructor(
 
     private suspend fun loadDistrict() = withContext(Dispatchers.IO) {
         getDistrictNetService()
-            .await()
             .onResult(
                 { failure: Failure ->
                     displayError(failure)
@@ -371,7 +361,6 @@ class WarningViewModel @Inject constructor(
 
     private suspend fun loadFeedSource() = withContext(Dispatchers.IO) {
         getFeedSourceNetService()
-            .await()
             .onResult(
                 { failure: Failure ->
                     displayError(failure)

@@ -129,9 +129,6 @@ dependencies {
     implementation libs.material
 
     // Reactive
-    implementation libs.rxandroid
-    implementation libs.rxbinding.core
-    implementation libs.rxkotlin
 
     // Dependency Injection
     implementation libs.dagger.runtime
@@ -140,6 +137,7 @@ dependencies {
     // Debugging, Testing, Linting, Analytics
     debugImplementation libs.leakcanary
     implementation libs.timber
+    testImplementation libs.coroutines.test
     testImplementation libs.junit
     testImplementation libs.mockito
 

@@ -12,7 +12,6 @@ dependencies {
 
     implementation libs.androidx.annotation
     implementation libs.dagger.runtime
-    implementation libs.rxkprefs
     implementation libs.timber
 
     ksp libs.dagger.compiler

@@ -6,29 +6,28 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import fi.kroon.vadret.data.district.model.DistrictEntity
-import io.reactivex.Single
 
 @Dao
 interface DistrictDao {
 
     @Query("SELECT count(district.id) FROM district")
-    fun count(): Single<Int>
+    suspend fun count(): Int
 
     @Query("SELECT * FROM district")
-    fun getAll(): Single<List<DistrictEntity>>
+    suspend fun getAll(): List<DistrictEntity>
 
     @Query("SELECT * FROM district WHERE id IN (:entityIds)")
-    fun getByIds(entityIds: IntArray): Single<List<DistrictEntity>>
+    suspend fun getByIds(entityIds: IntArray): List<DistrictEntity>
 
     @Query("SELECT EXISTS(SELECT 1 FROM feed_source_used_by WHERE used_by = :usedBy LIMIT 1)")
-    fun checkExists(usedBy: String): Single<Boolean>
+    suspend fun checkExists(usedBy: String): Boolean
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insert(entity: DistrictEntity): Single<Long>
+    suspend fun insert(entity: DistrictEntity): Long
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insert(entityList: List<DistrictEntity>): Single<List<Long>>
+    suspend fun insert(entityList: List<DistrictEntity>): List<Long>
 
     @Delete
-    fun delete(entity: DistrictEntity): Single<Unit>
+    suspend fun delete(entity: DistrictEntity)
 }

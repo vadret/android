@@ -16,7 +16,6 @@ dependencies {
     implementation libs.androidx.preference.ktx
     implementation libs.androidx.recyclerview
     implementation libs.androidx.viewpager
-    implementation libs.coroutines.rx2
     implementation libs.dagger.runtime
     implementation libs.timber
 

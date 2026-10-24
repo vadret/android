@@ -24,7 +24,6 @@ dependencies {
     api libs.dagger.runtime
     api libs.moshi.core
     api libs.okhttp.core
-    api libs.rxkprefs
     implementation libs.androidx.annotation
     implementation libs.androidx.appcompat
     implementation libs.androidx.fragment.ktx
@@ -32,7 +31,6 @@ dependencies {
     implementation libs.okhttp.logging
     implementation libs.retrofit.core
     implementation libs.room.runtime
-    implementation libs.rxandroid
     implementation libs.timber
 
     ksp libs.dagger.compiler

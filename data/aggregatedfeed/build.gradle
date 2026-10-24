@@ -16,7 +16,6 @@ dependencies {
     implementation libs.okhttp.core
     implementation libs.okio
     implementation libs.retrofit.core
-    implementation libs.rxkprefs
     implementation libs.timber
 
     ksp libs.dagger.compiler

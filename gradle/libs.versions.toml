@@ -35,17 +35,12 @@ moshi = "1.15.2"
 navigation = "2.3.4"
 okhttp = "4.2.2"
 okio = "2.6.0"
-osmdroid = "6.1.10"
+osmdroid = "6.1.20"
 permissionsDispatcher = "4.8.0"
 preference = "1.1.1"
 retrofit = "2.9.0"
 retrofitKotlinxSerializationConverter = "0.8.0"
 room = "2.7.2"
-rxandroid = "2.1.1"
-rxbinding = "3.1.0"
-rxjava = "2.2.19"
-rxkotlin = "2.4.0"
-rxkprefs = "1.2.5"
 threetenabp = "1.2.1"
 threetenbp = "1.5.0"
 timber = "4.7.1"
@@ -82,27 +77,17 @@ lifecycle-viewmodel-ktx = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx
 # Coroutines
 coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutines" }
 coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
-coroutines-rx2 = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-rx2", version.ref = "coroutines" }
+coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
 
 # Reactive
 corbind-appcompat = { module = "ru.ldralighieri.corbind:corbind-appcompat", version.ref = "corbind" }
 corbind-core = { module = "ru.ldralighieri.corbind:corbind-core", version.ref = "corbind" }
 corbind-swiperefreshlayout = { module = "ru.ldralighieri.corbind:corbind-swiperefreshlayout", version.ref = "corbind" }
-rxandroid = { module = "io.reactivex.rxjava2:rxandroid", version.ref = "rxandroid" }
-rxbinding-core = { module = "com.jakewharton.rxbinding3:rxbinding", version.ref = "rxbinding" }
-rxbinding-appcompat = { module = "com.jakewharton.rxbinding3:rxbinding-appcompat", version.ref = "rxbinding" }
-rxbinding-material = { module = "com.jakewharton.rxbinding3:rxbinding-material", version.ref = "rxbinding" }
-rxbinding-recyclerview = { module = "com.jakewharton.rxbinding3:rxbinding-recyclerview", version.ref = "rxbinding" }
-rxbinding-swiperefreshlayout = { module = "com.jakewharton.rxbinding3:rxbinding-swiperefreshlayout", version.ref = "rxbinding" }
-rxbinding-viewpager = { module = "com.jakewharton.rxbinding3:rxbinding-viewpager", version.ref = "rxbinding" }
-rxjava = { module = "io.reactivex.rxjava2:rxjava", version.ref = "rxjava" }
-rxkotlin = { module = "io.reactivex.rxjava2:rxkotlin", version.ref = "rxkotlin" }
 
 # Network
 okhttp-core = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
 okhttp-logging = { module = "com.squareup.okhttp3:logging-interceptor", version.ref = "okhttp" }
 okio = { module = "com.squareup.okio:okio", version.ref = "okio" }
-retrofit-adapter-rxjava2 = { module = "com.squareup.retrofit2:adapter-rxjava2", version.ref = "retrofit" }
 retrofit-converter-kotlinx-serialization = { module = "com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter", version.ref = "retrofitKotlinxSerializationConverter" }
 retrofit-converter-moshi = { module = "com.squareup.retrofit2:converter-moshi", version.ref = "retrofit" }
 retrofit-core = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
@@ -112,7 +97,6 @@ room-common = { module = "androidx.room:room-common", version.ref = "room" }
 room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
 room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
 room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
-room-rxjava2 = { module = "androidx.room:room-rxjava2", version.ref = "room" }
 
 # Serialization
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerialization" }
@@ -131,7 +115,6 @@ either = { module = "io.github.sphrak:either", version.ref = "either" }
 osmdroid = { module = "org.osmdroid:osmdroid-android", version.ref = "osmdroid" }
 permissionsdispatcher-processor = { module = "com.github.permissions-dispatcher:permissionsdispatcher-processor", version.ref = "permissionsDispatcher" }
 permissionsdispatcher-runtime = { module = "com.github.permissions-dispatcher:permissionsdispatcher", version.ref = "permissionsDispatcher" }
-rxkprefs = { module = "com.afollestad:rxkprefs", version.ref = "rxkprefs" }
 
 # Datetime
 threetenabp = { module = "com.jakewharton.threetenabp:threetenabp", version.ref = "threetenabp" }

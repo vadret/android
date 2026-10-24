@@ -6,6 +6,7 @@ import fi.kroon.vadret.data.location.local.LocationLocalDataSource
 import fi.kroon.vadret.data.location.model.Location
 import fi.kroon.vadret.util.extension.asLeft
 import io.github.sphrak.either.Either
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -32,22 +33,20 @@ class LocationRepositoryTest {
     @Test
     fun `location is returned`() {
         doReturn(createLocationEither(mockLocation)).`when`(mockLocationLocalDataSource)()
-        testLocationRepository()
-            .test()
-            .assertComplete()
-            .assertNoErrors()
-            .assertValueAt(0) { it is Either.Right<Location> && it.b == mockLocation }
+        assertTrue(
+            testLocationRepository()
+                .let { it is Either.Right<Location> && it.b == mockLocation }
+        )
     }
 
     @Test
     fun `location is not available`() {
         doReturn(getLocationFailure()).`when`(mockLocationLocalDataSource)()
 
-        testLocationRepository()
-            .test()
-            .assertComplete()
-            .assertNoErrors()
-            .assertValueAt(0) { it is Either.Left<Failure> && it.a is LocationFailure.LocationNotAvailable }
+        assertTrue(
+            testLocationRepository()
+                .let { it is Either.Left<Failure> && it.a is LocationFailure.LocationNotAvailable }
+        )
     }
 
     private fun getLocationFailure() = LocationFailure

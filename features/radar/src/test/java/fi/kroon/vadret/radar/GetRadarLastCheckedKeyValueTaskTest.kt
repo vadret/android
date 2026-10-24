@@ -5,9 +5,9 @@ import fi.kroon.vadret.data.failure.Failure
 import fi.kroon.vadret.data.radar.local.RadarLocalKeyValueDataSource
 import fi.kroon.vadret.util.LAST_CHECKED_RADAR_KEY
 import fi.kroon.vadret.util.extension.asRight
-import fi.kroon.vadret.util.extension.asSingle
 import io.github.sphrak.either.Either
-import io.reactivex.Single
+import kotlinx.coroutines.test.runTest
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -33,41 +33,38 @@ class GetRadarLastCheckedKeyValueTaskTest {
     }
 
     @Test
-    fun `get last checked value by key successfully`() {
+    fun `get last checked value by key successfully`() = runTest {
 
         doReturn(getEitherLong())
             .`when`(mockRadarLocalKeyValueDataSource)
             .getLong(key = LAST_CHECKED_RADAR_KEY)
 
-        testGetRadarLastCheckedKeyValueTask()
-            .test()
-            .assertNoErrors()
-            .assertComplete()
-            .assertValueAt(0) {
-                it is Either.Right && it.b == timeStamp
-            }
+        assertTrue(
+            testGetRadarLastCheckedKeyValueTask()
+                .let {
+                    it is Either.Right && it.b == timeStamp
+                }
+        )
     }
 
     @Test
-    fun `get last checked by key and fail with key not found`() {
+    fun `get last checked by key and fail with key not found`() = runTest {
         doReturn(errorHandler.getLocalKeyValueReadError<Long>(key = "LAST_CHECKED_RADAR"))
             .`when`(mockRadarLocalKeyValueDataSource)
             .getLong(key = LAST_CHECKED_RADAR_KEY)
 
-        testGetRadarLastCheckedKeyValueTask()
-            .test()
-            .assertNoErrors()
-            .assertComplete()
-            .assertValueAt(0) {
-                it is Either.Left &&
-                    it.a is Failure.LocalKeyValueReadError &&
-                    (it.a as Failure.LocalKeyValueReadError).message ==
-                    "error: failed reading property for key 'LAST_CHECKED_RADAR'. It was not recognized."
-            }
+        assertTrue(
+            testGetRadarLastCheckedKeyValueTask()
+                .let {
+                    it is Either.Left &&
+                        it.a is Failure.LocalKeyValueReadError &&
+                        (it.a as Failure.LocalKeyValueReadError).message ==
+                        "error: failed reading property for key 'LAST_CHECKED_RADAR'. It was not recognized."
+                }
+        )
     }
 
-    private fun getEitherLong(): Single<Either<Failure, Long>> =
+    private fun getEitherLong(): Either<Failure, Long> =
         timeStamp
             .asRight()
-            .asSingle()
 }

@@ -11,7 +11,6 @@ import fi.kroon.vadret.util.extension.asLeft
 import fi.kroon.vadret.util.extension.asRight
 import io.github.sphrak.either.Either
 import io.github.sphrak.either.extension.onResult
-import io.reactivex.Single
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -20,9 +19,9 @@ class ThemeRepository @Inject constructor(
     private val themeStyles: ThemeStyles
 ) {
 
-    operator fun invoke(key: String): Single<Either<Failure, Theme>> =
+    operator fun invoke(key: String): Either<Failure, Theme> =
         keyValueStore.getString(key)
-            .map { result: Either<Failure, String> ->
+            .let { result: Either<Failure, String> ->
                 result.onResult(
                     { failure: Failure ->
                         Timber.e("Failure: $failure")

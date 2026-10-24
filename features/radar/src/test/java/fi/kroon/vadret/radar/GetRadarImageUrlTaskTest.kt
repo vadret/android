@@ -6,9 +6,9 @@ import fi.kroon.vadret.data.radar.RadarRepository
 import fi.kroon.vadret.data.radar.model.Radar
 import fi.kroon.vadret.data.radar.model.RadarRequest
 import fi.kroon.vadret.util.extension.asRight
-import fi.kroon.vadret.util.extension.asSingle
 import io.github.sphrak.either.Either
-import io.reactivex.Single
+import kotlinx.coroutines.test.runTest
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -38,42 +38,39 @@ class GetRadarImageUrlTaskTest {
     }
 
     @Test
-    fun `fetch radar object successfully`() {
+    fun `fetch radar object successfully`() = runTest {
 
         doReturn(getResultEither())
             .`when`(mockRadarRepository)
             .invoke(mockRadarRequest)
 
-        testGetRadarImageUrlTask(mockRadarRequest)
-            .test()
-            .assertNoErrors()
-            .assertComplete()
-            .assertValueAt(0) {
-                it is Either.Right &&
-                    it.b == mockRadar
-            }
+        assertTrue(
+            testGetRadarImageUrlTask(mockRadarRequest)
+                .let {
+                    it is Either.Right &&
+                        it.b == mockRadar
+                }
+        )
     }
 
     @Test
-    fun `fetch radar object from network fails`() {
+    fun `fetch radar object from network fails`() = runTest {
 
         doReturn(errorHandler.getNetworkOfflineError<Radar>())
             .`when`(mockRadarRepository)
             .invoke(mockRadarRequest)
 
-        testGetRadarImageUrlTask(mockRadarRequest)
-            .test()
-            .assertNoErrors()
-            .assertComplete()
-            .assertValueAt(0) {
-                it is Either.Left &&
-                    it.a is Failure.NetworkOfflineError &&
-                    (it.a as Failure.NetworkOfflineError).message == "error: network offline or not available"
-            }
+        assertTrue(
+            testGetRadarImageUrlTask(mockRadarRequest)
+                .let {
+                    it is Either.Left &&
+                        it.a is Failure.NetworkOfflineError &&
+                        (it.a as Failure.NetworkOfflineError).message == "error: network offline or not available"
+                }
+        )
     }
 
-    private fun getResultEither(): Single<Either<Failure, Radar>> =
+    private fun getResultEither(): Either<Failure, Radar> =
         mockRadar
             .asRight()
-            .asSingle()
 }

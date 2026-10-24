@@ -9,8 +9,6 @@ android {
 
 ksp {
     arg('room.schemaLocation', "$projectDir/schemas")
-    // Kotlin codegen returns Int for @Delete methods declared as Single<Unit>
-    arg('room.generateKotlin', 'false')
 }
 
 dependencies {
@@ -21,7 +19,7 @@ dependencies {
     implementation project(':data:feedsourcepreference')
 
     api libs.room.runtime
-    implementation libs.room.rxjava2
+    implementation libs.room.ktx
 
     ksp libs.room.compiler
 }

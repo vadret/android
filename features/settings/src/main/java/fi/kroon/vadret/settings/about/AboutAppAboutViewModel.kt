@@ -12,7 +12,6 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.rx2.await
 import javax.inject.Inject
 
 class AboutAppAboutViewModel @Inject constructor(
@@ -34,7 +33,6 @@ class AboutAppAboutViewModel @Inject constructor(
 
     private suspend fun onViewInitialisedEvent(): Unit =
         getAboutInfoTask()
-            .await()
             .onResult(
                 { _: Failure ->
                     stateModel = stateModel.copy(renderEvent = AboutAppAboutView.RenderEvent.None)

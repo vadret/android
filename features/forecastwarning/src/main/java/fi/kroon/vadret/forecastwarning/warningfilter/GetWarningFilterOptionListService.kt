@@ -3,10 +3,9 @@ package fi.kroon.vadret.forecastwarning.warningfilter
 import fi.kroon.vadret.data.district.model.DistrictOptionEntity
 import fi.kroon.vadret.data.failure.Failure
 import fi.kroon.vadret.data.feedsource.model.FeedSourceOptionEntity
-import fi.kroon.vadret.util.extension.flatMapSingle
 import io.github.sphrak.either.Either
+import io.github.sphrak.either.flatMap
 import io.github.sphrak.either.map
-import io.reactivex.Single
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -20,14 +19,13 @@ class GetWarningFilterOptionListService @Inject constructor(
         val feedSourceOptionList: List<FeedSourceOptionEntity> = emptyList()
     )
 
-    operator fun invoke(): Single<Either<Failure, Data>> =
-        Single.just(Data())
-            .flatMap(::getAppFeedSourceState)
-            .flatMap(::getAppDistrictStateTask)
+    suspend operator fun invoke(): Either<Failure, Data> =
+        getAppFeedSourceState(Data())
+            .let { getAppDistrictStateTask(it) }
 
-    private fun getAppFeedSourceState(data: Data): Single<Either<Failure, Data>> =
+    private suspend fun getAppFeedSourceState(data: Data): Either<Failure, Data> =
         getAppFeedSourceStateTask()
-            .map { either: Either<Failure, List<FeedSourceOptionEntity>> ->
+            .let { either: Either<Failure, List<FeedSourceOptionEntity>> ->
                 either.map { feedSourceOptionList: List<FeedSourceOptionEntity> ->
                     feedSourceOptionList.forEach {
                         Timber.d("FeedSourceOption: $it")
@@ -36,10 +34,10 @@ class GetWarningFilterOptionListService @Inject constructor(
                 }
             }
 
-    private fun getAppDistrictStateTask(either: Either<Failure, Data>): Single<Either<Failure, Data>> =
-        either.flatMapSingle { data: Data ->
+    private suspend fun getAppDistrictStateTask(either: Either<Failure, Data>): Either<Failure, Data> =
+        either.flatMap { data: Data ->
             getAppDistrictStateTask()
-                .map { result: Either<Failure, List<DistrictOptionEntity>> ->
+                .let { result: Either<Failure, List<DistrictOptionEntity>> ->
                     result.map { districtOptionList: List<DistrictOptionEntity> ->
                         districtOptionList.forEach {
                             Timber.d("DistrictOption: $it")

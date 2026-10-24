@@ -16,6 +16,8 @@ import fi.kroon.vadret.util.extension.asLeft
 import fi.kroon.vadret.util.extension.asRight
 import fi.kroon.vadret.util.extension.toCoordinate
 import io.github.sphrak.either.Either
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import retrofit2.Response
 import timber.log.Timber
 import javax.inject.Inject
@@ -28,29 +30,31 @@ class WeatherForecastRepository @Inject constructor(
 ) : IErrorHandler by errorHandler, IExceptionHandler<Failure> by exceptionHandler {
 
     suspend operator fun invoke(request: WeatherOut): Either<Failure, Weather> =
-        try {
-            if (networkHandler.isConnected) {
-                weatherForecastNetDataSource
-                    .get()
-                    .getWeatherForecast(
-                        request.category,
-                        request.version,
-                        request.longitude.toCoordinate(),
-                        request.latitude.toCoordinate()
-                    ).let { response: Response<Weather> ->
-                        if (response.code() == HTTP_200_OK) {
-                            response.body()?.asRight() ?: WeatherForecastFailure.NoWeatherAvailable.asLeft()
-                        } else {
-                            WeatherForecastFailure.NoWeatherAvailable.asLeft()
+        withContext(Dispatchers.IO) {
+            try {
+                if (networkHandler.isConnected) {
+                    weatherForecastNetDataSource
+                        .get()
+                        .getWeatherForecast(
+                            request.category,
+                            request.version,
+                            request.longitude.toCoordinate(),
+                            request.latitude.toCoordinate()
+                        ).let { response: Response<Weather> ->
+                            if (response.code() == HTTP_200_OK) {
+                                response.body()?.asRight() ?: WeatherForecastFailure.NoWeatherAvailable.asLeft()
+                            } else {
+                                WeatherForecastFailure.NoWeatherAvailable.asLeft()
+                            }
                         }
-                    }
-            } else {
-                Failure
-                    .NetworkOfflineError("error: network offline or not available")
-                    .asLeft()
+                } else {
+                    Failure
+                        .NetworkOfflineError("error: network offline or not available")
+                        .asLeft()
+                }
+            } catch (exception: Exception) {
+                Timber.e(exception)
+                Failure.NetworkError().asLeft()
             }
-        } catch (exception: Exception) {
-            Timber.e(exception)
-            Failure.NetworkError().asLeft()
         }
 }

@@ -6,14 +6,13 @@ import fi.kroon.vadret.data.feedsourcepreference.local.FeedSourcePreferenceDao
 import fi.kroon.vadret.data.feedsourcepreference.model.FeedSourcePreferenceEntity
 import fi.kroon.vadret.util.extension.asRight
 import io.github.sphrak.either.Either
-import io.reactivex.Single
 import timber.log.Timber
 import javax.inject.Inject
 
 class UpdateFeedSourcePreferenceListTask @Inject constructor(
     private val dao: FeedSourcePreferenceDao
 ) {
-    operator fun invoke(entityList: List<FeedSourceOptionEntity>): Single<Either<Failure, Int>> {
+    suspend operator fun invoke(entityList: List<FeedSourceOptionEntity>): Either<Failure, Int> {
 
         val newEntityList: List<FeedSourcePreferenceEntity> =
             entityList.map { feedSourceOptionEntity: FeedSourceOptionEntity ->
@@ -29,7 +28,7 @@ class UpdateFeedSourcePreferenceListTask @Inject constructor(
         Timber.d("NEW ENTITY LIST: $newEntityList")
 
         return dao.update(entityList = newEntityList)
-            .map { updatedRowCount: Int ->
+            .let { updatedRowCount: Int ->
                 Timber.d("updated row count: $updatedRowCount")
                 updatedRowCount.asRight()
             }

@@ -5,9 +5,7 @@ import fi.kroon.vadret.data.feedsource.model.FeedSource
 import fi.kroon.vadret.util.FEED_SOURCE_KRISINFORMATION_ID
 import fi.kroon.vadret.util.FEED_SOURCE_SMHI_ID
 import fi.kroon.vadret.util.extension.asRight
-import fi.kroon.vadret.util.extension.asSingle
 import io.github.sphrak.either.Either
-import io.reactivex.Single
 import javax.inject.Inject
 
 class FeedSourceRepository @Inject constructor() {
@@ -36,8 +34,7 @@ class FeedSourceRepository @Inject constructor() {
         )
     )
 
-    operator fun invoke(): Single<Either<Failure, List<FeedSource>>> =
+    operator fun invoke(): Either<Failure, List<FeedSource>> =
         feedSourceList
             .asRight()
-            .asSingle()
 }

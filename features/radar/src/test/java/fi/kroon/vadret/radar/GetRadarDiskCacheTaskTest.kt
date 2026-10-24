@@ -5,9 +5,9 @@ import fi.kroon.vadret.data.failure.Failure
 import fi.kroon.vadret.data.radar.cache.RadarCacheDataSource
 import fi.kroon.vadret.data.radar.model.Radar
 import fi.kroon.vadret.util.extension.asRight
-import fi.kroon.vadret.util.extension.asSingle
 import io.github.sphrak.either.Either
-import io.reactivex.Single
+import kotlinx.coroutines.test.runTest
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -34,42 +34,39 @@ class GetRadarDiskCacheTaskTest {
     }
 
     @Test
-    fun `successfully retrieve cached radar object`() {
+    fun `successfully retrieve cached radar object`() = runTest {
 
         doReturn(getResultEither())
             .`when`(mockRadarCacheDataSource)
             .getDiskCache()
 
-        testGetRadarDiskCacheTask()
-            .test()
-            .assertNoErrors()
-            .assertComplete()
-            .assertValueAt(0) {
-                it is Either.Right &&
-                    it.b == radar
-            }
+        assertTrue(
+            testGetRadarDiskCacheTask()
+                .let {
+                    it is Either.Right &&
+                        it.b == radar
+                }
+        )
     }
 
     @Test
-    fun `fail to retrieve cached radar object and return cache read error`() {
+    fun `fail to retrieve cached radar object and return cache read error`() = runTest {
 
         doReturn(errorHandler.getCacheReadError<Radar>())
             .`when`(mockRadarCacheDataSource)
             .getDiskCache()
 
-        testGetRadarDiskCacheTask()
-            .test()
-            .assertNoErrors()
-            .assertComplete()
-            .assertValueAt(0) {
-                it is Either.Left &&
-                    it.a is Failure.CacheReadError &&
-                    (it.a as Failure.CacheReadError).message == "error: failed reading from cache"
-            }
+        assertTrue(
+            testGetRadarDiskCacheTask()
+                .let {
+                    it is Either.Left &&
+                        it.a is Failure.CacheReadError &&
+                        (it.a as Failure.CacheReadError).message == "error: failed reading from cache"
+                }
+        )
     }
 
-    private fun getResultEither(): Single<Either<Failure, Radar>> =
+    private fun getResultEither(): Either<Failure, Radar> =
         radar
             .asRight()
-            .asSingle()
 }

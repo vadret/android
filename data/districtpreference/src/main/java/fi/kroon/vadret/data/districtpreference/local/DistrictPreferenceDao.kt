@@ -8,44 +8,43 @@ import androidx.room.Query
 import androidx.room.Update
 import fi.kroon.vadret.data.district.model.DistrictOptionEntity
 import fi.kroon.vadret.data.districtpreference.model.DistrictPreferenceEntity
-import io.reactivex.Single
 
 @Dao
 interface DistrictPreferenceDao {
 
     @Query("SELECT count(district_preference.id) FROM district_preference WHERE used_by = :usedBy")
-    fun count(usedBy: String): Single<Int>
+    suspend fun count(usedBy: String): Int
 
     @Query(value = "SELECT * FROM district_preference")
-    fun getAll(): Single<List<DistrictPreferenceEntity>>
+    suspend fun getAll(): List<DistrictPreferenceEntity>
 
     @Query(value = "SELECT district_id FROM district_preference WHERE used_by = :usedBy AND is_enabled = 1")
-    fun getAllEnabledIds(usedBy: String): Single<List<Int>>
+    suspend fun getAllEnabledIds(usedBy: String): List<Int>
 
     @Query(value = "SELECT * FROM district_preference WHERE id IN (:entityIds)")
-    fun getByIds(entityIds: IntArray): Single<List<DistrictPreferenceEntity>>
+    suspend fun getByIds(entityIds: IntArray): List<DistrictPreferenceEntity>
 
     @Query(value = "SELECT * FROM district_used_by WHERE used_by = :usedBy")
-    fun getAllUsedBy(usedBy: String): Single<List<DistrictOptionEntity>>
+    suspend fun getAllUsedBy(usedBy: String): List<DistrictOptionEntity>
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    fun insert(entity: DistrictPreferenceEntity): Single<Long>
+    suspend fun insert(entity: DistrictPreferenceEntity): Long
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    fun insert(entityList: List<DistrictPreferenceEntity>): Single<List<Long>>
+    suspend fun insert(entityList: List<DistrictPreferenceEntity>): List<Long>
 
     @Update
-    fun update(entity: DistrictPreferenceEntity): Single<Int>
+    suspend fun update(entity: DistrictPreferenceEntity): Int
 
     @Update(onConflict = OnConflictStrategy.IGNORE)
-    fun update(entityList: List<DistrictPreferenceEntity>): Single<Int>
+    suspend fun update(entityList: List<DistrictPreferenceEntity>): Int
 
     @Delete
-    fun delete(entity: DistrictPreferenceEntity): Single<Unit>
+    suspend fun delete(entity: DistrictPreferenceEntity)
 
     @Query(value = "DELETE FROM district_preference")
-    fun deleteAll(): Single<Unit>
+    suspend fun deleteAll()
 
     @Query(value = "DELETE FROM district_preference WHERE (is_enabled = 1 AND used_by = :usedBy)")
-    fun deleteAllEnabledUsedBy(usedBy: String): Single<Unit>
+    suspend fun deleteAllEnabledUsedBy(usedBy: String)
 }

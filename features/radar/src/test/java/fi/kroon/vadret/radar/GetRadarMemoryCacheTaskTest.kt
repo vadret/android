@@ -5,9 +5,9 @@ import fi.kroon.vadret.data.failure.Failure
 import fi.kroon.vadret.data.radar.cache.RadarCacheDataSource
 import fi.kroon.vadret.data.radar.model.Radar
 import fi.kroon.vadret.util.extension.asRight
-import fi.kroon.vadret.util.extension.asSingle
 import io.github.sphrak.either.Either
-import io.reactivex.Single
+import kotlinx.coroutines.test.runTest
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -34,41 +34,38 @@ class GetRadarMemoryCacheTaskTest {
     }
 
     @Test
-    fun `set cache successfully and return radar data`() {
+    fun `set cache successfully and return radar data`() = runTest {
 
         doReturn(getResultEither())
             .`when`(mockRadarCacheDataSource)
             .getMemoryCache()
 
-        testGetRadarMemoryCacheTask()
-            .test()
-            .assertNoErrors()
-            .assertComplete()
-            .assertValueAt(0) {
-                it is Either.Right &&
-                    it.b == radar
-            }
+        assertTrue(
+            testGetRadarMemoryCacheTask()
+                .let {
+                    it is Either.Right &&
+                        it.b == radar
+                }
+        )
     }
 
     @Test
-    fun `set cache fails with cache write failure`() {
+    fun `set cache fails with cache write failure`() = runTest {
         doReturn(errorHandler.getCacheWriteError<Radar>())
             .`when`(mockRadarCacheDataSource)
             .getMemoryCache()
 
-        testGetRadarMemoryCacheTask()
-            .test()
-            .assertNoErrors()
-            .assertComplete()
-            .assertValueAt(0) {
-                it is Either.Left &&
-                    it.a is Failure.CacheWriteError &&
-                    (it.a as Failure.CacheWriteError).message == "error: failed writing to cache"
-            }
+        assertTrue(
+            testGetRadarMemoryCacheTask()
+                .let {
+                    it is Either.Left &&
+                        it.a is Failure.CacheWriteError &&
+                        (it.a as Failure.CacheWriteError).message == "error: failed writing to cache"
+                }
+        )
     }
 
-    private fun getResultEither(): Single<Either<Failure, Radar>> =
+    private fun getResultEither(): Either<Failure, Radar> =
         radar
             .asRight()
-            .asSingle()
 }

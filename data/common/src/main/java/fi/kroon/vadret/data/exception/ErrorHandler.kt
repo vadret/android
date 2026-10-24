@@ -2,45 +2,37 @@ package fi.kroon.vadret.data.exception
 
 import fi.kroon.vadret.data.failure.Failure
 import fi.kroon.vadret.util.extension.asLeft
-import fi.kroon.vadret.util.extension.asSingle
 import io.github.sphrak.either.Either
-import io.reactivex.Single
 
 class ErrorHandler : IErrorHandler {
 
-    override fun <T> getNetworkError(throwable: Throwable): Single<Either<Failure, T>> =
+    override fun <T> getNetworkError(throwable: Throwable): Either<Failure, T> =
         Failure
             .NetworkError("error: network request failed: ${throwable.message}, caused by: ${throwable.cause}")
             .asLeft()
-            .asSingle()
 
-    override fun <T> getNetworkOfflineError(): Single<Either<Failure, T>> =
+    override fun <T> getNetworkOfflineError(): Either<Failure, T> =
         Failure
             .NetworkOfflineError("error: network offline or not available")
             .asLeft()
-            .asSingle()
 
-    override fun <T, V> getLocalKeyValueWriteError(key: String, value: V): Single<Either<Failure, T>> =
+    override fun <T, V> getLocalKeyValueWriteError(key: String, value: V): Either<Failure, T> =
         Failure
             .LocalKeyValueWriteError("error: failed writing \'$value\'. key was not recognized: \'$key\'")
             .asLeft()
-            .asSingle()
 
-    override fun <T> getLocalKeyValueReadError(key: String): Single<Either<Failure, T>> =
+    override fun <T> getLocalKeyValueReadError(key: String): Either<Failure, T> =
         Failure
             .LocalKeyValueReadError("error: failed reading property for key \'$key\'. It was not recognized.")
             .asLeft()
-            .asSingle()
 
-    override fun <T> getCacheReadError(): Single<Either<Failure, T>> =
+    override fun <T> getCacheReadError(): Either<Failure, T> =
         Failure
             .CacheReadError("error: failed reading from cache")
             .asLeft()
-            .asSingle()
 
-    override fun <T> getCacheWriteError(): Single<Either<Failure, T>> =
+    override fun <T> getCacheWriteError(): Either<Failure, T> =
         Failure
             .CacheWriteError("error: failed writing to cache")
             .asLeft()
-            .asSingle()
 }

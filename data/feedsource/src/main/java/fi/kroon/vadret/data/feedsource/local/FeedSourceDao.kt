@@ -6,29 +6,28 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import fi.kroon.vadret.data.feedsource.model.FeedSourceEntity
-import io.reactivex.Single
 
 @Dao
 interface FeedSourceDao {
 
     @Query("SELECT count(feed_source.id) FROM feed_source")
-    fun count(): Single<Int>
+    suspend fun count(): Int
 
     @Query("SELECT * FROM feed_source")
-    fun getAll(): Single<List<FeedSourceEntity>>
+    suspend fun getAll(): List<FeedSourceEntity>
 
     @Query("SELECT * FROM feed_source WHERE id IN (:entityIds)")
-    fun getByIds(entityIds: IntArray): Single<List<FeedSourceEntity>>
+    suspend fun getByIds(entityIds: IntArray): List<FeedSourceEntity>
 
     @Query("SELECT EXISTS(SELECT 1 FROM feed_source_used_by WHERE used_by = :usedBy LIMIT 1)")
-    fun checkExists(usedBy: String): Single<Boolean>
+    suspend fun checkExists(usedBy: String): Boolean
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insert(entity: FeedSourceEntity): Single<Long>
+    suspend fun insert(entity: FeedSourceEntity): Long
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insert(entityList: List<FeedSourceEntity>): Single<List<Long>>
+    suspend fun insert(entityList: List<FeedSourceEntity>): List<Long>
 
     @Delete
-    fun delete(entity: FeedSourceEntity): Single<Unit>
+    suspend fun delete(entity: FeedSourceEntity)
 }

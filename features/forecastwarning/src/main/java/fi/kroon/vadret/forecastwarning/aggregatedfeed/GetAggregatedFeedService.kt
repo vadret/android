@@ -4,13 +4,10 @@ import fi.kroon.vadret.data.aggregatedfeed.model.AggregatedFeed
 import fi.kroon.vadret.data.failure.Failure
 import fi.kroon.vadret.shared.IService
 import fi.kroon.vadret.util.FIVE_MINUTES_IN_MILLIS
-import fi.kroon.vadret.util.extension.flatMapSingle
 import io.github.sphrak.either.Either
 import io.github.sphrak.either.extension.onResult
 import io.github.sphrak.either.flatMap
 import io.github.sphrak.either.map
-import io.reactivex.Single
-import io.reactivex.rxkotlin.zipWith
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -30,99 +27,67 @@ class GetAggregatedFeedService @Inject constructor(
         val timeStamp: Long
     )
 
-    operator fun invoke(timeStamp: Long, forceNet: Boolean, districtIds: List<Int>, feedSourceIds: List<Int>): Single<Either<Failure, Data>> =
-        Single.just(
+    suspend operator fun invoke(timeStamp: Long, forceNet: Boolean, districtIds: List<Int>, feedSourceIds: List<Int>): Either<Failure, Data> =
+        getAlert(
             Data(
                 timeStamp = timeStamp,
                 forceNet = forceNet,
                 counties = districtIds,
                 feeds = feedSourceIds
             )
-        ).flatMap(::getAggregatedFeed)
-            .map(::transform)
+        ).map { dataIn: Data ->
+            dataIn.copy(
+                timeStamp = currentTimeMillis
+            )
+        }
 
-    private fun getAggregatedFeed(data: Data): Single<Either<Failure, Data>> =
-        getAlert(data)
-            .map { either: Either<Failure, Data> ->
-                either.map { dataIn: Data ->
-                    dataIn.copy(
-                        timeStamp = currentTimeMillis
-                    )
-                }
-            }
-
-    private fun getAlert(data: Data): Single<Either<Failure, Data>> =
+    private suspend fun getAlert(data: Data): Either<Failure, Data> =
         with(data) {
             when {
-                forceNet || (currentTimeMillis > (timeStamp + FIVE_MINUTES_IN_MILLIS)) -> {
-                    getAggregatedFeedTask(counties = data.counties, feeds = data.feeds)
-                        .map { either: Either<Failure, List<AggregatedFeed>> ->
-                            either.map { aggregatedFeedList: List<AggregatedFeed> ->
-                                data.copy(aggregatedFeedList = aggregatedFeedList)
-                            }
-                        }.flatMap { either: Either<Failure, Data> ->
-                            updateCache(either)
-                        }
-                }
-                else -> {
-                    Single.merge(
-                        getAggregatedFeedMemoryCacheTask()
-                            .map { either: Either<Failure, List<AggregatedFeed>> ->
-                                either.map { aggregatedFeedList: List<AggregatedFeed> ->
-                                    data.copy(aggregatedFeedList = aggregatedFeedList)
-                                }
-                            },
-                        getAggregatedFeedDiskCacheTask()
-                            .map { either: Either<Failure, List<AggregatedFeed>> ->
-                                either.map { aggregatedFeedList: List<AggregatedFeed> ->
-                                    data.copy(aggregatedFeedList = aggregatedFeedList)
-                                }
-                            }
-                    ).filter { result: Either<Failure, Data> ->
-                        result.onResult(
-                            {
-                                false
-                            },
-                            { data: Data ->
-                                Timber.d("Fetched from cache ${data.aggregatedFeedList}")
-                                data
-                                    .aggregatedFeedList
-                                    .isNotEmpty()
-                            }
-                        )
-                    }.take(1)
-                        .switchIfEmpty(
-                            getAggregatedFeedTask(counties = data.counties, feeds = data.feeds)
-                                .map { either: Either<Failure, List<AggregatedFeed>> ->
-                                    Timber.d("Cache was empty, fetching from network.")
-                                    either.map { aggregatedFeedList: List<AggregatedFeed> ->
-                                        data.copy(aggregatedFeedList = aggregatedFeedList)
-                                    }
-                                }.flatMap { data: Either<Failure, Data> ->
-                                    updateCache(data)
-                                }.toFlowable()
-                        ).singleOrError()
+                forceNet || (currentTimeMillis > (timeStamp + FIVE_MINUTES_IN_MILLIS)) -> getAggregatedFeedNet(data)
+                else -> getAggregatedFeedCache(data) ?: run {
+                    Timber.d("Cache was empty, fetching from network.")
+                    getAggregatedFeedNet(data)
                 }
             }
         }
 
-    private fun updateCache(either: Either<Failure, Data>): Single<Either<Failure, Data>> =
-        either.flatMapSingle { data: Data ->
-            setAggregatedFeedMemoryCacheTask(data.aggregatedFeedList)
-                .zipWith(setAggregatedFeedDiskCacheTask(data.aggregatedFeedList))
-                .map { pair: Pair<Either<Failure, List<AggregatedFeed>>, Either<Failure, List<AggregatedFeed>>> ->
-                    Timber.i("Updating cache")
-                    val (firstEither: Either<Failure, List<AggregatedFeed>>, secondEither: Either<Failure, List<AggregatedFeed>>) = pair
-                    firstEither.flatMap { _: List<AggregatedFeed> ->
-                        secondEither.map { _: List<AggregatedFeed> ->
-                            data
-                        }
-                    }
-                }
-        }
+    private suspend fun getAggregatedFeedNet(data: Data): Either<Failure, Data> =
+        getAggregatedFeedTask(counties = data.counties, feeds = data.feeds)
+            .map { aggregatedFeedList: List<AggregatedFeed> ->
+                data.copy(aggregatedFeedList = aggregatedFeedList)
+            }.let { updateCache(it) }
 
-    private fun transform(either: Either<Failure, Data>): Either<Failure, Data> =
-        either.map { data: Data ->
-            data
+    /**
+     *  Memory cache first, then disk. Null when neither
+     *  holds a non-empty feed.
+     */
+    private suspend fun getAggregatedFeedCache(data: Data): Either<Failure, Data>? =
+        (getAggregatedFeedMemoryCacheTask().takeIf(::hasFeed) ?: getAggregatedFeedDiskCacheTask().takeIf(::hasFeed))
+            ?.map { aggregatedFeedList: List<AggregatedFeed> ->
+                Timber.d("Fetched from cache $aggregatedFeedList")
+                data.copy(aggregatedFeedList = aggregatedFeedList)
+            }
+
+    private fun hasFeed(result: Either<Failure, List<AggregatedFeed>>): Boolean =
+        result.onResult(
+            {
+                false
+            },
+            { aggregatedFeedList: List<AggregatedFeed> ->
+                aggregatedFeedList.isNotEmpty()
+            }
+        )
+
+    private suspend fun updateCache(either: Either<Failure, Data>): Either<Failure, Data> =
+        either.flatMap { data: Data ->
+            Timber.i("Updating cache")
+            val memoryEither: Either<Failure, List<AggregatedFeed>> = setAggregatedFeedMemoryCacheTask(data.aggregatedFeedList)
+            val diskEither: Either<Failure, List<AggregatedFeed>> = setAggregatedFeedDiskCacheTask(data.aggregatedFeedList)
+            memoryEither.flatMap { _: List<AggregatedFeed> ->
+                diskEither.map { _: List<AggregatedFeed> ->
+                    data
+                }
+            }
         }
 }

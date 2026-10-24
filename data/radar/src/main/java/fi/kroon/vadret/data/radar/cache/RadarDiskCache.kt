@@ -6,7 +6,8 @@ import fi.kroon.vadret.data.radar.model.Radar
 import fi.kroon.vadret.util.extension.asLeft
 import fi.kroon.vadret.util.extension.asRight
 import io.github.sphrak.either.Either
-import io.reactivex.Single
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import okhttp3.internal.cache.DiskLruCache
 import okio.buffer
 import timber.log.Timber
@@ -24,47 +25,53 @@ class RadarDiskCache(
         const val INDEX = 0
     }
 
-    fun put(radar: Radar): Single<Either<Failure, Radar>> =
-        Single.fromCallable {
-            val editor = cache.edit(KEY)
-            val sink = editor?.newSink(INDEX)
-            val bufferedSink = sink?.buffer()
-            val byteArray = serializerObject(radar)
+    suspend fun put(radar: Radar): Either<Failure, Radar> =
+        withContext(Dispatchers.IO) {
+            try {
+                val editor = cache.edit(KEY)
+                val sink = editor?.newSink(INDEX)
+                val bufferedSink = sink?.buffer()
+                val byteArray = serializerObject(radar)
 
-            bufferedSink.use { _ ->
-                bufferedSink?.write(byteArray)
+                bufferedSink.use { _ ->
+                    bufferedSink?.write(byteArray)
+                }
+                editor?.commit()
+
+                radar.asRight()
+            } catch (exception: Exception) {
+                Timber.e("Disk cache insert failed: $exception")
+                Failure
+                    .DiskCacheLruWriteFailure
+                    .asLeft()
             }
-            editor?.commit()
-
-            radar.asRight() as Either<Failure, Radar>
-        }.doOnError {
-            Timber.e("Disk cache insert failed: $it")
-        }.onErrorReturn {
-            Failure
-                .DiskCacheLruWriteFailure
-                .asLeft()
         }
 
-    fun read(): Single<Either<Failure, Radar>> = Single.fromCallable {
-        val snapshot: DiskLruCache.Snapshot = cache.get(KEY)!!
-        val byteArray: ByteArray
-        byteArray = snapshot.getSource(INDEX)
-            .buffer()
-            .readByteArray()
+    suspend fun read(): Either<Failure, Radar> =
+        withContext(Dispatchers.IO) {
+            try {
+                val snapshot: DiskLruCache.Snapshot = cache[KEY]!!
+                val byteArray: ByteArray = snapshot.getSource(INDEX)
+                    .buffer()
+                    .readByteArray()
 
-        deserializeBytes<Radar>(byteArray)
-            .asRight() as Either<Failure, Radar>
-    }.onErrorReturn {
-        Failure
-            .DiskCacheLruReadFailure
-            .asLeft()
-    }
+                deserializeBytes<Radar>(byteArray)
+                    .asRight()
+            } catch (exception: Exception) {
+                Failure
+                    .DiskCacheLruReadFailure
+                    .asLeft()
+            }
+        }
 
-    fun remove(): Single<Either<Failure, Boolean>> = Single.fromCallable {
-        cache.remove(KEY).asRight() as Either<Failure, Boolean>
-    }.onErrorReturn {
-        Failure
-            .DiskCacheEvictionFailure
-            .asLeft()
-    }
+    suspend fun remove(): Either<Failure, Boolean> =
+        withContext(Dispatchers.IO) {
+            try {
+                cache.remove(KEY).asRight()
+            } catch (exception: Exception) {
+                Failure
+                    .DiskCacheLruWriteFailure
+                    .asLeft()
+            }
+        }
 }

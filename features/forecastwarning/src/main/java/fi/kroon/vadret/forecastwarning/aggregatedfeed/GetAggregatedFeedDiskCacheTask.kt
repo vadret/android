@@ -4,13 +4,12 @@ import fi.kroon.vadret.data.aggregatedfeed.cache.AggregatedFeedCacheDataSource
 import fi.kroon.vadret.data.aggregatedfeed.model.AggregatedFeed
 import fi.kroon.vadret.data.failure.Failure
 import io.github.sphrak.either.Either
-import io.reactivex.Single
 import javax.inject.Inject
 
 class GetAggregatedFeedDiskCacheTask @Inject constructor(
     private val repo: AggregatedFeedCacheDataSource
 ) {
-    operator fun invoke(): Single<Either<Failure, List<AggregatedFeed>>> =
+    suspend operator fun invoke(): Either<Failure, List<AggregatedFeed>> =
         repo
             .getDiskCache()
 }

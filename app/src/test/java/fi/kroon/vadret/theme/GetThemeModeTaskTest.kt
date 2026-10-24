@@ -9,9 +9,9 @@ import fi.kroon.vadret.util.LIGHT_THEME
 import fi.kroon.vadret.util.THEME_MODE_KEY
 import fi.kroon.vadret.util.extension.asLeft
 import fi.kroon.vadret.util.extension.asRight
-import fi.kroon.vadret.util.extension.asSingle
 import io.github.sphrak.either.Either
-import io.reactivex.Single
+import kotlinx.coroutines.test.runTest
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -38,44 +38,40 @@ class GetThemeModeTaskTest {
     }
 
     @Test
-    fun `fetch theme successfully`() {
+    fun `fetch theme successfully`() = runTest {
 
         doReturn(getResultEither())
             .`when`(mockThemeRepository)
             .invoke(key = THEME_MODE_KEY)
 
-        testGetThemeModeTask()
-            .test()
-            .assertNoErrors()
-            .assertComplete()
-            .assertValueAt(0) {
-                it is Either.Right && it.b == theme
-            }
+        assertTrue(
+            testGetThemeModeTask()
+                .let {
+                    it is Either.Right && it.b == theme
+                }
+        )
     }
 
     @Test
-    fun `fail to fetch theme`() {
+    fun `fail to fetch theme`() = runTest {
         doReturn(getFailureEither())
             .`when`(mockThemeRepository)
             .invoke(key = THEME_MODE_KEY)
 
-        testGetThemeModeTask()
-            .test()
-            .assertNoErrors()
-            .assertComplete()
-            .assertValueAt(0) {
-                it is Either.Left && it.a is ThemeFailure.ParsingThemeFailed
-            }
+        assertTrue(
+            testGetThemeModeTask()
+                .let {
+                    it is Either.Left && it.a is ThemeFailure.ParsingThemeFailed
+                }
+        )
     }
 
-    private fun getFailureEither(): Single<Either<Failure, Theme>> =
+    private fun getFailureEither(): Either<Failure, Theme> =
         ThemeFailure
             .ParsingThemeFailed
             .asLeft()
-            .asSingle()
 
-    private fun getResultEither(): Single<Either<Failure, Theme>> =
+    private fun getResultEither(): Either<Failure, Theme> =
         theme
             .asRight()
-            .asSingle()
 }

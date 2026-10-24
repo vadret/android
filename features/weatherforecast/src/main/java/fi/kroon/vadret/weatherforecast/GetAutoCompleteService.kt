@@ -9,7 +9,6 @@ import fi.kroon.vadret.weatherforecast.autocomplete.AutoCompleteDiffUtil
 import io.github.sphrak.either.Either
 import io.github.sphrak.either.extension.onResult
 import io.github.sphrak.either.map
-import io.reactivex.Maybe
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -23,25 +22,22 @@ class GetAutoCompleteService @Inject constructor(
         val diffResult: DiffUtil.DiffResult? = null
     )
 
-    operator fun invoke(text: String): Maybe<Either<Failure, Data>> =
-        autoCompleteRepository().map { either ->
-
-            either.map { currentFilteredList ->
-
+    /**
+     *  Returns null when there is nothing to suggest, either
+     *  because nothing matched or the city list failed to load.
+     */
+    suspend operator fun invoke(text: String): Either<Failure, Data>? =
+        autoCompleteRepository()
+            .map { currentFilteredList ->
                 val state = Data(currentFilteredList = currentFilteredList)
-
                 val newFilteredList = currentFilteredList
                     .filter { city ->
                         city.locality.startsWith(text, true)
                     }
                     .take(DEFAULT_AUTOCOMPLETE_LIMIT)
                     .toList()
-
                 state.copy(newFilteredList = newFilteredList)
-            }
-        }.map { either: Either<Failure, Data> ->
-            either.map { state ->
-
+            }.map { state ->
                 val diffResult = DiffUtil
                     .calculateDiff(
                         AutoCompleteDiffUtil(
@@ -50,18 +46,16 @@ class GetAutoCompleteService @Inject constructor(
                         )
                     )
                 state.copy(diffResult = diffResult)
+            }.takeIf { result: Either<Failure, Data> ->
+                result.onResult(
+                    { failure: Failure ->
+                        Timber.e("$failure")
+                        false
+                    },
+                    { data: Data ->
+                        data.newFilteredList
+                            .isNotEmpty()
+                    }
+                )
             }
-        }.filter { result: Either<Failure, Data> ->
-            result.onResult(
-                {
-                    false
-                },
-                { data: Data ->
-                    data.newFilteredList
-                        .isNotEmpty()
-                }
-            )
-        }.doOnError {
-            Timber.e("$it")
-        }
 }

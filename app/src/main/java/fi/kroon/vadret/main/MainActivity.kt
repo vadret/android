@@ -2,6 +2,7 @@ package fi.kroon.vadret.main
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import androidx.preference.PreferenceManager
@@ -15,17 +16,14 @@ import fi.kroon.vadret.main.di.DaggerMainActivityComponent
 import fi.kroon.vadret.main.di.MainActivityComponent
 import fi.kroon.vadret.shared.ILocalityActionBar
 import fi.kroon.vadret.util.DEFAULT_SETTINGS
-import fi.kroon.vadret.util.Scheduler
 import fi.kroon.vadret.util.extension.coreComponent
 import fi.kroon.vadret.util.extension.lazyAndroid
 import fi.kroon.vadret.util.extension.toGone
-import fi.kroon.vadret.util.extension.toObservable
 import fi.kroon.vadret.util.extension.toVisible
 import io.github.sphrak.either.extension.onResult
-import io.reactivex.Observable
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.rxkotlin.addTo
-import io.reactivex.subjects.PublishSubject
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import timber.log.Timber
 
 class MainActivity : AppCompatActivity(), ILocalityActionBar {
@@ -38,20 +36,10 @@ class MainActivity : AppCompatActivity(), ILocalityActionBar {
             .create(context = this, coreComponent = coreComponent)
     }
 
-    private val subscriptions: CompositeDisposable by lazyAndroid {
-        component.provideCompositeDisposable()
-    }
-
-    private val scheduler: Scheduler by lazyAndroid {
-        component.provideScheduler()
-    }
+    private var viewStateJob: Job? = null
 
     private val viewModel: MainActivityViewModel by lazyAndroid {
         component.provideMainActivityViewModel()
-    }
-
-    private val onViewInitialisedSubject: PublishSubject<MainActivityView.Event.OnViewInitialised> by lazyAndroid {
-        component.provideOnViewInitialised()
     }
 
     /**
@@ -67,11 +55,9 @@ class MainActivity : AppCompatActivity(), ILocalityActionBar {
 
         /**
          * on runtime theme needs to be applied before
-         * setContentView has run. But we cant run
-         * setupEvents() since they open up UI
-         * which wont exist at this point.
+         * setContentView has run.
          */
-        preSetupEvents()
+        applyTheme()
 
         binding = MainActivityBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -82,27 +68,18 @@ class MainActivity : AppCompatActivity(), ILocalityActionBar {
         }
 
         setupPreferences()
-        setupEvents()
     }
 
-    /**
-     *  Needs to run before to allow
-     *  asynchronous comm with
-     *  doman layer before
-     *  contentview is setup.
-     */
-    private fun preSetupEvents() = viewModel
+    private fun applyTheme() = viewModel
         .getThemeMode()
-        .map { result ->
-            result.onResult(
-                { failure: Failure ->
-                    Timber.e("Error: $failure")
-                },
-                { theme: Theme ->
-                    setTheme(theme.resourceId)
-                }
-            )
-        }.blockingGet()
+        .onResult(
+            { failure: Failure ->
+                Timber.e("Error: $failure")
+            },
+            { theme: Theme ->
+                setTheme(theme.resourceId)
+            }
+        )
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
@@ -115,9 +92,22 @@ class MainActivity : AppCompatActivity(), ILocalityActionBar {
         setupBottomNavigationBar()
     }
 
+    /**
+     *  Theme changes are only observed while started, a change
+     *  made in the meantime is emitted again on the next start.
+     */
+    override fun onStart() {
+        super.onStart()
+        viewStateJob = viewModel
+            .viewState
+            .onEach(::render)
+            .launchIn(lifecycleScope)
+    }
+
     override fun onStop() {
         super.onStop()
-        subscriptions.clear()
+        viewStateJob?.cancel()
+        viewStateJob = null
     }
 
     private fun setupBottomNavigationBar() {
@@ -143,33 +133,6 @@ class MainActivity : AppCompatActivity(), ILocalityActionBar {
                 fi.kroon.vadret.core.R.xml.about_app_preferences,
                 false
             )
-    }
-
-    private fun setupEvents() {
-        Timber.d("MAIN ACTIVITY -- SETUP EVENTS")
-        if (subscriptions.size() == 0) {
-            Observable.mergeArray(
-                onViewInitialisedSubject
-                    .toObservable()
-            ).observeOn(
-                scheduler.io()
-            ).compose(
-                viewModel()
-            ).observeOn(
-                scheduler.ui()
-            ).subscribe(
-                ::render
-            ).addTo(
-                subscriptions
-            )
-
-            onViewInitialisedSubject
-                .onNext(
-                    MainActivityView
-                        .Event
-                        .OnViewInitialised
-                )
-        }
     }
 
     private fun render(viewState: MainActivityView.State) {

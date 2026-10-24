@@ -3,9 +3,7 @@ package fi.kroon.vadret.data.aboutinfo.local
 import fi.kroon.vadret.data.aboutinfo.model.AboutInfo
 import fi.kroon.vadret.data.failure.Failure
 import fi.kroon.vadret.util.extension.asRight
-import fi.kroon.vadret.util.extension.asSingle
 import io.github.sphrak.either.Either
-import io.reactivex.Single
 import javax.inject.Inject
 
 /**
@@ -15,8 +13,7 @@ class AboutInfoLocalDataSource @Inject constructor(
     private val aboutInfoList: List<AboutInfo>
 ) {
 
-    operator fun invoke(): Single<Either<Failure, List<AboutInfo>>> =
+    operator fun invoke(): Either<Failure, List<AboutInfo>> =
         aboutInfoList
             .asRight()
-            .asSingle()
 }

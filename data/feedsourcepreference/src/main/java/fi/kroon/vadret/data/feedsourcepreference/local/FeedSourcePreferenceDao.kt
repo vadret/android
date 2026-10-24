@@ -8,44 +8,43 @@ import androidx.room.Query
 import androidx.room.Update
 import fi.kroon.vadret.data.feedsource.model.FeedSourceOptionEntity
 import fi.kroon.vadret.data.feedsourcepreference.model.FeedSourcePreferenceEntity
-import io.reactivex.Single
 
 @Dao
 interface FeedSourcePreferenceDao {
 
     @Query("SELECT count(feed_source_preference.id) FROM feed_source_preference WHERE used_by = :usedBy")
-    fun count(usedBy: String): Single<Int>
+    suspend fun count(usedBy: String): Int
 
     @Query(value = "SELECT * FROM feed_source_preference")
-    fun getAll(): Single<List<FeedSourcePreferenceEntity>>
+    suspend fun getAll(): List<FeedSourcePreferenceEntity>
 
     @Query(value = "SELECT feed_source_id FROM feed_source_preference WHERE used_by = :usedBy AND is_enabled = 1")
-    fun getAllEnabledIds(usedBy: String): Single<List<Int>>
+    suspend fun getAllEnabledIds(usedBy: String): List<Int>
 
     @Query(value = "SELECT * FROM feed_source_preference WHERE id IN (:entityIds)")
-    fun getByIds(entityIds: IntArray): Single<List<FeedSourcePreferenceEntity>>
+    suspend fun getByIds(entityIds: IntArray): List<FeedSourcePreferenceEntity>
 
     @Query(value = "SELECT * FROM feed_source_used_by WHERE used_by = :usedBy")
-    fun getAllUsedBy(usedBy: String): Single<List<FeedSourceOptionEntity>>
+    suspend fun getAllUsedBy(usedBy: String): List<FeedSourceOptionEntity>
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    fun insert(entity: FeedSourcePreferenceEntity): Single<Long>
+    suspend fun insert(entity: FeedSourcePreferenceEntity): Long
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    fun insert(entityList: List<FeedSourcePreferenceEntity>): Single<List<Long>>
+    suspend fun insert(entityList: List<FeedSourcePreferenceEntity>): List<Long>
 
     @Update
-    fun update(entity: FeedSourcePreferenceEntity): Single<Int>
+    suspend fun update(entity: FeedSourcePreferenceEntity): Int
 
     @Update(onConflict = OnConflictStrategy.IGNORE)
-    fun update(entityList: List<FeedSourcePreferenceEntity>): Single<Int>
+    suspend fun update(entityList: List<FeedSourcePreferenceEntity>): Int
 
     @Delete
-    fun delete(entity: FeedSourcePreferenceEntity): Single<Unit>
+    suspend fun delete(entity: FeedSourcePreferenceEntity)
 
     @Query(value = "DELETE FROM feed_source_preference")
-    fun deleteAll(): Single<Unit>
+    suspend fun deleteAll()
 
     @Query(value = "DELETE FROM feed_source_preference WHERE (is_enabled = 1 AND used_by = :usedBy)")
-    fun deleteAllEnabledUsedBy(usedBy: String): Single<Unit>
+    suspend fun deleteAllEnabledUsedBy(usedBy: String)
 }

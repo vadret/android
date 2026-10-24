@@ -1,7 +1,6 @@
 package fi.kroon.vadret.data.aggregatedfeed.net
 
 import fi.kroon.vadret.data.aggregatedfeed.model.KrisinformationFeed
-import io.reactivex.Single
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Query
@@ -13,14 +12,14 @@ import retrofit2.http.Query
 interface KrisinformationNetDataSource {
 
     @GET("news")
-    fun getNews(
+    suspend fun getNews(
         @Query("counties")
         counties: String
-    ): Single<Response<List<KrisinformationFeed>>>
+    ): Response<List<KrisinformationFeed>>
 
     @GET("vmas")
-    fun getVmas(
+    suspend fun getVmas(
         @Query("counties")
         counties: String
-    ): Single<Response<List<KrisinformationFeed>>>
+    ): Response<List<KrisinformationFeed>>
 }

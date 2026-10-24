@@ -10,30 +10,21 @@ import fi.kroon.vadret.util.extension.asRight
 import fi.kroon.vadret.util.extension.toCoordinate
 import io.github.sphrak.either.Either
 import io.github.sphrak.either.flatMap
-import io.reactivex.Single
-import io.reactivex.rxkotlin.Singles
 import javax.inject.Inject
 
 class GetLocationManualTask @Inject constructor(
     private val keyValueStore: WeatherForecastLocalKeyValueDataSource
 ) {
 
-    operator fun invoke(): Single<Either<Failure, WeatherOut>> =
-        Singles.zip(
-            keyValueStore.getString(LOCALITY_KEY),
-            keyValueStore.getString(LATITUDE_KEY),
-            keyValueStore.getString(LONGITUDE_KEY)
-        ).map { triple: Triple<Either<Failure, String>, Either<Failure, String>, Either<Failure, String>> ->
-            val (localityEither: Either<Failure, String>, latitudeEither: Either<Failure, String>, longitudeEither: Either<Failure, String>) = triple
-            localityEither.flatMap { locality ->
-                latitudeEither.flatMap { latitude ->
-                    longitudeEither.flatMap { longitude ->
-                        WeatherOut(
-                            localityName = locality,
-                            latitude = latitude.toCoordinate(),
-                            longitude = longitude.toCoordinate()
-                        ).asRight()
-                    }
+    operator fun invoke(): Either<Failure, WeatherOut> =
+        keyValueStore.getString(LOCALITY_KEY).flatMap { locality ->
+            keyValueStore.getString(LATITUDE_KEY).flatMap { latitude ->
+                keyValueStore.getString(LONGITUDE_KEY).flatMap { longitude ->
+                    WeatherOut(
+                        localityName = locality,
+                        latitude = latitude.toCoordinate(),
+                        longitude = longitude.toCoordinate()
+                    ).asRight()
                 }
             }
         }

@@ -4,9 +4,9 @@ import fi.kroon.vadret.data.failure.Failure
 import fi.kroon.vadret.data.library.LibraryRepository
 import fi.kroon.vadret.data.library.model.Library
 import fi.kroon.vadret.util.extension.asRight
-import fi.kroon.vadret.util.extension.asSingle
 import io.github.sphrak.either.Either
-import io.reactivex.Single
+import kotlinx.coroutines.test.runTest
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -41,22 +41,20 @@ class GetAboutLibraryTaskTest {
     }
 
     @Test
-    fun `load valid library list`() {
+    fun `load valid library list`() = runTest {
 
         doReturn(getEither())
             .`when`(mockLibraryRepository)
             .invoke()
 
-        testGetAboutLibraryTask()
-            .test()
-            .assertNoErrors()
-            .assertComplete()
-            .assertValueAt(0) {
-                it is Either.Right && it.b == list
-            }
+        assertTrue(
+            testGetAboutLibraryTask()
+                .let {
+                    it is Either.Right && it.b == list
+                }
+        )
     }
 
-    private fun getEither(): Single<Either<Failure, List<Library>>> =
+    private fun getEither(): Either<Failure, List<Library>> =
         list.asRight()
-            .asSingle()
 }

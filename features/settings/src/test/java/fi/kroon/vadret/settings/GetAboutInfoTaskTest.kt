@@ -4,9 +4,9 @@ import fi.kroon.vadret.data.aboutinfo.AboutInfoRepository
 import fi.kroon.vadret.data.aboutinfo.model.AboutInfo
 import fi.kroon.vadret.data.failure.Failure
 import fi.kroon.vadret.util.extension.asRight
-import fi.kroon.vadret.util.extension.asSingle
 import io.github.sphrak.either.Either
-import io.reactivex.Single
+import kotlinx.coroutines.test.runTest
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -38,22 +38,20 @@ class GetAboutInfoTaskTest {
     }
 
     @Test
-    fun `load valid about info list`() {
+    fun `load valid about info list`() = runTest {
 
         Mockito.doReturn(getEither())
             .`when`(mockAboutInfoRepository)
             .invoke()
 
-        testGetAboutInfoTask()
-            .test()
-            .assertNoErrors()
-            .assertComplete()
-            .assertValueAt(0) {
-                it is Either.Right && it.b == list
-            }
+        assertTrue(
+            testGetAboutInfoTask()
+                .let {
+                    it is Either.Right && it.b == list
+                }
+        )
     }
 
-    private fun getEither(): Single<Either<Failure, List<AboutInfo>>> =
+    private fun getEither(): Either<Failure, List<AboutInfo>> =
         list.asRight()
-            .asSingle()
 }

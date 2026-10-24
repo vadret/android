@@ -23,14 +23,11 @@ dependencies {
     implementation libs.androidx.swiperefreshlayout
     implementation libs.corbind.core
     implementation libs.corbind.swiperefreshlayout
-    implementation libs.coroutines.rx2
     implementation libs.dagger.runtime
     implementation libs.moshi.core
     implementation libs.okhttp.core
-    implementation libs.retrofit.adapter.rxjava2
     implementation libs.retrofit.converter.moshi
     implementation libs.retrofit.core
-    implementation libs.rxkotlin
     implementation libs.timber
 
     ksp libs.dagger.compiler

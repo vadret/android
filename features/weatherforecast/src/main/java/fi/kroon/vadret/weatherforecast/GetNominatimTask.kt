@@ -2,25 +2,14 @@ package fi.kroon.vadret.weatherforecast
 
 import fi.kroon.vadret.data.failure.Failure
 import fi.kroon.vadret.data.nominatim.NominatimRepository
-import fi.kroon.vadret.data.nominatim.exception.NominatimFailure
 import fi.kroon.vadret.data.nominatim.model.Nominatim
 import fi.kroon.vadret.data.nominatim.model.NominatimOut
-import fi.kroon.vadret.util.extension.asLeft
 import io.github.sphrak.either.Either
-import io.reactivex.Single
-import timber.log.Timber
 import javax.inject.Inject
 
 class GetNominatimTask @Inject constructor(
     private val nominatimRepository: NominatimRepository
 ) {
-    operator fun invoke(nominatimOut: NominatimOut): Single<Either<Failure, List<Nominatim>>> =
+    suspend operator fun invoke(nominatimOut: NominatimOut): Either<Failure, List<Nominatim>> =
         nominatimRepository.get(nominatimOut)
-            .doOnError {
-                Timber.e("$it")
-            }.onErrorReturn {
-                NominatimFailure
-                    .NominatimNotAvailable
-                    .asLeft()
-            }
 }

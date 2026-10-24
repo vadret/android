@@ -28,7 +28,6 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import okhttp3.OkHttpClient
 import okhttp3.internal.cache.DiskLruCache
 import retrofit2.Retrofit
-import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.moshi.MoshiConverterFactory
 
 @Module
@@ -96,7 +95,6 @@ object WarningModule {
         assertNoInitMainThread()
         return Retrofit.Builder()
             .baseUrl(SMHI_API_ALERT_URL)
-            .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
             .addConverterFactory(MoshiConverterFactory.create(moshi))
             .delegatingCallFactory(okHttpClient)
             .build()
@@ -109,7 +107,6 @@ object WarningModule {
         assertNoInitMainThread()
         return Retrofit.Builder()
             .baseUrl(KRISINFORMATION_API_URL)
-            .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
             .addConverterFactory(MoshiConverterFactory.create(moshi))
             .delegatingCallFactory(okHttpClient)
             .build()

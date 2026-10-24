@@ -10,7 +10,6 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.rx2.await
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -39,7 +38,6 @@ class AboutAppLibraryViewModel @Inject constructor(
 
     private suspend fun onViewInitialisedEvent() {
         getAboutLibraryTask()
-            .await()
             .onResult(
                 { failure: Failure ->
                     Timber.e("failure: $failure")

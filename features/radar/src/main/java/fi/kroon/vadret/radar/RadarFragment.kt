@@ -8,11 +8,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.graphics.drawable.toBitmap
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import coil.ImageLoader
 import coil.request.ImageRequest
-import com.jakewharton.rxbinding3.view.clicks
-import com.jakewharton.rxbinding3.widget.changes
-import com.jakewharton.rxbinding3.widget.userChanges
 import fi.kroon.vadret.core.R
 import fi.kroon.vadret.radar.databinding.RadarFragmentBinding
 import fi.kroon.vadret.radar.di.DaggerRadarComponent
@@ -32,12 +30,12 @@ import fi.kroon.vadret.util.WIKIMEDIA_TILE_SOURCE_URL
 import fi.kroon.vadret.util.extension.coreComponent
 import fi.kroon.vadret.util.extension.lazyAndroid
 import fi.kroon.vadret.util.extension.snack
-import fi.kroon.vadret.util.extension.toObservable
-import io.reactivex.Observable
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.disposables.Disposable
-import io.reactivex.rxkotlin.addTo
-import io.reactivex.subjects.PublishSubject
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 import org.osmdroid.config.Configuration
 import org.osmdroid.config.IConfigurationProvider
 import org.osmdroid.tileprovider.tilesource.XYTileSource
@@ -45,9 +43,10 @@ import org.osmdroid.util.BoundingBox
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.CustomZoomButtonsController
 import org.osmdroid.views.overlay.GroundOverlay
+import ru.ldralighieri.corbind.view.clicks
+import ru.ldralighieri.corbind.widget.changes
 import timber.log.Timber
 import java.io.File
-import java.util.concurrent.TimeUnit
 
 typealias RadarFile = fi.kroon.vadret.data.radar.model.File
 
@@ -63,19 +62,14 @@ class RadarFragment : Fragment() {
 
     private var _binding: RadarFragmentBinding? = null
     private val binding: RadarFragmentBinding get() = _binding!!
-    private lateinit var disposable: Disposable
+    private var seekBarJob: Job? = null
     private var bundle: Bundle? = null
     private var stateParcel: RadarView.StateParcel? = null
-    private var isConfigChangeOrProcessDeath = false
 
     private val component: RadarComponent by lazyAndroid {
         DaggerRadarComponent
             .factory()
             .create(context = requireContext(), coreComponent = coreComponent)
-    }
-
-    private val scheduler by lazyAndroid {
-        component.provideScheduler()
     }
 
     private val imageLoader: ImageLoader by lazyAndroid {
@@ -84,70 +78,6 @@ class RadarFragment : Fragment() {
 
     private val viewModel: RadarViewModel by lazyAndroid {
         component.provideRadarViewModel()
-    }
-
-    private val onViewInitialisedSubject: PublishSubject<RadarView.Event.OnViewInitialised> by lazy(
-        LazyThreadSafetyMode.NONE
-    ) {
-        component.provideOnViewInitialised()
-    }
-
-    private val onFailureHandledSubject: PublishSubject<RadarView.Event.OnFailureHandled> by lazy(
-        LazyThreadSafetyMode.NONE
-    ) {
-        component.provideOnFailureHandled()
-    }
-
-    private val onRadarImageDisplayedSubject: PublishSubject<RadarView.Event.OnRadarImageDisplayed> by lazy(
-        LazyThreadSafetyMode.NONE
-    ) {
-        component.provideOnRadarImageDisplayed()
-    }
-
-    private val onSeekBarStoppedSubject: PublishSubject<RadarView.Event.OnSeekBarStopped> by lazy(
-        LazyThreadSafetyMode.NONE
-    ) {
-        component.provideOnSeekBarStopped()
-    }
-
-    private val onStateParcelUpdatedSubject: PublishSubject<RadarView.Event.OnStateParcelUpdated> by lazy(
-        LazyThreadSafetyMode.NONE
-    ) {
-        component.provideOnStateParcelUpdated()
-    }
-
-    private val onPlayButtonStartedSubject: PublishSubject<RadarView.Event.OnPlayButtonStarted> by lazy(
-        LazyThreadSafetyMode.NONE
-    ) {
-        component.provideOnPlayButtonStarted()
-    }
-
-    private val onPlayButtonStoppedSubject: PublishSubject<RadarView.Event.OnPlayButtonStopped> by lazy(
-        LazyThreadSafetyMode.NONE
-    ) {
-        component.provideOnPlayButtonStopped()
-    }
-
-    private val onSeekBarResetSubject: PublishSubject<RadarView.Event.OnSeekBarReset> by lazy(
-        LazyThreadSafetyMode.NONE
-    ) {
-        component.provideOnSeekBarReset()
-    }
-
-    private val onPositionUpdatedSubject: PublishSubject<RadarView.Event.OnPositionUpdated> by lazy(
-        LazyThreadSafetyMode.NONE
-    ) {
-        component.provideOnPositionUpdated()
-    }
-
-    private val onSeekBarRestoredSubject: PublishSubject<RadarView.Event.OnSeekBarRestored> by lazy(
-        LazyThreadSafetyMode.NONE
-    ) {
-        component.provideOnSeekBarRestored()
-    }
-
-    private val subscriptions: CompositeDisposable by lazyAndroid {
-        component.provideCompositeDisposable()
     }
 
     private val defaultTileSource = XYTileSource(
@@ -162,7 +92,7 @@ class RadarFragment : Fragment() {
     private fun renderError(errorCode: Int) {
         snack(errorCode)
         Timber.e("Rendering error code: ${getString(errorCode)}")
-        onFailureHandledSubject.onNext(
+        viewModel.send(
             RadarView
                 .Event
                 .OnFailureHandled
@@ -205,12 +135,6 @@ class RadarFragment : Fragment() {
         }
     }
 
-    override fun onStop() {
-        super.onStop()
-        Timber.d("ON STOP")
-        isConfigChangeOrProcessDeath = true
-    }
-
     private fun setupMapViewConfiguration() {
         Timber.d("setupMapViewConfiguration")
         val configuration: IConfigurationProvider = Configuration.getInstance()
@@ -224,10 +148,6 @@ class RadarFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         binding.radarMapView.onResume()
-        if (isConfigChangeOrProcessDeath) {
-            setupEvents()
-            isConfigChangeOrProcessDeath = false
-        }
     }
 
     override fun onPause() {
@@ -239,14 +159,12 @@ class RadarFragment : Fragment() {
         super.onDestroyView()
         binding.radarMapView.onDetach()
         disposeSeekBar()
-        subscriptions.clear()
         _binding = null
     }
 
     private fun disposeSeekBar() {
-        if (::disposable.isInitialized) {
-            disposable.dispose()
-        }
+        seekBarJob?.cancel()
+        seekBarJob = null
     }
 
     private fun setupRadarMapView() {
@@ -277,78 +195,45 @@ class RadarFragment : Fragment() {
     }
 
     private fun setupEvents() {
-        if (subscriptions.size() == 0) {
+        viewModel
+            .viewState
+            .onEach(::render)
+            .launchIn(viewLifecycleOwner.lifecycleScope)
 
-            Observable.mergeArray(
-                onViewInitialisedSubject
-                    .toObservable(),
-                onStateParcelUpdatedSubject
-                    .toObservable(),
-                onSeekBarStoppedSubject
-                    .toObservable(),
-                onRadarImageDisplayedSubject
-                    .toObservable(),
-                onSeekBarRestoredSubject
-                    .toObservable(),
-                onFailureHandledSubject
-                    .toObservable(),
-                onSeekBarResetSubject
-                    .toObservable(),
-                onPositionUpdatedSubject
-                    .toObservable(),
-                onPlayButtonStartedSubject
-                    .toObservable(),
-                onPlayButtonStoppedSubject
-                    .toObservable(),
-                binding.radarSeekBar
-                    .userChanges()
-                    .throttleFirst(RADAR_DEBOUNCE_MILLIS, TimeUnit.MILLISECONDS)
-                    .map { position: Int ->
-                        RadarView
-                            .Event
-                            .OnPositionUpdated(
-                                position
-                            )
-                    },
-                binding.radarSeekBar
-                    .changes()
-                    .skipInitialValue()
-                    .map { position: Int ->
-                        RadarView
-                            .Event
-                            .OnRadarImageDisplayed(position)
-                    },
-                binding.radarPlayFab
-                    .clicks()
-                    .map {
-                        RadarView
-                            .Event
-                            .OnPlayButtonClicked
-                    }
-
-            ).observeOn(
-                scheduler.io()
-            ).compose(
-                viewModel()
-            ).observeOn(
-                scheduler.ui()
-            ).subscribe(
-                ::render
-            ).addTo(
-                subscriptions
-            )
-
-            onViewInitialisedSubject
-                .onNext(
+        /**
+         *  Every progress change, from the user or from playback,
+         *  displays the image at that position.
+         */
+        binding.radarSeekBar
+            .changes()
+            .dropInitialValue()
+            .onEach { position: Int ->
+                viewModel.send(
                     RadarView
                         .Event
-                        .OnViewInitialised(
-                            stateParcel = bundle?.getParcelable(
-                                STATE_PARCEL_KEY
-                            )
-                        )
+                        .OnRadarImageDisplayed(position)
                 )
-        }
+            }.launchIn(viewLifecycleOwner.lifecycleScope)
+
+        binding.radarPlayFab
+            .clicks()
+            .onEach {
+                viewModel.send(
+                    RadarView
+                        .Event
+                        .OnPlayButtonClicked
+                )
+            }.launchIn(viewLifecycleOwner.lifecycleScope)
+
+        viewModel.send(
+            RadarView
+                .Event
+                .OnViewInitialised(
+                    stateParcel = bundle?.getParcelable(
+                        STATE_PARCEL_KEY
+                    )
+                )
+        )
     }
 
     private fun updateStateParcel(state: RadarView.State) {
@@ -360,12 +245,11 @@ class RadarFragment : Fragment() {
             seekBarMax = state.seekBarMax
         )
 
-        onStateParcelUpdatedSubject
-            .onNext(
-                RadarView
-                    .Event
-                    .OnStateParcelUpdated
-            )
+        viewModel.send(
+            RadarView
+                .Event
+                .OnStateParcelUpdated
+        )
     }
 
     private fun render(viewState: RadarView.State) {
@@ -385,7 +269,7 @@ class RadarFragment : Fragment() {
 
     private fun restoreSeekBarPosition(viewState: RadarView.State) {
         setRadarSeekBarPosition(viewState)
-        onSeekBarRestoredSubject.onNext(
+        viewModel.send(
             RadarView
                 .Event
                 .OnSeekBarRestored
@@ -395,7 +279,7 @@ class RadarFragment : Fragment() {
     private fun resetSeekBarPosition(viewState: RadarView.State) {
         setRadarSeekBarPosition(viewState)
         Timber.d("resetSeekBarPosition")
-        onSeekBarResetSubject.onNext(
+        viewModel.send(
             RadarView
                 .Event
                 .OnSeekBarReset
@@ -412,7 +296,7 @@ class RadarFragment : Fragment() {
     private fun setPlayButtonToPlaying() {
         binding.radarPlayFab.setImageResource(R.drawable.ic_pause_white_24dp)
         Timber.d("setPlayButtonToPlaying")
-        onPlayButtonStartedSubject.onNext(
+        viewModel.send(
             RadarView
                 .Event
                 .OnPlayButtonStarted
@@ -422,7 +306,7 @@ class RadarFragment : Fragment() {
     private fun setPlayButtonToStopped() {
         binding.radarPlayFab.setImageResource(R.drawable.ic_play_arrow_white_24dp)
         Timber.d("setPlayButtonToStopped")
-        onPlayButtonStoppedSubject.onNext(
+        viewModel.send(
             RadarView
                 .Event
                 .OnPlayButtonStopped
@@ -430,20 +314,21 @@ class RadarFragment : Fragment() {
     }
 
     private fun startSeekBar(state: RadarView.State) {
-        disposable = Observable.interval(
-            RADAR_DEBOUNCE_MILLIS,
-            TimeUnit.MILLISECONDS
-        ).map { _ ->
-            binding.radarSeekBar.run {
-                progress += state.seekStep
-                max = state.seekBarMax
+        disposeSeekBar()
+        seekBarJob = viewLifecycleOwner.lifecycleScope.launch {
+            while (isActive) {
+                delay(RADAR_DEBOUNCE_MILLIS)
+                binding.radarSeekBar.run {
+                    progress += state.seekStep
+                    max = state.seekBarMax
+                }
             }
-        }.subscribe()
+        }
     }
 
     private fun stopSeekBar() {
         disposeSeekBar()
-        onSeekBarStoppedSubject.onNext(
+        viewModel.send(
             RadarView
                 .Event
                 .OnSeekBarStopped

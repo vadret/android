@@ -14,9 +14,10 @@ import fi.kroon.vadret.data.nominatim.net.NominatimNetDataSource
 import fi.kroon.vadret.util.NetworkHandler
 import fi.kroon.vadret.util.extension.asLeft
 import fi.kroon.vadret.util.extension.asRight
+import fi.kroon.vadret.util.extension.catchFailure
 import io.github.sphrak.either.Either
-import io.reactivex.Single
-import retrofit2.Response
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class NominatimRepository @Inject constructor(
@@ -25,57 +26,44 @@ class NominatimRepository @Inject constructor(
     private val errorHandler: ErrorHandler,
     private val exceptionHandler: ExceptionHandler
 ) : IErrorHandler by errorHandler, IExceptionHandler<Failure> by exceptionHandler {
-    fun get(request: NominatimOut): Single<Either<Failure, List<Nominatim>>> =
-        when (networkHandler.isConnected) {
-            true ->
-                nominatimNetDataSource.get().getNominatim(
-                    city = request.city,
-                    format = request.format,
-                    limit = request.limit,
-                    nameDetails = request.nameDetails,
-                    countryCodes = request.countrycodes,
-                    addressDetails = request.addressDetails
-                ).map { response: Response<List<Nominatim>> ->
-                    when (response.body()) {
-                        null ->
-                            NominatimFailure
-                                .NominatimNotAvailable
-                                .asLeft()
-                        else -> {
-                            response.body()!!
-                                .asRight()
-                        }
-                    }
+
+    suspend fun get(request: NominatimOut): Either<Failure, List<Nominatim>> =
+        withContext(Dispatchers.IO) {
+            when (networkHandler.isConnected) {
+                true -> catchFailure {
+                    nominatimNetDataSource.get().getNominatim(
+                        city = request.city,
+                        format = request.format,
+                        limit = request.limit,
+                        nameDetails = request.nameDetails,
+                        countryCodes = request.countrycodes,
+                        addressDetails = request.addressDetails
+                    ).body()
+                        ?.asRight()
+                        ?: NominatimFailure
+                            .NominatimNotAvailable
+                            .asLeft()
                 }
-            false -> getNetworkOfflineError()
-        }.onErrorReturn {
-            exceptionHandler(it)
-                .asLeft()
+                false -> getNetworkOfflineError()
+            }
         }
 
-    fun reverse(request: NominatimReverseOut): Single<Either<Failure, Nominatim>> =
-        when (networkHandler.isConnected) {
-            true ->
-                nominatimNetDataSource.get().getNominatimReverse(
-                    format = request.format,
-                    latitude = request.latitude,
-                    longitude = request.longitude,
-                    zoom = request.zoom
-                ).map { response ->
-                    when (response.body()) {
-                        null ->
-                            NominatimFailure
-                                .NominatimNotAvailable
-                                .asLeft()
-                        else -> {
-                            response.body()!!
-                                .asRight()
-                        }
-                    }
+    suspend fun reverse(request: NominatimReverseOut): Either<Failure, Nominatim> =
+        withContext(Dispatchers.IO) {
+            when (networkHandler.isConnected) {
+                true -> catchFailure {
+                    nominatimNetDataSource.get().getNominatimReverse(
+                        format = request.format,
+                        latitude = request.latitude,
+                        longitude = request.longitude,
+                        zoom = request.zoom
+                    ).body()
+                        ?.asRight()
+                        ?: NominatimFailure
+                            .NominatimNotAvailable
+                            .asLeft()
                 }
-            false -> getNetworkOfflineError()
-        }.onErrorReturn {
-            exceptionHandler(it)
-                .asLeft()
+                false -> getNetworkOfflineError()
+            }
         }
 }

@@ -6,10 +6,13 @@ import fi.kroon.vadret.data.theme.local.ThemeLocalKeyValueDataSource
 import fi.kroon.vadret.util.LIGHT_THEME
 import fi.kroon.vadret.util.THEME_MODE_KEY
 import fi.kroon.vadret.util.extension.asLeft
-import fi.kroon.vadret.util.extension.asObservable
 import fi.kroon.vadret.util.extension.asRight
 import io.github.sphrak.either.Either
-import io.reactivex.Observable
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.test.runTest
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -31,45 +34,47 @@ class ObserveThemeChangeTaskTest {
     }
 
     @Test
-    fun `successfully retreive theme string`() {
+    fun `successfully retreive theme string`() = runTest {
 
         doReturn(getResultEither())
             .`when`(mockThemeLocalKeyValueDataSource)
             .observeString(THEME_MODE_KEY)
 
-        testObserveThemeChangeTask()
-            .test()
-            .assertNoErrors()
-            .assertComplete()
-            .assertValueAt(0) {
-                it is Either.Right && it.b == LIGHT_THEME
-            }
+        assertTrue(
+            testObserveThemeChangeTask()
+                .first()
+                .let {
+                    it is Either.Right && it.b == LIGHT_THEME
+                }
+        )
     }
 
     @Test
-    fun `fail to retreive theme string throw theme not found`() {
+    fun `fail to retreive theme string throw theme not found`() = runTest {
 
         doReturn(getFailureEither())
             .`when`(mockThemeLocalKeyValueDataSource)
             .observeString(THEME_MODE_KEY)
 
-        testObserveThemeChangeTask()
-            .test()
-            .assertNoErrors()
-            .assertComplete()
-            .assertValueAt(0) {
-                it is Either.Left && it.a is ThemeFailure.ThemeNotFound
-            }
+        assertTrue(
+            testObserveThemeChangeTask()
+                .first()
+                .let {
+                    it is Either.Left && it.a is ThemeFailure.ThemeNotFound
+                }
+        )
     }
 
-    private fun getFailureEither(): Observable<Either<Failure, String>> =
-        ThemeFailure
-            .ThemeNotFound
-            .asLeft()
-            .asObservable()
+    private fun getFailureEither(): Flow<Either<Failure, String>> =
+        flowOf(
+            ThemeFailure
+                .ThemeNotFound
+                .asLeft()
+        )
 
-    private fun getResultEither(): Observable<Either<Failure, String>> =
-        LIGHT_THEME
-            .asRight()
-            .asObservable()
+    private fun getResultEither(): Flow<Either<Failure, String>> =
+        flowOf(
+            LIGHT_THEME
+                .asRight()
+        )
 }

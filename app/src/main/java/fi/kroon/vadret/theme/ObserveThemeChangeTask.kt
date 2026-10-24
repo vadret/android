@@ -4,12 +4,12 @@ import fi.kroon.vadret.data.failure.Failure
 import fi.kroon.vadret.data.theme.local.ThemeLocalKeyValueDataSource
 import fi.kroon.vadret.util.THEME_MODE_KEY
 import io.github.sphrak.either.Either
-import io.reactivex.Observable
+import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class ObserveThemeChangeTask @Inject constructor(
     private val local: ThemeLocalKeyValueDataSource
 ) {
-    operator fun invoke(): Observable<Either<Failure, String>> = local
+    operator fun invoke(): Flow<Either<Failure, String>> = local
         .observeString(THEME_MODE_KEY)
 }

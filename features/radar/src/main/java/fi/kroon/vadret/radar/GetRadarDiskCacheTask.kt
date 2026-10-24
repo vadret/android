@@ -4,13 +4,12 @@ import fi.kroon.vadret.data.failure.Failure
 import fi.kroon.vadret.data.radar.cache.RadarCacheDataSource
 import fi.kroon.vadret.data.radar.model.Radar
 import io.github.sphrak.either.Either
-import io.reactivex.Single
 import javax.inject.Inject
 
 class GetRadarDiskCacheTask @Inject constructor(
     private val cache: RadarCacheDataSource
 ) {
-    operator fun invoke(): Single<Either<Failure, Radar>> =
+    suspend operator fun invoke(): Either<Failure, Radar> =
         cache
             .getDiskCache()
 }

@@ -9,7 +9,7 @@ android {
 
 dependencies {
     api libs.either
-    api libs.rxjava
+    api libs.coroutines.core
     api libs.threetenabp
     implementation libs.dagger.runtime
     implementation libs.moshi.core

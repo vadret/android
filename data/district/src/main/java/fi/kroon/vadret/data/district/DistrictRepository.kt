@@ -11,9 +11,10 @@ import fi.kroon.vadret.data.failure.Failure
 import fi.kroon.vadret.util.NetworkHandler
 import fi.kroon.vadret.util.extension.asLeft
 import fi.kroon.vadret.util.extension.asRight
+import fi.kroon.vadret.util.extension.catchFailure
 import io.github.sphrak.either.Either
-import io.reactivex.Single
-import retrofit2.Response
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class DistrictRepository @Inject constructor(
@@ -22,26 +23,23 @@ class DistrictRepository @Inject constructor(
     private val errorHandler: ErrorHandler,
     private val exceptionHandler: ExceptionHandler
 ) : IErrorHandler by errorHandler, IExceptionHandler<Failure> by exceptionHandler {
+
     /**
      *  When [response.body] is null [NetworkResponseEmpty] is
      *  returned.
      */
-    operator fun invoke(): Single<Either<Failure, List<District>>> =
-        when (networkHandler.isConnected) {
-            true -> {
-                networkDataSource.get()()
-                    .map { response: Response<List<District>> ->
-                        response
-                            .body()
-                            ?.asRight()
-                            ?: Failure
-                                .NetworkResponseEmpty
-                                .asLeft()
-                    }
+    suspend operator fun invoke(): Either<Failure, List<District>> =
+        withContext(Dispatchers.IO) {
+            when (networkHandler.isConnected) {
+                true -> catchFailure {
+                    networkDataSource.get()()
+                        .body()
+                        ?.asRight()
+                        ?: Failure
+                            .NetworkResponseEmpty
+                            .asLeft()
+                }
+                false -> getNetworkOfflineError()
             }
-            false -> getNetworkOfflineError()
-        }.onErrorReturn {
-            exceptionHandler(it)
-                .asLeft()
         }
 }

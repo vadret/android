@@ -5,16 +5,15 @@ import fi.kroon.vadret.data.failure.Failure
 import fi.kroon.vadret.util.APP_WARNING_FILTER_KEY
 import fi.kroon.vadret.util.extension.asRight
 import io.github.sphrak.either.Either
-import io.reactivex.Single
 import timber.log.Timber
 import javax.inject.Inject
 
 class CountDistrictPreferenceEntityTask @Inject constructor(
     private val dao: DistrictPreferenceDao
 ) {
-    operator fun invoke(): Single<Either<Failure, Boolean>> =
+    suspend operator fun invoke(): Either<Failure, Boolean> =
         dao.count(usedBy = APP_WARNING_FILTER_KEY)
-            .map { rowCount: Int ->
+            .let { rowCount: Int ->
                 Timber.d("ROW COUNT: $rowCount")
                 (rowCount > 0).asRight()
             }

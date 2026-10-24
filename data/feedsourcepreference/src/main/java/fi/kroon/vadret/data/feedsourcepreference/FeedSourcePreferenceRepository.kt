@@ -5,40 +5,28 @@ import fi.kroon.vadret.data.feedsourcepreference.local.FeedSourcePreferenceDao
 import fi.kroon.vadret.data.feedsourcepreference.model.FeedSourcePreferenceEntity
 import fi.kroon.vadret.util.extension.asRight
 import io.github.sphrak.either.Either
-import io.reactivex.Single
 import javax.inject.Inject
 
 class FeedSourcePreferenceRepository @Inject constructor(
     private val dao: FeedSourcePreferenceDao
 ) {
-    fun getAll(): Single<Either<Failure, List<FeedSourcePreferenceEntity>>> =
+    suspend fun getAll(): Either<Failure, List<FeedSourcePreferenceEntity>> =
         dao.getAll()
-            .map { entityList: List<FeedSourcePreferenceEntity> ->
-                entityList
-                    .asRight()
-            }
+            .asRight()
 
-    fun insert(entity: FeedSourcePreferenceEntity): Single<Either<Failure, Long>> =
+    suspend fun insert(entity: FeedSourcePreferenceEntity): Either<Failure, Long> =
         dao.insert(entity = entity)
-            .map { id: Long ->
-                id.asRight()
-            }
+            .asRight()
 
-    fun insert(entityList: List<FeedSourcePreferenceEntity>): Single<Either<Failure, List<Long>>> =
+    suspend fun insert(entityList: List<FeedSourcePreferenceEntity>): Either<Failure, List<Long>> =
         dao.insert(entityList = entityList)
-            .map { ids: List<Long> ->
-                ids.asRight()
-            }
+            .asRight()
 
-    fun deleteAll(): Single<Either<Failure, Unit>> = dao
-        .deleteAll()
-        .map { unit: Unit ->
-            unit.asRight()
-        }
+    suspend fun deleteAll(): Either<Failure, Unit> =
+        dao.deleteAll()
+            .asRight()
 
-    fun deleteAllEnabledUsedBy(usedBy: String): Single<Either<Failure, Unit>> =
+    suspend fun deleteAllEnabledUsedBy(usedBy: String): Either<Failure, Unit> =
         dao.deleteAllEnabledUsedBy(usedBy = usedBy)
-            .map { unit: Unit ->
-                unit.asRight()
-            }
+            .asRight()
 }

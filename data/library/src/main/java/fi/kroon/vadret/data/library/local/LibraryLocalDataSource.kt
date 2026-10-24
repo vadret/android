@@ -3,9 +3,7 @@ package fi.kroon.vadret.data.library.local
 import fi.kroon.vadret.data.failure.Failure
 import fi.kroon.vadret.data.library.model.Library
 import fi.kroon.vadret.util.extension.asRight
-import fi.kroon.vadret.util.extension.asSingle
 import io.github.sphrak.either.Either
-import io.reactivex.Single
 import javax.inject.Inject
 
 class LibraryLocalDataSource @Inject constructor() {
@@ -18,7 +16,7 @@ class LibraryLocalDataSource @Inject constructor() {
     private val bsd3ClauseLicense = "BSD 3-Clause License"
     private val mitLicense = "MIT License"
 
-    operator fun invoke(): Single<Either<Failure, List<Library>>> =
+    operator fun invoke(): Either<Failure, List<Library>> =
         listOf(
             Library(
                 author = "Pinterest",
@@ -75,21 +73,12 @@ class LibraryLocalDataSource @Inject constructor() {
                 description = "Either type for Kotlin"
             ),
             Library(
-                author = "Aidan Follestad",
-                title = "RxkPrefs",
-                description = "A small, Rx-powered shared preferences library for Kotlin.",
-                projectUrl = "https://github.com/afollestad/rxkprefs",
-                sourceUrl = "https://github.com/afollestad/rxkprefs",
-                licenseUrl = "https://github.com/afollestad/rxkprefs/blob/master/LICENSE.md",
-                license = apache2License
-            ),
-            Library(
-                author = "Jake Wharton",
-                title = "RxBinding",
-                description = "RxJava binding APIs for Android's UI widgets.",
-                projectUrl = "https://github.com/JakeWharton/RxBinding",
-                sourceUrl = "https://github.com/JakeWharton/RxBinding",
-                licenseUrl = "https://github.com/JakeWharton/RxBinding/blob/master/LICENSE.txt",
+                author = "Vladimir Raupov",
+                title = "Corbind",
+                description = "Kotlin Coroutines binding APIs for Android UI widgets.",
+                projectUrl = "https://github.com/LDRAlighieri/Corbind",
+                sourceUrl = "https://github.com/LDRAlighieri/Corbind",
+                licenseUrl = "https://github.com/LDRAlighieri/Corbind/blob/master/LICENSE",
                 license = apache2License
             ),
             Library(
@@ -207,12 +196,12 @@ class LibraryLocalDataSource @Inject constructor() {
                 license = apache2License
             ),
             Library(
-                author = "ReactiveX",
-                title = "RxJava2",
-                description = "RxJava – Reactive Extensions for the JVM – a library for composing asynchronous and event-based programs using observable sequences for the Java VM.",
-                projectUrl = "http://reactivex.io/",
-                sourceUrl = "https://github.com/ReactiveX/RxJava",
-                licenseUrl = "https://github.com/ReactiveX/RxJava/blob/2.x/LICENSE",
+                author = "JetBrains",
+                title = "Kotlin Coroutines",
+                description = "Library support for Kotlin coroutines, including Flow.",
+                projectUrl = "https://kotlinlang.org/docs/coroutines-overview.html",
+                sourceUrl = "https://github.com/Kotlin/kotlinx.coroutines",
+                licenseUrl = "https://github.com/Kotlin/kotlinx.coroutines/blob/master/LICENSE.txt",
                 license = apache2License
             ),
             Library(
@@ -231,5 +220,4 @@ class LibraryLocalDataSource @Inject constructor() {
                 licenseUrl = library.licenseUrl.trim()
             )
         }.asRight()
-            .asSingle()
 }

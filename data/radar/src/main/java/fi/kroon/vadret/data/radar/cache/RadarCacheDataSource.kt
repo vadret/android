@@ -7,7 +7,6 @@ import fi.kroon.vadret.util.RADAR_CACHE_KEY
 import fi.kroon.vadret.util.extension.asLeft
 import fi.kroon.vadret.util.extension.asRight
 import io.github.sphrak.either.Either
-import io.reactivex.Single
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -15,55 +14,40 @@ class RadarCacheDataSource @Inject constructor(
     private val diskCache: RadarDiskCache,
     private val memoryCache: LruCache<Long, Radar>
 ) {
-    fun getMemoryCache(): Single<Either<Failure, Radar>> =
-        Single.fromCallable {
-            memoryCache
-                .snapshot()
-                .getValue(RADAR_CACHE_KEY)
-                .asRight() as Either<Failure, Radar>
-        }.onErrorReturn {
-            Failure
+
+    fun getMemoryCache(): Either<Failure, Radar> =
+        memoryCache
+            .get(RADAR_CACHE_KEY)
+            ?.asRight()
+            ?: Failure
                 .MemoryCacheLruReadFailure
                 .asLeft()
-        }
 
-    fun getDiskCache(): Single<Either<Failure, Radar>> = diskCache
+    suspend fun getDiskCache(): Either<Failure, Radar> = diskCache
         .read()
 
-    fun updateMemoryCache(radar: Radar): Single<Either<Failure, Radar>> {
+    fun updateMemoryCache(radar: Radar): Either<Failure, Radar> {
         memoryCache.put(RADAR_CACHE_KEY, radar)
-        return Single.just(
-            radar.asRight() as Either<Failure, Radar>
-        ).onErrorReturn {
-            Failure
-                .MemoryCacheLruWriteFailure
-                .asLeft()
-        }
+        return radar.asRight()
     }
 
-    fun updateDiskCache(radar: Radar): Single<Either<Failure, Radar>> =
+    suspend fun updateDiskCache(radar: Radar): Either<Failure, Radar> =
         diskCache.put(radar)
 
-    fun clearMemoryCache(): Single<Either<Failure, Unit>> = Single.fromCallable {
+    fun clearMemoryCache(): Either<Failure, Unit> {
         memoryCache
             .evictAll()
-        Unit.asRight() as Either<Failure, Unit>
-    }.doOnError { failure ->
-        Timber.e("Memory cache eviction failed: $failure")
-    }.onErrorReturn {
-        Failure
-            .MemoryCacheEvictionFailure
-            .asLeft()
+        return Unit.asRight()
     }
 
-    fun clearDiskCache(): Single<Either<Failure, Unit>> = Single.fromCallable {
-        diskCache.remove()
-        Unit.asRight() as Either<Failure, Unit>
-    }.doOnError { failure ->
-        Timber.e("Disk cache eviction failed: $failure")
-    }.onErrorReturn {
-        Failure
-            .DiskCacheEvictionFailure
-            .asLeft()
-    }
+    suspend fun clearDiskCache(): Either<Failure, Unit> =
+        when (diskCache.remove()) {
+            is Either.Right -> Unit.asRight()
+            is Either.Left -> {
+                Timber.e("Disk cache eviction failed")
+                Failure
+                    .DiskCacheEvictionFailure
+                    .asLeft()
+            }
+        }
 }

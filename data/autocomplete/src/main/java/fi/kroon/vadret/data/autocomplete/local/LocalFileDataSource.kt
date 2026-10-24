@@ -6,8 +6,10 @@ import fi.kroon.vadret.data.autocomplete.exception.LocalFileReaderFailure
 import fi.kroon.vadret.data.autocomplete.model.AutoCompleteItem
 import fi.kroon.vadret.data.failure.Failure
 import fi.kroon.vadret.util.extension.asLeft
+import fi.kroon.vadret.util.extension.asRight
 import io.github.sphrak.either.Either
-import io.reactivex.Single
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.apache.commons.csv.CSVFormat
 import org.apache.commons.csv.CSVParser
 import org.apache.commons.csv.CSVRecord
@@ -21,45 +23,26 @@ class LocalFileDataSource @Inject constructor(
     private val context: Context
 ) {
 
-    fun read(@RawRes fileId: Int): Single<Either<Failure, String>> =
-        Single.fromCallable {
-
-            val inputStream = context.resources.openRawResource(fileId)
+    suspend fun read(@RawRes fileId: Int): Either<Failure, String> =
+        readRaw(fileId) { inputStream: InputStream ->
             val byteArray = ByteArray(inputStream.available())
 
             inputStream.read(byteArray)
 
-            Either.Right(
-                if (Charset.isSupported(StandardCharsets.UTF_8.name())) {
-                    byteArray.toString(StandardCharsets.UTF_8)
-                } else {
-                    byteArray.toString(Charset.defaultCharset())
-                }
-            ) as Either<Failure, String>
-        }.doOnError {
-            Timber.e("$it")
-        }.onErrorReturn {
-            LocalFileReaderFailure
-                .ReadFailure
-                .asLeft()
+            if (Charset.isSupported(StandardCharsets.UTF_8.name())) {
+                byteArray.toString(StandardCharsets.UTF_8)
+            } else {
+                byteArray.toString(Charset.defaultCharset())
+            }
         }
 
-    fun readList(@RawRes fileId: Int): Single<Either<Failure, List<String>>> =
-        Single.fromCallable {
-            val inputStream: InputStream = context.resources.openRawResource(fileId)
-            Either.Right(inputStream.bufferedReader().readLines())
-                as Either<Failure, List<String>>
-        }.doOnError {
-            Timber.e("$it")
-        }.onErrorReturn {
-            LocalFileReaderFailure
-                .ReadFailure
-                .asLeft()
+    suspend fun readList(@RawRes fileId: Int): Either<Failure, List<String>> =
+        readRaw(fileId) { inputStream: InputStream ->
+            inputStream.bufferedReader().readLines()
         }
 
-    fun readCsvList(@RawRes fileId: Int): Single<Either<Failure, List<AutoCompleteItem>>> =
-        Single.fromCallable {
-            val inputStream: InputStream = context.resources.openRawResource(fileId)
+    suspend fun readCsvList(@RawRes fileId: Int): Either<Failure, List<AutoCompleteItem>> =
+        readRaw(fileId) { inputStream: InputStream ->
             val csvParser = CSVParser(
                 inputStream.bufferedReader(),
                 CSVFormat
@@ -68,22 +51,30 @@ class LocalFileDataSource @Inject constructor(
                     .withIgnoreHeaderCase()
                     .withTrim()
             )
-            Either.Right(
-                csvParser.records.map { csvRecord: CSVRecord ->
-                    AutoCompleteItem(
-                        locality = csvRecord.get("locality"),
-                        municipality = csvRecord.get("municipality"),
-                        county = csvRecord.get("county"),
-                        latitude = csvRecord.get("latitude").toDouble(),
-                        longitude = csvRecord.get("longitude").toDouble()
-                    )
-                }.toList()
-            ) as Either<Failure, List<AutoCompleteItem>>
-        }.doOnError {
-            Timber.e("$it")
-        }.onErrorReturn {
-            LocalFileReaderFailure
-                .ReadFailure
-                .asLeft()
+            csvParser.records.map { csvRecord: CSVRecord ->
+                AutoCompleteItem(
+                    locality = csvRecord.get("locality"),
+                    municipality = csvRecord.get("municipality"),
+                    county = csvRecord.get("county"),
+                    latitude = csvRecord.get("latitude").toDouble(),
+                    longitude = csvRecord.get("longitude").toDouble()
+                )
+            }.toList()
+        }
+
+    private suspend fun <T> readRaw(@RawRes fileId: Int, parse: (InputStream) -> T): Either<Failure, T> =
+        withContext(Dispatchers.IO) {
+            try {
+                context
+                    .resources
+                    .openRawResource(fileId)
+                    .use(parse)
+                    .asRight()
+            } catch (exception: Exception) {
+                Timber.e("$exception")
+                LocalFileReaderFailure
+                    .ReadFailure
+                    .asLeft()
+            }
         }
 }

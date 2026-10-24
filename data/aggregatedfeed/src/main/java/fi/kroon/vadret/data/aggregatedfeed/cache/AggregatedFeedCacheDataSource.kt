@@ -7,7 +7,6 @@ import fi.kroon.vadret.util.AGGREGATED_FEED_CACHE_KEY
 import fi.kroon.vadret.util.extension.asLeft
 import fi.kroon.vadret.util.extension.asRight
 import io.github.sphrak.either.Either
-import io.reactivex.Single
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -16,57 +15,41 @@ class AggregatedFeedCacheDataSource @Inject constructor(
     private val memoryCache: LruCache<Long, List<AggregatedFeed>>
 ) {
 
-    fun getMemoryCache(): Single<Either<Failure, List<AggregatedFeed>>> =
-        Single.fromCallable {
-            memoryCache
-                .snapshot()
-                .getValue(AGGREGATED_FEED_CACHE_KEY)
-                .asRight() as Either<Failure, List<AggregatedFeed>>
-        }.onErrorReturn {
-            Failure
+    fun getMemoryCache(): Either<Failure, List<AggregatedFeed>> =
+        memoryCache
+            .get(AGGREGATED_FEED_CACHE_KEY)
+            ?.asRight()
+            ?: Failure
                 .MemoryCacheLruReadFailure
                 .asLeft()
-        }
 
-    fun getDiskCache(): Single<Either<Failure, List<AggregatedFeed>>> =
+    suspend fun getDiskCache(): Either<Failure, List<AggregatedFeed>> =
         diskCache
             .read()
 
-    fun updateMemoryCache(aggregatedFeedList: List<AggregatedFeed>): Single<Either<Failure, List<AggregatedFeed>>> {
+    fun updateMemoryCache(aggregatedFeedList: List<AggregatedFeed>): Either<Failure, List<AggregatedFeed>> {
         memoryCache.put(AGGREGATED_FEED_CACHE_KEY, aggregatedFeedList)
-        return Single.just(
-            aggregatedFeedList.asRight() as Either<Failure, List<AggregatedFeed>>
-        ).onErrorReturn {
-            Failure
-                .MemoryCacheLruWriteFailure
-                .asLeft()
-        }
+        return aggregatedFeedList.asRight()
     }
 
-    fun updateDiskCache(aggregatedFeedList: List<AggregatedFeed>): Single<Either<Failure, List<AggregatedFeed>>> =
+    suspend fun updateDiskCache(aggregatedFeedList: List<AggregatedFeed>): Either<Failure, List<AggregatedFeed>> =
         diskCache
             .put(aggregatedFeedList)
 
-    fun clearMemoryCache(): Single<Either<Failure, Unit>> = Single.fromCallable {
+    fun clearMemoryCache(): Either<Failure, Unit> {
         memoryCache
             .evictAll()
-        Unit.asRight() as Either<Failure, Unit>
-    }.doOnError { failure ->
-        Timber.e("Memory cache eviction failed: $failure")
-    }.onErrorReturn {
-        Failure
-            .DiskCacheEvictionFailure
-            .asLeft()
+        return Unit.asRight()
     }
 
-    fun clearDiskCache(): Single<Either<Failure, Unit>> = Single.fromCallable {
-        diskCache.remove()
-        Unit.asRight() as Either<Failure, Unit>
-    }.doOnError { failure ->
-        Timber.e("Disk cache eviction failed: $failure")
-    }.onErrorReturn {
-        Failure
-            .DiskCacheEvictionFailure
-            .asLeft()
-    }
+    suspend fun clearDiskCache(): Either<Failure, Unit> =
+        when (diskCache.remove()) {
+            is Either.Right -> Unit.asRight()
+            is Either.Left -> {
+                Timber.e("Disk cache eviction failed")
+                Failure
+                    .DiskCacheEvictionFailure
+                    .asLeft()
+            }
+        }
 }

@@ -12,8 +12,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.rx2.await
-import kotlinx.coroutines.rx2.awaitSingleOrNull
 import kotlinx.coroutines.withContext
 import timber.log.Timber
 import javax.inject.Inject
@@ -65,7 +63,6 @@ class WeatherForecastViewModel @Inject constructor(
     private suspend fun onViewInitialisedEvent(stateParcel: WeatherForecastView.StateParcel?) =
         withContext(Dispatchers.IO) {
             getAppLocationModeTask()
-                .await()
                 .onResult(
                     { failure: Failure ->
                         Timber.e("handleRuntimeLocationPermissionMode: Failure: $failure")
@@ -219,7 +216,6 @@ class WeatherForecastViewModel @Inject constructor(
 
     private suspend fun onAutoCompleteItemClickedEvent(autoCompleteItem: AutoCompleteItem) =
         enableGpsLocationModeTask(false)
-            .await()
             .onResult(
                 {
                     Timber.e("$it")
@@ -232,7 +228,6 @@ class WeatherForecastViewModel @Inject constructor(
 
     private suspend fun updateLocationInformation(autoCompleteItem: AutoCompleteItem) =
         setLocationInformationTask(autoCompleteItem)
-            .await()
             ?.onResult(
                 {
                     Timber.e("$it")
@@ -247,7 +242,6 @@ class WeatherForecastViewModel @Inject constructor(
 
     private suspend fun onSearchTextChanged(searchText: String) =
         getAutoCompleteService(searchText)
-            .awaitSingleOrNull()
             ?.onResult(
                 { failure: Failure ->
                     val errorCode: Int = getErrorCode(failure)
@@ -275,7 +269,6 @@ class WeatherForecastViewModel @Inject constructor(
 
     private suspend fun onSearchButtonSubmittedEvent(query: String) =
         getAutoCompleteService(query)
-            .awaitSingleOrNull()
             ?.onResult(
                 { failure: Failure ->
                     Timber.e("getAutoCompleteService failed: $failure")
@@ -289,7 +282,6 @@ class WeatherForecastViewModel @Inject constructor(
                 { data: GetAutoCompleteService.Data ->
                     Timber.d("Submit triggered: ${data.newFilteredList.first()}")
                     enableGpsLocationModeTask(false)
-                        .await()
                         .onResult(
                             {
                                 mutState.emit(state)
@@ -304,7 +296,6 @@ class WeatherForecastViewModel @Inject constructor(
 
     private suspend fun setLocationInformation(autoCompleteItem: AutoCompleteItem) =
         setLocationInformationTask(autoCompleteItem)
-            .await()
             .onResult(
                 {
                     state
@@ -322,7 +313,6 @@ class WeatherForecastViewModel @Inject constructor(
 
     private suspend fun setDefaultLocationInformation() =
         setDefaultLocationInformationTask()
-            .await()
             .onResult(
                 { failure: Failure ->
                     Timber.e("setDefaultLocationInformation: $failure")
@@ -343,7 +333,6 @@ class WeatherForecastViewModel @Inject constructor(
      */
     private suspend fun loadWeatherForecast() =
         getWeatherForecastLastCheckedTask()
-            .await()
             .onResult(
                 { failure: Failure ->
                     Timber.e("Failure: $failure")
@@ -380,7 +369,6 @@ class WeatherForecastViewModel @Inject constructor(
 
     private suspend fun updateLastChecked(timeStamp: Long) =
         setWeatherForecastLastCheckedTask(value = timeStamp)
-            .await()
             .onResult(
                 { failure: Failure ->
                     Timber.e("Failure: $failure")
@@ -418,7 +406,6 @@ class WeatherForecastViewModel @Inject constructor(
 
     private suspend fun onLocationPermissionGrantedEvent() =
         enableGpsLocationModeTask(true)
-            .await()
             ?.onResult(
                 { failure: Failure ->
                     Timber.e("onLocationPermissionGrantedFailure: $failure")
@@ -437,7 +424,6 @@ class WeatherForecastViewModel @Inject constructor(
 
     private suspend fun onLocationPermissionDeniedEvent() =
         getAppLocationModeTask()
-            .await()
             .onResult(
                 { failure: Failure ->
                     Timber.e("onLocationPermissionDeniedEvent: $failure")
@@ -460,7 +446,6 @@ class WeatherForecastViewModel @Inject constructor(
 
     private suspend fun onLocationPermissionDeniedNeverAskAgainEvent() =
         enableGpsLocationModeTask(false)
-            .await()
             .onResult(
                 { failure: Failure ->
                     Timber.e("onLocationPermissionDeniedNeverAskAgainEvent: $failure")

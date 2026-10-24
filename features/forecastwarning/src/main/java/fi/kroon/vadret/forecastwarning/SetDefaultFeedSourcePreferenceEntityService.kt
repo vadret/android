@@ -8,10 +8,9 @@ import fi.kroon.vadret.forecastwarning.feedsourcepreference.SetFeedSourcePrefere
 import fi.kroon.vadret.util.APP_WARNING_FILTER_KEY
 import fi.kroon.vadret.util.FEED_SOURCE_KRISINFORMATION_ID
 import fi.kroon.vadret.util.FEED_SOURCE_SMHI_ID
-import fi.kroon.vadret.util.extension.flatMapSingle
 import io.github.sphrak.either.Either
+import io.github.sphrak.either.flatMap
 import io.github.sphrak.either.map
-import io.reactivex.Single
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -29,14 +28,13 @@ class SetDefaultFeedSourcePreferenceEntityService @Inject constructor(
         val feedSourcePreferenceList: MutableList<FeedSourcePreferenceEntity> = mutableListOf()
     )
 
-    operator fun invoke(): Single<Either<Failure, Boolean>> =
-        Single.just(Data())
-            .flatMap(::buildFeedSourcePreferenceList)
-            .flatMap(::setFeedSourcePreference)
+    suspend operator fun invoke(): Either<Failure, Boolean> =
+        buildFeedSourcePreferenceList(Data())
+            .let { setFeedSourcePreference(it) }
 
-    private fun buildFeedSourcePreferenceList(data: Data): Single<Either<Failure, Data>> =
+    private suspend fun buildFeedSourcePreferenceList(data: Data): Either<Failure, Data> =
         getAllFeedSourceTask()
-            .map { result: Either<Failure, List<FeedSourceEntity>> ->
+            .let { result: Either<Failure, List<FeedSourceEntity>> ->
                 result.map { ids: List<FeedSourceEntity> ->
                     ids.forEach { feedSourceEntity: FeedSourceEntity ->
 
@@ -55,10 +53,10 @@ class SetDefaultFeedSourcePreferenceEntityService @Inject constructor(
                 }
             }
 
-    private fun setFeedSourcePreference(either: Either<Failure, Data>): Single<Either<Failure, Boolean>> =
-        either.flatMapSingle { data: Data ->
+    private suspend fun setFeedSourcePreference(either: Either<Failure, Data>): Either<Failure, Boolean> =
+        either.flatMap { data: Data ->
             setFeedSourcePreferenceListTask(entityList = data.feedSourcePreferenceList)
-                .map { result: Either<Failure, List<Long>> ->
+                .let { result: Either<Failure, List<Long>> ->
                     result.map { ids: List<Long> ->
                         Timber.d("INSERTED FEED: $ids")
                         true

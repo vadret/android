@@ -8,10 +8,8 @@ import fi.kroon.vadret.util.LATITUDE_KEY
 import fi.kroon.vadret.util.LOCALITY_KEY
 import fi.kroon.vadret.util.LONGITUDE_KEY
 import fi.kroon.vadret.util.MUNICIPALITY_KEY
+import fi.kroon.vadret.util.extension.asRight
 import io.github.sphrak.either.Either
-import io.reactivex.Observable
-import io.reactivex.Single
-import timber.log.Timber
 import javax.inject.Inject
 
 class SetLocationInformationTask @Inject constructor(
@@ -19,44 +17,15 @@ class SetLocationInformationTask @Inject constructor(
 ) {
 
     /**
-     *  Merge observable sources and get a combined list of Either's
-     *  back as result
+     *  Stores every field and returns the first failure, if any.
      */
-    operator fun invoke(autoCompleteItem: AutoCompleteItem): Single<Either<Failure, Unit>> =
-        Observable.mergeArray(
-            repo.putString(LATITUDE_KEY, autoCompleteItem.latitude.toString()).toObservable(),
-            repo.putString(LONGITUDE_KEY, autoCompleteItem.longitude.toString()).toObservable(),
-            repo.putString(LOCALITY_KEY, autoCompleteItem.locality).toObservable(),
-            repo.putString(MUNICIPALITY_KEY, autoCompleteItem.municipality).toObservable(),
-            repo.putString(COUNTY_KEY, autoCompleteItem.county).toObservable()
-        ).toList()
-            .flatMapObservable { eitherList: List<Either<Failure, Unit>> ->
-
-                /**
-                 *  [0] + [1]
-                 *  [0||1] + [2]
-                 *  [0||1||2] + [3]
-                 */
-
-                /**
-                 * @flatMapObservable to flatten the stream
-                 *
-                 * Every item in list becomes an observable
-                 * so we can use the operators (scan)?
-                 *
-                 * Then we scan, and if its .isLeft
-                 */
-                Observable.fromIterable(eitherList)
-                    .scan { previous: Either<Failure, Unit>, next: Either<Failure, Unit> ->
-                        Timber.d("SetLocationInformationTask: $eitherList")
-                        Timber.d("Previous: $previous, Next: $next")
-
-                        when {
-                            previous.isLeft -> previous
-                            next.isLeft -> next
-                            else -> next
-                        }
-                    }
-                    .takeLast(1)
-            }.singleOrError()
+    operator fun invoke(autoCompleteItem: AutoCompleteItem): Either<Failure, Unit> =
+        listOf(
+            repo.putString(LATITUDE_KEY, autoCompleteItem.latitude.toString()),
+            repo.putString(LONGITUDE_KEY, autoCompleteItem.longitude.toString()),
+            repo.putString(LOCALITY_KEY, autoCompleteItem.locality),
+            repo.putString(MUNICIPALITY_KEY, autoCompleteItem.municipality),
+            repo.putString(COUNTY_KEY, autoCompleteItem.county)
+        ).firstOrNull { result: Either<Failure, Unit> -> result.isLeft }
+            ?: Unit.asRight()
 }

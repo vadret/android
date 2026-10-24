@@ -13,8 +13,10 @@ import fi.kroon.vadret.data.radar.net.RadarNetDataSource
 import fi.kroon.vadret.util.NetworkHandler
 import fi.kroon.vadret.util.extension.asLeft
 import fi.kroon.vadret.util.extension.asRight
+import fi.kroon.vadret.util.extension.catchFailure
 import io.github.sphrak.either.Either
-import io.reactivex.Single
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import retrofit2.Response
 import timber.log.Timber
 import javax.inject.Inject
@@ -25,20 +27,22 @@ class RadarRepository @Inject constructor(
     private val errorHandler: ErrorHandler,
     private val exceptionHandler: ExceptionHandler
 ) : IErrorHandler by errorHandler, IExceptionHandler<Failure> by exceptionHandler {
-    operator fun invoke(radarRequest: RadarRequest): Single<Either<Failure, Radar>> =
-        when (networkHandler.isConnected) {
-            true ->
-                with(radarRequest) {
-                    radarNetDataSource
-                        .get()
-                        .getRadar(
-                            year = year,
-                            month = month,
-                            date = date,
-                            format = format,
-                            timeZone = timeZone
-                        )
-                }.map { response: Response<Radar> ->
+
+    suspend operator fun invoke(radarRequest: RadarRequest): Either<Failure, Radar> =
+        withContext(Dispatchers.IO) {
+            when (networkHandler.isConnected) {
+                true -> catchFailure {
+                    val response: Response<Radar> = with(radarRequest) {
+                        radarNetDataSource
+                            .get()
+                            .getRadar(
+                                year = year,
+                                month = month,
+                                date = date,
+                                format = format,
+                                timeZone = timeZone
+                            )
+                    }
                     Timber.d("RADAR RESPONSE : isCached: ${response.isCachedResponse}, isNetwork: ${response.isNetworkResponse}")
                     when (response.body()?.files) {
                         null -> {
@@ -52,10 +56,8 @@ class RadarRepository @Inject constructor(
                         }
                     }
                 }
-            false -> getNetworkOfflineError()
-        }.onErrorReturn {
-            exceptionHandler(it)
-                .asLeft()
+                false -> getNetworkOfflineError()
+            }
         }
 }
 

@@ -14,7 +14,6 @@ import fi.kroon.vadret.di.qualifiers.Nominatim
 import fi.kroon.vadret.di.qualifiers.WeatherQualifier
 import fi.kroon.vadret.util.NOMINATIM_BASE_API_URL
 import fi.kroon.vadret.util.SMHI_API_FORECAST_URL
-import fi.kroon.vadret.util.Scheduler
 import fi.kroon.vadret.util.extension.assertNoInitMainThread
 import fi.kroon.vadret.util.extension.delegatingCallFactory
 import fi.kroon.vadret.weatherforecast.WeatherForecastView
@@ -25,7 +24,6 @@ import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
-import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.moshi.MoshiConverterFactory
 
 @Module
@@ -38,10 +36,6 @@ object WeatherForecastModule {
     @Provides
     @WeatherForecastScope
     fun provideViewState(): WeatherForecastView.State = WeatherForecastView.State()
-
-    @Provides
-    @WeatherForecastScope
-    fun provideSchedulers(): Scheduler = Scheduler()
 
     @OptIn(ExperimentalSerializationApi::class)
     @WeatherQualifier
@@ -65,7 +59,6 @@ object WeatherForecastModule {
         assertNoInitMainThread()
         return Retrofit.Builder()
             .baseUrl(NOMINATIM_BASE_API_URL)
-            .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
             .addConverterFactory(MoshiConverterFactory.create(moshi))
             .delegatingCallFactory(okHttpClient)
             .build()

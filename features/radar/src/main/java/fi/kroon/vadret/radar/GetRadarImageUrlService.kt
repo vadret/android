@@ -7,14 +7,10 @@ import fi.kroon.vadret.data.radar.model.RadarRequest
 import fi.kroon.vadret.util.FIFTEEN_MINUTES_IN_MILLIS
 import fi.kroon.vadret.util.OFF_BY_ONE
 import fi.kroon.vadret.util.common.IDateTimeUtil
-import fi.kroon.vadret.util.extension.asSingle
-import fi.kroon.vadret.util.extension.flatMapSingle
 import io.github.sphrak.either.Either
 import io.github.sphrak.either.extension.onResult
 import io.github.sphrak.either.flatMap
 import io.github.sphrak.either.map
-import io.reactivex.Single
-import io.reactivex.rxkotlin.zipWith
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -36,13 +32,13 @@ class GetRadarImageUrlService @Inject constructor(
         val file: File? = null
     )
 
-    operator fun invoke(timeStamp: Long, index: Int): Single<Either<Failure, Data>> =
-        Data(
-            timeStamp = timeStamp,
-            index = index
-        ).asSingle()
-            .flatMap(::getRadar)
-            .map(::getFileByIndex)
+    suspend operator fun invoke(timeStamp: Long, index: Int): Either<Failure, Data> =
+        getRadar(
+            Data(
+                timeStamp = timeStamp,
+                index = index
+            )
+        ).let { getFileByIndex(it) }
 
     private fun getFileByIndex(either: Either<Failure, Data>): Either<Failure, Data> =
         either.map { data: Data ->
@@ -53,76 +49,53 @@ class GetRadarImageUrlService @Inject constructor(
 
     private fun getMaxIndex(radar: Radar): Int = radar.files.size - OFF_BY_ONE
 
-    private fun getRadar(data: Data): Single<Either<Failure, Data>> =
+    private suspend fun getRadar(data: Data): Either<Failure, Data> =
         with(data) {
             when {
-                (currentTimeMillis() > (timeStamp + FIFTEEN_MINUTES_IN_MILLIS)) -> {
-                    getRadarImageUrlTask(radarRequest).map { either ->
-                        either.map { radar: Radar ->
-                            data.copy(radar = radar, timeStamp = currentTimeMillis())
-                        }
-                    }.flatMap { data ->
-                        updateCache(data)
-                    }
-                }
-                else -> {
-                    Single.merge(
-                        getRadarDiskCacheTask()
-                            .map { either: Either<Failure, Radar> ->
-                                either.map { radar: Radar ->
-                                    data.copy(radar = radar)
-                                }
-                            },
-                        getRadarMemoryCacheTask()
-                            .map { either: Either<Failure, Radar> ->
-                                either.map { radar: Radar ->
-                                    data.copy(radar = radar)
-                                }
-                            }
-                    ).filter { result: Either<Failure, Data> ->
-                        result.onResult(
-                            {
-                                false
-                            },
-                            { data ->
-                                Timber.d("Fetched Radar from cache: ${data.radar?.files?.size}")
-                                data.radar!!.files.isNotEmpty()
-                            }
-                        )
-                    }.take(1)
-                        .switchIfEmpty(
-                            getRadarImageUrlTask(data.radarRequest)
-                                .map { either: Either<Failure, Radar> ->
-                                    Timber.d("Cache was empty, fetching radar from network.")
-                                    either.map { radar: Radar ->
-                                        data.copy(
-                                            radar = radar,
-                                            timeStamp = currentTimeMillis()
-                                        )
-                                    }
-                                }.flatMap { data: Either<Failure, Data> ->
-                                    updateCache(data)
-                                }.toFlowable()
-                        ).singleOrError()
+                (currentTimeMillis() > (timeStamp + FIFTEEN_MINUTES_IN_MILLIS)) -> getRadarNet(data)
+                else -> getRadarCache(data) ?: run {
+                    Timber.d("Cache was empty, fetching radar from network.")
+                    getRadarNet(data)
                 }
             }
         }
 
-    private fun updateCache(either: Either<Failure, Data>): Single<Either<Failure, Data>> =
-        either.flatMapSingle { data: Data ->
-            setRadarMemoryCacheTask(data.radar!!)
-                .zipWith(setRadarDiskCacheTask(data.radar))
-                .map { pair: Pair<Either<Failure, Radar>, Either<Failure, Radar>> ->
-                    Timber.i("Updating cache")
-                    val (
-                        firstEither: Either<Failure, Radar>,
-                        secondEither: Either<Failure, Radar>
-                    ) = pair
-                    firstEither.flatMap {
-                        secondEither.map {
-                            data
-                        }
-                    }
+    private suspend fun getRadarNet(data: Data): Either<Failure, Data> =
+        getRadarImageUrlTask(data.radarRequest)
+            .map { radar: Radar ->
+                data.copy(radar = radar, timeStamp = currentTimeMillis())
+            }.let { updateCache(it) }
+
+    /**
+     *  Memory cache first, then disk. Null when neither
+     *  holds a radar with images.
+     */
+    private suspend fun getRadarCache(data: Data): Either<Failure, Data>? =
+        (getRadarMemoryCacheTask().takeIf(::hasFiles) ?: getRadarDiskCacheTask().takeIf(::hasFiles))
+            ?.map { radar: Radar ->
+                Timber.d("Fetched Radar from cache: ${radar.files.size}")
+                data.copy(radar = radar)
+            }
+
+    private fun hasFiles(result: Either<Failure, Radar>): Boolean =
+        result.onResult(
+            {
+                false
+            },
+            { radar: Radar ->
+                radar.files.isNotEmpty()
+            }
+        )
+
+    private suspend fun updateCache(either: Either<Failure, Data>): Either<Failure, Data> =
+        either.flatMap { data: Data ->
+            Timber.i("Updating cache")
+            val memoryEither: Either<Failure, Radar> = setRadarMemoryCacheTask(data.radar!!)
+            val diskEither: Either<Failure, Radar> = setRadarDiskCacheTask(data.radar)
+            memoryEither.flatMap {
+                diskEither.map {
+                    data
                 }
+            }
         }
 }

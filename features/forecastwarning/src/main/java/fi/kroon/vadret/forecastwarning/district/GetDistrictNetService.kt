@@ -4,11 +4,9 @@ import fi.kroon.vadret.data.district.model.District
 import fi.kroon.vadret.data.district.model.DistrictEntity
 import fi.kroon.vadret.data.failure.Failure
 import fi.kroon.vadret.forecastwarning.CountDistrictEntityTask
-import fi.kroon.vadret.util.extension.asSingle
-import fi.kroon.vadret.util.extension.flatMapSingle
 import io.github.sphrak.either.Either
+import io.github.sphrak.either.flatMap
 import io.github.sphrak.either.map
-import io.reactivex.Single
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -24,16 +22,15 @@ class GetDistrictNetService @Inject constructor(
         val districtIsAvailable: Boolean = false
     )
 
-    operator fun invoke(): Single<Either<Failure, Boolean>> =
-        Single.just(Data())
-            .flatMap(::getDistrictAvailabilityStatus)
-            .flatMap(::checkDistrictAvailability)
-            .flatMap(::setDistrictEntityList)
-            .map(::transform)
+    suspend operator fun invoke(): Either<Failure, Boolean> =
+        getDistrictAvailabilityStatus(Data())
+            .let { checkDistrictAvailability(it) }
+            .let { setDistrictEntityList(it) }
+            .let { transform(it) }
 
-    private fun getDistrictAvailabilityStatus(data: Data): Single<Either<Failure, Data>> =
+    private suspend fun getDistrictAvailabilityStatus(data: Data): Either<Failure, Data> =
         countDistrictEntityTask()
-            .map { either: Either<Failure, Boolean> ->
+            .let { either: Either<Failure, Boolean> ->
                 either.map { districtIsAvailable: Boolean ->
                     data.copy(
                         districtIsAvailable = districtIsAvailable
@@ -41,18 +38,18 @@ class GetDistrictNetService @Inject constructor(
                 }
             }
 
-    private fun checkDistrictAvailability(either: Either<Failure, Data>): Single<Either<Failure, Data>> =
-        either.flatMapSingle { data: Data ->
+    private suspend fun checkDistrictAvailability(either: Either<Failure, Data>): Either<Failure, Data> =
+        either.flatMap { data: Data ->
             when (data.districtIsAvailable) {
                 false -> getDistrictNet(either)
-                true -> either.asSingle()
+                true -> either
             }
         }
 
-    private fun getDistrictNet(either: Either<Failure, Data>): Single<Either<Failure, Data>> =
-        either.flatMapSingle { data: Data ->
+    private suspend fun getDistrictNet(either: Either<Failure, Data>): Either<Failure, Data> =
+        either.flatMap { data: Data ->
             getDistrictNetTask()
-                .map { result: Either<Failure, List<District>> ->
+                .let { result: Either<Failure, List<District>> ->
                     result.map { districtList: List<District> ->
                         Timber.d("GET DISTRICT LIST NET")
                         districtList.forEach {
@@ -63,10 +60,10 @@ class GetDistrictNetService @Inject constructor(
                 }
         }
 
-    private fun setDistrictEntityList(either: Either<Failure, Data>): Single<Either<Failure, Data>> =
-        either.flatMapSingle { data: Data ->
+    private suspend fun setDistrictEntityList(either: Either<Failure, Data>): Either<Failure, Data> =
+        either.flatMap { data: Data ->
             setDistrictListTask(data.districtList)
-                .map { result: Either<Failure, List<Long>> ->
+                .let { result: Either<Failure, List<Long>> ->
                     result.map { ids: List<Long> ->
                         Timber.d("IDS: $ids")
                         data.copy(districtIsAvailable = true)

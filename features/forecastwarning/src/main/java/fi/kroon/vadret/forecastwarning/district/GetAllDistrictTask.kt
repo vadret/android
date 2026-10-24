@@ -5,15 +5,14 @@ import fi.kroon.vadret.data.district.model.DistrictEntity
 import fi.kroon.vadret.data.failure.Failure
 import fi.kroon.vadret.util.extension.asRight
 import io.github.sphrak.either.Either
-import io.reactivex.Single
 import javax.inject.Inject
 
 class GetAllDistrictTask @Inject constructor(
     private val dao: DistrictDao
 ) {
-    operator fun invoke(): Single<Either<Failure, List<DistrictEntity>>> =
+    suspend operator fun invoke(): Either<Failure, List<DistrictEntity>> =
         dao.getAll()
-            .map { districtList: List<DistrictEntity> ->
+            .let { districtList: List<DistrictEntity> ->
                 districtList.asRight()
             }
 }

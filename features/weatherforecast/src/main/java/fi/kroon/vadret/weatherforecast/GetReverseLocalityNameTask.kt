@@ -8,7 +8,6 @@ import fi.kroon.vadret.util.extension.asLeft
 import fi.kroon.vadret.util.extension.asRight
 import io.github.sphrak.either.Either
 import io.github.sphrak.either.extension.onResult
-import io.reactivex.Single
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -22,8 +21,8 @@ class GetReverseLocalityNameTask @Inject constructor(
      *  any viable name for the actionbar and returns it as
      *  a String object to the caller.
      */
-    operator fun invoke(nominatimReverseOut: NominatimReverseOut): Single<Either<Failure, String?>> =
-        task(nominatimReverseOut).map { result: Either<Failure, Nominatim> ->
+    suspend operator fun invoke(nominatimReverseOut: NominatimReverseOut): Either<Failure, String?> =
+        task(nominatimReverseOut).let { result: Either<Failure, Nominatim> ->
             result.onResult(
                 { failure ->
                     Timber.e("Failure: $failure")
