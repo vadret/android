@@ -3,8 +3,8 @@ package fi.kroon.vadret.domain.feedsourcepreference
 import fi.kroon.vadret.data.failure.Failure
 import fi.kroon.vadret.data.feedsourcepreference.FeedSourcePreferenceRepository
 import fi.kroon.vadret.data.feedsourcepreference.model.FeedSourcePreferenceEntity
-import io.github.sphrak.either.Either
 import io.reactivex.Single
+import se.fimbla.either.Either
 import javax.inject.Inject
 
 class GetFeedSourcePreferenceListTask @Inject constructor(

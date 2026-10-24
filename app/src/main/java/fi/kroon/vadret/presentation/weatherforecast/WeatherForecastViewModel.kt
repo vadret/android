@@ -20,7 +20,9 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.rx2.await
+import kotlinx.coroutines.rx2.awaitSingleOrNull
 import kotlinx.coroutines.withContext
+import se.fimbla.either.onResult
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -72,7 +74,7 @@ class WeatherForecastViewModel @Inject constructor(
         withContext(Dispatchers.IO) {
             getAppLocationModeTask()
                 .await()
-                .either(
+                .onResult(
                     { failure: Failure ->
                         Timber.e("handleRuntimeLocationPermissionMode: Failure: $failure")
                         val errorCode: Int = getErrorCode(failure)
@@ -226,7 +228,7 @@ class WeatherForecastViewModel @Inject constructor(
     private suspend fun onAutoCompleteItemClickedEvent(autoCompleteItem: AutoCompleteItem) =
         enableGpsLocationModeTask(false)
             .await()
-            .either(
+            .onResult(
                 {
                     Timber.e("$it")
                     mutState.emit(state)
@@ -239,7 +241,7 @@ class WeatherForecastViewModel @Inject constructor(
     private suspend fun updateLocationInformation(autoCompleteItem: AutoCompleteItem) =
         setLocationInformationTask(autoCompleteItem)
             .await()
-            ?.either(
+            ?.onResult(
                 {
                     Timber.e("$it")
                     mutState.emit(state)
@@ -253,8 +255,8 @@ class WeatherForecastViewModel @Inject constructor(
 
     private suspend fun onSearchTextChanged(searchText: String) =
         getAutoCompleteService(searchText)
-            .await()
-            ?.either(
+            .awaitSingleOrNull()
+            ?.onResult(
                 { failure: Failure ->
                     val errorCode: Int = getErrorCode(failure)
                     val renderEvent: WeatherForecastView.RenderEvent.DisplayError = WeatherForecastView.RenderEvent.DisplayError(errorCode)
@@ -281,8 +283,8 @@ class WeatherForecastViewModel @Inject constructor(
 
     private suspend fun onSearchButtonSubmittedEvent(query: String) =
         getAutoCompleteService(query)
-            .await()
-            ?.either(
+            .awaitSingleOrNull()
+            ?.onResult(
                 { failure: Failure ->
                     Timber.e("getAutoCompleteService failed: $failure")
                     val errorCode: Int = getErrorCode(failure)
@@ -296,7 +298,7 @@ class WeatherForecastViewModel @Inject constructor(
                     Timber.d("Submit triggered: ${data.newFilteredList.first()}")
                     enableGpsLocationModeTask(false)
                         .await()
-                        .either(
+                        .onResult(
                             {
                                 mutState.emit(state)
                             },
@@ -311,7 +313,7 @@ class WeatherForecastViewModel @Inject constructor(
     private suspend fun setLocationInformation(autoCompleteItem: AutoCompleteItem) =
         setLocationInformationTask(autoCompleteItem)
             .await()
-            .either(
+            .onResult(
                 {
                     state
                 },
@@ -329,7 +331,7 @@ class WeatherForecastViewModel @Inject constructor(
     private suspend fun setDefaultLocationInformation() =
         setDefaultLocationInformationTask()
             .await()
-            .either(
+            .onResult(
                 { failure: Failure ->
                     Timber.e("setDefaultLocationInformation: $failure")
                     val errorCode = getErrorCode(failure)
@@ -350,14 +352,14 @@ class WeatherForecastViewModel @Inject constructor(
     private suspend fun loadWeatherForecast() =
         getWeatherForecastLastCheckedTask()
             .await()
-            .either(
+            .onResult(
                 { failure: Failure ->
                     Timber.e("Failure: $failure")
                     mutState.emit(state)
                 },
                 { timeStamp: Long ->
                     getWeatherForecastService(timeStamp, state.forceNet)
-                        .either(
+                        .onResult(
                             { failure: Failure ->
                                 Timber.e("loadWeatherForecastFailure: $failure")
                                 val errorCode: Int = getErrorCode(failure)
@@ -387,7 +389,7 @@ class WeatherForecastViewModel @Inject constructor(
     private suspend fun updateLastChecked(timeStamp: Long) =
         setWeatherForecastLastCheckedTask(value = timeStamp)
             .await()
-            .either(
+            .onResult(
                 { failure: Failure ->
                     Timber.e("Failure: $failure")
                     mutState.emit(state)
@@ -425,7 +427,7 @@ class WeatherForecastViewModel @Inject constructor(
     private suspend fun onLocationPermissionGrantedEvent() =
         enableGpsLocationModeTask(true)
             .await()
-            ?.either(
+            ?.onResult(
                 { failure: Failure ->
                     Timber.e("onLocationPermissionGrantedFailure: $failure")
                     val errorCode = getErrorCode(failure)
@@ -444,7 +446,7 @@ class WeatherForecastViewModel @Inject constructor(
     private suspend fun onLocationPermissionDeniedEvent() =
         getAppLocationModeTask()
             .await()
-            .either(
+            .onResult(
                 { failure: Failure ->
                     Timber.e("onLocationPermissionDeniedEvent: $failure")
                     val errorCode = getErrorCode(failure)
@@ -467,7 +469,7 @@ class WeatherForecastViewModel @Inject constructor(
     private suspend fun onLocationPermissionDeniedNeverAskAgainEvent() =
         enableGpsLocationModeTask(false)
             .await()
-            .either(
+            .onResult(
                 { failure: Failure ->
                     Timber.e("onLocationPermissionDeniedNeverAskAgainEvent: $failure")
                     val errorCode: Int = getErrorCode(failure)

@@ -1,15 +1,15 @@
 buildscript {
-    ext.KOTLIN_VERSION = "1.4.32"
+    ext.KOTLIN_VERSION = "2.4.21"
     repositories {
         google()
-        jcenter()
+        mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.0.0-alpha12'
+        classpath 'com.android.tools.build:gradle:9.1.1'
+        classpath 'com.android.tools.build:gradle-kotlin:9.1.1'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$KOTLIN_VERSION"
         classpath "org.jetbrains.kotlin:kotlin-serialization:$KOTLIN_VERSION"
-        classpath 'com.google.gms:google-services:4.3.5'
-        classpath 'com.google.firebase:firebase-crashlytics-gradle:2.5.2'
+        classpath "com.google.devtools.ksp:symbol-processing-gradle-plugin:2.3.12"
     }
 
 }
@@ -17,6 +17,12 @@ buildscript {
 allprojects {
     repositories {
         google()
-        jcenter()
+        mavenCentral()
+        // se.fimbla (build-essentials) is only published to the local maven repository
+        mavenLocal {
+            content {
+                includeGroup "se.fimbla"
+            }
+        }
     }
 }

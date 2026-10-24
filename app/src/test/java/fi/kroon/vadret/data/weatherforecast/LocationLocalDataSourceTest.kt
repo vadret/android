@@ -9,13 +9,13 @@ import fi.kroon.vadret.data.location.local.LocationLocalDataSource
 import fi.kroon.vadret.data.location.model.Location
 import fi.kroon.vadret.util.DEFAULT_LATITUDE
 import fi.kroon.vadret.util.DEFAULT_LONGITUDE
-import io.github.sphrak.either.Either
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mock
 import org.mockito.Mockito.doReturn
 import org.mockito.junit.MockitoJUnitRunner
+import se.fimbla.either.Either
 
 @RunWith(MockitoJUnitRunner::class)
 class LocationLocalDataSourceTest {
@@ -41,7 +41,7 @@ class LocationLocalDataSourceTest {
         val result: Either<Failure, Location> = mockLocationLocalDataSource()
 
         assert(
-            result is Either.Left<Failure> && result.a is LocationFailure.LocationProviderDisabled
+            result is Either.Left<Failure> && result.value is LocationFailure.LocationProviderDisabled
         )
     }
 
@@ -54,8 +54,8 @@ class LocationLocalDataSourceTest {
         val result: Either<Failure, Location> = mockLocationLocalDataSource()
         assert(
             result is Either.Right &&
-                result.b.latitude == mockAndroidLocation.latitude &&
-                result.b.longitude == mockAndroidLocation.longitude
+                result.value.latitude == mockAndroidLocation.latitude &&
+                result.value.longitude == mockAndroidLocation.longitude
         )
     }
 
@@ -69,8 +69,8 @@ class LocationLocalDataSourceTest {
         val result: Either<Failure, Location> = mockLocationLocalDataSource()
         assert(
             result is Either.Right &&
-                result.b.latitude == mockAndroidLocation.latitude &&
-                result.b.longitude == mockAndroidLocation.longitude
+                result.value.latitude == mockAndroidLocation.latitude &&
+                result.value.longitude == mockAndroidLocation.longitude
         )
     }
 
@@ -82,7 +82,7 @@ class LocationLocalDataSourceTest {
 
         val result: Either<Failure, Location> = mockLocationLocalDataSource()
         assert(
-            result is Either.Left<Failure> && result.a is LocationFailure.LocationNotAvailable
+            result is Either.Left<Failure> && result.value is LocationFailure.LocationNotAvailable
         )
     }
 
@@ -91,7 +91,7 @@ class LocationLocalDataSourceTest {
         doThrow(SecurityException()).`when`(mockLocationManager).isProviderEnabled(anyString())
         val result = mockLocationLocalDataSource()
         assert(
-            result is Either.Left<Failure> && result.a is LocationFailure.LocationNotAvailable
+            result is Either.Left<Failure> && result.value is LocationFailure.LocationNotAvailable
         )
     }*/
 

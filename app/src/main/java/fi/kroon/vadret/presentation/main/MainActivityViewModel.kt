@@ -7,10 +7,11 @@ import fi.kroon.vadret.domain.theme.ObserveThemeChangeTask
 import fi.kroon.vadret.presentation.main.di.MainActivityScope
 import fi.kroon.vadret.presentation.shared.IViewModel
 import fi.kroon.vadret.util.extension.asObservable
-import io.github.sphrak.either.Either
 import io.reactivex.Observable
 import io.reactivex.ObservableTransformer
 import io.reactivex.Single
+import se.fimbla.either.Either
+import se.fimbla.either.onResult
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -44,7 +45,7 @@ class MainActivityViewModel @Inject constructor(
 
     private fun onViewInitialisedEvent(): Observable<MainActivityView.State> = observeThemeChangeTask()
         .flatMap { result: Either<Failure, String> ->
-            result.either(
+            result.onResult(
                 { failure: Failure ->
                     Timber.e("Failure: $failure")
                     state = state.copy(renderEvent = MainActivityView.RenderEvent.None)
@@ -73,7 +74,7 @@ class MainActivityViewModel @Inject constructor(
      */
     fun getThemeMode(): Single<Either<Failure, Theme>> = getThemeModeTask()
         .map { result: Either<Failure, Theme> ->
-            result.either(
+            result.onResult(
                 {
                     result
                 },

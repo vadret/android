@@ -24,6 +24,7 @@ import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.subjects.PublishSubject
+import se.fimbla.either.onResult
 import timber.log.Timber
 
 class MainActivity : AppCompatActivity() {
@@ -92,7 +93,7 @@ class MainActivity : AppCompatActivity() {
     private fun preSetupEvents() = viewModel
         .getThemeMode()
         .map { result ->
-            result.either(
+            result.onResult(
                 { failure: Failure ->
                     Timber.e("Error: $failure")
                 },

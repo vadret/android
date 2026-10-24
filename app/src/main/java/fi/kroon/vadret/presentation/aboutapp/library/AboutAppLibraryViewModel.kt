@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.rx2.await
+import se.fimbla.either.onResult
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -39,7 +40,7 @@ class AboutAppLibraryViewModel @Inject constructor(
     private suspend fun onViewInitialisedEvent() {
         getAboutLibraryTask()
             .await()
-            .either(
+            .onResult(
                 { failure: Failure ->
                     Timber.e("failure: $failure")
                     stateModel = stateModel.copy(renderEvent = AboutAppLibraryView.RenderEvent.None)

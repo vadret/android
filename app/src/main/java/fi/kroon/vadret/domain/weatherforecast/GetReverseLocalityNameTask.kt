@@ -6,8 +6,9 @@ import fi.kroon.vadret.data.nominatim.model.Nominatim
 import fi.kroon.vadret.data.nominatim.model.NominatimReverseOut
 import fi.kroon.vadret.util.extension.asLeft
 import fi.kroon.vadret.util.extension.asRight
-import io.github.sphrak.either.Either
 import io.reactivex.Single
+import se.fimbla.either.Either
+import se.fimbla.either.onResult
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -23,7 +24,7 @@ class GetReverseLocalityNameTask @Inject constructor(
      */
     operator fun invoke(nominatimReverseOut: NominatimReverseOut): Single<Either<Failure, String?>> =
         task(nominatimReverseOut).map { result: Either<Failure, Nominatim> ->
-            result.either(
+            result.onResult(
                 { failure ->
                     Timber.e("Failure: $failure")
                     NominatimFailure

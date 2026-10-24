@@ -11,9 +11,9 @@ import fi.kroon.vadret.data.feedsource.net.FeedSourceNetDataSource
 import fi.kroon.vadret.util.NetworkHandler
 import fi.kroon.vadret.util.extension.asLeft
 import fi.kroon.vadret.util.extension.asRight
-import io.github.sphrak.either.Either
 import io.reactivex.Single
 import retrofit2.Response
+import se.fimbla.either.Either
 import javax.inject.Inject
 
 class FeedSourceRepository @Inject constructor(

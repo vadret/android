@@ -4,7 +4,7 @@ import fi.kroon.vadret.data.failure.Failure
 import fi.kroon.vadret.data.weatherforecast.WeatherForecastRepository
 import fi.kroon.vadret.data.weatherforecast.model.Weather
 import fi.kroon.vadret.data.weatherforecast.model.WeatherOut
-import io.github.sphrak.either.Either
+import se.fimbla.either.Either
 import javax.inject.Inject
 
 class GetWeatherForecastTask @Inject constructor(

@@ -4,8 +4,8 @@ import fi.kroon.vadret.data.districtpreference.local.DistrictPreferenceDao
 import fi.kroon.vadret.data.districtpreference.model.DistrictPreferenceEntity
 import fi.kroon.vadret.data.failure.Failure
 import fi.kroon.vadret.util.extension.asRight
-import io.github.sphrak.either.Either
 import io.reactivex.Single
+import se.fimbla.either.Either
 import javax.inject.Inject
 
 class DistrictPreferenceRepository @Inject constructor(
@@ -18,7 +18,7 @@ class DistrictPreferenceRepository @Inject constructor(
                     .asRight()
             }
 
-    fun put(entity: DistrictPreferenceEntity): Single<Either.Right<Long>> =
+    fun put(entity: DistrictPreferenceEntity): Single<Either<Nothing, Long>> =
         dao.insert(entity = entity)
             .map { id: Long ->
                 id.asRight()

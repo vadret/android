@@ -1,10 +1,8 @@
 apply plugin: 'com.android.application'
-apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-kapt'
+apply plugin: 'com.android.legacy-kapt'
+apply plugin: 'com.google.devtools.ksp'
 apply plugin: 'kotlin-parcelize'
 apply plugin: 'kotlinx-serialization'
-apply plugin: 'com.google.gms.google-services'
-apply plugin: 'com.google.firebase.crashlytics'
 
 def static loadFromEnvironment(String key) {
     return System.getenv(key)
@@ -24,26 +22,22 @@ def static loadFromFile(String key, String value) {
 def isRunningOnCI = System.getenv("CI") == "true"
 
 def getGitSha = { ->
-    def stdout = new ByteArrayOutputStream()
-    exec {
+    return providers.exec {
         commandLine 'git', 'rev-parse', '--short', 'HEAD'
-        standardOutput = stdout
-    }
-    return stdout.toString().trim()
+    }.standardOutput.asText.get().trim()
 }
 
 android {
 
-    compileSdkVersion 30
-    buildToolsVersion '30.0.3'
+    namespace "fi.kroon.vadret"
+    compileSdk 36
     defaultConfig {
         applicationId "fi.kroon.vadret"
-        minSdkVersion 21
-        targetSdkVersion 30
+        minSdk 21
+        targetSdk 30
         versionCode 30
         versionName "2.0.3"
         vectorDrawables.useSupportLibrary = true
-        flavorDimensions "default"
         testInstrumentationRunner "androidx.top.runner.AndroidJUnitRunner"
         multiDexEnabled true
         javaCompileOptions {
@@ -71,56 +65,51 @@ android {
         signingConfigs.release.keyAlias = loadFromFile("keyAlias", "keystore.properties")
         signingConfigs.release.keyPassword = loadFromFile("keyPassword", "keystore.properties")
     }
-    packagingOptions {
-        exclude 'META-INF/NOTICE'
-        exclude 'META-INF/LICENSE'
-        exclude 'META-INF/notice'
-        exclude 'META-INF/notice.txt'
-        exclude 'META-INF/license'
-        exclude 'META-INF/license.txt'
+    packaging {
+        resources {
+            excludes += [
+                'META-INF/NOTICE',
+                'META-INF/LICENSE',
+                'META-INF/notice',
+                'META-INF/notice.txt',
+                'META-INF/license',
+                'META-INF/license.txt'
+            ]
+        }
     }
     buildTypes {
         release {
             minifyEnabled true
-            zipAlignEnabled true
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             resValue "string", "app_version", "${defaultConfig.versionName}"
         }
         debug {
-            ext.alwaysUpdateBuildId = false
-            testCoverageEnabled = true
+            enableAndroidTestCoverage true
             versionNameSuffix "debug"
             resValue "string", "app_version", "${defaultConfig.versionName}-${versionNameSuffix}-${getGitSha}"
         }
     }
+    flavorDimensions = ["default"]
     productFlavors {
-        google {
-            signingConfig signingConfigs.release
-            firebaseCrashlytics {
-                mappingFileUploadEnabled true
-            }
-        }
-        fdroid {
-            signingConfig fdroid.signingConfig
-        }
+        // unsigned, F-Droid signs its own builds
+        fdroid {}
         github {
             signingConfig signingConfigs.release
             versionNameSuffix "signed"
             resValue "string", "app_version", "${defaultConfig.versionName}-${getGitSha}-${versionNameSuffix}"
         }
     }
-    lintOptions {
+    lint {
         abortOnError false
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_11
         targetCompatibility JavaVersion.VERSION_11
     }
-    kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_11.toString()
-    }
     buildFeatures {
+        buildConfig true
+        resValues true
         viewBinding true
     }
 }
@@ -138,17 +127,16 @@ dependencies {
     def CONSTRAINT_LAYOUT_VERSION = "2.0.4"
     def CORBIND_VERSION = "1.5.0"
     def CORE_KTX_VERSION = "1.3.2"
-    def COROUTINES_VERSION = "1.4.3"
-    def DAGGER_VERSION = "2.33"
-    def EITHER_VERSION = "1.2.0"
+    def COROUTINES_VERSION = "1.11.0"
+    def DAGGER_VERSION = "2.60.1"
+    def EITHER_VERSION = "1.9.0"
     def FRAGMENT_VERSION = "1.3.2"
     def JUNIT_VERSION = "4.13"
-    def KOTLIN_STDLIB_VERSION = "1.4.32"
-    def KOTLINX_SERIALIZATION = "1.1.0"
+    def KOTLINX_SERIALIZATION = "1.11.0"
     def KTLINT_VERSION = "0.41.0"
     def MATERIAL_VERSION = "1.3.0"
-    def MOCKITO_CORE_VERSION = "3.1.0"
-    def MOSHI_VERSION = "1.9.2"
+    def MOCKITO_CORE_VERSION = "5.24.0"
+    def MOSHI_VERSION = "1.15.2"
     def NAVIGATION_VERSION = "2.3.4"
     def OKHTTP_VERSION = "4.2.2"
     def OKIO_VERSION = "2.6.0"
@@ -156,7 +144,7 @@ dependencies {
     def PERMISSIONS_DISPATCHER_VERSION = "4.8.0"
     def PREFERENCE_VERSION = "1.1.1"
     def RETROFIT_VERSION = "2.9.0"
-    def ROOM_VERSION = "2.2.6"
+    def ROOM_VERSION = "2.7.2"
     def RXANDROID_VERSION = "2.1.1"
     def RXBINDING_VERSION = "3.1.0"
     def RXJAVA_VERSION = "2.2.19"
@@ -221,7 +209,7 @@ dependencies {
     implementation "com.squareup.moshi:moshi-adapters:${MOSHI_VERSION}"
     implementation "com.squareup.moshi:moshi:${MOSHI_VERSION}"
     implementation "com.squareup.retrofit2:converter-moshi:${RETROFIT_VERSION}"
-    kapt "com.squareup.moshi:moshi-kotlin-codegen:${MOSHI_VERSION}"
+    ksp "com.squareup.moshi:moshi-kotlin-codegen:${MOSHI_VERSION}"
     implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:${KOTLINX_SERIALIZATION}"
 
     // Dependency Injection
@@ -232,11 +220,10 @@ dependencies {
     implementation "com.afollestad:rxkprefs:${RXK_PREFS_VERSION}"
     implementation "io.coil-kt:coil:${COIL_VERSION}"
     implementation "org.apache.commons:commons-csv:${COMMONS_CSV_VERSION}"
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${KOTLIN_STDLIB_VERSION}"
     implementation "org.osmdroid:osmdroid-android:${OSMDROID_VERSION}"
-    implementation "io.github.sphrak:either:${EITHER_VERSION}"
-    implementation "org.permissionsdispatcher:permissionsdispatcher:${PERMISSIONS_DISPATCHER_VERSION}"
-    kapt "org.permissionsdispatcher:permissionsdispatcher-processor:${PERMISSIONS_DISPATCHER_VERSION}"
+    implementation "se.fimbla:either:${EITHER_VERSION}"
+    implementation "com.github.permissions-dispatcher:permissionsdispatcher:${PERMISSIONS_DISPATCHER_VERSION}"
+    kapt "com.github.permissions-dispatcher:permissionsdispatcher-processor:${PERMISSIONS_DISPATCHER_VERSION}"
 
     // Datetime
     implementation "com.jakewharton.threetenabp:threetenabp:${THREETEN_ABP_VERSION}"
@@ -244,8 +231,6 @@ dependencies {
 
     // Debugging, Testing, Linting, Analytics
     debugImplementation "com.squareup.leakcanary:leakcanary-android:2.6"
-    googleImplementation platform('com.google.firebase:firebase-bom:26.0.0')
-    googleImplementation 'com.google.firebase:firebase-crashlytics-ktx'
     implementation "com.jakewharton.timber:timber:${TIMBER_VERSION}"
     ktlint "com.pinterest:ktlint:${KTLINT_VERSION}"
     testImplementation "junit:junit:${JUNIT_VERSION}"
@@ -257,7 +242,7 @@ dependencies {
 tasks.register("ktlint", JavaExec) {
     description = "Check Kotlin code style."
     classpath = configurations.ktlint
-    main = "com.pinterest.ktlint.Main"
+    mainClass = "com.pinterest.ktlint.Main"
     args "src/**/*.kt"
     // to generate report in checkstyle format prepend following args:
     // "--reporter=plain", "--reporter=checkstyle,output=${buildDir}/ktlint.xml"
@@ -269,7 +254,7 @@ check.dependsOn ktlint
 tasks.register("ktlintFormat", JavaExec) {
     description = "Fix Kotlin code style deviations."
     classpath = configurations.ktlint
-    main = "com.pinterest.ktlint.Main"
+    mainClass = "com.pinterest.ktlint.Main"
     args "-F", "src/**/*.kt"
 }
 

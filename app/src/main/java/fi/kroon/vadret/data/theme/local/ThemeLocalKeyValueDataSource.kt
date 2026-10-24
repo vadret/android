@@ -7,9 +7,10 @@ import fi.kroon.vadret.data.theme.exception.ThemeFailure
 import fi.kroon.vadret.util.LIGHT_THEME
 import fi.kroon.vadret.util.THEME_MODE_KEY
 import fi.kroon.vadret.util.extension.asLeft
-import io.github.sphrak.either.Either
 import io.reactivex.Observable
 import io.reactivex.Single
+import se.fimbla.either.Either
+import se.fimbla.either.right
 import javax.inject.Inject
 
 class ThemeLocalKeyValueDataSource @Inject constructor(
@@ -20,7 +21,7 @@ class ThemeLocalKeyValueDataSource @Inject constructor(
     fun getString(key: String): Single<Either<Failure, String>> =
         when (key) {
             THEME_MODE_KEY -> Single.just(
-                Either.Right(
+                right(
                     theme.get()
                 )
             )
@@ -40,7 +41,7 @@ class ThemeLocalKeyValueDataSource @Inject constructor(
                 throw Error("key doesn't exist")
             }
         }.map { value: String ->
-            Either.Right(value) as Either<Failure, String>
+            right(value) as Either<Failure, String>
         }.onErrorReturn {
             ThemeFailure
                 .ThemeNotFound

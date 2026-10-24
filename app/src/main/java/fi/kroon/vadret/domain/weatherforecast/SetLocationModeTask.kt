@@ -3,8 +3,8 @@ package fi.kroon.vadret.domain.weatherforecast
 import fi.kroon.vadret.data.failure.Failure
 import fi.kroon.vadret.data.weatherforecast.local.WeatherForecastLocalKeyValueDataSource
 import fi.kroon.vadret.util.AUTOMATIC_LOCATION_MODE_KEY
-import io.github.sphrak.either.Either
 import io.reactivex.Single
+import se.fimbla.either.Either
 import timber.log.Timber
 import javax.inject.Inject
 

@@ -6,8 +6,8 @@ import fi.kroon.vadret.data.district.model.District
 import fi.kroon.vadret.data.district.model.DistrictEntity
 import fi.kroon.vadret.data.failure.Failure
 import fi.kroon.vadret.util.extension.asRight
-import io.github.sphrak.either.Either
 import io.reactivex.Single
+import se.fimbla.either.Either
 import javax.inject.Inject
 
 class SetDistrictListTask @Inject constructor(

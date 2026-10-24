@@ -8,9 +8,10 @@ import fi.kroon.vadret.presentation.radar.di.RadarScope
 import fi.kroon.vadret.presentation.shared.IViewModel
 import fi.kroon.vadret.util.NIL_INT
 import fi.kroon.vadret.util.extension.asObservable
-import io.github.sphrak.either.Either
 import io.reactivex.Observable
 import io.reactivex.ObservableTransformer
+import se.fimbla.either.Either
+import se.fimbla.either.onResult
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -166,7 +167,7 @@ class RadarViewModel @Inject constructor(
     private fun loadRadarImageUrl(): Observable<RadarView.State> =
         getRadarLastCheckedKeyValueTask()
             .flatMapObservable { result: Either<Failure, Long> ->
-                result.either(
+                result.onResult(
                     { failure: Failure ->
                         Timber.e("failure: $failure")
                         state = state.copy(renderEvent = RadarView.RenderEvent.None)
@@ -175,7 +176,7 @@ class RadarViewModel @Inject constructor(
                     { timeStamp: Long ->
                         getRadarImageUrlService(timeStamp, state.currentSeekBarIndex)
                             .flatMapObservable { result: Either<Failure, GetRadarImageUrlService.Data> ->
-                                result.either(
+                                result.onResult(
                                     { failure: Failure ->
                                         Timber.e("LOAD RADAR IMAGE URL: $failure")
                                         val errorCode: Int = getErrorCode(failure)
@@ -202,7 +203,7 @@ class RadarViewModel @Inject constructor(
     private fun setLastCheckedTimeStamp(timeStamp: Long): Observable<RadarView.State> =
         setRadarLastCheckedKeyValueTask(value = timeStamp)
             .flatMapObservable { result: Either<Failure, Unit> ->
-                result.either(
+                result.onResult(
                     { failure: Failure ->
                         Timber.e("failure: $failure")
                         state = state.copy(renderEvent = RadarView.RenderEvent.None)

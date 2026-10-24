@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.rx2.await
+import se.fimbla.either.onResult
 import javax.inject.Inject
 
 class AboutAppAboutViewModel @Inject constructor(
@@ -34,7 +35,7 @@ class AboutAppAboutViewModel @Inject constructor(
     private suspend fun onViewInitialisedEvent(): Unit =
         getAboutInfoTask()
             .await()
-            .either(
+            .onResult(
                 { _: Failure ->
                     stateModel = stateModel.copy(renderEvent = AboutAppAboutView.RenderEvent.None)
                     state.emit(stateModel)

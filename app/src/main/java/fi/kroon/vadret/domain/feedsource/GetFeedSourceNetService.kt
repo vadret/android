@@ -6,9 +6,9 @@ import fi.kroon.vadret.data.feedsource.model.FeedSourceEntity
 import fi.kroon.vadret.domain.warning.CountFeedSourceEntityTask
 import fi.kroon.vadret.util.extension.asSingle
 import fi.kroon.vadret.util.extension.flatMapSingle
-import io.github.sphrak.either.Either
-import io.github.sphrak.either.map
 import io.reactivex.Single
+import se.fimbla.either.Either
+import se.fimbla.either.map
 import timber.log.Timber
 import javax.inject.Inject
 

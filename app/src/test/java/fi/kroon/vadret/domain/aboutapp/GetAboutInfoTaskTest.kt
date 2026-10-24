@@ -5,7 +5,6 @@ import fi.kroon.vadret.data.aboutinfo.model.AboutInfo
 import fi.kroon.vadret.data.failure.Failure
 import fi.kroon.vadret.util.extension.asRight
 import fi.kroon.vadret.util.extension.asSingle
-import io.github.sphrak.either.Either
 import io.reactivex.Single
 import org.junit.Before
 import org.junit.Test
@@ -13,6 +12,7 @@ import org.junit.runner.RunWith
 import org.mockito.Mock
 import org.mockito.Mockito
 import org.mockito.junit.MockitoJUnitRunner
+import se.fimbla.either.Either
 
 @RunWith(MockitoJUnitRunner::class)
 class GetAboutInfoTaskTest {
@@ -49,7 +49,7 @@ class GetAboutInfoTaskTest {
             .assertNoErrors()
             .assertComplete()
             .assertValueAt(0) {
-                it is Either.Right && it.b == list
+                it is Either.Right && it.value == list
             }
     }
 

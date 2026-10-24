@@ -19,6 +19,7 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.rx2.await
 import kotlinx.coroutines.withContext
+import se.fimbla.either.onResult
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -60,7 +61,7 @@ class WarningFilterViewModel @Inject constructor(
     private suspend fun onViewInitialised() = withContext(Dispatchers.IO) {
         getWarningFilterOptionListService()
             .await()
-            .either(
+            .onResult(
                 { failure: Failure ->
                     Timber.e("Failure: $failure")
                     state.emit(stateModel)
@@ -108,7 +109,7 @@ class WarningFilterViewModel @Inject constructor(
     private suspend fun updateDistrictPreferenceEntity() = withContext(Dispatchers.IO) {
         updateDistrictPreferenceEntityTask(entityList = stateModel.districtOptionList)
             .await()
-            .either(
+            .onResult(
                 { failure: Failure ->
                     Timber.e("Failure: $failure")
                     state.emit(stateModel)
@@ -123,7 +124,7 @@ class WarningFilterViewModel @Inject constructor(
     private suspend fun updateFeedSourcePreferenceEntity() = withContext(Dispatchers.IO) {
         updateFeedSourcePreferenceEntityTask(entityList = stateModel.feedSourceOptionList)
             .await()
-            .either(
+            .onResult(
                 { failure: Failure ->
                     Timber.e("Failure: $failure")
                     state.emit(stateModel)

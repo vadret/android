@@ -6,11 +6,12 @@ import fi.kroon.vadret.data.autocomplete.model.AutoCompleteItem
 import fi.kroon.vadret.data.common.exception.LocalFileReaderFailure
 import fi.kroon.vadret.data.failure.Failure
 import fi.kroon.vadret.util.extension.asLeft
-import io.github.sphrak.either.Either
 import io.reactivex.Single
 import org.apache.commons.csv.CSVFormat
 import org.apache.commons.csv.CSVParser
 import org.apache.commons.csv.CSVRecord
+import se.fimbla.either.Either
+import se.fimbla.either.right
 import timber.log.Timber
 import java.io.InputStream
 import java.nio.charset.Charset
@@ -29,7 +30,7 @@ class LocalFileDataSource @Inject constructor(
 
             inputStream.read(byteArray)
 
-            Either.Right(
+            right(
                 if (Charset.isSupported(StandardCharsets.UTF_8.name())) {
                     byteArray.toString(StandardCharsets.UTF_8)
                 } else {
@@ -47,7 +48,7 @@ class LocalFileDataSource @Inject constructor(
     fun readList(@RawRes fileId: Int): Single<Either<Failure, List<String>>> =
         Single.fromCallable {
             val inputStream: InputStream = context.resources.openRawResource(fileId)
-            Either.Right(inputStream.bufferedReader().readLines())
+            right(inputStream.bufferedReader().readLines())
                 as Either<Failure, List<String>>
         }.doOnError {
             Timber.e("$it")
@@ -68,7 +69,7 @@ class LocalFileDataSource @Inject constructor(
                     .withIgnoreHeaderCase()
                     .withTrim()
             )
-            Either.Right(
+            right(
                 csvParser.records.map { csvRecord: CSVRecord ->
                     AutoCompleteItem(
                         locality = csvRecord.get("locality"),

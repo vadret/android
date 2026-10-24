@@ -6,13 +6,14 @@ import fi.kroon.vadret.data.location.exception.LocationFailure
 import fi.kroon.vadret.data.location.local.LocationLocalDataSource
 import fi.kroon.vadret.data.location.model.Location
 import fi.kroon.vadret.util.extension.asLeft
-import io.github.sphrak.either.Either
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mock
 import org.mockito.Mockito.doReturn
 import org.mockito.junit.MockitoJUnitRunner
+import se.fimbla.either.Either
+import se.fimbla.either.right
 
 @RunWith(MockitoJUnitRunner::class)
 class LocationRepositoryTest {
@@ -37,7 +38,7 @@ class LocationRepositoryTest {
             .test()
             .assertComplete()
             .assertNoErrors()
-            .assertValueAt(0) { it is Either.Right<Location> && it.b == mockLocation }
+            .assertValueAt(0) { it is Either.Right<Location> && it.value == mockLocation }
     }
 
     @Test
@@ -48,12 +49,12 @@ class LocationRepositoryTest {
             .test()
             .assertComplete()
             .assertNoErrors()
-            .assertValueAt(0) { it is Either.Left<Failure> && it.a is LocationFailure.LocationNotAvailable }
+            .assertValueAt(0) { it is Either.Left<Failure> && it.value is LocationFailure.LocationNotAvailable }
     }
 
     private fun getLocationFailure() = LocationFailure
         .LocationNotAvailable
         .asLeft()
 
-    private fun createLocationEither(location: Location): Either<Failure, Location> = Either.Right(location)
+    private fun createLocationEither(location: Location): Either<Failure, Location> = right(location)
 }

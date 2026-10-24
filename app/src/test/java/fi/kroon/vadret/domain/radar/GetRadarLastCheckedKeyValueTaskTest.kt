@@ -6,7 +6,6 @@ import fi.kroon.vadret.data.radar.local.RadarLocalKeyValueDataSource
 import fi.kroon.vadret.util.LAST_CHECKED_RADAR_KEY
 import fi.kroon.vadret.util.extension.asRight
 import fi.kroon.vadret.util.extension.asSingle
-import io.github.sphrak.either.Either
 import io.reactivex.Single
 import org.junit.Before
 import org.junit.Test
@@ -14,6 +13,7 @@ import org.junit.runner.RunWith
 import org.mockito.Mock
 import org.mockito.Mockito.doReturn
 import org.mockito.junit.MockitoJUnitRunner
+import se.fimbla.either.Either
 
 @RunWith(MockitoJUnitRunner::class)
 class GetRadarLastCheckedKeyValueTaskTest {
@@ -44,7 +44,7 @@ class GetRadarLastCheckedKeyValueTaskTest {
             .assertNoErrors()
             .assertComplete()
             .assertValueAt(0) {
-                it is Either.Right && it.b == timeStamp
+                it is Either.Right && it.value == timeStamp
             }
     }
 
@@ -60,8 +60,8 @@ class GetRadarLastCheckedKeyValueTaskTest {
             .assertComplete()
             .assertValueAt(0) {
                 it is Either.Left &&
-                    it.a is Failure.LocalKeyValueReadError &&
-                    (it.a as Failure.LocalKeyValueReadError).message ==
+                    it.value is Failure.LocalKeyValueReadError &&
+                    (it.value as Failure.LocalKeyValueReadError).message ==
                     "error: failed reading property for key 'LAST_CHECKED_RADAR'. It was not recognized."
             }
     }

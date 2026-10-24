@@ -8,10 +8,10 @@ import fi.kroon.vadret.util.LOCALITY_KEY
 import fi.kroon.vadret.util.LONGITUDE_KEY
 import fi.kroon.vadret.util.extension.asRight
 import fi.kroon.vadret.util.extension.toCoordinate
-import io.github.sphrak.either.Either
-import io.github.sphrak.either.flatMap
 import io.reactivex.Single
 import io.reactivex.rxkotlin.Singles
+import se.fimbla.either.Either
+import se.fimbla.either.flatMap
 import javax.inject.Inject
 
 class GetLocationManualTask @Inject constructor(

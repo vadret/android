@@ -93,7 +93,7 @@ class WeatherForecastAdapter @Inject constructor() : RecyclerView.Adapter<Recycl
                 .getDisplayName(
                     TextStyle.FULL_STANDALONE,
                     Locale.getDefault()
-                ).toUpperCase()
+                ).uppercase(Locale.getDefault())
         }
     }
 

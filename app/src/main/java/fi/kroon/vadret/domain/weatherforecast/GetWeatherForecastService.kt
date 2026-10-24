@@ -8,12 +8,12 @@ import fi.kroon.vadret.data.weatherforecast.model.WeatherOut
 import fi.kroon.vadret.domain.IService
 import fi.kroon.vadret.presentation.weatherforecast.WeatherForecastMapper
 import fi.kroon.vadret.presentation.weatherforecast.model.IWeatherForecastModel
-import io.github.sphrak.either.Either
-import io.github.sphrak.either.flatMap
-import io.github.sphrak.either.map
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.rx2.await
 import kotlinx.coroutines.withContext
+import se.fimbla.either.Either
+import se.fimbla.either.flatMap
+import se.fimbla.either.map
 import javax.inject.Inject
 
 class GetWeatherForecastService @Inject constructor(

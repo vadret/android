@@ -3,8 +3,8 @@ package fi.kroon.vadret.domain.radar
 import fi.kroon.vadret.data.failure.Failure
 import fi.kroon.vadret.data.radar.cache.RadarCacheDataSource
 import fi.kroon.vadret.data.radar.model.Radar
-import io.github.sphrak.either.Either
 import io.reactivex.Single
+import se.fimbla.either.Either
 import javax.inject.Inject
 
 class GetRadarMemoryCacheTask @Inject constructor(

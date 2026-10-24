@@ -26,6 +26,7 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.rx2.await
 import kotlinx.coroutines.withContext
+import se.fimbla.either.onResult
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -110,7 +111,7 @@ class WarningViewModel @Inject constructor(
     private suspend fun setDefaultFeedSourcePreference() = withContext(Dispatchers.IO) {
         countFeedSourcePreferenceEntityTask()
             .await()
-            .either(
+            .onResult(
                 { failure: Failure ->
                     Timber.e("Failure: $failure")
                     state.emit(stateModel)
@@ -130,7 +131,7 @@ class WarningViewModel @Inject constructor(
                         false ->
                             setDefaultFeedSourcePreferenceEntityService()
                                 .await()
-                                .either(
+                                .onResult(
                                     { failure: Failure ->
                                         Timber.e("Failure: $failure")
                                         state.emit(stateModel)
@@ -153,7 +154,7 @@ class WarningViewModel @Inject constructor(
     private suspend fun setDefaultDistrictPreference() = withContext(Dispatchers.IO) {
         countDistrictPreferenceEntityTask()
             .await()
-            .either(
+            .onResult(
                 { failure: Failure ->
                     Timber.e("Failure: $failure")
                     state.emit(stateModel)
@@ -165,7 +166,7 @@ class WarningViewModel @Inject constructor(
                         false ->
                             setDefaultDistrictPreferenceEntityService()
                                 .await()
-                                .either(
+                                .onResult(
                                     { failure: Failure ->
                                         Timber.e("Failure: $failure")
                                         state.emit(stateModel)
@@ -256,7 +257,7 @@ class WarningViewModel @Inject constructor(
     private suspend fun loadLastChecked() = withContext(Dispatchers.IO) {
         getAggregatedFeedLastCheckedTask()
             .await()
-            .either(
+            .onResult(
                 { failure: Failure ->
                     Timber.e("failure: $failure")
                     state.emit(stateModel)
@@ -270,7 +271,7 @@ class WarningViewModel @Inject constructor(
     private suspend fun loadDistrictIds(timeStamp: Long) = withContext(Dispatchers.IO) {
         getEnabledDistrictPreferenceIdsTask()
             .await()
-            .either(
+            .onResult(
                 { failure: Failure ->
                     Timber.e("failure: $failure")
                     state.emit(stateModel)
@@ -290,7 +291,7 @@ class WarningViewModel @Inject constructor(
     ) = withContext(Dispatchers.IO) {
         getEnabledFeedSourcePreferenceIdsTask()
             .await()
-            .either(
+            .onResult(
                 { failure: Failure ->
                     Timber.e("failure: $failure")
                     state.emit(stateModel)
@@ -316,7 +317,7 @@ class WarningViewModel @Inject constructor(
             districtIds = districtIds,
             feedSourceIds = feedSourceIds
         ).await()
-            .either(
+            .onResult(
                 { failure: Failure ->
                     Timber.e("Failure: $failure")
                     val errorCode: Int = getErrorCode(failure)
@@ -343,7 +344,7 @@ class WarningViewModel @Inject constructor(
 
                     setAggregatedFeedLastCheckedTask(data.timeStamp)
                         .await()
-                        .either(
+                        .onResult(
                             { failure: Failure ->
                                 Timber.e("failure: $failure")
                                 state.emit(stateModel)
@@ -359,7 +360,7 @@ class WarningViewModel @Inject constructor(
     private suspend fun loadDistrict() = withContext(Dispatchers.IO) {
         getDistrictNetService()
             .await()
-            .either(
+            .onResult(
                 { failure: Failure ->
                     Timber.e("failure: $failure")
                     state.emit(stateModel)
@@ -383,7 +384,7 @@ class WarningViewModel @Inject constructor(
     private suspend fun loadFeedSource() = withContext(Dispatchers.IO) {
         getFeedSourceNetService()
             .await()
-            .either(
+            .onResult(
                 { failure: Failure ->
                     Timber.e("failure: $failure")
                     state.emit(stateModel)
