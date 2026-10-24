@@ -1,1 +1,29 @@
+pluginManagement {
+    includeBuild('build-logic')
+}
+
+plugins {
+    id 'org.gradle.toolchains.foojay-resolver-convention' version '1.0.0'
+}
+
 include ':app'
+include ':core'
+include ':features:forecastwarning'
+include ':features:radar'
+include ':features:settings'
+include ':features:weatherforecast'
+include ':data:aboutinfo'
+include ':data:aggregatedfeed'
+include ':data:autocomplete'
+include ':data:common'
+include ':data:district'
+include ':data:districtpreference'
+include ':data:feedsource'
+include ':data:feedsourcepreference'
+include ':data:library'
+include ':data:location'
+include ':data:nominatim'
+include ':data:persistance'
+include ':data:radar'
+include ':data:theme'
+include ':data:weatherforecast'

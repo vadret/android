@@ -1,0 +1,27 @@
+plugins {
+    id 'vadret.android.library'
+    id 'com.google.devtools.ksp'
+}
+
+android {
+    namespace 'fi.kroon.vadret.data.persistance'
+}
+
+ksp {
+    arg('room.schemaLocation', "$projectDir/schemas")
+    // Kotlin codegen returns Int for @Delete methods declared as Single<Unit>
+    arg('room.generateKotlin', 'false')
+}
+
+dependencies {
+    api project(':data:common')
+    implementation project(':data:district')
+    implementation project(':data:districtpreference')
+    implementation project(':data:feedsource')
+    implementation project(':data:feedsourcepreference')
+
+    api libs.room.runtime
+    implementation libs.room.rxjava2
+
+    ksp libs.room.compiler
+}

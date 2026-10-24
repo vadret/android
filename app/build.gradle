@@ -1,8 +1,6 @@
 apply plugin: 'com.android.application'
-apply plugin: 'com.android.legacy-kapt'
 apply plugin: 'com.google.devtools.ksp'
 apply plugin: 'kotlin-parcelize'
-apply plugin: 'kotlinx-serialization'
 
 def static loadFromEnvironment(String key) {
     return System.getenv(key)
@@ -30,21 +28,16 @@ def getGitSha = { ->
 android {
 
     namespace "fi.kroon.vadret"
-    compileSdk 36
+    compileSdk libs.versions.android.compileSdk.get().toInteger()
     defaultConfig {
         applicationId "fi.kroon.vadret"
-        minSdk 21
-        targetSdk 30
+        minSdk libs.versions.android.minSdk.get().toInteger()
+        targetSdk libs.versions.android.targetSdk.get().toInteger()
         versionCode 30
         versionName "2.0.3"
         vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner "androidx.top.runner.AndroidJUnitRunner"
         multiDexEnabled true
-        javaCompileOptions {
-            annotationProcessorOptions {
-                arguments = ["room.schemaLocation": "$projectDir/schemas".toString()]
-            }
-        }
     }
     signingConfigs {
         release {
@@ -114,150 +107,48 @@ android {
     }
 }
 
-configurations {
-    ktlint
-}
-
 dependencies {
-
-    def APPCOMPAT_VERSION = "1.2.0"
-    def ASSERTJ_VERSION = "3.14.0"
-    def COIL_VERSION = "1.1.1"
-    def COMMONS_CSV_VERSION = "1.7"
-    def CONSTRAINT_LAYOUT_VERSION = "2.0.4"
-    def CORBIND_VERSION = "1.5.0"
-    def CORE_KTX_VERSION = "1.3.2"
-    def COROUTINES_VERSION = "1.11.0"
-    def DAGGER_VERSION = "2.60.1"
-    def EITHER_VERSION = "1.9.0"
-    def FRAGMENT_VERSION = "1.3.2"
-    def JUNIT_VERSION = "4.13"
-    def KOTLINX_SERIALIZATION = "1.11.0"
-    def KTLINT_VERSION = "0.41.0"
-    def MATERIAL_VERSION = "1.3.0"
-    def MOCKITO_CORE_VERSION = "5.24.0"
-    def MOSHI_VERSION = "1.15.2"
-    def NAVIGATION_VERSION = "2.3.4"
-    def OKHTTP_VERSION = "4.2.2"
-    def OKIO_VERSION = "2.6.0"
-    def OSMDROID_VERSION = "6.1.10"
-    def PERMISSIONS_DISPATCHER_VERSION = "4.8.0"
-    def PREFERENCE_VERSION = "1.1.1"
-    def RETROFIT_VERSION = "2.9.0"
-    def ROOM_VERSION = "2.7.2"
-    def RXANDROID_VERSION = "2.1.1"
-    def RXBINDING_VERSION = "3.1.0"
-    def RXJAVA_VERSION = "2.2.19"
-    def RXKOTLIN_VERSION = "2.4.0"
-    def RXK_PREFS_VERSION = "1.2.5"
-    def THREETEN_ABP_VERSION = "1.2.1"
-    def THREETEN_BP_VERSION = "1.5.0"
-    def TIMBER_VERSION = "4.7.1"
-    def LIFECYCLE_VERSION = "2.3.0"
 
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
+    // Modules
+    implementation project(':core')
+    implementation project(':features:forecastwarning')
+    implementation project(':features:radar')
+    implementation project(':features:settings')
+    implementation project(':features:weatherforecast')
+    implementation project(':data:nominatim')
+    implementation project(':data:theme')
+
     // Android
-    implementation "androidx.appcompat:appcompat:${APPCOMPAT_VERSION}"
-    implementation "androidx.constraintlayout:constraintlayout:${CONSTRAINT_LAYOUT_VERSION}"
-    implementation "androidx.core:core-ktx:${CORE_KTX_VERSION}"
-    implementation "androidx.fragment:fragment-ktx:${FRAGMENT_VERSION}"
-    implementation "androidx.navigation:navigation-fragment-ktx:${NAVIGATION_VERSION}"
-    implementation "androidx.navigation:navigation-ui-ktx:${NAVIGATION_VERSION}"
-    implementation "androidx.preference:preference-ktx:${PREFERENCE_VERSION}"
-    implementation "com.google.android.material:material:${MATERIAL_VERSION}"
-
-    // Lifecycle
-    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$LIFECYCLE_VERSION"
-    implementation "androidx.lifecycle:lifecycle-runtime-ktx:$LIFECYCLE_VERSION"
-    kapt "androidx.lifecycle:lifecycle-common-java8:$LIFECYCLE_VERSION"
-
-    // Coroutines
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:${COROUTINES_VERSION}"
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:${COROUTINES_VERSION}"
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-rx2:${COROUTINES_VERSION}"
+    implementation libs.androidx.appcompat
+    implementation libs.androidx.constraintlayout
+    implementation libs.androidx.navigation.fragment.ktx
+    implementation libs.androidx.navigation.ui.ktx
+    implementation libs.androidx.preference.ktx
+    implementation libs.material
 
     // Reactive
-    implementation "com.jakewharton.rxbinding3:rxbinding-appcompat:${RXBINDING_VERSION}"
-    implementation "com.jakewharton.rxbinding3:rxbinding-material:${RXBINDING_VERSION}"
-    implementation "com.jakewharton.rxbinding3:rxbinding-recyclerview:${RXBINDING_VERSION}"
-    implementation "com.jakewharton.rxbinding3:rxbinding-swiperefreshlayout:${RXBINDING_VERSION}"
-    implementation "com.jakewharton.rxbinding3:rxbinding-viewpager:${RXBINDING_VERSION}"
-    implementation "io.reactivex.rxjava2:rxandroid:${RXANDROID_VERSION}"
-    implementation "io.reactivex.rxjava2:rxjava:${RXJAVA_VERSION}"
-    implementation "io.reactivex.rxjava2:rxkotlin:${RXKOTLIN_VERSION}"
-    implementation "ru.ldralighieri.corbind:corbind-core:${CORBIND_VERSION}"
-    implementation "ru.ldralighieri.corbind:corbind-appcompat:${CORBIND_VERSION}"
-    implementation "ru.ldralighieri.corbind:corbind-swiperefreshlayout:${CORBIND_VERSION}"
-
-    // Network
-    implementation "com.squareup.okhttp3:logging-interceptor:${OKHTTP_VERSION}"
-    implementation "com.squareup.okhttp3:okhttp:${OKHTTP_VERSION}"
-    implementation "com.squareup.okio:okio:${OKIO_VERSION}"
-    implementation "com.squareup.retrofit2:adapter-rxjava2:${RETROFIT_VERSION}"
-    implementation "com.squareup.retrofit2:converter-moshi:${RETROFIT_VERSION}"
-    implementation "com.squareup.retrofit2:retrofit:${RETROFIT_VERSION}"
-    implementation "com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:0.8.0"
-
-    // Database
-    implementation "androidx.room:room-runtime:${ROOM_VERSION}"
-    kapt "androidx.room:room-compiler:${ROOM_VERSION}"
-    implementation "androidx.room:room-ktx:${ROOM_VERSION}"
-    implementation "androidx.room:room-rxjava2:${ROOM_VERSION}"
-
-    // Serialization
-    implementation "com.squareup.moshi:moshi-adapters:${MOSHI_VERSION}"
-    implementation "com.squareup.moshi:moshi:${MOSHI_VERSION}"
-    implementation "com.squareup.retrofit2:converter-moshi:${RETROFIT_VERSION}"
-    ksp "com.squareup.moshi:moshi-kotlin-codegen:${MOSHI_VERSION}"
-    implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:${KOTLINX_SERIALIZATION}"
+    implementation libs.rxandroid
+    implementation libs.rxbinding.core
+    implementation libs.rxkotlin
 
     // Dependency Injection
-    implementation "com.google.dagger:dagger:${DAGGER_VERSION}"
-    kapt "com.google.dagger:dagger-compiler:${DAGGER_VERSION}"
-
-    // Miscellaneous
-    implementation "com.afollestad:rxkprefs:${RXK_PREFS_VERSION}"
-    implementation "io.coil-kt:coil:${COIL_VERSION}"
-    implementation "org.apache.commons:commons-csv:${COMMONS_CSV_VERSION}"
-    implementation "org.osmdroid:osmdroid-android:${OSMDROID_VERSION}"
-    implementation "se.fimbla:either:${EITHER_VERSION}"
-    implementation "com.github.permissions-dispatcher:permissionsdispatcher:${PERMISSIONS_DISPATCHER_VERSION}"
-    kapt "com.github.permissions-dispatcher:permissionsdispatcher-processor:${PERMISSIONS_DISPATCHER_VERSION}"
-
-    // Datetime
-    implementation "com.jakewharton.threetenabp:threetenabp:${THREETEN_ABP_VERSION}"
-    testImplementation "org.threeten:threetenbp:${THREETEN_BP_VERSION}"
+    implementation libs.dagger.runtime
+    ksp libs.dagger.compiler
 
     // Debugging, Testing, Linting, Analytics
-    debugImplementation "com.squareup.leakcanary:leakcanary-android:2.6"
-    implementation "com.jakewharton.timber:timber:${TIMBER_VERSION}"
-    ktlint "com.pinterest:ktlint:${KTLINT_VERSION}"
-    testImplementation "junit:junit:${JUNIT_VERSION}"
-    testImplementation "org.assertj:assertj-core:${ASSERTJ_VERSION}"
-    testImplementation "org.mockito:mockito-core:${MOCKITO_CORE_VERSION}"
+    debugImplementation libs.leakcanary
+    implementation libs.timber
+    testImplementation libs.junit
+    testImplementation libs.mockito
 
-}
-
-tasks.register("ktlint", JavaExec) {
-    description = "Check Kotlin code style."
-    classpath = configurations.ktlint
-    mainClass = "com.pinterest.ktlint.Main"
-    args "src/**/*.kt"
-    // to generate report in checkstyle format prepend following args:
-    // "--reporter=plain", "--reporter=checkstyle,output=${buildDir}/ktlint.xml"
-    // see https://github.com/shyiko/ktlint#usage for more
-}
-
-check.dependsOn ktlint
-
-tasks.register("ktlintFormat", JavaExec) {
-    description = "Fix Kotlin code style deviations."
-    classpath = configurations.ktlint
-    mainClass = "com.pinterest.ktlint.Main"
-    args "-F", "src/**/*.kt"
 }
 
 repositories {
     mavenCentral()
+}
+
+tasks.named("check") {
+    dependsOn ":ktlint"
 }

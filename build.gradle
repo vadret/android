@@ -1,15 +1,14 @@
 buildscript {
-    ext.KOTLIN_VERSION = "2.4.21"
     repositories {
         google()
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:9.1.1'
-        classpath 'com.android.tools.build:gradle-kotlin:9.1.1'
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$KOTLIN_VERSION"
-        classpath "org.jetbrains.kotlin:kotlin-serialization:$KOTLIN_VERSION"
-        classpath "com.google.devtools.ksp:symbol-processing-gradle-plugin:2.3.12"
+        classpath libs.android.gradlePlugin
+        classpath libs.android.gradleKotlinPlugin
+        classpath libs.kotlin.gradlePlugin
+        classpath libs.kotlin.serializationPlugin
+        classpath libs.ksp.gradlePlugin
     }
 
 }
@@ -25,4 +24,42 @@ allprojects {
             }
         }
     }
+}
+
+apply plugin: 'jvm-toolchains'
+
+configurations {
+    ktlint {
+        attributes {
+            attribute(Bundling.BUNDLING_ATTRIBUTE, objects.named(Bundling, Bundling.EXTERNAL))
+        }
+    }
+}
+
+dependencies {
+    ktlint libs.ktlint
+}
+
+// ktlint 0.41 does not run on JDK 16+
+def ktlintLauncher = javaToolchains.launcherFor {
+    languageVersion = JavaLanguageVersion.of(11)
+}
+
+tasks.register("ktlint", JavaExec) {
+    description = "Check Kotlin code style."
+    classpath = configurations.ktlint
+    mainClass = "com.pinterest.ktlint.Main"
+    javaLauncher = ktlintLauncher
+    args "**/src/**/*.kt", "!**/build/**"
+    // to generate report in checkstyle format prepend following args:
+    // "--reporter=plain", "--reporter=checkstyle,output=${buildDir}/ktlint.xml"
+    // see https://github.com/shyiko/ktlint#usage for more
+}
+
+tasks.register("ktlintFormat", JavaExec) {
+    description = "Fix Kotlin code style deviations."
+    classpath = configurations.ktlint
+    mainClass = "com.pinterest.ktlint.Main"
+    javaLauncher = ktlintLauncher
+    args "-F", "**/src/**/*.kt", "!**/build/**"
 }

@@ -19,7 +19,7 @@
         android:supportsRtl="true"
         android:theme="@style/LIGHT">
         <activity
-            android:name="fi.kroon.vadret.presentation.main.MainActivity"
+            android:name="fi.kroon.vadret.main.MainActivity"
             android:launchMode="singleTop"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>

@@ -1,0 +1,18 @@
+plugins {
+    id 'vadret.android.library'
+    id 'com.google.devtools.ksp'
+}
+
+android {
+    namespace 'fi.kroon.vadret.data.districtpreference'
+}
+
+dependencies {
+    api project(':data:common')
+    implementation project(':data:district')
+
+    implementation libs.dagger.runtime
+    implementation libs.room.common
+
+    ksp libs.dagger.compiler
+}

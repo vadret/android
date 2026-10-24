@@ -1,0 +1,27 @@
+// Shared configuration for every Android library module.
+// AGP itself comes from the root build script classpath.
+pluginManager.apply('com.android.library')
+// Applied everywhere so @Parcelize models stay readable to annotation processors downstream.
+pluginManager.apply('kotlin-parcelize')
+
+def libs = extensions.getByType(VersionCatalogsExtension).named('libs')
+def sdk = { String name -> libs.findVersion(name).get().requiredVersion.toInteger() }
+
+android {
+    compileSdk sdk('android-compileSdk')
+    defaultConfig {
+        minSdk sdk('android-minSdk')
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
+    }
+    lint {
+        abortOnError false
+    }
+}
+
+dependencies {
+    testImplementation libs.findLibrary('junit').get()
+    testImplementation libs.findLibrary('mockito').get()
+}

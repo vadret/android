@@ -1,0 +1,16 @@
+plugins {
+    id 'vadret.android.library'
+    id 'com.google.devtools.ksp'
+}
+
+android {
+    namespace 'fi.kroon.vadret.data.aboutinfo'
+}
+
+dependencies {
+    api project(':data:common')
+
+    implementation libs.dagger.runtime
+
+    ksp libs.dagger.compiler
+}

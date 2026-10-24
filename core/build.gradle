@@ -1,0 +1,41 @@
+plugins {
+    id 'vadret.android.library'
+    id 'com.google.devtools.ksp'
+}
+
+android {
+    namespace 'fi.kroon.vadret.core'
+    buildFeatures {
+        buildConfig true
+    }
+}
+
+dependencies {
+    api project(':data:aggregatedfeed')
+    api project(':data:autocomplete')
+    api project(':data:common')
+    api project(':data:district')
+    api project(':data:location')
+    api project(':data:nominatim')
+    api project(':data:persistance')
+    api project(':data:radar')
+    api project(':data:weatherforecast')
+
+    api libs.dagger.runtime
+    api libs.moshi.core
+    api libs.okhttp.core
+    api libs.rxkprefs
+    implementation libs.androidx.annotation
+    implementation libs.androidx.appcompat
+    implementation libs.androidx.fragment.ktx
+    implementation libs.material
+    implementation libs.okhttp.logging
+    implementation libs.retrofit.core
+    implementation libs.room.runtime
+    implementation libs.rxandroid
+    implementation libs.timber
+
+    ksp libs.dagger.compiler
+
+    testImplementation libs.assertj
+}

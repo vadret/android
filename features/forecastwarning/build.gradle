@@ -1,0 +1,37 @@
+plugins {
+    id 'vadret.android.feature'
+    id 'com.google.devtools.ksp'
+}
+
+android {
+    namespace 'fi.kroon.vadret.forecastwarning'
+}
+
+dependencies {
+    implementation project(':data:aggregatedfeed')
+    implementation project(':data:common')
+    implementation project(':data:district')
+    implementation project(':data:districtpreference')
+    implementation project(':data:feedsource')
+    implementation project(':data:feedsourcepreference')
+    implementation project(':data:persistance')
+
+    implementation libs.androidx.annotation
+    implementation libs.androidx.collection
+    implementation libs.androidx.navigation.fragment.ktx
+    implementation libs.androidx.recyclerview
+    implementation libs.androidx.swiperefreshlayout
+    implementation libs.corbind.core
+    implementation libs.corbind.swiperefreshlayout
+    implementation libs.coroutines.rx2
+    implementation libs.dagger.runtime
+    implementation libs.moshi.core
+    implementation libs.okhttp.core
+    implementation libs.retrofit.adapter.rxjava2
+    implementation libs.retrofit.converter.moshi
+    implementation libs.retrofit.core
+    implementation libs.rxkotlin
+    implementation libs.timber
+
+    ksp libs.dagger.compiler
+}

@@ -1,0 +1,25 @@
+// Feature modules: library defaults plus view binding and the UI stack every feature uses.
+pluginManager.apply('vadret.android.library')
+
+def libs = extensions.getByType(VersionCatalogsExtension).named('libs')
+
+android {
+    buildFeatures {
+        viewBinding true
+    }
+}
+
+dependencies {
+    implementation project(':core')
+    [
+        'androidx-appcompat',
+        'androidx-constraintlayout',
+        'androidx-core-ktx',
+        'androidx-fragment-ktx',
+        'coroutines-android',
+        'coroutines-core',
+        'lifecycle-runtime-ktx',
+        'lifecycle-viewmodel-ktx',
+        'material',
+    ].each { implementation libs.findLibrary(it).get() }
+}

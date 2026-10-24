@@ -1,0 +1,19 @@
+plugins {
+    id 'vadret.android.library'
+    id 'com.google.devtools.ksp'
+}
+
+android {
+    namespace 'fi.kroon.vadret.data.nominatim'
+}
+
+dependencies {
+    api project(':data:common')
+
+    implementation libs.dagger.runtime
+    implementation libs.moshi.core
+    implementation libs.retrofit.core
+
+    ksp libs.dagger.compiler
+    ksp libs.moshi.codegen
+}

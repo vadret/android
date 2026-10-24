@@ -1,0 +1,14 @@
+package fi.kroon.vadret.forecastwarning.districtpreference
+
+import fi.kroon.vadret.data.districtpreference.DistrictPreferenceRepository
+import fi.kroon.vadret.data.failure.Failure
+import io.reactivex.Single
+import se.fimbla.either.Either
+import javax.inject.Inject
+
+class DeleteAllDistrictPreferenceTask @Inject constructor(
+    private val repo: DistrictPreferenceRepository
+) {
+    operator fun invoke(): Single<Either<Failure, Unit>> = repo
+        .deleteAll()
+}

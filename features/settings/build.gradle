@@ -1,0 +1,24 @@
+plugins {
+    id 'vadret.android.feature'
+    id 'com.google.devtools.ksp'
+}
+
+android {
+    namespace 'fi.kroon.vadret.settings'
+}
+
+dependencies {
+    implementation project(':data:aboutinfo')
+    implementation project(':data:common')
+    implementation project(':data:library')
+
+    implementation libs.androidx.cardview
+    implementation libs.androidx.preference.ktx
+    implementation libs.androidx.recyclerview
+    implementation libs.androidx.viewpager
+    implementation libs.coroutines.rx2
+    implementation libs.dagger.runtime
+    implementation libs.timber
+
+    ksp libs.dagger.compiler
+}

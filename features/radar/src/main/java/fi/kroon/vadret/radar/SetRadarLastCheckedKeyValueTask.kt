@@ -1,0 +1,19 @@
+package fi.kroon.vadret.radar
+
+import fi.kroon.vadret.data.failure.Failure
+import fi.kroon.vadret.data.radar.local.RadarLocalKeyValueDataSource
+import fi.kroon.vadret.util.LAST_CHECKED_RADAR_KEY
+import io.reactivex.Single
+import se.fimbla.either.Either
+import javax.inject.Inject
+
+class SetRadarLastCheckedKeyValueTask @Inject constructor(
+    private val local: RadarLocalKeyValueDataSource
+) {
+    operator fun invoke(value: Long): Single<Either<Failure, Unit>> =
+        local
+            .putLong(
+                key = LAST_CHECKED_RADAR_KEY,
+                value = value
+            )
+}
