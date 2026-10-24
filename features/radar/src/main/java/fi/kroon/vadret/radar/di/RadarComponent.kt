@@ -1,15 +1,14 @@
 package fi.kroon.vadret.radar.di
 
 import androidx.compose.runtime.Composable
+import androidx.lifecycle.viewmodel.compose.viewModel
 import dagger.Component
-import fi.kroon.vadret.core.CoreComponent
 import fi.kroon.vadret.radar.RadarViewModel
-import fi.kroon.vadret.ui.daggerViewModel
 
 @RadarScope
 @Component(
     dependencies = [
-        CoreComponent::class
+        RadarDependencies::class
     ],
     modules = [
         RadarModule::class
@@ -21,15 +20,18 @@ internal interface RadarComponent {
 
     @Component.Factory
     interface Factory {
-        fun create(coreComponent: CoreComponent): RadarComponent
+        fun create(radarDependencies: RadarDependencies): RadarComponent
     }
 }
 
+/**
+ *  One view model per navigation entry.
+ */
 @Composable
-internal fun radarViewModel(): RadarViewModel =
-    daggerViewModel { _, coreComponent: CoreComponent ->
+internal fun radarViewModel(radarDependencies: RadarDependencies): RadarViewModel =
+    viewModel {
         DaggerRadarComponent
             .factory()
-            .create(coreComponent = coreComponent)
+            .create(radarDependencies = radarDependencies)
             .radarViewModel()
     }

@@ -3,7 +3,6 @@ package fi.kroon.vadret.weatherforecast.ui
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
@@ -12,7 +11,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -28,11 +26,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import fi.kroon.vadret.core.R
+import fi.kroon.vadret.ui.VadretProgressBar
 import fi.kroon.vadret.ui.VadretTheme
 import fi.kroon.vadret.ui.VadretTopAppBar
 import fi.kroon.vadret.weatherforecast.WeatherForecastEvent
 import fi.kroon.vadret.weatherforecast.WeatherForecastState
 import fi.kroon.vadret.weatherforecast.WeatherForecastViewModel
+import fi.kroon.vadret.weatherforecast.di.WeatherForecastDependencies
 import fi.kroon.vadret.weatherforecast.di.weatherForecastViewModel
 import fi.kroon.vadret.weatherforecast.model.SearchState
 import fi.kroon.vadret.weatherforecast.model.WeatherForecastRow
@@ -50,8 +50,9 @@ private val floatingActionButtonClearance = 88.dp
 
 @Composable
 fun WeatherForecastRoute(
+    weatherForecastDependencies: WeatherForecastDependencies,
     modifier: Modifier = Modifier,
-    viewModel: WeatherForecastViewModel = weatherForecastViewModel()
+    viewModel: WeatherForecastViewModel = weatherForecastViewModel(weatherForecastDependencies = weatherForecastDependencies)
 ) {
     val state: WeatherForecastState by viewModel.state.collectAsStateWithLifecycle()
     WeatherForecastScreen(
@@ -139,11 +140,7 @@ fun WeatherForecastScreen(
                 forecastRows(rows = state.forecast.days)
             }
             if (state.isLoading) {
-                LinearProgressIndicator(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .align(alignment = Alignment.TopCenter)
-                )
+                VadretProgressBar(modifier = Modifier.align(alignment = Alignment.TopCenter))
             }
         }
     }

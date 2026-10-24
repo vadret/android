@@ -2,18 +2,16 @@ package fi.kroon.vadret.weatherforecast
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import fi.kroon.vadret.data.autocomplete.model.AutoCompleteItem
-import fi.kroon.vadret.data.failure.Failure
-import fi.kroon.vadret.data.location.model.Location
-import fi.kroon.vadret.data.weatherforecast.model.Weather
-import fi.kroon.vadret.data.weatherforecast.model.WeatherOut
-import fi.kroon.vadret.shared.IViewModel
-import fi.kroon.vadret.util.AUTOCOMPLETE_DEBOUNCE_MILLIS
+import fi.kroon.vadret.autocomplete.model.AutoCompleteItem
+import fi.kroon.vadret.common.Failure
+import fi.kroon.vadret.ui.extension.messageResourceId
+import fi.kroon.vadret.weatherforecast.extension.toWeatherForecast
+import fi.kroon.vadret.weatherforecast.model.PlaceForecast
 import fi.kroon.vadret.weatherforecast.model.SearchState
 import fi.kroon.vadret.weatherforecast.model.WeatherForecast
 import io.github.sphrak.either.Either
+import io.github.sphrak.either.extension.asRight
 import io.github.sphrak.either.extension.onResult
-import io.github.sphrak.either.flatMap
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -22,31 +20,41 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlinx.datetime.TimeZone
-import timber.log.Timber
 import java.util.Locale
 import javax.inject.Inject
 import kotlin.time.Clock
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.milliseconds
 
-class WeatherForecastViewModel @Inject constructor(
-    private val getAppLocationModeTask: GetAppLocationModeTask,
+/**
+ *  Typing waits this long before searching.
+ */
+private val searchDebounce: Duration = 70.milliseconds
+
+/**
+ *  Jobs and [loadedLocationMode] are only touched on the main
+ *  thread, the work itself runs on [coroutineDispatcher].
+ */
+class WeatherForecastViewModel @Inject internal constructor(
+    private val getLocationModeTask: GetLocationModeTask,
     private val setLocationModeTask: SetLocationModeTask,
-    private val setLocationInformationTask: SetLocationInformationTask,
-    private val getWeatherForecastService: GetWeatherForecastService,
-    private val getWeatherForecastLastCheckedTask: GetWeatherForecastLastCheckedTask,
-    private val setWeatherForecastLastCheckedTask: SetWeatherForecastLastCheckedTask,
-    private val getAutoCompleteService: GetAutoCompleteService,
+    private val getWeatherForecastTask: GetWeatherForecastTask,
+    private val searchPlacesTask: SearchPlacesTask,
+    private val selectPlaceTask: SelectPlaceTask,
     private val clock: Clock,
     private val coroutineDispatcher: CoroutineDispatcher
-) : ViewModel(), IViewModel {
+) : ViewModel() {
 
-    private val mutableState: MutableStateFlow<WeatherForecastState> = MutableStateFlow(WeatherForecastState())
+    private val mutableState: MutableStateFlow<WeatherForecastState> = MutableStateFlow(value = WeatherForecastState())
     val state: StateFlow<WeatherForecastState> = mutableState.asStateFlow()
 
     /**
-     *  The location mode the shown forecast was loaded with.
+     *  The location mode the shown forecast was loaded
+     *  with, null before the first load.
      */
-    private val loadedLocationMode: MutableStateFlow<Boolean?> = MutableStateFlow(null)
+    private var loadedLocationMode: Boolean? = null
     private var loadJob: Job? = null
     private var searchJob: Job? = null
 
@@ -68,19 +76,21 @@ class WeatherForecastViewModel @Inject constructor(
         }
     }
 
+    /**
+     *  The location mode may have changed in settings meanwhile.
+     */
     private fun onShown() {
-        viewModelScope.launch(context = coroutineDispatcher) {
-            getAppLocationModeTask()
-                .onResult(
-                    { failure: Failure ->
-                        displayError(failure = failure)
-                    },
-                    { isAutomatic: Boolean ->
-                        if (isAutomatic != loadedLocationMode.value) {
-                            startLoading(isAutomatic = isAutomatic)
-                        }
+        viewModelScope.launch {
+            withContext(context = coroutineDispatcher) {
+                getLocationModeTask()
+            }.onResult(
+                onError = { failure: Failure -> displayError(failure = failure) },
+                onSuccess = { isAutomatic: Boolean ->
+                    if (isAutomatic != loadedLocationMode) {
+                        startLoading(isAutomatic = isAutomatic)
                     }
-                )
+                }
+            )
         }
     }
 
@@ -90,10 +100,7 @@ class WeatherForecastViewModel @Inject constructor(
                 state.copy(isLocationPermissionRequested = true)
             }
         } else {
-            load(
-                isAutomatic = false,
-                forceNet = false
-            )
+            load(isAutomatic = false)
         }
     }
 
@@ -105,19 +112,13 @@ class WeatherForecastViewModel @Inject constructor(
         mutableState.update { state: WeatherForecastState ->
             state.copy(isLocationPermissionRequested = false)
         }
-        viewModelScope.launch(context = coroutineDispatcher) {
-            setLocationModeTask(value = isGranted)
-                .onResult(
-                    { failure: Failure ->
-                        displayError(failure = failure)
-                    },
-                    {
-                        load(
-                            isAutomatic = isGranted,
-                            forceNet = false
-                        )
-                    }
-                )
+        viewModelScope.launch {
+            withContext(context = coroutineDispatcher) {
+                setLocationModeTask(isAutomatic = isGranted)
+            }.onResult(
+                onError = { failure: Failure -> displayError(failure = failure) },
+                onSuccess = { load(isAutomatic = isGranted) }
+            )
         }
     }
 
@@ -125,54 +126,29 @@ class WeatherForecastViewModel @Inject constructor(
      *  Nothing to refresh until the first load has started.
      */
     private fun onRefresh() {
-        val isAutomatic: Boolean? = loadedLocationMode.value
-        if (isAutomatic == null) {
-            return
-        }
+        val isAutomatic: Boolean = loadedLocationMode ?: return
         mutableState.update { state: WeatherForecastState ->
             state.copy(isRefreshing = true)
         }
-        load(
-            isAutomatic = isAutomatic,
-            forceNet = true
-        )
+        load(isAutomatic = isAutomatic)
     }
 
-    private fun load(isAutomatic: Boolean, forceNet: Boolean) {
-        loadedLocationMode.value = isAutomatic
+    private fun load(isAutomatic: Boolean) {
+        loadedLocationMode = isAutomatic
         loadJob?.cancel()
-        loadJob = viewModelScope.launch(context = coroutineDispatcher) {
-            getWeatherForecastLastCheckedTask()
-                .flatMap { timeStamp: Long ->
-                    getWeatherForecastService(
-                        timeStamp = timeStamp,
-                        forceNet = forceNet
+        loadJob = viewModelScope.launch {
+            withContext(context = coroutineDispatcher) {
+                getWeatherForecastTask()
+                    .onResult(
+                        onError = { failure: Failure -> displayError(failure = failure) },
+                        onSuccess = { placeForecast: PlaceForecast -> displayForecast(placeForecast = placeForecast) }
                     )
-                }
-                .onResult(
-                    { failure: Failure ->
-                        displayError(failure = failure)
-                    },
-                    { data: GetWeatherForecastService.Data ->
-                        displayForecast(data = data)
-                        setLastChecked(timeStamp = data.timeStamp)
-                    }
-                )
+            }
         }
     }
 
-    private fun displayForecast(data: GetWeatherForecastService.Data) {
-        val weather: Weather? = data.weather
-        val weatherOut: WeatherOut? = data.weatherOut
-        if (weather == null || weatherOut == null) {
-            return
-        }
-        val forecast: WeatherForecast = WeatherForecastMapper(
-            timeSeries = weather.timeSeries,
-            location = Location(
-                latitude = weatherOut.latitude,
-                longitude = weatherOut.longitude
-            ),
+    private fun displayForecast(placeForecast: PlaceForecast) {
+        val forecast: WeatherForecast = placeForecast.toWeatherForecast(
             now = clock.now(),
             timeZone = TimeZone.currentSystemDefault(),
             locale = Locale.getDefault()
@@ -180,24 +156,11 @@ class WeatherForecastViewModel @Inject constructor(
         mutableState.update { state: WeatherForecastState ->
             state.copy(
                 forecast = forecast,
-                localityName = data.localityName,
+                localityName = placeForecast.placeName,
                 isLoading = false,
                 isRefreshing = false
             )
         }
-    }
-
-    /**
-     *  A lost timestamp only means the next load skips the cache.
-     */
-    private fun setLastChecked(timeStamp: Long) {
-        setWeatherForecastLastCheckedTask(value = timeStamp)
-            .onResult(
-                { failure: Failure ->
-                    Timber.e("Failed storing last checked: $failure")
-                },
-                {}
-            )
     }
 
     private fun onSearchDismissed() {
@@ -221,28 +184,43 @@ class WeatherForecastViewModel @Inject constructor(
             }
         }
         searchJob?.cancel()
-        searchJob = viewModelScope.launch(context = coroutineDispatcher) {
-            delay(timeMillis = AUTOCOMPLETE_DEBOUNCE_MILLIS)
-            val suggestions: Either<Failure, List<AutoCompleteItem>> = if (query.isBlank()) {
-                Either.Right(emptyList())
-            } else {
-                getAutoCompleteService(text = query)
-            }
-            suggestions.onResult(
-                { failure: Failure ->
-                    displayError(failure = failure)
-                },
-                { autoCompleteItemList: List<AutoCompleteItem> ->
-                    mutableState.update { state: WeatherForecastState ->
-                        val search: SearchState? = state.search
-                        if (search != null && search.query == query) {
-                            state.copy(search = search.copy(suggestions = autoCompleteItemList))
-                        } else {
-                            state
-                        }
-                    }
+        searchJob = viewModelScope.launch {
+            delay(duration = searchDebounce)
+            withContext(context = coroutineDispatcher) {
+                search(query = query)
+            }.onResult(
+                onError = { failure: Failure -> displayError(failure = failure) },
+                onSuccess = { suggestions: List<AutoCompleteItem> ->
+                    displaySuggestions(
+                        query = query,
+                        suggestions = suggestions
+                    )
                 }
             )
+        }
+    }
+
+    private suspend fun search(query: String): Either<Failure, List<AutoCompleteItem>> =
+        if (query.isBlank()) {
+            emptyList<AutoCompleteItem>().asRight()
+        } else {
+            searchPlacesTask(prefix = query)
+        }
+
+    /**
+     *  Suggestions for a query the user has typed past are dropped.
+     */
+    private fun displaySuggestions(
+        query: String,
+        suggestions: List<AutoCompleteItem>
+    ) {
+        mutableState.update { state: WeatherForecastState ->
+            val search: SearchState? = state.search
+            if (search != null && search.query == query) {
+                state.copy(search = search.copy(suggestions = suggestions))
+            } else {
+                state
+            }
         }
     }
 
@@ -253,36 +231,30 @@ class WeatherForecastViewModel @Inject constructor(
 
     private fun onSuggestionClicked(autoCompleteItem: AutoCompleteItem) {
         searchJob?.cancel()
-        viewModelScope.launch(context = coroutineDispatcher) {
-            setLocationModeTask(value = false)
-                .flatMap { setLocationInformationTask(autoCompleteItem = autoCompleteItem) }
-                .onResult(
-                    { failure: Failure ->
-                        displayError(failure = failure)
-                    },
-                    {
-                        mutableState.update { state: WeatherForecastState ->
-                            state.copy(
-                                search = null,
-                                isRefreshing = true
-                            )
-                        }
-                        load(
-                            isAutomatic = false,
-                            forceNet = true
+        viewModelScope.launch {
+            withContext(context = coroutineDispatcher) {
+                selectPlaceTask(autoCompleteItem = autoCompleteItem)
+            }.onResult(
+                onError = { failure: Failure -> displayError(failure = failure) },
+                onSuccess = {
+                    mutableState.update { state: WeatherForecastState ->
+                        state.copy(
+                            search = null,
+                            isRefreshing = true
                         )
                     }
-                )
+                    load(isAutomatic = false)
+                }
+            )
         }
     }
 
     private fun displayError(failure: Failure) {
-        Timber.e("Failure: $failure")
         mutableState.update { state: WeatherForecastState ->
             state.copy(
                 isLoading = false,
                 isRefreshing = false,
-                errorMessageResourceId = getErrorCode(failure)
+                errorMessageResourceId = failure.messageResourceId()
             )
         }
     }

@@ -11,17 +11,6 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
-import fi.kroon.vadret.util.DEFAULT_BOUNDINGBOX_CENTER_LATITUDE
-import fi.kroon.vadret.util.DEFAULT_BOUNDINGBOX_CENTER_LONGITUDE
-import fi.kroon.vadret.util.DEFAULT_BOUNDINGBOX_LATITUDE_MAX
-import fi.kroon.vadret.util.DEFAULT_BOUNDINGBOX_LATITUDE_MIN
-import fi.kroon.vadret.util.DEFAULT_BOUNDINGBOX_LONGITUDE_MAX
-import fi.kroon.vadret.util.DEFAULT_BOUNDINGBOX_LONGITUDE_MIN
-import fi.kroon.vadret.util.DEFAULT_RADAR_FILE_EXTENSION
-import fi.kroon.vadret.util.DEFAULT_RADAR_ZOOM_LEVEL
-import fi.kroon.vadret.util.MAXIMUM_ZOOM_LEVEL
-import fi.kroon.vadret.util.MINIMUM_ZOOM_LEVEL
-import fi.kroon.vadret.util.WIKIMEDIA_TILE_SOURCE_URL
 import org.osmdroid.config.Configuration
 import org.osmdroid.config.IConfigurationProvider
 import org.osmdroid.tileprovider.tilesource.XYTileSource
@@ -32,7 +21,25 @@ import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.GroundOverlay
 import java.io.File
 
+/**
+ *  The area SMHI's composite radar image covers.
+ */
+private const val RADAR_LATITUDE_MAX = 70.0481652870767
+private const val RADAR_LATITUDE_MIN = 53.6813981284917
+private const val RADAR_LONGITUDE_MAX = 29.7811924432583
+private const val RADAR_LONGITUDE_MIN = 5.2849968932444
+
+/**
+ *  Sweden fills the screen at this zoom.
+ */
+private const val CENTER_LATITUDE = 58.62
+private const val CENTER_LONGITUDE = 15.57
+private const val INITIAL_ZOOM_LEVEL = 6.0
+private const val MINIMUM_ZOOM_LEVEL = 5.0
+private const val MAXIMUM_ZOOM_LEVEL = 20.0
+
 private const val TILE_SOURCE_NAME = "wikimedia"
+private const val TILE_FILE_EXTENSION = ".png"
 private const val TILE_ZOOM_MIN_LEVEL = 1
 private const val TILE_ZOOM_MAX_LEVEL = 18
 private const val TILE_SIZE_PIXELS = 256
@@ -53,8 +60,8 @@ internal fun RadarMap(
     val groundOverlay: GroundOverlay = remember {
         GroundOverlay().apply {
             setPosition(
-                GeoPoint(DEFAULT_BOUNDINGBOX_LATITUDE_MAX, DEFAULT_BOUNDINGBOX_LONGITUDE_MIN),
-                GeoPoint(DEFAULT_BOUNDINGBOX_LATITUDE_MIN, DEFAULT_BOUNDINGBOX_LONGITUDE_MAX)
+                GeoPoint(RADAR_LATITUDE_MAX, RADAR_LONGITUDE_MIN),
+                GeoPoint(RADAR_LATITUDE_MIN, RADAR_LONGITUDE_MAX)
             )
         }
     }
@@ -102,8 +109,8 @@ private fun createMapView(context: Context): MapView {
                 TILE_ZOOM_MIN_LEVEL,
                 TILE_ZOOM_MAX_LEVEL,
                 TILE_SIZE_PIXELS,
-                DEFAULT_RADAR_FILE_EXTENSION,
-                arrayOf(WIKIMEDIA_TILE_SOURCE_URL)
+                TILE_FILE_EXTENSION,
+                arrayOf("https://maps.wikimedia.org/osm-intl/")
             )
         )
         isTilesScaledToDpi = true
@@ -111,14 +118,14 @@ private fun createMapView(context: Context): MapView {
         zoomController.setVisibility(CustomZoomButtonsController.Visibility.NEVER)
         maxZoomLevel = MAXIMUM_ZOOM_LEVEL
         minZoomLevel = MINIMUM_ZOOM_LEVEL
-        controller.setCenter(GeoPoint(DEFAULT_BOUNDINGBOX_CENTER_LATITUDE, DEFAULT_BOUNDINGBOX_CENTER_LONGITUDE))
-        controller.setZoom(DEFAULT_RADAR_ZOOM_LEVEL)
+        controller.setCenter(GeoPoint(CENTER_LATITUDE, CENTER_LONGITUDE))
+        controller.setZoom(INITIAL_ZOOM_LEVEL)
         setScrollableAreaLimitDouble(
             BoundingBox(
-                DEFAULT_BOUNDINGBOX_LATITUDE_MAX,
-                DEFAULT_BOUNDINGBOX_LONGITUDE_MAX,
-                DEFAULT_BOUNDINGBOX_LATITUDE_MIN,
-                DEFAULT_BOUNDINGBOX_LONGITUDE_MIN
+                RADAR_LATITUDE_MAX,
+                RADAR_LONGITUDE_MAX,
+                RADAR_LATITUDE_MIN,
+                RADAR_LONGITUDE_MIN
             )
         )
     }

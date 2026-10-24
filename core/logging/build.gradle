@@ -1,0 +1,7 @@
+plugins {
+    id 'vadret.android.library'
+}
+
+android {
+    namespace 'fi.kroon.vadret.logging'
+}

@@ -115,19 +115,31 @@ dependencies {
 
     // Modules
     implementation project(':core')
+    implementation project(':core:logging')
+    implementation project(':data:aggregatedfeed')
+    implementation project(':data:autocomplete')
+    implementation project(':data:common')
+    implementation project(':data:library')
+    implementation project(':data:location')
+    implementation project(':data:nominatim')
+    implementation project(':data:radar')
+    implementation project(':data:theme')
+    implementation project(':data:warningfilter')
+    implementation project(':data:weatherforecast')
     implementation project(':features:forecastwarning')
     implementation project(':features:radar')
     implementation project(':features:settings')
     implementation project(':features:weatherforecast')
-    implementation project(':data:nominatim')
-    implementation project(':data:theme')
 
     // Android
     implementation libs.androidx.activity.compose
     implementation libs.lifecycle.viewmodel.navigation3
     implementation libs.navigation3.runtime
     implementation libs.navigation3.ui
+    implementation libs.coroutines.core
+    implementation libs.either
     implementation libs.kotlinx.serialization.json
+    implementation libs.ktor.client.core
 
     // Dependency Injection
     implementation libs.dagger.runtime
@@ -135,7 +147,7 @@ dependencies {
 
     // Debugging, Testing, Linting, Analytics
     debugImplementation libs.leakcanary
-    implementation libs.timber
+    testImplementation project(':core:testing')
     testImplementation libs.coroutines.test
     testImplementation libs.kotlin.test
     testImplementation libs.kotlin.test.junit

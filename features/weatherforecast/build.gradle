@@ -8,6 +8,7 @@ android {
 }
 
 dependencies {
+    implementation project(':core:logging')
     implementation project(':data:autocomplete')
     implementation project(':data:common')
     implementation project(':data:location')
@@ -17,8 +18,10 @@ dependencies {
     implementation libs.androidx.activity.compose
     implementation libs.androidx.annotation
     implementation libs.dagger.runtime
+    implementation libs.either
     implementation libs.kotlinx.datetime
-    implementation libs.timber
 
     ksp libs.dagger.compiler
+
+    testImplementation project(':core:testing')
 }

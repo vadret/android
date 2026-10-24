@@ -1,0 +1,49 @@
+package fi.kroon.vadret.location.local
+
+import android.annotation.SuppressLint
+import android.location.Location
+import android.location.LocationManager
+import fi.kroon.vadret.location.exception.LocationNotAvailableException
+import fi.kroon.vadret.location.exception.LocationProviderDisabledException
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.withContext
+
+/**
+ *  The network provider answers faster and indoors,
+ *  so it is asked before GPS.
+ */
+internal class DefaultDeviceLocationLocalDataSource(
+    private val locationManager: LocationManager,
+    private val coroutineDispatcher: CoroutineDispatcher
+) : DeviceLocationLocalDataSource {
+
+    private val providers: List<String> = listOf(
+        LocationManager.NETWORK_PROVIDER,
+        LocationManager.GPS_PROVIDER
+    )
+
+    override suspend fun getLastKnownLocation(): LocationEntity =
+        withContext(context = coroutineDispatcher) {
+            val enabledProviders: List<String> = providers.filter { provider: String ->
+                locationManager.isProviderEnabled(provider)
+            }
+            if (enabledProviders.isEmpty()) {
+                throw LocationProviderDisabledException()
+            }
+            val location: Location = enabledProviders.firstNotNullOfOrNull { provider: String ->
+                lastKnownLocation(provider = provider)
+            } ?: throw LocationNotAvailableException()
+            LocationEntity(
+                latitude = location.latitude,
+                longitude = location.longitude
+            )
+        }
+
+    /**
+     *  The caller asks for location access before using the
+     *  device location, a missing permission throws.
+     */
+    @SuppressLint("MissingPermission")
+    private fun lastKnownLocation(provider: String): Location? =
+        locationManager.getLastKnownLocation(provider)
+}

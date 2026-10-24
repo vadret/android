@@ -1,15 +1,13 @@
 package fi.kroon.vadret.weatherforecast.di
 
 import androidx.compose.runtime.Composable
+import androidx.lifecycle.viewmodel.compose.viewModel
 import dagger.Component
-import fi.kroon.vadret.core.CoreComponent
-import fi.kroon.vadret.ui.daggerViewModel
 import fi.kroon.vadret.weatherforecast.WeatherForecastViewModel
 
-@WeatherForecastScope
 @Component(
     dependencies = [
-        CoreComponent::class
+        WeatherForecastDependencies::class
     ],
     modules = [
         WeatherForecastModule::class
@@ -21,15 +19,18 @@ internal interface WeatherForecastComponent {
 
     @Component.Factory
     interface Factory {
-        fun create(coreComponent: CoreComponent): WeatherForecastComponent
+        fun create(weatherForecastDependencies: WeatherForecastDependencies): WeatherForecastComponent
     }
 }
 
+/**
+ *  One view model per navigation entry.
+ */
 @Composable
-internal fun weatherForecastViewModel(): WeatherForecastViewModel =
-    daggerViewModel { _, coreComponent: CoreComponent ->
+internal fun weatherForecastViewModel(weatherForecastDependencies: WeatherForecastDependencies): WeatherForecastViewModel =
+    viewModel {
         DaggerWeatherForecastComponent
             .factory()
-            .create(coreComponent = coreComponent)
+            .create(weatherForecastDependencies = weatherForecastDependencies)
             .weatherForecastViewModel()
     }

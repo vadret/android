@@ -1,8 +1,6 @@
 // Shared configuration for every Android library module.
 // AGP itself comes from the root build script classpath.
 pluginManager.apply('com.android.library')
-// Applied everywhere so @Parcelize models stay readable to annotation processors downstream.
-pluginManager.apply('kotlin-parcelize')
 
 def libs = extensions.getByType(VersionCatalogsExtension).named('libs')
 def sdk = { String name -> libs.findVersion(name).get().requiredVersion.toInteger() }
@@ -25,5 +23,5 @@ dependencies {
     testImplementation libs.findLibrary('coroutines-test').get()
     testImplementation libs.findLibrary('kotlin-test').get()
     testImplementation libs.findLibrary('kotlin-test-junit').get()
-    testImplementation libs.findLibrary('mockito').get()
+    testImplementation libs.findLibrary('mockk').get()
 }

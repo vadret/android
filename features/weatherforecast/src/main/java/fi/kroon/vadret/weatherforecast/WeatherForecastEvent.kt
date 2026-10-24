@@ -1,6 +1,6 @@
 package fi.kroon.vadret.weatherforecast
 
-import fi.kroon.vadret.data.autocomplete.model.AutoCompleteItem
+import fi.kroon.vadret.autocomplete.model.AutoCompleteItem
 
 sealed interface WeatherForecastEvent {
 

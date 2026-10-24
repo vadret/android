@@ -3,13 +3,12 @@ package fi.kroon.vadret.radar
 import android.graphics.Bitmap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import fi.kroon.vadret.data.failure.Failure
-import fi.kroon.vadret.data.radar.model.Radar
+import fi.kroon.vadret.common.Failure
+import fi.kroon.vadret.radar.extension.toRadarFrames
+import fi.kroon.vadret.radar.model.Radar
 import fi.kroon.vadret.radar.model.RadarFrame
-import fi.kroon.vadret.shared.IViewModel
-import fi.kroon.vadret.util.RADAR_DEBOUNCE_MILLIS
+import fi.kroon.vadret.ui.extension.messageResourceId
 import io.github.sphrak.either.extension.onResult
-import io.github.sphrak.either.flatMap
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -17,20 +16,30 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlinx.datetime.TimeZone
-import timber.log.Timber
 import javax.inject.Inject
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.milliseconds
 
-class RadarViewModel @Inject constructor(
-    private val getRadarImageUrlService: GetRadarImageUrlService,
-    private val getRadarLastCheckedKeyValueTask: GetRadarLastCheckedKeyValueTask,
-    private val setRadarLastCheckedKeyValueTask: SetRadarLastCheckedKeyValueTask,
+/**
+ *  How long each frame shows while playing.
+ */
+private val frameDuration: Duration = 256.milliseconds
+
+/**
+ *  Jobs are started and cancelled on the main thread only,
+ *  the work itself runs on [coroutineDispatcher].
+ */
+class RadarViewModel @Inject internal constructor(
+    private val getRadarTask: GetRadarTask,
     private val radarImageLoader: RadarImageLoader,
     private val coroutineDispatcher: CoroutineDispatcher
-) : ViewModel(), IViewModel {
+) : ViewModel() {
 
-    private val mutableState: MutableStateFlow<RadarState> = MutableStateFlow(RadarState())
+    private val mutableState: MutableStateFlow<RadarState> = MutableStateFlow(value = RadarState())
     val state: StateFlow<RadarState> = mutableState.asStateFlow()
 
     private var playJob: Job? = null
@@ -50,97 +59,37 @@ class RadarViewModel @Inject constructor(
         }
     }
 
+    /**
+     *  Shows the newest frame once loaded.
+     */
     private fun load() {
-        viewModelScope.launch(context = coroutineDispatcher) {
-            getRadarLastCheckedKeyValueTask()
-                .flatMap { timeStamp: Long -> getRadarImageUrlService(timeStamp = timeStamp) }
-                .onResult(
-                    { failure: Failure ->
-                        displayError(failure = failure)
-                    },
-                    { data: GetRadarImageUrlService.Data ->
-                        val radar: Radar? = data.radar
-                        val frames: List<RadarFrame> = if (radar != null) {
-                            RadarFrameMapper(
-                                files = radar.files,
-                                timeZone = TimeZone.currentSystemDefault()
-                            )
-                        } else {
-                            emptyList()
+        viewModelScope.launch {
+            val isLoaded: Boolean = withContext(context = coroutineDispatcher) {
+                getRadarTask()
+                    .onResult(
+                        onError = { failure: Failure ->
+                            displayError(failure = failure)
+                            false
+                        },
+                        onSuccess = { radar: Radar ->
+                            displayFrames(frames = radar.toRadarFrames(timeZone = TimeZone.currentSystemDefault()))
+                            true
                         }
-                        mutableState.update { state: RadarState ->
-                            state.copy(
-                                frames = frames,
-                                index = frames.lastIndex.coerceAtLeast(minimumValue = 0),
-                                isLoading = false
-                            )
-                        }
-                        setLastChecked(timeStamp = data.timeStamp)
-                        showFrame(index = frames.lastIndex)
-                    }
-                )
-        }
-    }
-
-    /**
-     *  A lost timestamp only means the next load skips the cache.
-     */
-    private suspend fun setLastChecked(timeStamp: Long) {
-        setRadarLastCheckedKeyValueTask(value = timeStamp)
-            .onResult(
-                { failure: Failure ->
-                    Timber.e("Failed storing last checked: $failure")
-                },
-                {}
-            )
-    }
-
-    private suspend fun showFrame(index: Int) {
-        val frame: RadarFrame = mutableState.value.frames.getOrNull(index) ?: return
-        radarImageLoader.load(url = frame.imageUrl)
-            .onResult(
-                { failure: Failure ->
-                    displayError(failure = failure)
-                },
-                { bitmap: Bitmap ->
-                    mutableState.update { state: RadarState ->
-                        state.copy(
-                            index = index,
-                            overlay = bitmap
-                        )
-                    }
-                }
-            )
-    }
-
-    /**
-     *  Plays from the shown frame and starts over after the newest.
-     */
-    private fun onPlayButtonClicked() {
-        if (mutableState.value.isPlaying) {
-            stopPlaying()
-            return
-        }
-        mutableState.update { state: RadarState ->
-            state.copy(isPlaying = true)
-        }
-        playJob = viewModelScope.launch(context = coroutineDispatcher) {
-            while (true) {
-                delay(timeMillis = RADAR_DEBOUNCE_MILLIS)
-                val state: RadarState = mutableState.value
-                if (state.frames.isEmpty()) {
-                    stopPlaying()
-                    return@launch
-                }
-                showFrame(index = (state.index + 1) % state.frames.size)
+                    )
+            }
+            if (isLoaded) {
+                showFrame(index = mutableState.value.frames.lastIndex)
             }
         }
     }
 
-    private fun stopPlaying() {
-        playJob?.cancel()
+    private fun displayFrames(frames: List<RadarFrame>) {
         mutableState.update { state: RadarState ->
-            state.copy(isPlaying = false)
+            state.copy(
+                frames = frames,
+                index = frames.lastIndex.coerceAtLeast(minimumValue = 0),
+                isLoading = false
+            )
         }
     }
 
@@ -152,20 +101,98 @@ class RadarViewModel @Inject constructor(
         mutableState.update { state: RadarState ->
             state.copy(index = index)
         }
+        showFrame(index = index)
+    }
+
+    /**
+     *  A newer frame request replaces one still loading.
+     */
+    private fun showFrame(index: Int) {
+        val frame: RadarFrame = mutableState.value.frames.getOrNull(index = index) ?: return
         frameJob?.cancel()
-        frameJob = viewModelScope.launch(context = coroutineDispatcher) {
-            showFrame(index = index)
+        frameJob = viewModelScope.launch {
+            loadFrame(
+                index = index,
+                frame = frame
+            )
+        }
+    }
+
+    /**
+     *  False when the image could not be loaded.
+     */
+    private suspend fun loadFrame(
+        index: Int,
+        frame: RadarFrame
+    ): Boolean =
+        withContext(context = coroutineDispatcher) {
+            radarImageLoader
+                .load(imageUrl = frame.imageUrl)
+                .onResult(
+                    onError = { failure: Failure ->
+                        displayError(failure = failure)
+                        false
+                    },
+                    onSuccess = { bitmap: Bitmap ->
+                        mutableState.update { state: RadarState ->
+                            state.copy(
+                                index = index,
+                                overlay = bitmap
+                            )
+                        }
+                        true
+                    }
+                )
+        }
+
+    /**
+     *  Plays from the shown frame and starts over after the newest.
+     *  Each frame is shown before the next one is loaded, and a frame
+     *  that fails to load stops playback.
+     */
+    private fun onPlayButtonClicked() {
+        if (mutableState.value.isPlaying) {
+            stopPlaying()
+            return
+        }
+        mutableState.update { state: RadarState ->
+            state.copy(isPlaying = true)
+        }
+        frameJob?.cancel()
+        playJob = viewModelScope.launch {
+            while (isActive) {
+                delay(duration = frameDuration)
+                val state: RadarState = mutableState.value
+                if (state.frames.isEmpty()) {
+                    stopPlaying()
+                    return@launch
+                }
+                val index: Int = (state.index + 1) % state.frames.size
+                val isShown: Boolean = loadFrame(
+                    index = index,
+                    frame = state.frames[index]
+                )
+                if (!isShown) {
+                    stopPlaying()
+                    return@launch
+                }
+            }
+        }
+    }
+
+    private fun stopPlaying() {
+        playJob?.cancel()
+        playJob = null
+        mutableState.update { state: RadarState ->
+            state.copy(isPlaying = false)
         }
     }
 
     private fun displayError(failure: Failure) {
-        Timber.e("Failure: $failure")
-        playJob?.cancel()
         mutableState.update { state: RadarState ->
             state.copy(
                 isLoading = false,
-                isPlaying = false,
-                errorMessageResourceId = getErrorCode(failure)
+                errorMessageResourceId = failure.messageResourceId()
             )
         }
     }

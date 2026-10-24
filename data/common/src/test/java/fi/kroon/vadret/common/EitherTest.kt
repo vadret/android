@@ -1,0 +1,69 @@
+package fi.kroon.vadret.common
+
+import io.github.sphrak.either.Either
+import kotlinx.coroutines.CancellationException
+import java.io.IOException
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
+import kotlin.test.assertSame
+
+class EitherTest {
+
+    @Test
+    fun `a value is kept on the right`() {
+        assertEquals(
+            expected = Either.Right(b = 1),
+            actual = either { 1 }
+        )
+    }
+
+    @Test
+    fun `an exception is kept on the left`() {
+        val exception = IOException("broken")
+
+        val result: Either<Exception, Int> = either { throw exception }
+
+        assertEquals(
+            expected = Either.Left(a = exception),
+            actual = result
+        )
+    }
+
+    @Test
+    fun `cancellation is rethrown`() {
+        assertFailsWith<CancellationException> {
+            either<Int> { throw CancellationException("cancelled") }
+        }
+    }
+
+    @Test
+    fun `catch turns the exception into an error value`() {
+        val exception = IOException("broken")
+
+        val result: Either<String, Int> = either<Int> { throw exception }
+            .catch { caught: Exception -> caught.message.orEmpty() }
+
+        assertEquals(
+            expected = Either.Left(a = "broken"),
+            actual = result
+        )
+    }
+
+    @Test
+    fun `catch leaves a value alone`() {
+        var isTransformed = false
+
+        val result: Either<String, Int> = either { 1 }
+            .catch {
+                isTransformed = true
+                "unused"
+            }
+
+        assertEquals(
+            expected = Either.Right(b = 1),
+            actual = result
+        )
+        assertSame(expected = false, actual = isTransformed)
+    }
+}

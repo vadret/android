@@ -8,17 +8,16 @@ android {
 }
 
 dependencies {
+    implementation project(':core:logging')
     implementation project(':data:aggregatedfeed')
     implementation project(':data:common')
-    implementation project(':data:district')
-    implementation project(':data:districtpreference')
-    implementation project(':data:feedsource')
-    implementation project(':data:feedsourcepreference')
-    implementation project(':data:persistance')
+    implementation project(':data:warningfilter')
 
     implementation libs.androidx.annotation
     implementation libs.dagger.runtime
-    implementation libs.timber
+    implementation libs.either
 
     ksp libs.dagger.compiler
+
+    testImplementation project(':core:testing')
 }

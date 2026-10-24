@@ -1,25 +1,32 @@
 package fi.kroon.vadret
 
 import android.app.Application
-import fi.kroon.vadret.core.CoreComponent
-import fi.kroon.vadret.core.CoreComponentFactory
-import fi.kroon.vadret.core.CoreComponentProvider
-import timber.log.Timber
+import fi.kroon.vadret.di.AppComponent
+import fi.kroon.vadret.di.DaggerAppComponent
+import fi.kroon.vadret.logging.LogLevel
+import fi.kroon.vadret.logging.LogcatSink
+import fi.kroon.vadret.logging.LoggerFactory
 
-abstract class BaseApplication : Application(), CoreComponentProvider {
+private const val LOGCAT_SINK_NAME = "logcat"
 
-    override val coreComponent: CoreComponent
-        get() = CoreComponentFactory.getInstance(applicationContext)
+abstract class BaseApplication : Application() {
 
-    override fun onCreate() {
-        super.onCreate()
-        plantTimber()
-        cacheDir.delete()
+    internal val appComponent: AppComponent by lazy {
+        DaggerAppComponent
+            .factory()
+            .create(context = this)
     }
 
-    private fun plantTimber() {
+    /**
+     *  Release builds log nothing.
+     */
+    override fun onCreate() {
+        super.onCreate()
         if (BuildConfig.DEBUG) {
-            Timber.plant(Timber.DebugTree())
+            LoggerFactory.register(
+                name = LOGCAT_SINK_NAME,
+                sink = LogcatSink(minimumLevel = LogLevel.DEBUG)
+            )
         }
     }
 }

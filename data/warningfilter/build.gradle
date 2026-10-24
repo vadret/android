@@ -1,0 +1,26 @@
+plugins {
+    id 'vadret.android.library'
+    id 'com.google.devtools.ksp'
+    id 'kotlinx-serialization'
+}
+
+android {
+    namespace 'fi.kroon.vadret.data.warningfilter'
+}
+
+dependencies {
+    implementation project(':core:logging')
+    implementation project(':data:aggregatedfeed')
+    implementation project(':data:common')
+
+    implementation libs.coroutines.core
+    implementation libs.either
+    implementation libs.kotlinx.serialization.json
+    implementation libs.ktor.client.core
+    implementation libs.room.runtime
+
+    ksp libs.room.compiler
+
+    testImplementation project(':core:testing')
+    testImplementation libs.sqlite.bundled.jvm
+}

@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SnackbarHost
@@ -29,8 +28,10 @@ import fi.kroon.vadret.core.R
 import fi.kroon.vadret.radar.RadarEvent
 import fi.kroon.vadret.radar.RadarState
 import fi.kroon.vadret.radar.RadarViewModel
+import fi.kroon.vadret.radar.di.RadarDependencies
 import fi.kroon.vadret.radar.di.radarViewModel
 import fi.kroon.vadret.radar.model.RadarFrame
+import fi.kroon.vadret.ui.VadretProgressBar
 import fi.kroon.vadret.ui.VadretTheme
 import fi.kroon.vadret.ui.VadretTopAppBar
 import kotlin.math.roundToInt
@@ -42,8 +43,9 @@ private const val CONTROLS_ALPHA = 0.85f
 
 @Composable
 fun RadarRoute(
+    radarDependencies: RadarDependencies,
     modifier: Modifier = Modifier,
-    viewModel: RadarViewModel = radarViewModel()
+    viewModel: RadarViewModel = radarViewModel(radarDependencies = radarDependencies)
 ) {
     val state: RadarState by viewModel.state.collectAsStateWithLifecycle()
     RadarScreen(
@@ -84,11 +86,7 @@ fun RadarScreen(
                 modifier = Modifier.fillMaxSize()
             )
             if (state.isLoading) {
-                LinearProgressIndicator(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .align(alignment = Alignment.TopCenter)
-                )
+                VadretProgressBar(modifier = Modifier.align(alignment = Alignment.TopCenter))
             }
             if (state.frames.isNotEmpty()) {
                 PlaybackControls(

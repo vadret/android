@@ -16,10 +16,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import fi.kroon.vadret.aggregatedfeed.model.FeedSource
 import fi.kroon.vadret.core.R
+import fi.kroon.vadret.forecastwarning.extension.displayName
 import fi.kroon.vadret.forecastwarning.model.ElapsedTime
 import fi.kroon.vadret.forecastwarning.model.WarningItem
-import fi.kroon.vadret.forecastwarning.model.WarningSource
 import fi.kroon.vadret.ui.VadretTheme
 
 private val chipStrokeWidth = 1.dp
@@ -63,12 +64,10 @@ internal fun WarningCard(
                     modifier = Modifier.padding(top = VadretTheme.spacing.medium)
                 )
             }
-            if (warning.source != WarningSource.UNKNOWN) {
-                SourceChip(
-                    source = warning.source,
-                    modifier = Modifier.padding(top = VadretTheme.spacing.medium)
-                )
-            }
+            SourceChip(
+                source = warning.source,
+                modifier = Modifier.padding(top = VadretTheme.spacing.medium)
+            )
         }
     }
 }
@@ -78,7 +77,7 @@ internal fun WarningCard(
  */
 @Composable
 private fun SourceChip(
-    source: WarningSource,
+    source: FeedSource,
     modifier: Modifier = Modifier
 ) {
     val chipColors: ChipColors = source.chipColors()
@@ -93,7 +92,7 @@ private fun SourceChip(
         modifier = modifier
     ) {
         Text(
-            text = source.displayName,
+            text = source.displayName(),
             style = VadretTheme.typography.labelLarge,
             modifier = Modifier.padding(
                 horizontal = VadretTheme.spacing.large,

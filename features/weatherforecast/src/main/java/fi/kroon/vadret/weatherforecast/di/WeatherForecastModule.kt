@@ -1,21 +1,33 @@
 package fi.kroon.vadret.weatherforecast.di
 
-import android.content.Context
-import android.location.LocationManager
+import dagger.Binds
 import dagger.Module
-import dagger.Provides
-import fi.kroon.vadret.data.location.local.LocationLocalDataSource
+import fi.kroon.vadret.weatherforecast.DefaultGetLocationModeTask
+import fi.kroon.vadret.weatherforecast.DefaultGetWeatherForecastTask
+import fi.kroon.vadret.weatherforecast.DefaultSearchPlacesTask
+import fi.kroon.vadret.weatherforecast.DefaultSelectPlaceTask
+import fi.kroon.vadret.weatherforecast.DefaultSetLocationModeTask
+import fi.kroon.vadret.weatherforecast.GetLocationModeTask
+import fi.kroon.vadret.weatherforecast.GetWeatherForecastTask
+import fi.kroon.vadret.weatherforecast.SearchPlacesTask
+import fi.kroon.vadret.weatherforecast.SelectPlaceTask
+import fi.kroon.vadret.weatherforecast.SetLocationModeTask
 
 @Module
-internal object WeatherForecastModule {
+internal interface WeatherForecastModule {
 
-    @Provides
-    @WeatherForecastScope
-    fun provideLocationManager(context: Context): LocationManager =
-        context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+    @Binds
+    fun bindGetLocationModeTask(defaultGetLocationModeTask: DefaultGetLocationModeTask): GetLocationModeTask
 
-    @Provides
-    @WeatherForecastScope
-    fun provideLocationProvider(locationManager: LocationManager): LocationLocalDataSource =
-        LocationLocalDataSource(locationManager)
+    @Binds
+    fun bindGetWeatherForecastTask(defaultGetWeatherForecastTask: DefaultGetWeatherForecastTask): GetWeatherForecastTask
+
+    @Binds
+    fun bindSearchPlacesTask(defaultSearchPlacesTask: DefaultSearchPlacesTask): SearchPlacesTask
+
+    @Binds
+    fun bindSelectPlaceTask(defaultSelectPlaceTask: DefaultSelectPlaceTask): SelectPlaceTask
+
+    @Binds
+    fun bindSetLocationModeTask(defaultSetLocationModeTask: DefaultSetLocationModeTask): SetLocationModeTask
 }

@@ -31,7 +31,7 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.drawable.toBitmap
 import fi.kroon.vadret.core.R
-import fi.kroon.vadret.data.aboutinfo.model.AboutInfo
+import fi.kroon.vadret.settings.model.AboutRow
 import fi.kroon.vadret.ui.VadretTheme
 
 private const val ABOUT_ROW_CONTENT_TYPE = "about-row"
@@ -41,7 +41,7 @@ private val rowIconSize = 24.dp
 
 @Composable
 internal fun AboutPage(
-    aboutRows: List<AboutInfo>,
+    aboutRows: List<AboutRow>,
     modifier: Modifier = Modifier
 ) {
     LazyColumn(
@@ -54,10 +54,10 @@ internal fun AboutPage(
         }
         items(
             items = aboutRows,
-            key = { row: AboutInfo -> row.titleResourceId ?: row.hashCode() },
+            key = { aboutRow: AboutRow -> aboutRow.titleResourceId },
             contentType = { ABOUT_ROW_CONTENT_TYPE }
-        ) { row: AboutInfo ->
-            AboutRow(row = row)
+        ) { aboutRow: AboutRow ->
+            AboutRowCard(aboutRow = aboutRow)
         }
     }
 }
@@ -98,48 +98,32 @@ private fun AboutHeader(modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun AboutRow(
-    row: AboutInfo,
+private fun AboutRowCard(
+    aboutRow: AboutRow,
     modifier: Modifier = Modifier
 ) {
     val uriHandler: UriHandler = LocalUriHandler.current
-    val iconResourceId: Int? = row.iconResourceId
-    val titleResourceId: Int? = row.titleResourceId
-    val hintResourceId: Int? = row.hintResourceId
-    val urlResourceId: Int? = row.urlResourceId
-    val url: String? = if (urlResourceId != null) {
-        stringResource(id = urlResourceId)
-    } else {
-        null
-    }
-    val clickModifier: Modifier = if (url != null) {
-        Modifier.clickable { uriHandler.openUri(uri = url) }
-    } else {
-        Modifier
-    }
+    val url: String = stringResource(id = aboutRow.urlResourceId)
+    val hintResourceId: Int? = aboutRow.hintResourceId
     ElevatedCard(modifier = modifier.fillMaxWidth()) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .fillMaxWidth()
-                .then(clickModifier)
+                .clickable { uriHandler.openUri(uri = url) }
                 .padding(all = VadretTheme.spacing.large)
         ) {
-            if (iconResourceId != null) {
-                Icon(
-                    painter = painterResource(id = iconResourceId),
-                    contentDescription = null,
-                    tint = VadretTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.size(size = rowIconSize)
-                )
-            }
+            Icon(
+                painter = painterResource(id = aboutRow.iconResourceId),
+                contentDescription = null,
+                tint = VadretTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.size(size = rowIconSize)
+            )
             Column(modifier = Modifier.padding(start = VadretTheme.spacing.extraLarge)) {
-                if (titleResourceId != null) {
-                    Text(
-                        text = stringResource(id = titleResourceId),
-                        style = VadretTheme.typography.titleMedium
-                    )
-                }
+                Text(
+                    text = stringResource(id = aboutRow.titleResourceId),
+                    style = VadretTheme.typography.titleMedium
+                )
                 if (hintResourceId != null) {
                     Text(
                         text = stringResource(id = hintResourceId),

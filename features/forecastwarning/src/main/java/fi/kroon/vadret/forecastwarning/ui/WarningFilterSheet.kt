@@ -21,12 +21,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import fi.kroon.vadret.core.R
-import fi.kroon.vadret.data.district.model.DistrictOptionEntity
-import fi.kroon.vadret.data.feedsource.model.FeedSourceOptionEntity
 import fi.kroon.vadret.forecastwarning.WarningEvent
-import fi.kroon.vadret.forecastwarning.WarningMapper
-import fi.kroon.vadret.forecastwarning.model.WarningFilter
+import fi.kroon.vadret.forecastwarning.extension.displayName
+import fi.kroon.vadret.forecastwarning.model.WarningFilterState
 import fi.kroon.vadret.ui.VadretTheme
+import fi.kroon.vadret.warningfilter.model.DistrictOption
+import fi.kroon.vadret.warningfilter.model.FeedSourceOption
 
 private const val TITLE_CONTENT_TYPE = "title"
 private const val CHIPS_CONTENT_TYPE = "chips"
@@ -35,7 +35,7 @@ private val chipStrokeWidth = 1.dp
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun WarningFilterSheet(
-    filter: WarningFilter,
+    filter: WarningFilterState,
     onEvent: (WarningEvent) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -55,13 +55,13 @@ internal fun WarningFilterSheet(
             }
             item(key = "feed-source-chips", contentType = CHIPS_CONTENT_TYPE) {
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(space = VadretTheme.spacing.small)) {
-                    filter.feedSourceOptions.forEach { option: FeedSourceOptionEntity ->
-                        key(option.id) {
+                    filter.feedSources.forEach { feedSourceOption: FeedSourceOption ->
+                        key(feedSourceOption.feedSource) {
                             FilterOptionChip(
-                                label = option.name,
-                                isSelected = option.isEnabled,
-                                chipColors = WarningMapper.toWarningSource(name = option.name).chipColors(),
-                                onClick = { onEvent(WarningEvent.OnFeedSourceToggled(id = option.id)) }
+                                label = feedSourceOption.feedSource.displayName(),
+                                isSelected = feedSourceOption.isEnabled,
+                                chipColors = feedSourceOption.feedSource.chipColors(),
+                                onClick = { onEvent(WarningEvent.OnFeedSourceToggled(feedSource = feedSourceOption.feedSource)) }
                             )
                         }
                     }
@@ -72,13 +72,13 @@ internal fun WarningFilterSheet(
             }
             item(key = "district-chips", contentType = CHIPS_CONTENT_TYPE) {
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(space = VadretTheme.spacing.small)) {
-                    filter.districtOptions.forEach { option: DistrictOptionEntity ->
-                        key(option.id) {
+                    filter.districts.forEach { districtOption: DistrictOption ->
+                        key(districtOption.districtId) {
                             FilterOptionChip(
-                                label = option.name,
-                                isSelected = option.isEnabled,
-                                chipColors = districtChipColors(category = option.category),
-                                onClick = { onEvent(WarningEvent.OnDistrictToggled(id = option.id)) }
+                                label = districtOption.name,
+                                isSelected = districtOption.isEnabled,
+                                chipColors = districtOption.category.chipColors(),
+                                onClick = { onEvent(WarningEvent.OnDistrictToggled(districtId = districtOption.districtId)) }
                             )
                         }
                     }

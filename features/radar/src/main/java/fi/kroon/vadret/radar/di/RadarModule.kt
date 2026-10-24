@@ -1,26 +1,18 @@
 package fi.kroon.vadret.radar.di
 
+import dagger.Binds
 import dagger.Module
-import dagger.Provides
-import fi.kroon.vadret.data.common.DiskCache
-import fi.kroon.vadret.data.common.MemoryCache
-import fi.kroon.vadret.data.radar.cache.RadarDiskCache
-import fi.kroon.vadret.data.radar.model.Radar
-import fi.kroon.vadret.util.common.DateTimeUtil
-import fi.kroon.vadret.util.common.IDateTimeUtil
+import fi.kroon.vadret.radar.DefaultGetRadarTask
+import fi.kroon.vadret.radar.DefaultRadarImageLoader
+import fi.kroon.vadret.radar.GetRadarTask
+import fi.kroon.vadret.radar.RadarImageLoader
 
 @Module
-internal object RadarModule {
+internal interface RadarModule {
 
-    @Provides
-    @RadarScope
-    fun provideRadarMemoryCache(): MemoryCache<Long, Radar> = MemoryCache()
+    @Binds
+    fun bindGetRadarTask(defaultGetRadarTask: DefaultGetRadarTask): GetRadarTask
 
-    @Provides
-    @RadarScope
-    fun provideRadarDiskCache(cache: DiskCache): RadarDiskCache = RadarDiskCache(cache)
-
-    @Provides
-    @RadarScope
-    fun provideDateTimeUtil(dateTimeUtil: DateTimeUtil): IDateTimeUtil = dateTimeUtil
+    @Binds
+    fun bindRadarImageLoader(defaultRadarImageLoader: DefaultRadarImageLoader): RadarImageLoader
 }

@@ -9,8 +9,10 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import fi.kroon.vadret.data.theme.model.Theme
-import fi.kroon.vadret.main.di.mainViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
+import fi.kroon.vadret.BaseApplication
+import fi.kroon.vadret.di.AppComponent
+import fi.kroon.vadret.theme.model.Theme
 import fi.kroon.vadret.ui.VadretTheme
 import fi.kroon.vadret.ui.isDark
 
@@ -19,8 +21,9 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        val appComponent: AppComponent = (application as BaseApplication).appComponent
         setContent {
-            val viewModel: MainViewModel = mainViewModel()
+            val viewModel: MainViewModel = viewModel { appComponent.mainViewModel() }
             val theme: Theme? by viewModel.theme.collectAsStateWithLifecycle()
             val currentTheme: Theme = theme ?: return@setContent
             val isDark: Boolean = currentTheme.isDark()
@@ -34,7 +37,7 @@ class MainActivity : ComponentActivity() {
             }
 
             VadretTheme(theme = currentTheme) {
-                VadretApp()
+                VadretApp(appComponent = appComponent)
             }
         }
     }

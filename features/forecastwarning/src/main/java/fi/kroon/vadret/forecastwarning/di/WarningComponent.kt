@@ -1,15 +1,13 @@
 package fi.kroon.vadret.forecastwarning.di
 
 import androidx.compose.runtime.Composable
+import androidx.lifecycle.viewmodel.compose.viewModel
 import dagger.Component
-import fi.kroon.vadret.core.CoreComponent
 import fi.kroon.vadret.forecastwarning.WarningViewModel
-import fi.kroon.vadret.ui.daggerViewModel
 
-@WarningScope
 @Component(
     dependencies = [
-        CoreComponent::class
+        WarningDependencies::class
     ],
     modules = [
         WarningModule::class
@@ -21,15 +19,18 @@ internal interface WarningComponent {
 
     @Component.Factory
     interface Factory {
-        fun create(coreComponent: CoreComponent): WarningComponent
+        fun create(warningDependencies: WarningDependencies): WarningComponent
     }
 }
 
+/**
+ *  One view model per navigation entry.
+ */
 @Composable
-internal fun warningViewModel(): WarningViewModel =
-    daggerViewModel { _, coreComponent: CoreComponent ->
+internal fun warningViewModel(warningDependencies: WarningDependencies): WarningViewModel =
+    viewModel {
         DaggerWarningComponent
             .factory()
-            .create(coreComponent = coreComponent)
+            .create(warningDependencies = warningDependencies)
             .warningViewModel()
     }

@@ -15,7 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import fi.kroon.vadret.core.R
-import fi.kroon.vadret.data.theme.model.Theme
+import fi.kroon.vadret.theme.model.Theme
 import fi.kroon.vadret.ui.VadretTheme
 
 @Composable

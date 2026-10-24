@@ -1,7 +1,7 @@
 package fi.kroon.vadret.forecastwarning
 
 import androidx.annotation.StringRes
-import fi.kroon.vadret.forecastwarning.model.WarningFilter
+import fi.kroon.vadret.forecastwarning.model.WarningFilterState
 import fi.kroon.vadret.forecastwarning.model.WarningItem
 
 /**
@@ -14,7 +14,7 @@ data class WarningState(
     val isLoading: Boolean = true,
     val isRefreshing: Boolean = false,
     val isEmpty: Boolean = false,
-    val filter: WarningFilter? = null,
+    val filter: WarningFilterState? = null,
     @StringRes
     val errorMessageResourceId: Int? = null
 )

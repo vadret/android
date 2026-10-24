@@ -1,31 +1,36 @@
 package fi.kroon.vadret.settings.di
 
 import androidx.compose.runtime.Composable
+import androidx.lifecycle.viewmodel.compose.viewModel
 import dagger.Component
-import fi.kroon.vadret.core.CoreComponent
 import fi.kroon.vadret.settings.SettingsViewModel
-import fi.kroon.vadret.ui.daggerViewModel
 
-@SettingsScope
 @Component(
-    dependencies = [CoreComponent::class],
-    modules = [SettingsModule::class]
+    dependencies = [
+        SettingsDependencies::class
+    ],
+    modules = [
+        SettingsModule::class
+    ]
 )
-interface SettingsComponent {
+internal interface SettingsComponent {
 
     fun settingsViewModel(): SettingsViewModel
 
     @Component.Factory
     interface Factory {
-        fun create(coreComponent: CoreComponent): SettingsComponent
+        fun create(settingsDependencies: SettingsDependencies): SettingsComponent
     }
 }
 
+/**
+ *  One view model per navigation entry.
+ */
 @Composable
-fun settingsViewModel(): SettingsViewModel =
-    daggerViewModel { _, coreComponent ->
+internal fun settingsViewModel(settingsDependencies: SettingsDependencies): SettingsViewModel =
+    viewModel {
         DaggerSettingsComponent
             .factory()
-            .create(coreComponent = coreComponent)
+            .create(settingsDependencies = settingsDependencies)
             .settingsViewModel()
     }

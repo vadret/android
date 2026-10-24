@@ -1,6 +1,5 @@
 plugins {
     id 'vadret.android.library'
-    id 'com.google.devtools.ksp'
 }
 
 android {
@@ -8,9 +7,7 @@ android {
 }
 
 dependencies {
-    api project(':data:common')
+    implementation libs.either
 
-    implementation libs.dagger.runtime
-
-    ksp libs.dagger.compiler
+    testImplementation project(':core:testing')
 }

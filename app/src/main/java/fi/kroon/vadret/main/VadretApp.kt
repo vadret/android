@@ -26,6 +26,7 @@ import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
+import fi.kroon.vadret.di.AppComponent
 import fi.kroon.vadret.forecastwarning.ui.WarningRoute
 import fi.kroon.vadret.main.navigation.RadarKey
 import fi.kroon.vadret.main.navigation.SettingsKey
@@ -45,7 +46,10 @@ private val navigationIconSize = 24.dp
  *  tab leads to the weather and back from there leaves the app.
  */
 @Composable
-internal fun VadretApp(modifier: Modifier = Modifier) {
+internal fun VadretApp(
+    appComponent: AppComponent,
+    modifier: Modifier = Modifier
+) {
     val backStack: NavBackStack<NavKey> = rememberNavBackStack(WeatherKey)
     val currentKey: NavKey? = backStack.lastOrNull()
 
@@ -96,10 +100,10 @@ internal fun VadretApp(modifier: Modifier = Modifier) {
                 rememberViewModelStoreNavEntryDecorator()
             ),
             entryProvider = entryProvider {
-                entry<WeatherKey> { WeatherForecastRoute() }
-                entry<WarningKey> { WarningRoute() }
-                entry<RadarKey> { RadarRoute() }
-                entry<SettingsKey> { SettingsRoute() }
+                entry<WeatherKey> { WeatherForecastRoute(weatherForecastDependencies = appComponent) }
+                entry<WarningKey> { WarningRoute(warningDependencies = appComponent) }
+                entry<RadarKey> { RadarRoute(radarDependencies = appComponent) }
+                entry<SettingsKey> { SettingsRoute(settingsDependencies = appComponent) }
             },
             modifier = Modifier
                 .padding(paddingValues = innerPadding)
@@ -108,7 +112,10 @@ internal fun VadretApp(modifier: Modifier = Modifier) {
     }
 }
 
-private fun selectTab(backStack: NavBackStack<NavKey>, key: NavKey) {
+private fun selectTab(
+    backStack: NavBackStack<NavKey>,
+    key: NavKey
+) {
     if (backStack.lastOrNull() == key) {
         return
     }

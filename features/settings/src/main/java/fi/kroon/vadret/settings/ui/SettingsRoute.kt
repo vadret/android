@@ -18,6 +18,7 @@ import fi.kroon.vadret.core.R
 import fi.kroon.vadret.settings.SettingsEvent
 import fi.kroon.vadret.settings.SettingsState
 import fi.kroon.vadret.settings.SettingsViewModel
+import fi.kroon.vadret.settings.di.SettingsDependencies
 import fi.kroon.vadret.settings.di.settingsViewModel
 import fi.kroon.vadret.ui.VadretTopAppBar
 import kotlinx.coroutines.launch
@@ -30,8 +31,9 @@ private enum class SettingsPage(val titleResourceId: Int) {
 
 @Composable
 fun SettingsRoute(
+    settingsDependencies: SettingsDependencies,
     modifier: Modifier = Modifier,
-    viewModel: SettingsViewModel = settingsViewModel()
+    viewModel: SettingsViewModel = settingsViewModel(settingsDependencies = settingsDependencies)
 ) {
     val state: SettingsState by viewModel.state.collectAsStateWithLifecycle()
     SettingsScreen(

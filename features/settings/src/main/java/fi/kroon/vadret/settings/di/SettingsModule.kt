@@ -1,37 +1,28 @@
 package fi.kroon.vadret.settings.di
 
+import dagger.Binds
 import dagger.Module
-import dagger.Provides
-import fi.kroon.vadret.core.R
-import fi.kroon.vadret.data.aboutinfo.model.AboutInfo
+import fi.kroon.vadret.settings.DefaultGetLibrariesTask
+import fi.kroon.vadret.settings.DefaultGetSettingsTask
+import fi.kroon.vadret.settings.DefaultSetLocationModeTask
+import fi.kroon.vadret.settings.DefaultSetThemeTask
+import fi.kroon.vadret.settings.GetLibrariesTask
+import fi.kroon.vadret.settings.GetSettingsTask
+import fi.kroon.vadret.settings.SetLocationModeTask
+import fi.kroon.vadret.settings.SetThemeTask
 
 @Module
-object SettingsModule {
+internal interface SettingsModule {
 
-    @Provides
-    fun provideAboutInfoList(): List<AboutInfo> =
-        listOf(
-            AboutInfo(
-                iconResourceId = R.drawable.ic_info_outline,
-                titleResourceId = R.string.version_row_title,
-                hintResourceId = R.string.app_version,
-                urlResourceId = R.string.app_release_page
-            ),
-            AboutInfo(
-                iconResourceId = R.drawable.ic_copyright,
-                titleResourceId = R.string.license_row_title,
-                hintResourceId = R.string.license_row_hint,
-                urlResourceId = R.string.app_license_url
-            ),
-            AboutInfo(
-                iconResourceId = R.drawable.ic_history,
-                titleResourceId = R.string.changelog_row_title,
-                urlResourceId = R.string.app_github_changelog_url
-            ),
-            AboutInfo(
-                iconResourceId = R.drawable.ic_code,
-                titleResourceId = R.string.source_code_row_title,
-                urlResourceId = R.string.app_github_source_url
-            )
-        )
+    @Binds
+    fun bindGetLibrariesTask(defaultGetLibrariesTask: DefaultGetLibrariesTask): GetLibrariesTask
+
+    @Binds
+    fun bindGetSettingsTask(defaultGetSettingsTask: DefaultGetSettingsTask): GetSettingsTask
+
+    @Binds
+    fun bindSetLocationModeTask(defaultSetLocationModeTask: DefaultSetLocationModeTask): SetLocationModeTask
+
+    @Binds
+    fun bindSetThemeTask(defaultSetThemeTask: DefaultSetThemeTask): SetThemeTask
 }

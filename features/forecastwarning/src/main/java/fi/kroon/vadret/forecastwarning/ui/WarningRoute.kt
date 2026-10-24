@@ -3,7 +3,6 @@ package fi.kroon.vadret.forecastwarning.ui
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -11,7 +10,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -32,9 +30,11 @@ import fi.kroon.vadret.core.R
 import fi.kroon.vadret.forecastwarning.WarningEvent
 import fi.kroon.vadret.forecastwarning.WarningState
 import fi.kroon.vadret.forecastwarning.WarningViewModel
+import fi.kroon.vadret.forecastwarning.di.WarningDependencies
 import fi.kroon.vadret.forecastwarning.di.warningViewModel
-import fi.kroon.vadret.forecastwarning.model.WarningFilter
+import fi.kroon.vadret.forecastwarning.model.WarningFilterState
 import fi.kroon.vadret.forecastwarning.model.WarningItem
+import fi.kroon.vadret.ui.VadretProgressBar
 import fi.kroon.vadret.ui.VadretTheme
 import fi.kroon.vadret.ui.VadretTopAppBar
 
@@ -47,8 +47,9 @@ private val floatingActionButtonClearance = 88.dp
 
 @Composable
 fun WarningRoute(
+    warningDependencies: WarningDependencies,
     modifier: Modifier = Modifier,
-    viewModel: WarningViewModel = warningViewModel()
+    viewModel: WarningViewModel = warningViewModel(warningDependencies = warningDependencies)
 ) {
     val state: WarningState by viewModel.state.collectAsStateWithLifecycle()
     WarningScreen(
@@ -119,11 +120,7 @@ fun WarningScreen(
                 }
             }
             if (state.isLoading) {
-                LinearProgressIndicator(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .align(alignment = Alignment.TopCenter)
-                )
+                VadretProgressBar(modifier = Modifier.align(alignment = Alignment.TopCenter))
             }
             if (state.isEmpty) {
                 Text(
@@ -138,7 +135,7 @@ fun WarningScreen(
         }
     }
 
-    val filter: WarningFilter? = state.filter
+    val filter: WarningFilterState? = state.filter
     if (filter != null) {
         WarningFilterSheet(
             filter = filter,

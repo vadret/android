@@ -12,27 +12,26 @@ android {
 }
 
 dependencies {
-    api project(':data:aggregatedfeed')
-    api project(':data:autocomplete')
-    api project(':data:common')
-    api project(':data:district')
-    api project(':data:location')
-    api project(':data:nominatim')
-    api project(':data:persistance')
-    api project(':data:theme')
-    api project(':data:radar')
-    api project(':data:weatherforecast')
+    implementation project(':data:aggregatedfeed')
+    implementation project(':data:autocomplete')
+    implementation project(':data:common')
+    implementation project(':data:library')
+    implementation project(':data:location')
+    implementation project(':data:nominatim')
+    implementation project(':data:radar')
+    implementation project(':data:theme')
+    implementation project(':data:warningfilter')
+    implementation project(':data:weatherforecast')
 
-    api libs.dagger.runtime
-    api libs.ktor.client.core
     implementation libs.androidx.annotation
-    implementation libs.okhttp.logging
+    implementation libs.coroutines.core
+    implementation libs.dagger.runtime
     implementation libs.ktor.client.content.negotiation
+    implementation libs.ktor.client.core
     implementation libs.ktor.client.okhttp
     implementation libs.ktor.serialization.kotlinx.json
     implementation libs.okhttp.core
-    implementation libs.room.runtime
-    implementation libs.timber
+    implementation libs.okhttp.logging
 
     ksp libs.dagger.compiler
 }

@@ -8,6 +8,7 @@ android {
 }
 
 dependencies {
+    implementation project(':core:logging')
     implementation project(':data:common')
     implementation project(':data:radar')
 
@@ -15,11 +16,12 @@ dependencies {
     implementation libs.coil.core
     implementation libs.coil.network.ktor
     implementation libs.dagger.runtime
+    implementation libs.either
     implementation libs.kotlinx.datetime
+    implementation libs.ktor.client.core
     implementation libs.osmdroid
-    implementation libs.timber
 
     ksp libs.dagger.compiler
 
-    testImplementation project(':core')
+    testImplementation project(':core:testing')
 }

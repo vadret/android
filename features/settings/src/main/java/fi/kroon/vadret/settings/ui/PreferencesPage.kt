@@ -16,10 +16,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.res.stringResource
 import fi.kroon.vadret.core.R
-import fi.kroon.vadret.data.theme.model.Theme
 import fi.kroon.vadret.settings.Settings
 import fi.kroon.vadret.settings.SettingsEvent
 import fi.kroon.vadret.settings.SettingsState
+import fi.kroon.vadret.theme.model.Theme
 import fi.kroon.vadret.ui.VadretTheme
 
 private const val DISABLED_ALPHA = 0.38f
@@ -39,11 +39,11 @@ internal fun PreferencesPage(
 ) {
     val settings: Settings = state.settings ?: return
     val locationRows: List<Pair<Int, String>> = listOf(
-        R.string.setting_city to settings.storedLocation.city,
+        R.string.setting_city to settings.storedLocation.locality,
         R.string.setting_municipality to settings.storedLocation.municipality,
         R.string.setting_county to settings.storedLocation.county,
-        R.string.setting_latitude to settings.storedLocation.latitude,
-        R.string.setting_longitude to settings.storedLocation.longitude
+        R.string.setting_latitude to settings.storedLocation.latitude.toString(),
+        R.string.setting_longitude to settings.storedLocation.longitude.toString()
     )
 
     LazyColumn(modifier = modifier.fillMaxSize()) {
@@ -53,9 +53,9 @@ internal fun PreferencesPage(
         item(key = "gps", contentType = PreferenceContentType.SWITCH) {
             SwitchRow(
                 title = stringResource(id = R.string.use_gps_by_default),
-                summary = stringResource(id = gpsSummaryResourceId(isGpsEnabled = settings.isGpsEnabled)),
-                isChecked = settings.isGpsEnabled,
-                onCheckedChange = { isChecked -> onEvent(SettingsEvent.OnLocationModeToggled(isGpsEnabled = isChecked)) }
+                summary = stringResource(id = automaticLocationSummaryResourceId(isAutomaticLocation = settings.isAutomaticLocation)),
+                isChecked = settings.isAutomaticLocation,
+                onCheckedChange = { isChecked -> onEvent(SettingsEvent.OnLocationModeToggled(isAutomaticLocation = isChecked)) }
             )
         }
         item(key = "location-divider", contentType = PreferenceContentType.DIVIDER) {
@@ -82,7 +82,7 @@ internal fun PreferencesPage(
                 PreferenceRow(
                     title = stringResource(id = titleResourceId),
                     summary = value,
-                    modifier = Modifier.alpha(alpha = locationAlpha(isGpsEnabled = settings.isGpsEnabled))
+                    modifier = Modifier.alpha(alpha = locationAlpha(isAutomaticLocation = settings.isAutomaticLocation))
                 )
             }
         }
@@ -181,8 +181,8 @@ private fun RowText(
     }
 }
 
-private fun gpsSummaryResourceId(isGpsEnabled: Boolean): Int =
-    if (isGpsEnabled) {
+private fun automaticLocationSummaryResourceId(isAutomaticLocation: Boolean): Int =
+    if (isAutomaticLocation) {
         R.string.gps_is_being_used
     } else {
         R.string.gps_is_not_being_used
@@ -191,8 +191,8 @@ private fun gpsSummaryResourceId(isGpsEnabled: Boolean): Int =
 /**
  *  The stored place is only used while GPS is off.
  */
-private fun locationAlpha(isGpsEnabled: Boolean): Float =
-    if (isGpsEnabled) {
+private fun locationAlpha(isAutomaticLocation: Boolean): Float =
+    if (isAutomaticLocation) {
         DISABLED_ALPHA
     } else {
         1f

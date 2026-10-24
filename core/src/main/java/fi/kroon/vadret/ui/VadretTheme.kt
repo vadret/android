@@ -14,7 +14,7 @@ import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import fi.kroon.vadret.data.theme.model.Theme
+import fi.kroon.vadret.theme.model.Theme
 
 private val LocalVadretColors = staticCompositionLocalOf { VadretColors() }
 private val LocalVadretSpacing = staticCompositionLocalOf { VadretSpacing() }

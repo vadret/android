@@ -18,7 +18,7 @@ import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.platform.UriHandler
 import androidx.compose.ui.res.stringResource
 import fi.kroon.vadret.core.R
-import fi.kroon.vadret.data.library.model.Library
+import fi.kroon.vadret.library.model.Library
 import fi.kroon.vadret.ui.VadretTheme
 
 private const val LIBRARY_CONTENT_TYPE = "library"

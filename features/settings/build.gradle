@@ -8,12 +8,16 @@ android {
 }
 
 dependencies {
-    implementation project(':data:aboutinfo')
+    implementation project(':core:logging')
     implementation project(':data:common')
     implementation project(':data:library')
+    implementation project(':data:location')
+    implementation project(':data:theme')
 
     implementation libs.dagger.runtime
-    implementation libs.timber
+    implementation libs.either
 
     ksp libs.dagger.compiler
+
+    testImplementation project(':core:testing')
 }
