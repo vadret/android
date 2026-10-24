@@ -6,6 +6,7 @@ import fi.kroon.vadret.data.radar.cache.RadarCacheDataSource
 import fi.kroon.vadret.data.radar.model.Radar
 import fi.kroon.vadret.util.extension.asRight
 import fi.kroon.vadret.util.extension.asSingle
+import io.github.sphrak.either.Either
 import io.reactivex.Single
 import org.junit.Before
 import org.junit.Test
@@ -13,7 +14,6 @@ import org.junit.runner.RunWith
 import org.mockito.Mock
 import org.mockito.Mockito.doReturn
 import org.mockito.junit.MockitoJUnitRunner
-import se.fimbla.either.Either
 
 @RunWith(MockitoJUnitRunner::class)
 class GetRadarMemoryCacheTaskTest {
@@ -46,7 +46,7 @@ class GetRadarMemoryCacheTaskTest {
             .assertComplete()
             .assertValueAt(0) {
                 it is Either.Right &&
-                    it.value == radar
+                    it.b == radar
             }
     }
 
@@ -62,8 +62,8 @@ class GetRadarMemoryCacheTaskTest {
             .assertComplete()
             .assertValueAt(0) {
                 it is Either.Left &&
-                    it.value is Failure.CacheWriteError &&
-                    (it.value as Failure.CacheWriteError).message == "error: failed writing to cache"
+                    it.a is Failure.CacheWriteError &&
+                    (it.a as Failure.CacheWriteError).message == "error: failed writing to cache"
             }
     }
 

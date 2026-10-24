@@ -6,6 +6,7 @@ import fi.kroon.vadret.data.radar.local.RadarLocalKeyValueDataSource
 import fi.kroon.vadret.util.LAST_CHECKED_RADAR_KEY
 import fi.kroon.vadret.util.extension.asRight
 import fi.kroon.vadret.util.extension.asSingle
+import io.github.sphrak.either.Either
 import io.reactivex.Single
 import org.junit.Before
 import org.junit.Test
@@ -13,7 +14,6 @@ import org.junit.runner.RunWith
 import org.mockito.Mock
 import org.mockito.Mockito.doReturn
 import org.mockito.junit.MockitoJUnitRunner
-import se.fimbla.either.Either
 
 @RunWith(MockitoJUnitRunner::class)
 class SetRadarLastCheckedKeyValueTaskTest {
@@ -43,7 +43,7 @@ class SetRadarLastCheckedKeyValueTaskTest {
             .assertNoErrors()
             .assertComplete()
             .assertValueAt(0) {
-                it is Either.Right && it.value == Unit
+                it is Either.Right && it.b == Unit
             }
     }
 
@@ -64,8 +64,8 @@ class SetRadarLastCheckedKeyValueTaskTest {
             .assertComplete()
             .assertValueAt(0) {
                 it is Either.Left &&
-                    it.value is Failure.LocalKeyValueWriteError &&
-                    (it.value as Failure.LocalKeyValueWriteError).message ==
+                    it.a is Failure.LocalKeyValueWriteError &&
+                    (it.a as Failure.LocalKeyValueWriteError).message ==
                     "error: failed writing '1563292476031'. key was not recognized: 'LAST_CHECKED_RADAR'"
             }
     }

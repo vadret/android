@@ -7,11 +7,11 @@ import fi.kroon.vadret.shared.IViewModel
 import fi.kroon.vadret.theme.GetThemeModeTask
 import fi.kroon.vadret.theme.ObserveThemeChangeTask
 import fi.kroon.vadret.util.extension.asObservable
+import io.github.sphrak.either.Either
+import io.github.sphrak.either.extension.onResult
 import io.reactivex.Observable
 import io.reactivex.ObservableTransformer
 import io.reactivex.Single
-import se.fimbla.either.Either
-import se.fimbla.either.onResult
 import timber.log.Timber
 import javax.inject.Inject
 

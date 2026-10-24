@@ -5,12 +5,12 @@ import fi.kroon.vadret.data.failure.Failure
 import fi.kroon.vadret.shared.IService
 import fi.kroon.vadret.util.FIVE_MINUTES_IN_MILLIS
 import fi.kroon.vadret.util.extension.flatMapSingle
+import io.github.sphrak.either.Either
+import io.github.sphrak.either.extension.onResult
+import io.github.sphrak.either.flatMap
+import io.github.sphrak.either.map
 import io.reactivex.Single
 import io.reactivex.rxkotlin.zipWith
-import se.fimbla.either.Either
-import se.fimbla.either.flatMap
-import se.fimbla.either.map
-import se.fimbla.either.onResult
 import timber.log.Timber
 import javax.inject.Inject
 

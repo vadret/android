@@ -17,10 +17,20 @@ allprojects {
     repositories {
         google()
         mavenCentral()
-        // se.fimbla (build-essentials) is only published to the local maven repository
+        // Either is published to GitHub Packages, which needs a token with read:packages
+        // in the GitHubPackagesUsername and GitHubPackagesPassword gradle properties
+        maven {
+            name = "GitHubPackages"
+            url = "https://maven.pkg.github.com/sphrak/Either"
+            credentials(PasswordCredentials)
+            content {
+                includeGroup "io.github.sphrak"
+            }
+        }
+        // Either releases are published to the local maven repository before they are deployed
         mavenLocal {
             content {
-                includeGroup "se.fimbla"
+                includeGroup "io.github.sphrak"
             }
         }
     }

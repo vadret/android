@@ -7,8 +7,8 @@ import fi.kroon.vadret.data.failure.Failure
 import fi.kroon.vadret.util.LAST_CHECKED_RADAR_KEY
 import fi.kroon.vadret.util.extension.asRight
 import fi.kroon.vadret.util.extension.asSingle
+import io.github.sphrak.either.Either
 import io.reactivex.Single
-import se.fimbla.either.Either
 import javax.inject.Inject
 
 class RadarLocalKeyValueDataSource @Inject constructor(

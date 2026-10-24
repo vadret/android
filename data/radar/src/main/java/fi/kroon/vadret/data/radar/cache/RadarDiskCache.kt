@@ -5,10 +5,10 @@ import fi.kroon.vadret.data.failure.Failure
 import fi.kroon.vadret.data.radar.model.Radar
 import fi.kroon.vadret.util.extension.asLeft
 import fi.kroon.vadret.util.extension.asRight
+import io.github.sphrak.either.Either
 import io.reactivex.Single
 import okhttp3.internal.cache.DiskLruCache
 import okio.buffer
-import se.fimbla.either.Either
 import timber.log.Timber
 
 class RadarDiskCache(

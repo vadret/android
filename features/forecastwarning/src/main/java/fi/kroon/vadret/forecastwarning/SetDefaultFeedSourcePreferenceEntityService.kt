@@ -9,9 +9,9 @@ import fi.kroon.vadret.util.APP_WARNING_FILTER_KEY
 import fi.kroon.vadret.util.FEED_SOURCE_KRISINFORMATION_ID
 import fi.kroon.vadret.util.FEED_SOURCE_SMHI_ID
 import fi.kroon.vadret.util.extension.flatMapSingle
+import io.github.sphrak.either.Either
+import io.github.sphrak.either.map
 import io.reactivex.Single
-import se.fimbla.either.Either
-import se.fimbla.either.map
 import timber.log.Timber
 import javax.inject.Inject
 

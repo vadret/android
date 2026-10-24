@@ -6,9 +6,9 @@ import fi.kroon.vadret.data.nominatim.model.Nominatim
 import fi.kroon.vadret.data.nominatim.model.NominatimReverseOut
 import fi.kroon.vadret.util.extension.asLeft
 import fi.kroon.vadret.util.extension.asRight
+import io.github.sphrak.either.Either
+import io.github.sphrak.either.extension.onResult
 import io.reactivex.Single
-import se.fimbla.either.Either
-import se.fimbla.either.onResult
 import timber.log.Timber
 import javax.inject.Inject
 

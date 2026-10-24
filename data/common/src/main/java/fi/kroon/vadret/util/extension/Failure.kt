@@ -1,9 +1,7 @@
 package fi.kroon.vadret.util.extension
 
 import fi.kroon.vadret.data.failure.Failure
-import se.fimbla.either.Either
-import se.fimbla.either.left
-import se.fimbla.either.right
+import io.github.sphrak.either.Either
 
-fun Failure.asLeft(): Either<Failure, Nothing> = left(this)
-fun <T> T.asRight(): Either<Nothing, T> = right(this)
+fun Failure.asLeft(): Either<Failure, Nothing> = Either.Left(this)
+fun <T> T.asRight(): Either<Nothing, T> = Either.Right(this)

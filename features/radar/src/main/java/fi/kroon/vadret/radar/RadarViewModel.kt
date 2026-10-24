@@ -5,10 +5,10 @@ import fi.kroon.vadret.radar.di.RadarScope
 import fi.kroon.vadret.shared.IViewModel
 import fi.kroon.vadret.util.NIL_INT
 import fi.kroon.vadret.util.extension.asObservable
+import io.github.sphrak.either.Either
+import io.github.sphrak.either.extension.onResult
 import io.reactivex.Observable
 import io.reactivex.ObservableTransformer
-import se.fimbla.either.Either
-import se.fimbla.either.onResult
 import timber.log.Timber
 import javax.inject.Inject
 

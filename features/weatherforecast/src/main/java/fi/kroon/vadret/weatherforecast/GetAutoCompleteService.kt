@@ -6,10 +6,10 @@ import fi.kroon.vadret.data.autocomplete.model.AutoCompleteItem
 import fi.kroon.vadret.data.failure.Failure
 import fi.kroon.vadret.util.DEFAULT_AUTOCOMPLETE_LIMIT
 import fi.kroon.vadret.weatherforecast.autocomplete.AutoCompleteDiffUtil
+import io.github.sphrak.either.Either
+import io.github.sphrak.either.extension.onResult
+import io.github.sphrak.either.map
 import io.reactivex.Maybe
-import se.fimbla.either.Either
-import se.fimbla.either.map
-import se.fimbla.either.onResult
 import timber.log.Timber
 import javax.inject.Inject
 

@@ -7,6 +7,7 @@ import fi.kroon.vadret.util.DARK_THEME
 import fi.kroon.vadret.util.LIGHT_THEME
 import fi.kroon.vadret.util.extension.asObservable
 import fi.kroon.vadret.util.extension.asRight
+import io.github.sphrak.either.Either
 import io.reactivex.Observable
 import org.junit.Before
 import org.junit.Test
@@ -14,7 +15,6 @@ import org.junit.runner.RunWith
 import org.mockito.Mock
 import org.mockito.Mockito.doReturn
 import org.mockito.junit.MockitoJUnitRunner
-import se.fimbla.either.Either
 
 @RunWith(MockitoJUnitRunner::class)
 class MainActivityViewModelTest {

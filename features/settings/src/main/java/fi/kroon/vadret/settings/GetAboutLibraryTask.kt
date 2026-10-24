@@ -3,9 +3,9 @@ package fi.kroon.vadret.settings
 import fi.kroon.vadret.data.failure.Failure
 import fi.kroon.vadret.data.library.LibraryRepository
 import fi.kroon.vadret.data.library.model.Library
+import io.github.sphrak.either.Either
+import io.github.sphrak.either.map
 import io.reactivex.Single
-import se.fimbla.either.Either
-import se.fimbla.either.map
 import javax.inject.Inject
 
 class GetAboutLibraryTask @Inject constructor(

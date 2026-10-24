@@ -8,10 +8,9 @@ import fi.kroon.vadret.util.LATITUDE_KEY
 import fi.kroon.vadret.util.LOCALITY_KEY
 import fi.kroon.vadret.util.LONGITUDE_KEY
 import fi.kroon.vadret.util.MUNICIPALITY_KEY
+import io.github.sphrak.either.Either
 import io.reactivex.Observable
 import io.reactivex.Single
-import se.fimbla.either.Either
-import se.fimbla.either.isLeft
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -53,8 +52,8 @@ class SetLocationInformationTask @Inject constructor(
                         Timber.d("Previous: $previous, Next: $next")
 
                         when {
-                            previous.isLeft() -> previous
-                            next.isLeft() -> next
+                            previous.isLeft -> previous
+                            next.isLeft -> next
                             else -> next
                         }
                     }

@@ -7,10 +7,17 @@ on:
         - dev
         - master
 
+permissions:
+  contents: read
+  packages: read
+
 jobs:
   ktlint:
     name: ktlint
     runs-on: ubuntu-latest
+    env:
+      ORG_GRADLE_PROJECT_GitHubPackagesUsername: ${{ github.actor }}
+      ORG_GRADLE_PROJECT_GitHubPackagesPassword: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Checkout the code
         uses: actions/checkout@v2
@@ -23,6 +30,9 @@ jobs:
   tests:
     name: unittests
     runs-on: ubuntu-latest
+    env:
+      ORG_GRADLE_PROJECT_GitHubPackagesUsername: ${{ github.actor }}
+      ORG_GRADLE_PROJECT_GitHubPackagesPassword: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Checkout the code
         uses: actions/checkout@v2

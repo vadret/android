@@ -7,8 +7,8 @@ import fi.kroon.vadret.util.APP_AGGREGATED_FEED_LAST_CHECKED_KEY
 import fi.kroon.vadret.util.extension.asLeft
 import fi.kroon.vadret.util.extension.asRight
 import fi.kroon.vadret.util.extension.asSingle
+import io.github.sphrak.either.Either
 import io.reactivex.Single
-import se.fimbla.either.Either
 import javax.inject.Inject
 
 class AggregatedFeedLocalDataSource @Inject constructor(

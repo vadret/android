@@ -7,6 +7,7 @@ import fi.kroon.vadret.data.failure.Failure
 import fi.kroon.vadret.data.nominatim.model.Locality
 import fi.kroon.vadret.shared.IViewModel
 import fi.kroon.vadret.util.extension.empty
+import io.github.sphrak.either.extension.onResult
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -14,7 +15,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.rx2.await
 import kotlinx.coroutines.rx2.awaitSingleOrNull
 import kotlinx.coroutines.withContext
-import se.fimbla.either.onResult
 import timber.log.Timber
 import javax.inject.Inject
 

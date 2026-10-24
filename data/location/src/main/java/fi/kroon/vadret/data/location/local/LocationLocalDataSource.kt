@@ -10,7 +10,7 @@ import fi.kroon.vadret.data.location.exception.LocationFailure
 import fi.kroon.vadret.util.extension.asLeft
 import fi.kroon.vadret.util.extension.asRight
 import fi.kroon.vadret.util.extension.lazyAndroid
-import se.fimbla.either.Either
+import io.github.sphrak.either.Either
 import timber.log.Timber
 import javax.inject.Inject
 

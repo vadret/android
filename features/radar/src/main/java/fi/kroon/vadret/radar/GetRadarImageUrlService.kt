@@ -9,12 +9,12 @@ import fi.kroon.vadret.util.OFF_BY_ONE
 import fi.kroon.vadret.util.common.IDateTimeUtil
 import fi.kroon.vadret.util.extension.asSingle
 import fi.kroon.vadret.util.extension.flatMapSingle
+import io.github.sphrak.either.Either
+import io.github.sphrak.either.extension.onResult
+import io.github.sphrak.either.flatMap
+import io.github.sphrak.either.map
 import io.reactivex.Single
 import io.reactivex.rxkotlin.zipWith
-import se.fimbla.either.Either
-import se.fimbla.either.flatMap
-import se.fimbla.either.map
-import se.fimbla.either.onResult
 import timber.log.Timber
 import javax.inject.Inject
 

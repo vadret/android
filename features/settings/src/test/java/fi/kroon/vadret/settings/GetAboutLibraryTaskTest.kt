@@ -5,6 +5,7 @@ import fi.kroon.vadret.data.library.LibraryRepository
 import fi.kroon.vadret.data.library.model.Library
 import fi.kroon.vadret.util.extension.asRight
 import fi.kroon.vadret.util.extension.asSingle
+import io.github.sphrak.either.Either
 import io.reactivex.Single
 import org.junit.Before
 import org.junit.Test
@@ -12,7 +13,6 @@ import org.junit.runner.RunWith
 import org.mockito.Mock
 import org.mockito.Mockito.doReturn
 import org.mockito.junit.MockitoJUnitRunner
-import se.fimbla.either.Either
 
 @RunWith(MockitoJUnitRunner::class)
 class GetAboutLibraryTaskTest {
@@ -52,7 +52,7 @@ class GetAboutLibraryTaskTest {
             .assertNoErrors()
             .assertComplete()
             .assertValueAt(0) {
-                it is Either.Right && it.value == list
+                it is Either.Right && it.b == list
             }
     }
 

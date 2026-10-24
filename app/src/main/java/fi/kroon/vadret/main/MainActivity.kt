@@ -21,11 +21,11 @@ import fi.kroon.vadret.util.extension.lazyAndroid
 import fi.kroon.vadret.util.extension.toGone
 import fi.kroon.vadret.util.extension.toObservable
 import fi.kroon.vadret.util.extension.toVisible
+import io.github.sphrak.either.extension.onResult
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.subjects.PublishSubject
-import se.fimbla.either.onResult
 import timber.log.Timber
 
 class MainActivity : AppCompatActivity(), ILocalityActionBar {

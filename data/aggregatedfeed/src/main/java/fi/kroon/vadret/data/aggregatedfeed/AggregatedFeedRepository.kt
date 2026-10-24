@@ -18,12 +18,12 @@ import fi.kroon.vadret.util.NetworkHandler
 import fi.kroon.vadret.util.extension.asLeft
 import fi.kroon.vadret.util.extension.asRight
 import fi.kroon.vadret.util.extension.asSingle
+import io.github.sphrak.either.Either
+import io.github.sphrak.either.flatMap
+import io.github.sphrak.either.map
 import io.reactivex.Single
 import org.threeten.bp.OffsetDateTime
 import retrofit2.Response
-import se.fimbla.either.Either
-import se.fimbla.either.flatMap
-import se.fimbla.either.map
 import timber.log.Timber
 import javax.inject.Inject
 

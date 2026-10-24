@@ -6,8 +6,8 @@ import fi.kroon.vadret.data.nominatim.exception.NominatimFailure
 import fi.kroon.vadret.data.nominatim.model.Nominatim
 import fi.kroon.vadret.data.nominatim.model.NominatimReverseOut
 import fi.kroon.vadret.util.extension.asLeft
+import io.github.sphrak.either.Either
 import io.reactivex.Single
-import se.fimbla.either.Either
 import timber.log.Timber
 import javax.inject.Inject
 

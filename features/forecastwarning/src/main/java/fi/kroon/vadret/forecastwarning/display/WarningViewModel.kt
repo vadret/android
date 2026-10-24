@@ -19,6 +19,7 @@ import fi.kroon.vadret.forecastwarning.districtpreference.GetEnabledDistrictPref
 import fi.kroon.vadret.forecastwarning.feedsource.GetFeedSourceNetService
 import fi.kroon.vadret.forecastwarning.feedsourcepreference.GetEnabledFeedSourcePreferenceIdsTask
 import fi.kroon.vadret.shared.IViewModel
+import io.github.sphrak.either.extension.onResult
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -27,7 +28,6 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.rx2.await
 import kotlinx.coroutines.withContext
-import se.fimbla.either.onResult
 import timber.log.Timber
 import javax.inject.Inject
 

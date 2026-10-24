@@ -19,8 +19,8 @@ import fi.kroon.vadret.util.LONGITUDE_KEY
 import fi.kroon.vadret.util.MUNICIPALITY_KEY
 import fi.kroon.vadret.util.extension.asRight
 import fi.kroon.vadret.util.extension.asSingle
+import io.github.sphrak.either.Either
 import io.reactivex.Single
-import se.fimbla.either.Either
 import javax.inject.Inject
 
 class WeatherForecastLocalKeyValueDataSource @Inject constructor(

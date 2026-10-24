@@ -6,8 +6,8 @@ import fi.kroon.vadret.data.radar.model.Radar
 import fi.kroon.vadret.util.RADAR_CACHE_KEY
 import fi.kroon.vadret.util.extension.asLeft
 import fi.kroon.vadret.util.extension.asRight
+import io.github.sphrak.either.Either
 import io.reactivex.Single
-import se.fimbla.either.Either
 import timber.log.Timber
 import javax.inject.Inject
 

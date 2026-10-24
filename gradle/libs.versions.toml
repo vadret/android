@@ -22,7 +22,7 @@ corbind = "1.5.0"
 coreKtx = "1.3.2"
 coroutines = "1.11.0"
 dagger = "2.60.1"
-either = "1.9.0"
+either = "2.4.3"
 fragment = "1.3.2"
 junit = "4.13"
 kotlinxSerialization = "1.11.0"
@@ -127,7 +127,7 @@ dagger-runtime = { module = "com.google.dagger:dagger", version.ref = "dagger" }
 # Miscellaneous
 coil = { module = "io.coil-kt:coil", version.ref = "coil" }
 commons-csv = { module = "org.apache.commons:commons-csv", version.ref = "commonsCsv" }
-either = { module = "se.fimbla:either", version.ref = "either" }
+either = { module = "io.github.sphrak:either", version.ref = "either" }
 osmdroid = { module = "org.osmdroid:osmdroid-android", version.ref = "osmdroid" }
 permissionsdispatcher-processor = { module = "com.github.permissions-dispatcher:permissionsdispatcher-processor", version.ref = "permissionsDispatcher" }
 permissionsdispatcher-runtime = { module = "com.github.permissions-dispatcher:permissionsdispatcher", version.ref = "permissionsDispatcher" }

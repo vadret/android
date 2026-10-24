@@ -5,12 +5,12 @@ import androidx.lifecycle.viewModelScope
 import fi.kroon.vadret.data.failure.Failure
 import fi.kroon.vadret.data.library.model.Library
 import fi.kroon.vadret.settings.GetAboutLibraryTask
+import io.github.sphrak.either.extension.onResult
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.rx2.await
-import se.fimbla.either.onResult
 import timber.log.Timber
 import javax.inject.Inject
 

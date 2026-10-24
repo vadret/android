@@ -3,8 +3,8 @@ package fi.kroon.vadret.forecastwarning.feedsource
 import fi.kroon.vadret.data.failure.Failure
 import fi.kroon.vadret.data.feedsource.FeedSourceRepository
 import fi.kroon.vadret.data.feedsource.model.FeedSource
+import io.github.sphrak.either.Either
 import io.reactivex.Single
-import se.fimbla.either.Either
 import javax.inject.Inject
 
 class GetFeedSourceNetTask @Inject constructor(

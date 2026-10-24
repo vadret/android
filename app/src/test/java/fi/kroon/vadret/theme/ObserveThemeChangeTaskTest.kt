@@ -8,6 +8,7 @@ import fi.kroon.vadret.util.THEME_MODE_KEY
 import fi.kroon.vadret.util.extension.asLeft
 import fi.kroon.vadret.util.extension.asObservable
 import fi.kroon.vadret.util.extension.asRight
+import io.github.sphrak.either.Either
 import io.reactivex.Observable
 import org.junit.Before
 import org.junit.Test
@@ -15,7 +16,6 @@ import org.junit.runner.RunWith
 import org.mockito.Mock
 import org.mockito.Mockito.doReturn
 import org.mockito.junit.MockitoJUnitRunner
-import se.fimbla.either.Either
 
 @RunWith(MockitoJUnitRunner::class)
 class ObserveThemeChangeTaskTest {
@@ -42,7 +42,7 @@ class ObserveThemeChangeTaskTest {
             .assertNoErrors()
             .assertComplete()
             .assertValueAt(0) {
-                it is Either.Right && it.value == LIGHT_THEME
+                it is Either.Right && it.b == LIGHT_THEME
             }
     }
 
@@ -58,7 +58,7 @@ class ObserveThemeChangeTaskTest {
             .assertNoErrors()
             .assertComplete()
             .assertValueAt(0) {
-                it is Either.Left && it.value is ThemeFailure.ThemeNotFound
+                it is Either.Left && it.a is ThemeFailure.ThemeNotFound
             }
     }
 

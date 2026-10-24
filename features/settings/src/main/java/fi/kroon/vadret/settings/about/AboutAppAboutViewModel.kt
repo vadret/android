@@ -7,12 +7,12 @@ import fi.kroon.vadret.core.R
 import fi.kroon.vadret.data.aboutinfo.model.AboutInfo
 import fi.kroon.vadret.data.failure.Failure
 import fi.kroon.vadret.settings.GetAboutInfoTask
+import io.github.sphrak.either.extension.onResult
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.rx2.await
-import se.fimbla.either.onResult
 import javax.inject.Inject
 
 class AboutAppAboutViewModel @Inject constructor(

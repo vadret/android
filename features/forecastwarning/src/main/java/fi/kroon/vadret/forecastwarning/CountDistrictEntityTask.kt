@@ -3,8 +3,8 @@ package fi.kroon.vadret.forecastwarning
 import fi.kroon.vadret.data.district.local.DistrictDao
 import fi.kroon.vadret.data.failure.Failure
 import fi.kroon.vadret.util.extension.asRight
+import io.github.sphrak.either.Either
 import io.reactivex.Single
-import se.fimbla.either.Either
 import javax.inject.Inject
 
 class CountDistrictEntityTask @Inject constructor(
