@@ -17,12 +17,6 @@ dependencies {
     implementation project(':data:persistance')
 
     implementation libs.androidx.annotation
-    implementation libs.androidx.collection
-    implementation libs.androidx.navigation.fragment.ktx
-    implementation libs.androidx.recyclerview
-    implementation libs.androidx.swiperefreshlayout
-    implementation libs.corbind.core
-    implementation libs.corbind.swiperefreshlayout
     implementation libs.dagger.runtime
     implementation libs.timber
 

@@ -33,6 +33,22 @@ class ThemeLocalKeyValueDataSource @Inject constructor(
             }
         }
 
+    fun putString(
+        key: String,
+        value: String
+    ): Either<Failure, Unit> =
+        when (key) {
+            THEME_MODE_KEY ->
+                theme
+                    .set(value = value)
+                    .asRight()
+            else -> {
+                ThemeFailure
+                    .ThemeNotFound
+                    .asLeft()
+            }
+        }
+
     fun observeString(key: String): Flow<Either<Failure, String>> =
         when (key) {
             THEME_MODE_KEY ->

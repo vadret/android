@@ -8,34 +8,22 @@ import fi.kroon.vadret.data.radar.model.RadarRequest
 import fi.kroon.vadret.util.extension.asRight
 import io.github.sphrak.either.Either
 import kotlinx.coroutines.test.runTest
-import org.junit.Assert.assertTrue
-import org.junit.Before
-import org.junit.Test
-import org.junit.runner.RunWith
-import org.mockito.Mock
 import org.mockito.Mockito.doReturn
-import org.mockito.junit.MockitoJUnitRunner
+import org.mockito.Mockito.mock
+import kotlin.test.Test
+import kotlin.test.assertTrue
 
-@RunWith(MockitoJUnitRunner::class)
 class GetRadarImageUrlTaskTest {
 
     private val errorHandler: ErrorHandler = ErrorHandler()
 
-    private lateinit var testGetRadarImageUrlTask: GetRadarImageUrlTask
+    private val mockRadarRepository: RadarRepository = mock(RadarRepository::class.java)
 
-    @Mock
-    private lateinit var mockRadarRepository: RadarRepository
+    private val mockRadar: Radar = mock(Radar::class.java)
 
-    @Mock
-    private lateinit var mockRadar: Radar
+    private val mockRadarRequest: RadarRequest = mock(RadarRequest::class.java)
 
-    @Mock
-    private lateinit var mockRadarRequest: RadarRequest
-
-    @Before
-    fun setup() {
-        testGetRadarImageUrlTask = GetRadarImageUrlTask(repo = mockRadarRepository)
-    }
+    private val testGetRadarImageUrlTask: GetRadarImageUrlTask = GetRadarImageUrlTask(repo = mockRadarRepository)
 
     @Test
     fun `fetch radar object successfully`() = runTest {

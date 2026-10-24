@@ -2,13 +2,20 @@ package fi.kroon.vadret.data.radar.model
 
 import fi.kroon.vadret.util.DEFAULT_RADAR_FILE_FORMAT
 import fi.kroon.vadret.util.DEFAULT_TIME_ZONE
-import org.threeten.bp.LocalDate
-import org.threeten.bp.ZoneOffset
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.number
+import kotlinx.datetime.todayIn
+import kotlin.time.Clock
 
+/**
+ *  SMHI publishes the radar per UTC day.
+ */
 data class RadarRequest(
-    val year: String = LocalDate.now(ZoneOffset.UTC).year.toString(),
-    val month: String = LocalDate.now(ZoneOffset.UTC).monthValue.toString(),
-    val date: String = LocalDate.now(ZoneOffset.UTC).dayOfMonth.toString(),
+    private val today: LocalDate = Clock.System.todayIn(TimeZone.UTC),
+    val year: String = today.year.toString(),
+    val month: String = today.month.number.toString(),
+    val date: String = today.day.toString(),
     val format: String = DEFAULT_RADAR_FILE_FORMAT,
     val timeZone: String = DEFAULT_TIME_ZONE
 )

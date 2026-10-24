@@ -1,8 +1,5 @@
 package fi.kroon.vadret.util.extension
 
-import org.threeten.bp.LocalDate
-import org.threeten.bp.OffsetDateTime
-
 fun String.Companion.empty(): String = ""
 fun String.splitToList(): List<String> = this
     .split(",")
@@ -13,4 +10,3 @@ fun String.splitToList(): List<String> = this
     .filter { string ->
         string.isNotEmpty()
     }.toList()
-fun String.parseToLocalDate(): LocalDate = OffsetDateTime.parse(this).toLocalDate()

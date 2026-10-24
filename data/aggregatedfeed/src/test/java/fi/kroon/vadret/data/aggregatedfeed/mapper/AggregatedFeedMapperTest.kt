@@ -6,9 +6,9 @@ import fi.kroon.vadret.data.aggregatedfeed.model.SmhiWarning
 import fi.kroon.vadret.data.common.defaultJson
 import fi.kroon.vadret.util.FEED_SOURCE_KRISINFORMATION_ID
 import fi.kroon.vadret.util.FEED_SOURCE_SMHI_ID
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
-import org.junit.Test
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 /**
  *  Fixtures are trimmed responses from SMHI's IBWW v1

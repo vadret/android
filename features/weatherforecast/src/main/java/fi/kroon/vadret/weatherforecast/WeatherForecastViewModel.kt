@@ -4,461 +4,286 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import fi.kroon.vadret.data.autocomplete.model.AutoCompleteItem
 import fi.kroon.vadret.data.failure.Failure
-import fi.kroon.vadret.data.nominatim.model.Locality
+import fi.kroon.vadret.data.location.model.Location
+import fi.kroon.vadret.data.weatherforecast.model.Weather
+import fi.kroon.vadret.data.weatherforecast.model.WeatherOut
 import fi.kroon.vadret.shared.IViewModel
-import fi.kroon.vadret.util.extension.empty
+import fi.kroon.vadret.util.AUTOCOMPLETE_DEBOUNCE_MILLIS
+import fi.kroon.vadret.weatherforecast.model.SearchState
+import fi.kroon.vadret.weatherforecast.model.WeatherForecast
+import io.github.sphrak.either.Either
 import io.github.sphrak.either.extension.onResult
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
+import io.github.sphrak.either.flatMap
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.datetime.TimeZone
 import timber.log.Timber
+import java.util.Locale
 import javax.inject.Inject
+import kotlin.time.Clock
 
 class WeatherForecastViewModel @Inject constructor(
-    private var state: WeatherForecastView.State,
-    private val setDefaultLocationInformationTask: SetDefaultLocationInformationTask,
-    private val getWeatherForecastService: GetWeatherForecastService,
-    private val getAutoCompleteService: GetAutoCompleteService,
-    private val setLocationInformationTask: SetLocationInformationTask,
-    private val enableGpsLocationModeTask: SetLocationModeTask,
     private val getAppLocationModeTask: GetAppLocationModeTask,
+    private val setLocationModeTask: SetLocationModeTask,
+    private val setLocationInformationTask: SetLocationInformationTask,
+    private val getWeatherForecastService: GetWeatherForecastService,
+    private val getWeatherForecastLastCheckedTask: GetWeatherForecastLastCheckedTask,
     private val setWeatherForecastLastCheckedTask: SetWeatherForecastLastCheckedTask,
-    private val getWeatherForecastLastCheckedTask: GetWeatherForecastLastCheckedTask
-) : IViewModel, ViewModel() {
+    private val getAutoCompleteService: GetAutoCompleteService,
+    private val clock: Clock,
+    private val coroutineDispatcher: CoroutineDispatcher
+) : ViewModel(), IViewModel {
 
-    fun send(event: WeatherForecastView.Event) {
-        viewModelScope.launch {
-            reduce(event = event)
-        }
-    }
+    private val mutableState: MutableStateFlow<WeatherForecastState> = MutableStateFlow(WeatherForecastState())
+    val state: StateFlow<WeatherForecastState> = mutableState.asStateFlow()
 
-    private val mutState: MutableSharedFlow<WeatherForecastView.State> = MutableSharedFlow()
+    /**
+     *  The location mode the shown forecast was loaded with.
+     */
+    private val loadedLocationMode: MutableStateFlow<Boolean?> = MutableStateFlow(null)
+    private var loadJob: Job? = null
+    private var searchJob: Job? = null
 
-    val viewState = mutState.asSharedFlow()
-
-    private suspend fun reduce(event: WeatherForecastView.Event) = withContext(Dispatchers.IO) {
-        Timber.d("event: $event")
+    fun onEvent(event: WeatherForecastEvent) {
         when (event) {
-            is WeatherForecastView.Event.OnViewInitialised -> onViewInitialisedEvent(event.stateParcel)
-            WeatherForecastView.Event.OnLocationPermissionGranted -> onLocationPermissionGrantedEvent()
-            WeatherForecastView.Event.OnLocationPermissionDenied -> onLocationPermissionDeniedEvent()
-            WeatherForecastView.Event.OnLocationPermissionDeniedNeverAskAgain -> onLocationPermissionDeniedNeverAskAgainEvent()
-            is WeatherForecastView.Event.OnSearchViewDismissed -> onSearchViewDismissedEvent()
-            is WeatherForecastView.Event.OnSearchButtonToggled -> onSearchButtonToggledEvent()
-            WeatherForecastView.Event.OnSwipedToRefresh -> onSwipedToRefreshEvent()
-            is WeatherForecastView.Event.OnSearchButtonSubmitted -> onSearchButtonSubmittedEvent(event.query)
-            is WeatherForecastView.Event.OnAutoCompleteItemClicked -> onAutoCompleteItemClickedEvent(event.autoCompleteItem)
-            WeatherForecastView.Event.OnFailureHandled -> onFailureHandled()
-            is WeatherForecastView.Event.OnSearchTextChanged -> onSearchTextChanged(event.text)
-            WeatherForecastView.Event.OnProgressBarEffectStarted -> onProgressBarEffectStartedEvent()
-            WeatherForecastView.Event.OnProgressBarEffectStopped -> onProgressBarEffectStoppedEvent()
-            WeatherForecastView.Event.OnScrollPositionRestored -> onScrollPositionRestored()
-            WeatherForecastView.Event.OnWeatherListDisplayed -> onWeatherListDisplayed()
-            WeatherForecastView.Event.OnStateParcelUpdated -> onStateParcelUpdatedEvent()
+            WeatherForecastEvent.OnShown -> onShown()
+            WeatherForecastEvent.OnRefresh -> onRefresh()
+            WeatherForecastEvent.OnErrorShown -> mutableState.update { state: WeatherForecastState ->
+                state.copy(errorMessageResourceId = null)
+            }
+            is WeatherForecastEvent.OnLocationPermissionResult -> onLocationPermissionResult(isGranted = event.isGranted)
+            WeatherForecastEvent.OnSearchButtonClicked -> mutableState.update { state: WeatherForecastState ->
+                state.copy(search = SearchState())
+            }
+            WeatherForecastEvent.OnSearchDismissed -> onSearchDismissed()
+            WeatherForecastEvent.OnSearchSubmitted -> onSearchSubmitted()
+            is WeatherForecastEvent.OnSearchQueryChanged -> onSearchQueryChanged(query = event.query)
+            is WeatherForecastEvent.OnSuggestionClicked -> onSuggestionClicked(autoCompleteItem = event.autoCompleteItem)
         }
     }
 
-    private suspend fun onViewInitialisedEvent(stateParcel: WeatherForecastView.StateParcel?) =
-        withContext(Dispatchers.IO) {
+    private fun onShown() {
+        viewModelScope.launch(context = coroutineDispatcher) {
             getAppLocationModeTask()
                 .onResult(
                     { failure: Failure ->
-                        Timber.e("handleRuntimeLocationPermissionMode: Failure: $failure")
-                        val errorCode: Int = getErrorCode(failure)
-                        val renderEvent: WeatherForecastView.RenderEvent.DisplayError = WeatherForecastView
-                            .RenderEvent
-                            .DisplayError(errorCode)
-
-                        state = state.copy(renderEvent = renderEvent)
-                        mutState.emit(state)
+                        displayError(failure = failure)
                     },
-                    { locationMode: Boolean ->
-                        restoreStateFromStateParcel(stateParcel)
-                        when (locationMode) {
-                            true -> onRequestLocationPermission()
-                            false -> onLocationPermissionDeniedEvent()
+                    { isAutomatic: Boolean ->
+                        if (isAutomatic != loadedLocationMode.value) {
+                            startLoading(isAutomatic = isAutomatic)
                         }
                     }
                 )
         }
+    }
 
-    private fun restoreStateFromStateParcel(stateParcel: WeatherForecastView.StateParcel?) {
-        Timber.d("restoreStateFromStateParcel: $stateParcel")
-
-        stateParcel?.run {
-            state = state.copy(
-                forceNet = forceNet,
-                searchText = searchText,
-                isSearchToggled = isSearchToggled,
-                wasRestoredFromStateParcel = true,
-                startRefreshing = startRefreshing,
-                stopRefreshing = stopRefreshing
+    private fun startLoading(isAutomatic: Boolean) {
+        if (isAutomatic) {
+            mutableState.update { state: WeatherForecastState ->
+                state.copy(isLocationPermissionRequested = true)
+            }
+        } else {
+            load(
+                isAutomatic = false,
+                forceNet = false
             )
         }
     }
-
-    private suspend fun onStateParcelUpdatedEvent() {
-        state = state.copy(renderEvent = WeatherForecastView.RenderEvent.Idle)
-        mutState.emit(state)
-    }
-
-    private suspend fun onWeatherListDisplayed() =
-        endLoadingWeatherForecast()
-
-    private suspend fun onProgressBarEffectStartedEvent() =
-        preLoadingWeatherForecast()
-
-    private suspend fun onProgressBarEffectStoppedEvent() =
-        endLoadingWeatherForecast()
-
-    private suspend fun onScrollPositionRestored() =
-        endLoadingWeatherForecast()
-
-    private suspend fun preLoadingWeatherForecast() =
-        withContext(Dispatchers.IO) {
-            when {
-                state.isSearchToggled -> {
-                    val renderEvent: WeatherForecastView.RenderEvent.DisableSearchView =
-                        WeatherForecastView.RenderEvent.DisableSearchView(
-                            text = String.empty()
-                        )
-                    state = state.copy(
-                        renderEvent = renderEvent,
-                        searchText = String.empty(),
-                        isSearchToggled = false
-                    )
-                    mutState.emit(state)
-                }
-                state.startRefreshing -> {
-                    state = state.copy(
-                        renderEvent = WeatherForecastView.RenderEvent.StartProgressBarEffect,
-                        startRefreshing = false,
-                        stopRefreshing = true
-                    )
-                    mutState.emit(state)
-                }
-                else -> {
-                    Timber.d("preLoadingWeatherForecast ended")
-                    state = state.copy(
-                        isInitialised = true
-                    )
-                    loadWeatherForecast()
-                }
-            }
-        }
-
-    private suspend fun endLoadingWeatherForecast() =
-        when {
-            state.isSearchToggled -> {
-                state = state.copy(
-                    renderEvent = WeatherForecastView
-                        .RenderEvent
-                        .DisableSearchView(text = String.empty()),
-                    isSearchToggled = false
-                )
-                mutState.emit(state)
-            }
-            state.wasRestoredFromStateParcel -> {
-                state = state.copy(
-                    renderEvent = WeatherForecastView.RenderEvent.RestoreScrollPosition,
-                    wasRestoredFromStateParcel = false
-                )
-                mutState.emit(state)
-            }
-            state.stopRefreshing -> {
-                state = state.copy(
-                    renderEvent = WeatherForecastView.RenderEvent.StopProgressBarEffect,
-                    stopRefreshing = false
-                )
-                mutState.emit(state)
-            }
-            else -> {
-                Timber.d("endLoadingWeatherForecast ended.")
-                updateStateParcel()
-                mutState.emit(state)
-            }
-        }
-
-    private suspend fun onFailureHandled() {
-        Timber.e("onFailureHandled")
-        endLoadingWeatherForecast()
-    }
-
-    private suspend fun onSwipedToRefreshEvent() {
-        Timber.d("onSwipedToRefreshEvent")
-        state = state.copy(forceNet = true)
-        updateStateToRefreshing()
-        preLoadingWeatherForecast()
-    }
-
-    private suspend fun onRequestLocationPermission() {
-        Timber.d("onRequestLocationPermission")
-        state = state.copy(
-            renderEvent = WeatherForecastView.RenderEvent.RequestLocationPermission
-        )
-        mutState.emit(state)
-    }
-
-    private suspend fun updateStateParcel() {
-        state = state.copy(
-            renderEvent = WeatherForecastView.RenderEvent.UpdateStateParcel,
-            startRefreshing = false,
-            stopRefreshing = false,
-            forceNet = false
-        )
-        mutState.emit(state)
-    }
-
-    private suspend fun onSearchViewDismissedEvent() =
-        preLoadingWeatherForecast()
-
-    private suspend fun onAutoCompleteItemClickedEvent(autoCompleteItem: AutoCompleteItem) =
-        enableGpsLocationModeTask(false)
-            .onResult(
-                {
-                    Timber.e("$it")
-                    mutState.emit(state)
-                },
-                {
-                    updateLocationInformation(autoCompleteItem = autoCompleteItem)
-                }
-            )
-
-    private suspend fun updateLocationInformation(autoCompleteItem: AutoCompleteItem) =
-        setLocationInformationTask(autoCompleteItem)
-            ?.onResult(
-                {
-                    Timber.e("$it")
-                    mutState.emit(state)
-                },
-                {
-                    state = state.copy(forceNet = true)
-                    updateStateToRefreshing()
-                    preLoadingWeatherForecast()
-                }
-            )
-
-    private suspend fun onSearchTextChanged(searchText: String) =
-        getAutoCompleteService(searchText)
-            ?.onResult(
-                { failure: Failure ->
-                    val errorCode: Int = getErrorCode(failure)
-                    val renderEvent: WeatherForecastView.RenderEvent.DisplayError = WeatherForecastView.RenderEvent.DisplayError(errorCode)
-
-                    state = state.copy(renderEvent = renderEvent)
-                    mutState.emit(state)
-                },
-                { data: GetAutoCompleteService.Data ->
-                    val renderEvent: WeatherForecastView.RenderEvent.DisplayAutoComplete =
-                        WeatherForecastView
-                            .RenderEvent
-                            .DisplayAutoComplete(
-                                data.diffResult,
-                                data.newFilteredList
-                            )
-
-                    state = state.copy(
-                        renderEvent = renderEvent,
-                        searchText = searchText
-                    )
-                    mutState.emit(state)
-                }
-            )
-
-    private suspend fun onSearchButtonSubmittedEvent(query: String) =
-        getAutoCompleteService(query)
-            ?.onResult(
-                { failure: Failure ->
-                    Timber.e("getAutoCompleteService failed: $failure")
-                    val errorCode: Int = getErrorCode(failure)
-                    val renderEvent: WeatherForecastView.RenderEvent.DisplayError =
-                        WeatherForecastView.RenderEvent.DisplayError(errorCode)
-
-                    state = state.copy(renderEvent = renderEvent)
-                    mutState.emit(state)
-                },
-                { data: GetAutoCompleteService.Data ->
-                    Timber.d("Submit triggered: ${data.newFilteredList.first()}")
-                    enableGpsLocationModeTask(false)
-                        .onResult(
-                            {
-                                mutState.emit(state)
-                            },
-                            {
-                                setLocationInformation(data.newFilteredList.first())
-                                mutState.emit(state)
-                            }
-                        )
-                }
-            )
-
-    private suspend fun setLocationInformation(autoCompleteItem: AutoCompleteItem) =
-        setLocationInformationTask(autoCompleteItem)
-            .onResult(
-                {
-                    state
-                },
-                {
-                    updateStateToRefreshing()
-                    state = state.copy(
-                        forceNet = true,
-                        searchText = String.empty(),
-                        isSearchToggled = true
-                    )
-                    preLoadingWeatherForecast()
-                }
-            )
-
-    private suspend fun setDefaultLocationInformation() =
-        setDefaultLocationInformationTask()
-            .onResult(
-                { failure: Failure ->
-                    Timber.e("setDefaultLocationInformation: $failure")
-                    val errorCode = getErrorCode(failure)
-                    val renderEvent = WeatherForecastView.RenderEvent.DisplayError(errorCode)
-
-                    state = state.copy(renderEvent = renderEvent)
-                    mutState.emit(state)
-                },
-                {
-                    preLoadingWeatherForecast()
-                }
-            )
 
     /**
-     *  On location mode setting updated. Which happens after
-     *  location permission is successfully granted.
+     *  Without location access the stored place is used,
+     *  which is Stockholm until the user searches for another.
      */
-    private suspend fun loadWeatherForecast() =
-        getWeatherForecastLastCheckedTask()
-            .onResult(
-                { failure: Failure ->
-                    Timber.e("Failure: $failure")
-                    mutState.emit(state)
-                },
-                { timeStamp: Long ->
-                    getWeatherForecastService(timeStamp, state.forceNet)
-                        .onResult(
-                            { failure: Failure ->
-                                Timber.e("loadWeatherForecastFailure: $failure")
-                                val errorCode: Int = getErrorCode(failure)
-                                val renderEvent: WeatherForecastView.RenderEvent.DisplayError =
-                                    WeatherForecastView.RenderEvent.DisplayError(errorCode)
-
-                                state = state.copy(renderEvent = renderEvent)
-                                mutState.emit(state)
-                            },
-                            { data: GetWeatherForecastService.Data ->
-
-                                val renderEvent: WeatherForecastView.RenderEvent.DisplayWeatherForecast =
-                                    WeatherForecastView.RenderEvent.DisplayWeatherForecast(
-                                        list = data.weatherForecastModelList,
-                                        locality = Locality(name = data.localityName)
-                                    )
-
-                                state = state.copy(
-                                    renderEvent = renderEvent
-                                )
-                                updateLastChecked(data.timeStamp)
-                            }
+    private fun onLocationPermissionResult(isGranted: Boolean) {
+        mutableState.update { state: WeatherForecastState ->
+            state.copy(isLocationPermissionRequested = false)
+        }
+        viewModelScope.launch(context = coroutineDispatcher) {
+            setLocationModeTask(value = isGranted)
+                .onResult(
+                    { failure: Failure ->
+                        displayError(failure = failure)
+                    },
+                    {
+                        load(
+                            isAutomatic = isGranted,
+                            forceNet = false
                         )
-                }
-            )
+                    }
+                )
+        }
+    }
 
-    private suspend fun updateLastChecked(timeStamp: Long) =
+    /**
+     *  Nothing to refresh until the first load has started.
+     */
+    private fun onRefresh() {
+        val isAutomatic: Boolean? = loadedLocationMode.value
+        if (isAutomatic == null) {
+            return
+        }
+        mutableState.update { state: WeatherForecastState ->
+            state.copy(isRefreshing = true)
+        }
+        load(
+            isAutomatic = isAutomatic,
+            forceNet = true
+        )
+    }
+
+    private fun load(isAutomatic: Boolean, forceNet: Boolean) {
+        loadedLocationMode.value = isAutomatic
+        loadJob?.cancel()
+        loadJob = viewModelScope.launch(context = coroutineDispatcher) {
+            getWeatherForecastLastCheckedTask()
+                .flatMap { timeStamp: Long ->
+                    getWeatherForecastService(
+                        timeStamp = timeStamp,
+                        forceNet = forceNet
+                    )
+                }
+                .onResult(
+                    { failure: Failure ->
+                        displayError(failure = failure)
+                    },
+                    { data: GetWeatherForecastService.Data ->
+                        displayForecast(data = data)
+                        setLastChecked(timeStamp = data.timeStamp)
+                    }
+                )
+        }
+    }
+
+    private fun displayForecast(data: GetWeatherForecastService.Data) {
+        val weather: Weather? = data.weather
+        val weatherOut: WeatherOut? = data.weatherOut
+        if (weather == null || weatherOut == null) {
+            return
+        }
+        val forecast: WeatherForecast = WeatherForecastMapper(
+            timeSeries = weather.timeSeries,
+            location = Location(
+                latitude = weatherOut.latitude,
+                longitude = weatherOut.longitude
+            ),
+            now = clock.now(),
+            timeZone = TimeZone.currentSystemDefault(),
+            locale = Locale.getDefault()
+        )
+        mutableState.update { state: WeatherForecastState ->
+            state.copy(
+                forecast = forecast,
+                localityName = data.localityName,
+                isLoading = false,
+                isRefreshing = false
+            )
+        }
+    }
+
+    /**
+     *  A lost timestamp only means the next load skips the cache.
+     */
+    private fun setLastChecked(timeStamp: Long) {
         setWeatherForecastLastCheckedTask(value = timeStamp)
             .onResult(
                 { failure: Failure ->
-                    Timber.e("Failure: $failure")
-                    mutState.emit(state)
+                    Timber.e("Failed storing last checked: $failure")
                 },
-                {
-                    Timber.d("LAST CHECKED UPDATED")
-                    mutState.emit(state)
-                }
+                {}
             )
-
-    private suspend fun onSearchButtonToggledEvent() {
-        state = state.copy(
-            renderEvent = WeatherForecastView.RenderEvent.EnableSearchView,
-            isSearchToggled = true
-        )
-        mutState.emit(state)
     }
 
-    private suspend fun updateStateToLoadingAndRefreshing() {
-        Timber.d("updateStateToLoadingAndRefreshing")
-        state = state.copy(
-            startRefreshing = state.wasRestoredFromStateParcel.not()
-        )
-        mutState.emit(state)
+    private fun onSearchDismissed() {
+        searchJob?.cancel()
+        mutableState.update { state: WeatherForecastState ->
+            state.copy(search = null)
+        }
     }
 
-    private suspend fun updateStateToRefreshing() {
-        Timber.d("updateStateToRefreshing")
-        state = state.copy(
-            startRefreshing = true
-        )
-        mutState.emit(state)
-    }
-
-    private suspend fun onLocationPermissionGrantedEvent() =
-        enableGpsLocationModeTask(true)
-            ?.onResult(
+    /**
+     *  The query is stored right away so the text field
+     *  never lags behind typing, suggestions follow.
+     */
+    private fun onSearchQueryChanged(query: String) {
+        mutableState.update { state: WeatherForecastState ->
+            val search: SearchState? = state.search
+            if (search != null) {
+                state.copy(search = search.copy(query = query))
+            } else {
+                state
+            }
+        }
+        searchJob?.cancel()
+        searchJob = viewModelScope.launch(context = coroutineDispatcher) {
+            delay(timeMillis = AUTOCOMPLETE_DEBOUNCE_MILLIS)
+            val suggestions: Either<Failure, List<AutoCompleteItem>> = if (query.isBlank()) {
+                Either.Right(emptyList())
+            } else {
+                getAutoCompleteService(text = query)
+            }
+            suggestions.onResult(
                 { failure: Failure ->
-                    Timber.e("onLocationPermissionGrantedFailure: $failure")
-                    val errorCode = getErrorCode(failure)
-                    val renderEvent = WeatherForecastView.RenderEvent.DisplayError(errorCode)
-
-                    state = state.copy(renderEvent = renderEvent)
-                    mutState.emit(state)
+                    displayError(failure = failure)
                 },
-                {
-                    Timber.d("Location mode updated to true -- proceeding to fetch weather.")
-                    updateStateToLoadingAndRefreshing()
-                    preLoadingWeatherForecast()
-                }
-            )
-
-    private suspend fun onLocationPermissionDeniedEvent() =
-        getAppLocationModeTask()
-            .onResult(
-                { failure: Failure ->
-                    Timber.e("onLocationPermissionDeniedEvent: $failure")
-                    val errorCode = getErrorCode(failure)
-                    val renderEvent = WeatherForecastView
-                        .RenderEvent
-                        .DisplayError(errorCode)
-
-                    state = state.copy(renderEvent = renderEvent)
-                    mutState.emit(state)
-                },
-                { locationMode: Boolean ->
-                    updateStateToLoadingAndRefreshing()
-                    when (locationMode) {
-                        false -> preLoadingWeatherForecast()
-                        true -> setDefaultLocationInformation()
+                { autoCompleteItemList: List<AutoCompleteItem> ->
+                    mutableState.update { state: WeatherForecastState ->
+                        val search: SearchState? = state.search
+                        if (search != null && search.query == query) {
+                            state.copy(search = search.copy(suggestions = autoCompleteItemList))
+                        } else {
+                            state
+                        }
                     }
                 }
             )
+        }
+    }
 
-    private suspend fun onLocationPermissionDeniedNeverAskAgainEvent() =
-        enableGpsLocationModeTask(false)
-            .onResult(
-                { failure: Failure ->
-                    Timber.e("onLocationPermissionDeniedNeverAskAgainEvent: $failure")
-                    val errorCode: Int = getErrorCode(failure)
-                    val renderEvent: WeatherForecastView.RenderEvent.DisplayError = WeatherForecastView.RenderEvent.DisplayError(errorCode)
+    private fun onSearchSubmitted() {
+        val autoCompleteItem: AutoCompleteItem = mutableState.value.search?.suggestions?.firstOrNull() ?: return
+        onSuggestionClicked(autoCompleteItem = autoCompleteItem)
+    }
 
-                    state = state.copy(renderEvent = renderEvent)
-                    mutState.emit(state)
-                },
-                {
-                    Timber.d("Location mode updated, proceeding to fetch weather.")
-                    updateStateToLoadingAndRefreshing()
-                    preLoadingWeatherForecast()
-                }
+    private fun onSuggestionClicked(autoCompleteItem: AutoCompleteItem) {
+        searchJob?.cancel()
+        viewModelScope.launch(context = coroutineDispatcher) {
+            setLocationModeTask(value = false)
+                .flatMap { setLocationInformationTask(autoCompleteItem = autoCompleteItem) }
+                .onResult(
+                    { failure: Failure ->
+                        displayError(failure = failure)
+                    },
+                    {
+                        mutableState.update { state: WeatherForecastState ->
+                            state.copy(
+                                search = null,
+                                isRefreshing = true
+                            )
+                        }
+                        load(
+                            isAutomatic = false,
+                            forceNet = true
+                        )
+                    }
+                )
+        }
+    }
+
+    private fun displayError(failure: Failure) {
+        Timber.e("Failure: $failure")
+        mutableState.update { state: WeatherForecastState ->
+            state.copy(
+                isLoading = false,
+                isRefreshing = false,
+                errorMessageResourceId = getErrorCode(failure)
             )
+        }
+    }
 }

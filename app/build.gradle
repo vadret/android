@@ -1,6 +1,9 @@
-apply plugin: 'com.android.application'
-apply plugin: 'com.google.devtools.ksp'
-apply plugin: 'kotlin-parcelize'
+plugins {
+    id 'com.android.application'
+    id 'com.google.devtools.ksp'
+    id 'kotlinx-serialization'
+    id 'vadret.android.compose'
+}
 
 def static loadFromEnvironment(String key) {
     return System.getenv(key)
@@ -103,7 +106,6 @@ android {
     buildFeatures {
         buildConfig true
         resValues true
-        viewBinding true
     }
 }
 
@@ -121,14 +123,11 @@ dependencies {
     implementation project(':data:theme')
 
     // Android
-    implementation libs.androidx.appcompat
-    implementation libs.androidx.constraintlayout
-    implementation libs.androidx.navigation.fragment.ktx
-    implementation libs.androidx.navigation.ui.ktx
-    implementation libs.androidx.preference.ktx
-    implementation libs.material
-
-    // Reactive
+    implementation libs.androidx.activity.compose
+    implementation libs.lifecycle.viewmodel.navigation3
+    implementation libs.navigation3.runtime
+    implementation libs.navigation3.ui
+    implementation libs.kotlinx.serialization.json
 
     // Dependency Injection
     implementation libs.dagger.runtime
@@ -138,8 +137,8 @@ dependencies {
     debugImplementation libs.leakcanary
     implementation libs.timber
     testImplementation libs.coroutines.test
-    testImplementation libs.junit
-    testImplementation libs.mockito
+    testImplementation libs.kotlin.test
+    testImplementation libs.kotlin.test.junit
 
 }
 

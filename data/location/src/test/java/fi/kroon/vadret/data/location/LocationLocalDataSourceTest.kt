@@ -10,28 +10,17 @@ import fi.kroon.vadret.data.location.model.Location
 import fi.kroon.vadret.util.DEFAULT_LATITUDE
 import fi.kroon.vadret.util.DEFAULT_LONGITUDE
 import io.github.sphrak.either.Either
-import org.junit.Before
-import org.junit.Test
-import org.junit.runner.RunWith
-import org.mockito.Mock
 import org.mockito.Mockito.doReturn
-import org.mockito.junit.MockitoJUnitRunner
+import org.mockito.Mockito.mock
+import kotlin.test.Test
 
-@RunWith(MockitoJUnitRunner::class)
 class LocationLocalDataSourceTest {
 
-    private lateinit var mockLocationLocalDataSource: LocationLocalDataSource
+    private val mockAndroidLocation: android.location.Location = mock(android.location.Location::class.java)
 
-    @Mock
-    private lateinit var mockAndroidLocation: android.location.Location
+    private val mockLocationManager: LocationManager = mock(LocationManager::class.java)
 
-    @Mock
-    private lateinit var mockLocationManager: LocationManager
-
-    @Before
-    fun setup() {
-        mockLocationLocalDataSource = LocationLocalDataSource(mockLocationManager)
-    }
+    private val mockLocationLocalDataSource: LocationLocalDataSource = LocationLocalDataSource(mockLocationManager)
 
     @Test
     fun `both nlp and gps are disabled returns failure`() {

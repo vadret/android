@@ -1,7 +1,7 @@
 package fi.kroon.vadret.data.aggregatedfeed.cache
 
-import androidx.collection.LruCache
 import fi.kroon.vadret.data.aggregatedfeed.model.AggregatedFeed
+import fi.kroon.vadret.data.common.MemoryCache
 import fi.kroon.vadret.data.failure.Failure
 import fi.kroon.vadret.util.AGGREGATED_FEED_CACHE_KEY
 import fi.kroon.vadret.util.extension.asLeft
@@ -12,7 +12,7 @@ import javax.inject.Inject
 
 class AggregatedFeedCacheDataSource @Inject constructor(
     private val diskCache: AggregatedFeedDiskCache,
-    private val memoryCache: LruCache<Long, List<AggregatedFeed>>
+    private val memoryCache: MemoryCache<Long, List<AggregatedFeed>>
 ) {
 
     fun getMemoryCache(): Either<Failure, List<AggregatedFeed>> =

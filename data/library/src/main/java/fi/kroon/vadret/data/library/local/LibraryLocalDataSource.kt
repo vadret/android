@@ -8,12 +8,10 @@ import javax.inject.Inject
 
 class LibraryLocalDataSource @Inject constructor() {
 
-    private val bsdLicense = "BSD License"
     private val gplV2License = "GPLv2"
     private val apache2License = "Apache License, Version 2.0"
     private val creativeCommonsV4License = "CC BY 4.0"
     private val ODbLicense = "Open Data Commons Open Database License"
-    private val bsd3ClauseLicense = "BSD 3-Clause License"
     private val mitLicense = "MIT License"
 
     operator fun invoke(): Either<Failure, List<Library>> =
@@ -30,7 +28,7 @@ class LibraryLocalDataSource @Inject constructor() {
             Library(
                 author = "Apache Commons™",
                 title = "Apache Commons CSV",
-                description = "Android is an open source operating system for mobile devices and a corresponding open source project led by Google.",
+                description = "Reads and writes files in the comma separated values format.",
                 projectUrl = "https://commons.apache.org/proper/commons-csv/",
                 sourceUrl = "https://git-wip-us.apache.org/repos/asf?p=commons-csv.git",
                 licenseUrl = "http://www.apache.org/licenses/",
@@ -71,24 +69,6 @@ class LibraryLocalDataSource @Inject constructor() {
                 licenseUrl = "https://github.com/sphrak/Either/blob/master/LICENSE",
                 license = apache2License,
                 description = "Either type for Kotlin"
-            ),
-            Library(
-                author = "Vladimir Raupov",
-                title = "Corbind",
-                description = "Kotlin Coroutines binding APIs for Android UI widgets.",
-                projectUrl = "https://github.com/LDRAlighieri/Corbind",
-                sourceUrl = "https://github.com/LDRAlighieri/Corbind",
-                licenseUrl = "https://github.com/LDRAlighieri/Corbind/blob/master/LICENSE",
-                license = apache2License
-            ),
-            Library(
-                author = "permissions-dispatcher",
-                title = "PermissionsDispatcher",
-                description = "Simple annotation-based API to handle runtime permissions.",
-                projectUrl = "https://permissions-dispatcher.github.io/PermissionsDispatcher/",
-                sourceUrl = "https://github.com/permissions-dispatcher/PermissionsDispatcher",
-                licenseUrl = "https://github.com/permissions-dispatcher/PermissionsDispatcher/blob/master/LICENSE",
-                license = apache2License
             ),
             Library(
                 author = "SMHI Open Data Meteorological Forecasts",
@@ -133,15 +113,6 @@ class LibraryLocalDataSource @Inject constructor() {
                 license = apache2License
             ),
             Library(
-                author = "Square, Inc.",
-                title = "Picasso",
-                description = "A powerful image downloading and caching library for Android",
-                projectUrl = "http://square.github.io/picasso/",
-                sourceUrl = "https://github.com/square/picasso",
-                licenseUrl = "https://github.com/square/picasso/blob/master/LICENSE.txt",
-                license = apache2License
-            ),
-            Library(
                 author = "JetBrains",
                 title = "Ktor",
                 description = "Asynchronous HTTP client for Kotlin, built on coroutines.",
@@ -160,22 +131,40 @@ class LibraryLocalDataSource @Inject constructor() {
                 license = apache2License
             ),
             Library(
-                author = "Jake Wharton",
-                title = "ThreetenABP",
-                description = "An adaptation of the JSR-310 backport for Android.",
-                projectUrl = "https://github.com/JakeWharton/ThreeTenABP",
-                sourceUrl = "https://github.com/JakeWharton/ThreeTenABP",
-                licenseUrl = "https://github.com/JakeWharton/ThreeTenABP/blob/master/LICENSE.txt",
+                author = "Google Inc.",
+                title = "Jetpack Compose",
+                description = "Android's toolkit for building native UI.",
+                projectUrl = "https://developer.android.com/compose",
+                sourceUrl = "https://android.googlesource.com/platform/frameworks/support",
+                licenseUrl = "https://android.googlesource.com/platform/frameworks/support/+/androidx-main/LICENSE.txt",
                 license = apache2License
             ),
             Library(
-                author = "ThreeTen",
-                title = "Threetenbp",
-                description = "Backport of functionality based on JSR-310 to Java SE 6 and 7.",
-                projectUrl = "https://www.threeten.org/threetenbp/",
-                sourceUrl = "https://github.com/ThreeTen/threetenbp",
-                licenseUrl = "https://github.com/ThreeTen/threetenbp/blob/master/LICENSE.txt",
-                license = bsd3ClauseLicense
+                author = "Google Inc.",
+                title = "Navigation 3",
+                description = "Navigation for Compose with a back stack the app owns.",
+                projectUrl = "https://developer.android.com/guide/navigation/navigation-3",
+                sourceUrl = "https://android.googlesource.com/platform/frameworks/support",
+                licenseUrl = "https://android.googlesource.com/platform/frameworks/support/+/androidx-main/LICENSE.txt",
+                license = apache2License
+            ),
+            Library(
+                author = "Coil Contributors",
+                title = "Coil",
+                description = "Image loading for Android backed by Kotlin coroutines.",
+                projectUrl = "https://coil-kt.github.io/coil/",
+                sourceUrl = "https://github.com/coil-kt/coil",
+                licenseUrl = "https://github.com/coil-kt/coil/blob/main/LICENSE.txt",
+                license = apache2License
+            ),
+            Library(
+                author = "JetBrains",
+                title = "kotlinx-datetime",
+                description = "A multiplatform Kotlin library for working with date and time.",
+                projectUrl = "https://github.com/Kotlin/kotlinx-datetime",
+                sourceUrl = "https://github.com/Kotlin/kotlinx-datetime",
+                licenseUrl = "https://github.com/Kotlin/kotlinx-datetime/blob/master/LICENSE.txt",
+                license = apache2License
             ),
             Library(
                 author = "Google Inc.",

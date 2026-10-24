@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <!-- Navigation destination declared by the app's nav graph, used by features -->
-    <item name="warningFilterDialog" type="id" />
-</resources>

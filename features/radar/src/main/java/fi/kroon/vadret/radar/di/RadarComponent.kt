@@ -1,36 +1,35 @@
 package fi.kroon.vadret.radar.di
 
-import android.content.Context
-import coil.ImageLoader
-import dagger.BindsInstance
+import androidx.compose.runtime.Composable
 import dagger.Component
 import fi.kroon.vadret.core.CoreComponent
 import fi.kroon.vadret.radar.RadarViewModel
+import fi.kroon.vadret.ui.daggerViewModel
 
+@RadarScope
 @Component(
-    modules = [
-        RadarModule::class
-    ],
     dependencies = [
         CoreComponent::class
+    ],
+    modules = [
+        RadarModule::class
     ]
 )
-@RadarScope
-interface RadarComponent {
+internal interface RadarComponent {
 
-    /**
-     *  ViewModel
-     */
-    fun provideRadarViewModel(): RadarViewModel
-
-    fun provideImageLoader(): ImageLoader
+    fun radarViewModel(): RadarViewModel
 
     @Component.Factory
     interface Factory {
-        fun create(
-            @BindsInstance
-            context: Context,
-            coreComponent: CoreComponent
-        ): RadarComponent
+        fun create(coreComponent: CoreComponent): RadarComponent
     }
 }
+
+@Composable
+internal fun radarViewModel(): RadarViewModel =
+    daggerViewModel { _, coreComponent: CoreComponent ->
+        DaggerRadarComponent
+            .factory()
+            .create(coreComponent = coreComponent)
+            .radarViewModel()
+    }

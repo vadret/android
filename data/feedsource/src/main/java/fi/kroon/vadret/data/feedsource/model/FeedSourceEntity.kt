@@ -3,7 +3,6 @@ package fi.kroon.vadret.data.feedsource.model
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import org.threeten.bp.OffsetDateTime
 
 @Entity(tableName = "feed_source")
 data class FeedSourceEntity(
@@ -27,7 +26,7 @@ data class FeedSourceEntity(
     @ColumnInfo(name = "headline_row_limit")
     val headLineRowLimit: Int,
 
-    @ColumnInfo(name = "created_at")
-    val createdAt: OffsetDateTime
+    @ColumnInfo(name = "created_at_epoch_millis")
+    val createdAtEpochMillis: Long
 
 )

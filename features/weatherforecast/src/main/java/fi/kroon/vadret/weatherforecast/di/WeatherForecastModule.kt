@@ -5,16 +5,9 @@ import android.location.LocationManager
 import dagger.Module
 import dagger.Provides
 import fi.kroon.vadret.data.location.local.LocationLocalDataSource
-import fi.kroon.vadret.weatherforecast.WeatherForecastView
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 @Module
-@ExperimentalCoroutinesApi
-object WeatherForecastModule {
-
-    @Provides
-    @WeatherForecastScope
-    fun provideViewState(): WeatherForecastView.State = WeatherForecastView.State()
+internal object WeatherForecastModule {
 
     @Provides
     @WeatherForecastScope

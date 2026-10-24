@@ -2,7 +2,7 @@ package fi.kroon.vadret.common
 
 import fi.kroon.vadret.util.extension.toCoordinate
 import junit.framework.Assert.assertEquals
-import org.junit.Test
+import kotlin.test.Test
 
 class CoordinateTest {
 

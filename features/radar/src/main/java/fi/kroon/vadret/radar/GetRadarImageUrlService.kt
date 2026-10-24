@@ -1,11 +1,9 @@
 package fi.kroon.vadret.radar
 
 import fi.kroon.vadret.data.failure.Failure
-import fi.kroon.vadret.data.radar.model.File
 import fi.kroon.vadret.data.radar.model.Radar
 import fi.kroon.vadret.data.radar.model.RadarRequest
 import fi.kroon.vadret.util.FIFTEEN_MINUTES_IN_MILLIS
-import fi.kroon.vadret.util.OFF_BY_ONE
 import fi.kroon.vadret.util.common.IDateTimeUtil
 import io.github.sphrak.either.Either
 import io.github.sphrak.either.extension.onResult
@@ -24,30 +22,17 @@ class GetRadarImageUrlService @Inject constructor(
 ) : IDateTimeUtil by iDateTimeUtil {
 
     data class Data(
-        val index: Int,
-        val maxIndex: Int? = null,
         val timeStamp: Long,
         val radar: Radar? = null,
-        val radarRequest: RadarRequest = RadarRequest(),
-        val file: File? = null
+        val radarRequest: RadarRequest = RadarRequest()
     )
 
-    suspend operator fun invoke(timeStamp: Long, index: Int): Either<Failure, Data> =
-        getRadar(
-            Data(
-                timeStamp = timeStamp,
-                index = index
-            )
-        ).let { getFileByIndex(it) }
-
-    private fun getFileByIndex(either: Either<Failure, Data>): Either<Failure, Data> =
-        either.map { data: Data ->
-            val file: File = data.radar!!.files[data.index]
-            val maxIndex: Int = getMaxIndex(radar = data.radar)
-            data.copy(file = file, maxIndex = maxIndex)
-        }
-
-    private fun getMaxIndex(radar: Radar): Int = radar.files.size - OFF_BY_ONE
+    /**
+     *  Today's radar images, from cache when [timeStamp]
+     *  is less than fifteen minutes old.
+     */
+    suspend operator fun invoke(timeStamp: Long): Either<Failure, Data> =
+        getRadar(Data(timeStamp = timeStamp))
 
     private suspend fun getRadar(data: Data): Either<Failure, Data> =
         with(data) {

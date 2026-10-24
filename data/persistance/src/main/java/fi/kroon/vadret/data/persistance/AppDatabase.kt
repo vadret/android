@@ -2,8 +2,6 @@ package fi.kroon.vadret.data.persistance
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
-import androidx.room.TypeConverters
-import fi.kroon.vadret.data.common.OffsetDateTimeTypeConverter
 import fi.kroon.vadret.data.district.local.DistrictDao
 import fi.kroon.vadret.data.district.model.DistrictEntity
 import fi.kroon.vadret.data.district.model.DistrictOptionEntity
@@ -30,7 +28,6 @@ import fi.kroon.vadret.util.DATABASE_VERSION
     ],
     exportSchema = false
 )
-@TypeConverters(OffsetDateTimeTypeConverter::class)
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun districtDao(): DistrictDao

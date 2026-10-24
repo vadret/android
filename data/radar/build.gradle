@@ -11,8 +11,8 @@ android {
 dependencies {
     api project(':data:common')
 
-    implementation libs.androidx.collection
     implementation libs.dagger.runtime
+    implementation libs.kotlinx.datetime
     implementation libs.timber
 
     ksp libs.dagger.compiler

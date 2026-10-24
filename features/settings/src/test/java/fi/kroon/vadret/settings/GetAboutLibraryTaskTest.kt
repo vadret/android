@@ -6,15 +6,11 @@ import fi.kroon.vadret.data.library.model.Library
 import fi.kroon.vadret.util.extension.asRight
 import io.github.sphrak.either.Either
 import kotlinx.coroutines.test.runTest
-import org.junit.Assert.assertTrue
-import org.junit.Before
-import org.junit.Test
-import org.junit.runner.RunWith
-import org.mockito.Mock
 import org.mockito.Mockito.doReturn
-import org.mockito.junit.MockitoJUnitRunner
+import org.mockito.Mockito.mock
+import kotlin.test.Test
+import kotlin.test.assertTrue
 
-@RunWith(MockitoJUnitRunner::class)
 class GetAboutLibraryTaskTest {
 
     private val list: List<Library> = listOf(
@@ -29,16 +25,9 @@ class GetAboutLibraryTaskTest {
         )
     )
 
-    private lateinit var testGetAboutLibraryTask: GetAboutLibraryTask
+    private val mockLibraryRepository: LibraryRepository = mock(LibraryRepository::class.java)
 
-    @Mock
-    private lateinit var mockLibraryRepository: LibraryRepository
-
-    @Before
-    fun setup() {
-        testGetAboutLibraryTask =
-            GetAboutLibraryTask(libraryRepository = mockLibraryRepository)
-    }
+    private val testGetAboutLibraryTask: GetAboutLibraryTask = GetAboutLibraryTask(libraryRepository = mockLibraryRepository)
 
     @Test
     fun `load valid library list`() = runTest {

@@ -1,8 +1,8 @@
 package fi.kroon.vadret.common
 
 import fi.kroon.vadret.util.common.WindChill
-import org.assertj.core.api.Assertions.assertThat
-import org.junit.Test
+import kotlin.test.Test
+import kotlin.test.assertEquals
 
 class WindChillTest {
 
@@ -12,7 +12,7 @@ class WindChillTest {
         val windSpeed = 2.0
 
         val windChill = WindChill.calculate(temperature, windSpeed)
-        assertThat(windChill).isEqualTo("-14.1")
+        assertEquals(expected = "-14.1", actual = windChill)
     }
 
     @Test
@@ -21,6 +21,6 @@ class WindChillTest {
         val windSpeed = 10.0
 
         val windChill = WindChill.calculate(temperature, windSpeed)
-        assertThat(windChill).isEqualTo("-33.6")
+        assertEquals(expected = "-33.6", actual = windChill)
     }
 }

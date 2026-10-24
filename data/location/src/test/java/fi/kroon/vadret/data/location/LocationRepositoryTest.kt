@@ -6,29 +6,18 @@ import fi.kroon.vadret.data.location.local.LocationLocalDataSource
 import fi.kroon.vadret.data.location.model.Location
 import fi.kroon.vadret.util.extension.asLeft
 import io.github.sphrak.either.Either
-import org.junit.Assert.assertTrue
-import org.junit.Before
-import org.junit.Test
-import org.junit.runner.RunWith
-import org.mockito.Mock
 import org.mockito.Mockito.doReturn
-import org.mockito.junit.MockitoJUnitRunner
+import org.mockito.Mockito.mock
+import kotlin.test.Test
+import kotlin.test.assertTrue
 
-@RunWith(MockitoJUnitRunner::class)
 class LocationRepositoryTest {
 
-    @Mock
-    private lateinit var mockLocationLocalDataSource: LocationLocalDataSource
+    private val mockLocationLocalDataSource: LocationLocalDataSource = mock(LocationLocalDataSource::class.java)
 
-    @Mock
-    private lateinit var mockLocation: Location
+    private val mockLocation: Location = mock(Location::class.java)
 
-    private lateinit var testLocationRepository: LocationRepository
-
-    @Before
-    fun setup() {
-        testLocationRepository = LocationRepository(mockLocationLocalDataSource)
-    }
+    private val testLocationRepository: LocationRepository = LocationRepository(mockLocationLocalDataSource)
 
     @Test
     fun `location is returned`() {

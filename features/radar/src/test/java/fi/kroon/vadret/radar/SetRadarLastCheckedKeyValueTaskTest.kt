@@ -7,30 +7,20 @@ import fi.kroon.vadret.util.LAST_CHECKED_RADAR_KEY
 import fi.kroon.vadret.util.extension.asRight
 import io.github.sphrak.either.Either
 import kotlinx.coroutines.test.runTest
-import org.junit.Assert.assertTrue
-import org.junit.Before
-import org.junit.Test
-import org.junit.runner.RunWith
-import org.mockito.Mock
 import org.mockito.Mockito.doReturn
-import org.mockito.junit.MockitoJUnitRunner
+import org.mockito.Mockito.mock
+import kotlin.test.Test
+import kotlin.test.assertTrue
 
-@RunWith(MockitoJUnitRunner::class)
 class SetRadarLastCheckedKeyValueTaskTest {
 
     private val errorHandler: ErrorHandler = ErrorHandler()
 
     private val timeStamp: Long = 1563292476031L
 
-    private lateinit var testSetRadarLastCheckedKeyValueTask: SetRadarLastCheckedKeyValueTask
+    private val mockRadarLocalKeyValueDataSource: RadarLocalKeyValueDataSource = mock(RadarLocalKeyValueDataSource::class.java)
 
-    @Mock
-    private lateinit var mockRadarLocalKeyValueDataSource: RadarLocalKeyValueDataSource
-
-    @Before
-    fun setup() {
-        testSetRadarLastCheckedKeyValueTask = SetRadarLastCheckedKeyValueTask(mockRadarLocalKeyValueDataSource)
-    }
+    private val testSetRadarLastCheckedKeyValueTask: SetRadarLastCheckedKeyValueTask = SetRadarLastCheckedKeyValueTask(mockRadarLocalKeyValueDataSource)
 
     @Test
     fun `set radar last checked successfully and retrieve unit as result`() = runTest {

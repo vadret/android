@@ -6,15 +6,11 @@ import fi.kroon.vadret.data.failure.Failure
 import fi.kroon.vadret.util.extension.asRight
 import io.github.sphrak.either.Either
 import kotlinx.coroutines.test.runTest
-import org.junit.Assert.assertTrue
-import org.junit.Before
-import org.junit.Test
-import org.junit.runner.RunWith
-import org.mockito.Mock
 import org.mockito.Mockito
-import org.mockito.junit.MockitoJUnitRunner
+import org.mockito.Mockito.mock
+import kotlin.test.Test
+import kotlin.test.assertTrue
 
-@RunWith(MockitoJUnitRunner::class)
 class GetAboutInfoTaskTest {
 
     private val list: List<AboutInfo> = listOf(
@@ -26,16 +22,9 @@ class GetAboutInfoTaskTest {
         )
     )
 
-    private lateinit var testGetAboutInfoTask: GetAboutInfoTask
+    private val mockAboutInfoRepository: AboutInfoRepository = mock(AboutInfoRepository::class.java)
 
-    @Mock
-    private lateinit var mockAboutInfoRepository: AboutInfoRepository
-
-    @Before
-    fun setup() {
-        testGetAboutInfoTask =
-            GetAboutInfoTask(aboutInfoRepository = mockAboutInfoRepository)
-    }
+    private val testGetAboutInfoTask: GetAboutInfoTask = GetAboutInfoTask(aboutInfoRepository = mockAboutInfoRepository)
 
     @Test
     fun `load valid about info list`() = runTest {

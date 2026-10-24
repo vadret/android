@@ -195,6 +195,7 @@
     <string name="openstreetmap_copyright_notice" translatable="false">Wikimedia maps | Map data © OpenStreetMap contributors</string>
 
     <string name="county">county</string>
+    <string name="close_search">Close search</string>
     <string name="search">Search</string>
     <string name="search_failed">Search failed</string>
     <string name="search_results">Search results</string>

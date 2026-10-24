@@ -24,10 +24,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.withContext
-import org.threeten.bp.OffsetDateTime
 import timber.log.Timber
 import javax.inject.Inject
 import kotlin.coroutines.cancellation.CancellationException
+import kotlin.time.Instant
 
 class AggregatedFeedRepository @Inject constructor(
     private val networkHandler: NetworkHandler,
@@ -39,7 +39,8 @@ class AggregatedFeedRepository @Inject constructor(
 
     /**
      *  Merges SMHI warnings with Krisinformation news and VMAs
-     *  from the enabled [feeds], newest first. When a
+     *  from the enabled [feeds], newest first. A VMA can also
+     *  be listed as news, so items are unique by identifier. When a
      *  [response.body] is null [NetworkResponseEmpty] is
      *  returned.
      */
@@ -63,7 +64,8 @@ class AggregatedFeedRepository @Inject constructor(
                     smhi.await().flatMap { smhiList: List<AggregatedFeed> ->
                         krisinformationEither.map { krisinformationList: List<AggregatedFeed> ->
                             (smhiList + krisinformationList)
-                                .sortedByDescending { OffsetDateTime.parse(it.published) }
+                                .distinctBy { aggregatedFeed: AggregatedFeed -> aggregatedFeed.identifier }
+                                .sortedByDescending { aggregatedFeed: AggregatedFeed -> Instant.parse(aggregatedFeed.published) }
                         }
                     }
                 }

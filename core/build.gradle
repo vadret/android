@@ -1,5 +1,6 @@
 plugins {
     id 'vadret.android.library'
+    id 'vadret.android.compose'
     id 'com.google.devtools.ksp'
 }
 
@@ -18,15 +19,13 @@ dependencies {
     api project(':data:location')
     api project(':data:nominatim')
     api project(':data:persistance')
+    api project(':data:theme')
     api project(':data:radar')
     api project(':data:weatherforecast')
 
     api libs.dagger.runtime
     api libs.ktor.client.core
     implementation libs.androidx.annotation
-    implementation libs.androidx.appcompat
-    implementation libs.androidx.fragment.ktx
-    implementation libs.material
     implementation libs.okhttp.logging
     implementation libs.ktor.client.content.negotiation
     implementation libs.ktor.client.okhttp
@@ -36,6 +35,4 @@ dependencies {
     implementation libs.timber
 
     ksp libs.dagger.compiler
-
-    testImplementation libs.assertj
 }

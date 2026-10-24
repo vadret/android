@@ -6,7 +6,7 @@ import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import fi.kroon.vadret.data.feedsource.model.FeedSourceEntity
-import org.threeten.bp.OffsetDateTime
+import kotlin.time.Clock
 
 @Entity(
     tableName = "feed_source_preference",
@@ -42,7 +42,7 @@ data class FeedSourcePreferenceEntity(
     @ColumnInfo(name = "is_enabled")
     val isEnabled: Boolean,
 
-    @ColumnInfo(name = "created_at")
-    val createdAt: OffsetDateTime = OffsetDateTime.now()
+    @ColumnInfo(name = "created_at_epoch_millis")
+    val createdAtEpochMillis: Long = Clock.System.now().toEpochMilliseconds()
 
 )

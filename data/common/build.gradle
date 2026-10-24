@@ -12,7 +12,6 @@ dependencies {
     api libs.coroutines.core
     api libs.kotlinx.serialization.json
     api libs.ktor.client.core
-    api libs.threetenabp
     implementation libs.dagger.runtime
     implementation libs.room.common
 

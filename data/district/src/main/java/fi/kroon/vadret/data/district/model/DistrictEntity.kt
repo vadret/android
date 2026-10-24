@@ -3,7 +3,7 @@ package fi.kroon.vadret.data.district.model
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import org.threeten.bp.OffsetDateTime
+import kotlin.time.Clock
 
 @Entity(tableName = "district")
 data class DistrictEntity(
@@ -21,7 +21,7 @@ data class DistrictEntity(
     @ColumnInfo(name = "name")
     val name: String,
 
-    @ColumnInfo(name = "created_at")
-    val createdAt: OffsetDateTime = OffsetDateTime.now()
+    @ColumnInfo(name = "created_at_epoch_millis")
+    val createdAtEpochMillis: Long = Clock.System.now().toEpochMilliseconds()
 
 )

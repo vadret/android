@@ -12,10 +12,10 @@ dependencies {
     implementation project(':data:radar')
 
     implementation libs.androidx.annotation
-    implementation libs.androidx.collection
-    implementation libs.coil
-    implementation libs.corbind.core
+    implementation libs.coil.core
+    implementation libs.coil.network.ktor
     implementation libs.dagger.runtime
+    implementation libs.kotlinx.datetime
     implementation libs.osmdroid
     implementation libs.timber
 

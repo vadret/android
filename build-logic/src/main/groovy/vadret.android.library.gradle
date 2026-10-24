@@ -23,6 +23,7 @@ android {
 
 dependencies {
     testImplementation libs.findLibrary('coroutines-test').get()
-    testImplementation libs.findLibrary('junit').get()
+    testImplementation libs.findLibrary('kotlin-test').get()
+    testImplementation libs.findLibrary('kotlin-test-junit').get()
     testImplementation libs.findLibrary('mockito').get()
 }

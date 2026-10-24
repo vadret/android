@@ -2,7 +2,7 @@ package fi.kroon.vadret.data.feedsource.mapper
 
 import fi.kroon.vadret.data.feedsource.model.FeedSource
 import fi.kroon.vadret.data.feedsource.model.FeedSourceEntity
-import org.threeten.bp.OffsetDateTime
+import kotlin.time.Clock
 
 object FeedSourceEntityMapper {
 
@@ -16,7 +16,7 @@ object FeedSourceEntityMapper {
                 FeedSourceEntity(
                     id = id,
                     description = description,
-                    createdAt = OffsetDateTime.now(),
+                    createdAtEpochMillis = Clock.System.now().toEpochMilliseconds(),
                     headLineRowLimit = headLineRowLimit,
                     name = name,
                     type = type,

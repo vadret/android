@@ -7,31 +7,20 @@ import fi.kroon.vadret.data.radar.model.Radar
 import fi.kroon.vadret.util.extension.asRight
 import io.github.sphrak.either.Either
 import kotlinx.coroutines.test.runTest
-import org.junit.Assert.assertTrue
-import org.junit.Before
-import org.junit.Test
-import org.junit.runner.RunWith
-import org.mockito.Mock
 import org.mockito.Mockito.doReturn
-import org.mockito.junit.MockitoJUnitRunner
+import org.mockito.Mockito.mock
+import kotlin.test.Test
+import kotlin.test.assertTrue
 
-@RunWith(MockitoJUnitRunner::class)
 class GetRadarMemoryCacheTaskTest {
 
     private val errorHandler: ErrorHandler = ErrorHandler()
 
-    private lateinit var testGetRadarMemoryCacheTask: GetRadarMemoryCacheTask
+    private val radar: Radar = mock(Radar::class.java)
 
-    @Mock
-    private lateinit var radar: Radar
+    private val mockRadarCacheDataSource: RadarCacheDataSource = mock(RadarCacheDataSource::class.java)
 
-    @Mock
-    private lateinit var mockRadarCacheDataSource: RadarCacheDataSource
-
-    @Before
-    fun setup() {
-        testGetRadarMemoryCacheTask = GetRadarMemoryCacheTask(cache = mockRadarCacheDataSource)
-    }
+    private val testGetRadarMemoryCacheTask: GetRadarMemoryCacheTask = GetRadarMemoryCacheTask(cache = mockRadarCacheDataSource)
 
     @Test
     fun `set cache successfully and return radar data`() = runTest {

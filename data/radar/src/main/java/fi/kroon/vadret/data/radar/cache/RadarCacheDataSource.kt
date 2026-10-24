@@ -1,6 +1,6 @@
 package fi.kroon.vadret.data.radar.cache
 
-import androidx.collection.LruCache
+import fi.kroon.vadret.data.common.MemoryCache
 import fi.kroon.vadret.data.failure.Failure
 import fi.kroon.vadret.data.radar.model.Radar
 import fi.kroon.vadret.util.RADAR_CACHE_KEY
@@ -12,7 +12,7 @@ import javax.inject.Inject
 
 class RadarCacheDataSource @Inject constructor(
     private val diskCache: RadarDiskCache,
-    private val memoryCache: LruCache<Long, Radar>
+    private val memoryCache: MemoryCache<Long, Radar>
 ) {
 
     fun getMemoryCache(): Either<Failure, Radar> =

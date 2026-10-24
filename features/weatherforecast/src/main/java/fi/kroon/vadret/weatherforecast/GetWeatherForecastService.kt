@@ -6,12 +6,9 @@ import fi.kroon.vadret.data.nominatim.model.NominatimReverseOut
 import fi.kroon.vadret.data.weatherforecast.model.Weather
 import fi.kroon.vadret.data.weatherforecast.model.WeatherOut
 import fi.kroon.vadret.shared.IService
-import fi.kroon.vadret.weatherforecast.model.IWeatherForecastModel
 import io.github.sphrak.either.Either
 import io.github.sphrak.either.flatMap
 import io.github.sphrak.either.map
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class GetWeatherForecastService @Inject constructor(
@@ -23,7 +20,6 @@ class GetWeatherForecastService @Inject constructor(
 ) : IService {
 
     data class Data(
-        val weatherForecastModelList: List<IWeatherForecastModel> = listOf(),
         val localityName: String? = null,
         val forceNet: Boolean = false,
         val weather: Weather? = null,
@@ -39,14 +35,11 @@ class GetWeatherForecastService @Inject constructor(
      *  [forceNet]          -- Forces a network request regardless of value in timeStamp.
      */
     suspend operator fun invoke(timeStamp: Long, forceNet: Boolean): Either<Failure, Data> =
-        withContext(Dispatchers.Default) {
-            getEmptyData(timeStamp = timeStamp, forceNet = forceNet)
-                .getLocationMode()
-                .getGpsLocationOrStoredLocation()
-                .getWeatherForecastList()
-                .doReverseNominatimLookupOrReturn()
-                .toWeatherForecastMapper()
-        }
+        getEmptyData(timeStamp = timeStamp, forceNet = forceNet)
+            .getLocationMode()
+            .getGpsLocationOrStoredLocation()
+            .getWeatherForecastList()
+            .doReverseNominatimLookupOrReturn()
 
     private fun getEmptyData(timeStamp: Long, forceNet: Boolean): Data = Data(timeStamp = timeStamp, forceNet = forceNet)
 
@@ -134,14 +127,4 @@ class GetWeatherForecastService @Inject constructor(
                 data.copy(weather = weather)
             }
     }
-
-    private fun Either<Failure, Data>.toWeatherForecastMapper(): Either<Failure, Data> =
-        this.map { data: Data ->
-            val locationEntity = Location(data.weatherOut!!.latitude, data.weatherOut.longitude)
-            val baseWeatherForecastModelList: List<IWeatherForecastModel> = WeatherForecastMapper(
-                data.weather!!.timeSeries,
-                locationEntity
-            )
-            data.copy(weatherForecastModelList = baseWeatherForecastModelList)
-        }
 }

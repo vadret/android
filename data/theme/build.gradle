@@ -10,7 +10,6 @@ android {
 dependencies {
     api project(':data:common')
 
-    implementation libs.androidx.annotation
     implementation libs.dagger.runtime
     implementation libs.timber
 

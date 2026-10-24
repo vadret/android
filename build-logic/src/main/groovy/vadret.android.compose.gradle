@@ -1,0 +1,23 @@
+// Jetpack Compose for any module that renders UI. The compiler plugin follows the Kotlin version.
+pluginManager.apply('org.jetbrains.kotlin.plugin.compose')
+
+def libs = extensions.getByType(VersionCatalogsExtension).named('libs')
+
+android {
+    buildFeatures {
+        compose true
+    }
+}
+
+dependencies {
+    implementation platform(libs.findLibrary('compose-bom').get())
+    [
+        'compose-foundation',
+        'compose-material3',
+        'compose-ui',
+        'compose-ui-tooling-preview',
+        'lifecycle-runtime-compose',
+        'lifecycle-viewmodel-compose',
+    ].each { implementation libs.findLibrary(it).get() }
+    debugImplementation libs.findLibrary('compose-ui-tooling').get()
+}

@@ -75,6 +75,7 @@
     <string name="settings">Inställningar</string>
     <string name="setting_language_description">Välj språk</string>
     <string name="setting_language_title">Språk</string>
+    <string name="close_search">Stäng sökningen</string>
     <string name="search">Sök</string>
     <string name="search_failed">Sökning misslyckades</string>
     <string name="setting_current_location">Nuvarande plats</string>

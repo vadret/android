@@ -3,141 +3,153 @@ package fi.kroon.vadret.weatherforecast
 import fi.kroon.vadret.data.location.model.Location
 import fi.kroon.vadret.data.weatherforecast.model.TimeSerie
 import fi.kroon.vadret.data.weatherforecast.model.WeatherData
+import fi.kroon.vadret.util.common.SunriseSunset
 import fi.kroon.vadret.util.common.SunsetUtil
+import fi.kroon.vadret.util.common.WeatherForecastUtil
 import fi.kroon.vadret.util.common.WindChill
-import fi.kroon.vadret.util.extension.parseToLocalDate
-import fi.kroon.vadret.weatherforecast.model.IWeatherForecastModel
-import fi.kroon.vadret.weatherforecast.model.WeatherForecastDateItemModel
-import fi.kroon.vadret.weatherforecast.model.WeatherForecastHeadlineModel
-import fi.kroon.vadret.weatherforecast.model.WeatherForecastItemModel
-import fi.kroon.vadret.weatherforecast.model.WeatherForecastSplashItemModel
-import org.threeten.bp.Instant
-import org.threeten.bp.OffsetDateTime
-import org.threeten.bp.ZoneId
-import java.util.Calendar
+import fi.kroon.vadret.weatherforecast.model.WeatherForecast
+import fi.kroon.vadret.weatherforecast.model.WeatherForecastRow
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.LocalTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.atStartOfDayIn
+import kotlinx.datetime.format
+import kotlinx.datetime.format.char
+import kotlinx.datetime.toLocalDateTime
+import java.text.DateFormat
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+import kotlin.time.Instant
 
-object WeatherForecastMapper {
+/**
+ *  Groups the forecast by local date, the times from SMHI are in UTC.
+ */
+internal object WeatherForecastMapper {
 
-    operator fun invoke(timeSerieList: List<TimeSerie>, location: Location): List<IWeatherForecastModel> =
-        when {
-            timeSerieList.isNotEmpty() -> {
-                val iWeatherForecastList: List<IWeatherForecastModel> = mapTimeSerieList(timeSerieList, location)
-                iWeatherForecastList
-            }
-            else -> {
-                listOf()
-            }
+    private const val WEEKDAY_PATTERN = "EEEE"
+
+    /**
+     *  The wind arrow drawable points east.
+     */
+    private const val WIND_ARROW_ROTATION_OFFSET = 90f
+    private const val NO_PRECIPITATION = 0
+
+    private val hourFormat = LocalTime.Format {
+        hour()
+        char(value = ':')
+        minute()
+    }
+
+    operator fun invoke(
+        timeSeries: List<TimeSerie>,
+        location: Location,
+        now: Instant,
+        timeZone: TimeZone,
+        locale: Locale
+    ): WeatherForecast {
+        val first: TimeSerie = timeSeries.firstOrNull() ?: return WeatherForecast(
+            overview = emptyList(),
+            days = emptyList()
+        )
+        val dateFormat: DateFormat = DateFormat.getDateInstance(DateFormat.LONG, locale)
+        val timeFormat: DateFormat = DateFormat.getTimeInstance(DateFormat.SHORT, locale)
+        val weekdayFormat = SimpleDateFormat(WEEKDAY_PATTERN, locale)
+        val javaTimeZone: java.util.TimeZone = java.util.TimeZone.getTimeZone(timeZone.id)
+        listOf(dateFormat, timeFormat, weekdayFormat).forEach { format: DateFormat ->
+            format.timeZone = javaTimeZone
         }
 
-    private fun mapTimeSerieList(timeSerieList: List<TimeSerie>, location: Location): List<IWeatherForecastModel> {
+        val overview: List<WeatherForecastRow> = listOf(
+            toHeadline(data = first.data),
+            toSummary(
+                data = first.data,
+                sunriseSunset = SunsetUtil.getSunriseSunset(
+                    day = now,
+                    latitude = location.latitude,
+                    longitude = location.longitude
+                ),
+                timeFormat = timeFormat
+            )
+        )
+        val days: List<WeatherForecastRow> = buildList {
+            timeSeries
+                .groupBy { timeSerie: TimeSerie -> toLocalDateTime(timeSerie = timeSerie, timeZone = timeZone).date }
+                .forEach { (date: LocalDate, dayTimeSeries: List<TimeSerie>) ->
+                    val startOfDay = Date(date.atStartOfDayIn(timeZone = timeZone).toEpochMilliseconds())
+                    add(
+                        WeatherForecastRow.Day(
+                            key = "day-$date",
+                            weekday = weekdayFormat.format(startOfDay).uppercase(locale = locale),
+                            dateText = dateFormat.format(startOfDay)
+                        )
+                    )
+                    dayTimeSeries.forEach { timeSerie: TimeSerie ->
+                        add(toHour(timeSerie = timeSerie, timeZone = timeZone))
+                    }
+                }
+        }
+        return WeatherForecast(
+            overview = overview,
+            days = days
+        )
+    }
 
-        val weatherForecastModelList: MutableList<IWeatherForecastModel> = mutableListOf()
+    private fun toLocalDateTime(timeSerie: TimeSerie, timeZone: TimeZone): LocalDateTime =
+        Instant.parse(input = timeSerie.time).toLocalDateTime(timeZone = timeZone)
 
-        var weatherForecastHeadlineModel: WeatherForecastHeadlineModel? = null
-        var weatherForecastDateItemModel: WeatherForecastDateItemModel? = null
-        var weatherForecastSplashItemModel: WeatherForecastSplashItemModel? = null
-        var temp: TimeSerie? = null
+    private fun toHeadline(data: WeatherData): WeatherForecastRow.Headline =
+        WeatherForecastRow.Headline(
+            descriptionResourceId = WeatherForecastUtil.getWsymb2ResourceId(index = data.symbolCode),
+            windSpeedClassResourceId = WeatherForecastUtil.getWindSpeedClassResourceId(windSpeed = data.windSpeed),
+            windDirectionResourceId = WeatherForecastUtil.handleWindDirection(degree = data.windFromDirection),
+            windArrowRotation = data.windFromDirection.toFloat() + WIND_ARROW_ROTATION_OFFSET
+        )
 
-        for (timeSerie: TimeSerie in timeSerieList) {
-
-            if (weatherForecastHeadlineModel == null) {
-                weatherForecastHeadlineModel = getWeatherForecastHeadlineModel(timeSerie.data)
-                weatherForecastModelList.add(weatherForecastHeadlineModel)
-            }
-
-            if (weatherForecastSplashItemModel == null) {
-                weatherForecastSplashItemModel = getWeatherForecastSplashItemModel(timeSerie, location)
-                weatherForecastModelList.add(weatherForecastSplashItemModel)
-            }
-
-            if (weatherForecastDateItemModel == null) {
-                weatherForecastDateItemModel = WeatherForecastDateItemModel(
-                    timeSerieList.first().time.parseToLocalDate()
-                )
-            }
-
-            if (!weatherForecastModelList.contains(weatherForecastDateItemModel)) {
-                weatherForecastModelList.add(weatherForecastDateItemModel)
-            }
-
-            if (temp != null) {
-
-                val weatherForecastItemModel: WeatherForecastItemModel = getWeatherForecastItemModel(temp)
-                weatherForecastModelList.add(weatherForecastItemModel)
-                temp = null
-            }
-
-            if (timeSerie.time.parseToLocalDate() == weatherForecastDateItemModel.date) {
-                val weatherForecastItemModel = getWeatherForecastItemModel(timeSerie)
-                weatherForecastModelList.add(weatherForecastItemModel)
+    private fun toSummary(
+        data: WeatherData,
+        sunriseSunset: SunriseSunset?,
+        timeFormat: DateFormat
+    ): WeatherForecastRow.Summary =
+        WeatherForecastRow.Summary(
+            sunriseText = if (sunriseSunset != null) {
+                timeFormat.format(Date(sunriseSunset.sunrise.toEpochMilliseconds()))
             } else {
-                temp = timeSerie
-                weatherForecastDateItemModel = WeatherForecastDateItemModel(
-                    timeSerie.time.parseToLocalDate()
-                )
-            }
-        }
-        return weatherForecastModelList.toList()
-    }
-
-    private fun getWeatherForecastHeadlineModel(data: WeatherData): WeatherForecastHeadlineModel =
-        WeatherForecastHeadlineModel(
-            headline = data.symbolCode,
-            windSpeed = data.windSpeed,
-            windDirection = data.windFromDirection
-        )
-
-    private fun getWeatherForecastSplashItemModel(timeSerie: TimeSerie, location: Location): WeatherForecastSplashItemModel {
-
-        val cal: Calendar = Calendar.getInstance()
-        val result: Array<Calendar>? = SunsetUtil.getSunriseSunset(cal, location.latitude, location.longitude)
-
-        var sunriseDateTime: OffsetDateTime? = null
-        var sunsetDateTime: OffsetDateTime? = null
-
-        result?.let { dates ->
-            val sunriseDateTimeInstant: org.threeten.bp.Instant = org.threeten.bp.Instant.ofEpochMilli(dates.get(0).timeInMillis)
-            val sunsetDateTimeInstant: org.threeten.bp.Instant = org.threeten.bp.Instant.ofEpochMilli(dates.get(1).timeInMillis)
-            sunriseDateTime = OffsetDateTime.ofInstant(sunriseDateTimeInstant, ZoneId.systemDefault())
-            sunsetDateTime = OffsetDateTime.ofInstant(sunsetDateTimeInstant, ZoneId.systemDefault())
-        }
-
-        val data: WeatherData = timeSerie.data
-        val temperature: Double = data.airTemperature
-        val windSpeed: Double = data.windSpeed
-        val weatherIcon: Int = data.symbolCode
-
-        return WeatherForecastSplashItemModel(
-            sunriseDateTime = sunriseDateTime,
-            sunsetDateTime = sunsetDateTime,
+                null
+            },
+            sunsetText = if (sunriseSunset != null) {
+                timeFormat.format(Date(sunriseSunset.sunset.toEpochMilliseconds()))
+            } else {
+                null
+            },
+            temperature = data.airTemperature,
+            feelsLikeTemperature = WindChill.calculate(
+                temperatureCelcius = data.airTemperature,
+                windSpeedMeterPerSecond = data.windSpeed
+            ),
             humidityPercent = data.relativeHumidity,
-            temperature = temperature,
-            windSpeed = windSpeed,
-            windDirection = data.windFromDirection,
-            feelsLikeTemperature = WindChill.calculate(temperature, windSpeed),
-            weatherIcon = weatherIcon,
-            weatherDescription = weatherIcon,
-            precipitationCode = data.precipitationType,
-            thunderRisk = data.thunderstormProbability
+            windSpeed = data.windSpeed,
+            precipitationResourceId = if (data.precipitationType > NO_PRECIPITATION) {
+                WeatherForecastUtil.getPrecipitationResourceId(prSort = data.precipitationType)
+            } else {
+                null
+            }
         )
-    }
 
-    private fun getWeatherForecastItemModel(timeSerie: TimeSerie): WeatherForecastItemModel {
+    private fun toHour(timeSerie: TimeSerie, timeZone: TimeZone): WeatherForecastRow.Hour {
         val data: WeatherData = timeSerie.data
-        val time: String = Instant.parse(timeSerie.time).atZone(ZoneId.systemDefault()).toLocalTime().toString()
-        val temperature: Double = data.airTemperature
-        val windSpeed: Double = data.windSpeed
-        val weatherIcon: Int = data.symbolCode
-        val precipitationType: Int = 0
-
-        return WeatherForecastItemModel(
-            temperature = temperature,
-            time = time,
-            feelsLikeTemperature = WindChill.calculate(temperature, windSpeed),
-            precipitationType = precipitationType,
-            windSpeed = windSpeed,
-            weatherIcon = weatherIcon,
-            weatherDescription = weatherIcon
+        return WeatherForecastRow.Hour(
+            key = "hour-${timeSerie.time}",
+            timeText = toLocalDateTime(timeSerie = timeSerie, timeZone = timeZone).time.format(format = hourFormat),
+            temperature = data.airTemperature,
+            feelsLikeTemperature = WindChill.calculate(
+                temperatureCelcius = data.airTemperature,
+                windSpeedMeterPerSecond = data.windSpeed
+            ),
+            descriptionResourceId = WeatherForecastUtil.getWsymb2ResourceId(index = data.symbolCode),
+            iconResourceId = WeatherForecastUtil.getWsymb2IconResourceId(index = data.symbolCode),
+            temperatureColorResourceId = WeatherForecastUtil.getTemperatureColorResourceId(temperature = data.airTemperature)
         )
     }
 }
