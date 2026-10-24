@@ -77,7 +77,6 @@ class AggregatedFeedRepository @Inject constructor(
                 smhiWarningNetDataSource
                     .get()
                     .getWarnings()
-                    .body()
                     ?.let { warningList ->
                         AggregatedFeedMapper
                             .fromSmhi(warningList = warningList, districtIds = counties)
@@ -97,7 +96,6 @@ class AggregatedFeedRepository @Inject constructor(
                 krisinformationNetDataSource
                     .get()
                     .getNews(counties = countyCodes)
-                    .body()
                     ?.let { newsList: List<KrisinformationFeed> ->
                         (AggregatedFeedMapper.fromKrisinformation(feedList = newsList, isVma = false) + vmaList)
                             .asRight()
@@ -119,7 +117,6 @@ class AggregatedFeedRepository @Inject constructor(
                 feedList = krisinformationNetDataSource
                     .get()
                     .getVmas(counties = countyCodes)
-                    .body()
                     .orEmpty(),
                 isVma = true
             )

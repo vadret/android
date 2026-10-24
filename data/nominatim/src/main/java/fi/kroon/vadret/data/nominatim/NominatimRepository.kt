@@ -38,7 +38,7 @@ class NominatimRepository @Inject constructor(
                         nameDetails = request.nameDetails,
                         countryCodes = request.countrycodes,
                         addressDetails = request.addressDetails
-                    ).body()
+                    )
                         ?.asRight()
                         ?: NominatimFailure
                             .NominatimNotAvailable
@@ -57,7 +57,7 @@ class NominatimRepository @Inject constructor(
                         latitude = request.latitude,
                         longitude = request.longitude,
                         zoom = request.zoom
-                    ).body()
+                    )
                         ?.asRight()
                         ?: NominatimFailure
                             .NominatimNotAvailable

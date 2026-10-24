@@ -1,27 +1,44 @@
 package fi.kroon.vadret.data.nominatim.net
 
 import fi.kroon.vadret.data.nominatim.model.Nominatim
-import retrofit2.Response
-import retrofit2.http.GET
-import retrofit2.http.Query
+import fi.kroon.vadret.util.NOMINATIM_BASE_API_URL
+import fi.kroon.vadret.util.extension.bodyOrNull
+import io.ktor.client.HttpClient
+import io.ktor.client.request.get
+import io.ktor.client.request.parameter
+import javax.inject.Inject
 
-interface NominatimNetDataSource {
+class NominatimNetDataSource @Inject constructor(
+    private val client: HttpClient
+) {
 
-    @GET("search")
     suspend fun getNominatim(
-        @Query("city") city: String,
-        @Query("format") format: String,
-        @Query("countrycodes") countryCodes: String,
-        @Query("limit") limit: Int,
-        @Query("namedetails") nameDetails: Int,
-        @Query("addressdetails") addressDetails: Int
-    ): Response<List<Nominatim>>
+        city: String,
+        format: String,
+        countryCodes: String,
+        limit: Int,
+        nameDetails: Int,
+        addressDetails: Int
+    ): List<Nominatim>? =
+        client.get("${NOMINATIM_BASE_API_URL}search") {
+            parameter("city", city)
+            parameter("format", format)
+            parameter("countrycodes", countryCodes)
+            parameter("limit", limit)
+            parameter("namedetails", nameDetails)
+            parameter("addressdetails", addressDetails)
+        }.bodyOrNull()
 
-    @GET("reverse")
     suspend fun getNominatimReverse(
-        @Query("format") format: String,
-        @Query("lat") latitude: Double,
-        @Query("lon") longitude: Double,
-        @Query("zoom") zoom: Int
-    ): Response<Nominatim>
+        format: String,
+        latitude: Double,
+        longitude: Double,
+        zoom: Int
+    ): Nominatim? =
+        client.get("${NOMINATIM_BASE_API_URL}reverse") {
+            parameter("format", format)
+            parameter("lat", latitude)
+            parameter("lon", longitude)
+            parameter("zoom", zoom)
+        }.bodyOrNull()
 }

@@ -1,24 +1,21 @@
 package fi.kroon.vadret.core
 
 import android.content.Context
-import com.squareup.moshi.Moshi
 import dagger.BindsInstance
 import dagger.Component
-import fi.kroon.vadret.core.module.ApiServiceModule
 import fi.kroon.vadret.core.module.CacheModule
 import fi.kroon.vadret.core.module.DatabaseModule
 import fi.kroon.vadret.core.module.NetworkModule
 import fi.kroon.vadret.core.module.PrefsModule
+import fi.kroon.vadret.data.common.DiskCache
 import fi.kroon.vadret.data.exception.ErrorHandler
 import fi.kroon.vadret.data.persistance.AppDatabase
 import fi.kroon.vadret.data.preference.Prefs
-import okhttp3.OkHttpClient
-import okhttp3.internal.cache.DiskLruCache
+import io.ktor.client.HttpClient
 
 @CoreScope
 @Component(
     modules = [
-        ApiServiceModule::class,
         CacheModule::class,
         DatabaseModule::class,
         NetworkModule::class,
@@ -27,10 +24,9 @@ import okhttp3.internal.cache.DiskLruCache
 )
 interface CoreComponent {
 
-    fun provideOkHttpClient(): OkHttpClient
+    fun provideHttpClient(): HttpClient
     fun provideAppDatabase(): AppDatabase
-    fun provideMoshi(): Moshi
-    fun provideDiskLruCache(): DiskLruCache
+    fun provideDiskCache(): DiskCache
     fun providePrefs(): Prefs
     fun provideErrorHandler(): ErrorHandler
 

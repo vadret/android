@@ -4,21 +4,16 @@ import android.content.Context
 import dagger.Module
 import dagger.Provides
 import fi.kroon.vadret.core.CoreScope
-import fi.kroon.vadret.util.DISK_CACHE_SIZE
-import okhttp3.internal.cache.DiskLruCache
-import okhttp3.internal.io.FileSystem
+import fi.kroon.vadret.data.common.DiskCache
+import java.io.File
 
 @Module
 object CacheModule {
 
+    private const val DISK_CACHE_DIRECTORY = "disk_cache"
+
     @Provides
     @CoreScope
-    fun provideDiskLruCache(context: Context): DiskLruCache =
-        DiskLruCache.create(
-            FileSystem.SYSTEM,
-            context.cacheDir,
-            1,
-            1,
-            DISK_CACHE_SIZE
-        )
+    fun provideDiskCache(context: Context): DiskCache =
+        DiskCache(File(context.cacheDir, DISK_CACHE_DIRECTORY))
 }

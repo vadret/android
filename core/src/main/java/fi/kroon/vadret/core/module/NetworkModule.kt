@@ -5,7 +5,13 @@ import dagger.Module
 import dagger.Provides
 import fi.kroon.vadret.core.BuildConfig
 import fi.kroon.vadret.core.CoreScope
+import fi.kroon.vadret.data.common.defaultJson
 import fi.kroon.vadret.data.exception.ErrorHandler
+import fi.kroon.vadret.util.extension.assertNoInitMainThread
+import io.ktor.client.HttpClient
+import io.ktor.client.engine.okhttp.OkHttp
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.serialization.kotlinx.json.json
 import okhttp3.Cache
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -96,4 +102,22 @@ object NetworkModule {
         }
         .addInterceptor(httpLoggingInterceptor)
         .build()
+
+    /**
+     *  Every API client shares this, so they all go through the
+     *  same OkHttp cache, user agent and logging.
+     */
+    @Provides
+    @CoreScope
+    fun provideHttpClient(okHttpClient: OkHttpClient): HttpClient {
+        assertNoInitMainThread()
+        return HttpClient(OkHttp) {
+            engine {
+                preconfigured = okHttpClient
+            }
+            install(ContentNegotiation) {
+                json(defaultJson)
+            }
+        }
+    }
 }

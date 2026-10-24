@@ -1,14 +1,14 @@
 package fi.kroon.vadret.data.aggregatedfeed.model
 
-import com.squareup.moshi.Json
-import com.squareup.moshi.JsonClass
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
-@JsonClass(generateAdapter = true)
+@Serializable
 data class SmhiText(
 
-    @Json(name = "sv")
+    @SerialName("sv")
     val sv: String,
 
-    @Json(name = "code")
+    @SerialName("code")
     val code: String?
 )

@@ -1,24 +1,23 @@
 package fi.kroon.vadret.data.radar.model
 
-import com.squareup.moshi.Json
-import com.squareup.moshi.JsonClass
-import java.io.Serializable
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
-@JsonClass(generateAdapter = true)
+@Serializable
 data class Radar(
 
-    @Json(name = "key")
+    @SerialName("key")
     val key: String,
 
-    @Json(name = "updated")
+    @SerialName("updated")
     val updated: String,
 
-    @Json(name = "timeZone")
+    @SerialName("timeZone")
     val timeZone: String,
 
-    @Json(name = "downloads")
+    @SerialName("downloads")
     val downloads: List<Download>,
 
-    @Json(name = "files")
+    @SerialName("files")
     val files: List<File>
-) : Serializable
+) : java.io.Serializable

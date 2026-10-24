@@ -1,44 +1,44 @@
 package fi.kroon.vadret.data.aggregatedfeed.model
 
-import com.squareup.moshi.Json
-import com.squareup.moshi.JsonClass
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
 /**
  *  A news item or VMA from Krisinformation's v3 API.
  */
-@JsonClass(generateAdapter = true)
+@Serializable
 data class KrisinformationFeed(
 
-    @Json(name = "identifier")
+    @SerialName("identifier")
     val identifier: String,
 
-    @Json(name = "updated")
+    @SerialName("updated")
     val updated: String?,
 
-    @Json(name = "published")
+    @SerialName("published")
     val published: String,
 
-    @Json(name = "headline")
+    @SerialName("headline")
     val headline: String,
 
-    @Json(name = "preamble")
+    @SerialName("preamble")
     val preamble: String?,
 
-    @Json(name = "bodyText")
+    @SerialName("bodyText")
     val bodyText: String?,
 
-    @Json(name = "area")
+    @SerialName("area")
     val areaList: List<KrisinformationArea>?,
 
-    @Json(name = "links")
+    @SerialName("links")
     val links: List<KrisinformationLink>?,
 
-    @Json(name = "web")
+    @SerialName("web")
     val web: String?,
 
-    @Json(name = "language")
+    @SerialName("language")
     val language: String?,
 
-    @Json(name = "event")
+    @SerialName("event")
     val event: String?
 )

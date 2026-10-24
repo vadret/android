@@ -142,12 +142,12 @@ class LibraryLocalDataSource @Inject constructor() {
                 license = apache2License
             ),
             Library(
-                author = "Square, Inc.",
-                title = "Retrofit",
-                description = "Type-safe HTTP client for Android and Java by Square, Inc.",
-                projectUrl = "https://square.github.io/retrofit/",
-                sourceUrl = "https://github.com/square/retrofit",
-                licenseUrl = "https://github.com/square/retrofit/blob/master/LICENSE.txt",
+                author = "JetBrains",
+                title = "Ktor",
+                description = "Asynchronous HTTP client for Kotlin, built on coroutines.",
+                projectUrl = "https://ktor.io/",
+                sourceUrl = "https://github.com/ktorio/ktor",
+                licenseUrl = "https://github.com/ktorio/ktor/blob/main/LICENSE",
                 license = apache2License
             ),
             Library(
@@ -187,12 +187,12 @@ class LibraryLocalDataSource @Inject constructor() {
                 license = apache2License
             ),
             Library(
-                author = "Square, Inc.",
-                title = "Moshi",
-                description = "A modern JSON library for Android and Java.",
-                projectUrl = "https://github.com/square/moshi",
-                sourceUrl = "https://github.com/square/moshi",
-                licenseUrl = "https://github.com/square/moshi/blob/master/LICENSE.txt",
+                author = "JetBrains",
+                title = "kotlinx.serialization",
+                description = "Kotlin multiplatform serialization, used here for JSON.",
+                projectUrl = "https://kotlinlang.org/docs/serialization.html",
+                sourceUrl = "https://github.com/Kotlin/kotlinx.serialization",
+                licenseUrl = "https://github.com/Kotlin/kotlinx.serialization/blob/master/LICENSE.txt",
                 license = apache2License
             ),
             Library(

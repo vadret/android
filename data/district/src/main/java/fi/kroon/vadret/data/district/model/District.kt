@@ -1,21 +1,21 @@
 package fi.kroon.vadret.data.district.model
 
-import com.squareup.moshi.Json
-import com.squareup.moshi.JsonClass
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
 /**
  *  A warning area from SMHI's IBWW metadata, either
  *  a county or a sea district.
  */
-@JsonClass(generateAdapter = true)
+@Serializable
 data class District(
 
-    @Json(name = "id")
+    @SerialName("id")
     val id: Int,
 
-    @Json(name = "sv")
+    @SerialName("sv")
     val name: String,
 
-    @Json(name = "code")
+    @SerialName("code")
     val code: String
 )

@@ -1,32 +1,32 @@
 package fi.kroon.vadret.data.aggregatedfeed.model
 
-import com.squareup.moshi.Json
-import com.squareup.moshi.JsonClass
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
-@JsonClass(generateAdapter = true)
+@Serializable
 data class SmhiWarningArea(
 
-    @Json(name = "id")
+    @SerialName("id")
     val id: Int,
 
-    @Json(name = "published")
+    @SerialName("published")
     val published: String,
 
-    @Json(name = "pushNotice")
+    @SerialName("pushNotice")
     val pushNotice: Boolean,
 
-    @Json(name = "areaName")
+    @SerialName("areaName")
     val areaName: SmhiText,
 
-    @Json(name = "warningLevel")
+    @SerialName("warningLevel")
     val warningLevel: SmhiText,
 
-    @Json(name = "eventDescription")
+    @SerialName("eventDescription")
     val eventDescription: SmhiText,
 
-    @Json(name = "affectedAreas")
+    @SerialName("affectedAreas")
     val affectedAreas: List<SmhiAffectedArea>?,
 
-    @Json(name = "descriptions")
+    @SerialName("descriptions")
     val descriptions: List<SmhiDescription>?
 )

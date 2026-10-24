@@ -33,7 +33,6 @@ class DistrictRepository @Inject constructor(
             when (networkHandler.isConnected) {
                 true -> catchFailure {
                     networkDataSource.get()()
-                        .body()
                         ?.asRight()
                         ?: Failure
                             .NetworkResponseEmpty

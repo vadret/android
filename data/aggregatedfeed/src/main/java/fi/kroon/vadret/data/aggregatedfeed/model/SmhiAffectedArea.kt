@@ -1,17 +1,17 @@
 package fi.kroon.vadret.data.aggregatedfeed.model
 
-import com.squareup.moshi.Json
-import com.squareup.moshi.JsonClass
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
 /**
  *  [id] matches the district ids from SMHI's area metadata.
  */
-@JsonClass(generateAdapter = true)
+@Serializable
 data class SmhiAffectedArea(
 
-    @Json(name = "id")
+    @SerialName("id")
     val id: Int,
 
-    @Json(name = "sv")
+    @SerialName("sv")
     val sv: String
 )

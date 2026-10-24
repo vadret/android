@@ -1,6 +1,7 @@
 plugins {
     id 'vadret.android.library'
     id 'com.google.devtools.ksp'
+    id 'kotlinx-serialization'
 }
 
 android {
@@ -12,12 +13,7 @@ dependencies {
 
     implementation libs.androidx.collection
     implementation libs.dagger.runtime
-    implementation libs.moshi.core
-    implementation libs.okhttp.core
-    implementation libs.okio
-    implementation libs.retrofit.core
     implementation libs.timber
 
     ksp libs.dagger.compiler
-    ksp libs.moshi.codegen
 }

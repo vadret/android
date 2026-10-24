@@ -17,8 +17,6 @@ import fi.kroon.vadret.util.extension.catchFailure
 import io.github.sphrak.either.Either
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import retrofit2.Response
-import timber.log.Timber
 import javax.inject.Inject
 
 class RadarRepository @Inject constructor(
@@ -32,7 +30,7 @@ class RadarRepository @Inject constructor(
         withContext(Dispatchers.IO) {
             when (networkHandler.isConnected) {
                 true -> catchFailure {
-                    val response: Response<Radar> = with(radarRequest) {
+                    val radar: Radar? = with(radarRequest) {
                         radarNetDataSource
                             .get()
                             .getRadar(
@@ -43,16 +41,14 @@ class RadarRepository @Inject constructor(
                                 timeZone = timeZone
                             )
                     }
-                    Timber.d("RADAR RESPONSE : isCached: ${response.isCachedResponse}, isNetwork: ${response.isNetworkResponse}")
-                    when (response.body()?.files) {
+                    when (radar?.files) {
                         null -> {
                             RadarFailure
                                 .NoRadarAvailable
                                 .asLeft()
                         }
                         else -> {
-                            response.body()!!
-                                .asRight()
+                            radar.asRight()
                         }
                     }
                 }
@@ -60,6 +56,3 @@ class RadarRepository @Inject constructor(
             }
         }
 }
-
-private val Response<Radar>.isCachedResponse: Boolean get() = (raw().networkResponse == null)
-private val Response<Radar>.isNetworkResponse: Boolean get() = (raw().networkResponse != null)

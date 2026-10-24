@@ -10,9 +10,10 @@ android {
 dependencies {
     api libs.either
     api libs.coroutines.core
+    api libs.kotlinx.serialization.json
+    api libs.ktor.client.core
     api libs.threetenabp
     implementation libs.dagger.runtime
-    implementation libs.moshi.core
     implementation libs.room.common
 
     ksp libs.dagger.compiler

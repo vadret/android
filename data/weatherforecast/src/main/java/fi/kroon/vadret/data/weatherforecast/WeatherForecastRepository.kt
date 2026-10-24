@@ -10,7 +10,6 @@ import fi.kroon.vadret.data.weatherforecast.exception.WeatherForecastFailure
 import fi.kroon.vadret.data.weatherforecast.model.Weather
 import fi.kroon.vadret.data.weatherforecast.model.WeatherOut
 import fi.kroon.vadret.data.weatherforecast.net.WeatherForecastNetDataSource
-import fi.kroon.vadret.util.HTTP_200_OK
 import fi.kroon.vadret.util.NetworkHandler
 import fi.kroon.vadret.util.extension.asLeft
 import fi.kroon.vadret.util.extension.asRight
@@ -18,9 +17,9 @@ import fi.kroon.vadret.util.extension.toCoordinate
 import io.github.sphrak.either.Either
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import retrofit2.Response
 import timber.log.Timber
 import javax.inject.Inject
+import kotlin.coroutines.cancellation.CancellationException
 
 class WeatherForecastRepository @Inject constructor(
     private val weatherForecastNetDataSource: Lazy<WeatherForecastNetDataSource>,
@@ -40,18 +39,15 @@ class WeatherForecastRepository @Inject constructor(
                             request.version,
                             request.longitude.toCoordinate(),
                             request.latitude.toCoordinate()
-                        ).let { response: Response<Weather> ->
-                            if (response.code() == HTTP_200_OK) {
-                                response.body()?.asRight() ?: WeatherForecastFailure.NoWeatherAvailable.asLeft()
-                            } else {
-                                WeatherForecastFailure.NoWeatherAvailable.asLeft()
-                            }
-                        }
+                        )?.asRight()
+                        ?: WeatherForecastFailure.NoWeatherAvailable.asLeft()
                 } else {
                     Failure
                         .NetworkOfflineError("error: network offline or not available")
                         .asLeft()
                 }
+            } catch (exception: CancellationException) {
+                throw exception
             } catch (exception: Exception) {
                 Timber.e(exception)
                 Failure.NetworkError().asLeft()

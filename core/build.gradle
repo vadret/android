@@ -22,14 +22,16 @@ dependencies {
     api project(':data:weatherforecast')
 
     api libs.dagger.runtime
-    api libs.moshi.core
-    api libs.okhttp.core
+    api libs.ktor.client.core
     implementation libs.androidx.annotation
     implementation libs.androidx.appcompat
     implementation libs.androidx.fragment.ktx
     implementation libs.material
     implementation libs.okhttp.logging
-    implementation libs.retrofit.core
+    implementation libs.ktor.client.content.negotiation
+    implementation libs.ktor.client.okhttp
+    implementation libs.ktor.serialization.kotlinx.json
+    implementation libs.okhttp.core
     implementation libs.room.runtime
     implementation libs.timber
 

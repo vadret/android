@@ -1,20 +1,25 @@
 package fi.kroon.vadret.data.weatherforecast.net
 
 import fi.kroon.vadret.data.weatherforecast.model.Weather
-import retrofit2.Response
-import retrofit2.http.GET
-import retrofit2.http.Path
+import fi.kroon.vadret.util.SMHI_API_FORECAST_URL
+import fi.kroon.vadret.util.extension.bodyOrNull
+import io.ktor.client.HttpClient
+import io.ktor.client.request.get
+import javax.inject.Inject
 
-interface WeatherForecastNetDataSource {
+class WeatherForecastNetDataSource @Inject constructor(
+    private val client: HttpClient
+) {
 
     /**
      * Provide lat/lon for 10 day forecast
      */
-    @GET("/api/category/{category}/version/{version}/geotype/point/lon/{longitude}/lat/{latitude}/data.json")
     suspend fun getWeatherForecast(
-        @Path("category") category: String,
-        @Path("version") version: Int,
-        @Path("longitude") longitude: Double,
-        @Path("latitude") latitude: Double
-    ): Response<Weather>
+        category: String,
+        version: Int,
+        longitude: Double,
+        latitude: Double
+    ): Weather? =
+        client.get("$SMHI_API_FORECAST_URL/api/category/$category/version/$version/geotype/point/lon/$longitude/lat/$latitude/data.json")
+            .bodyOrNull()
 }

@@ -1,11 +1,17 @@
 package fi.kroon.vadret.data.district.net
 
 import fi.kroon.vadret.data.district.model.District
-import retrofit2.Response
-import retrofit2.http.GET
+import fi.kroon.vadret.util.SMHI_API_ALERT_URL
+import fi.kroon.vadret.util.extension.bodyOrNull
+import io.ktor.client.HttpClient
+import io.ktor.client.request.get
+import javax.inject.Inject
 
-interface DistrictNetDataSource {
+class DistrictNetDataSource @Inject constructor(
+    private val client: HttpClient
+) {
 
-    @GET("ibww/api/version/1/metadata/area.json")
-    suspend operator fun invoke(): Response<List<District>>
+    suspend operator fun invoke(): List<District>? =
+        client.get("$SMHI_API_ALERT_URL/ibww/api/version/1/metadata/area.json")
+            .bodyOrNull()
 }

@@ -1,10 +1,9 @@
 package fi.kroon.vadret.data.aggregatedfeed.mapper
 
-import com.squareup.moshi.Moshi
-import com.squareup.moshi.Types
 import fi.kroon.vadret.data.aggregatedfeed.model.AggregatedFeed
 import fi.kroon.vadret.data.aggregatedfeed.model.KrisinformationFeed
 import fi.kroon.vadret.data.aggregatedfeed.model.SmhiWarning
+import fi.kroon.vadret.data.common.defaultJson
 import fi.kroon.vadret.util.FEED_SOURCE_KRISINFORMATION_ID
 import fi.kroon.vadret.util.FEED_SOURCE_SMHI_ID
 import org.junit.Assert.assertEquals
@@ -23,18 +22,14 @@ class AggregatedFeedMapperTest {
         const val SKANE_LAN = 12
     }
 
-    private val moshi: Moshi = Moshi.Builder().build()
+    private val smhiWarningList: List<SmhiWarning> = parse("smhi_warning.json")
 
-    private val smhiWarningList: List<SmhiWarning> = parse("smhi_warning.json", SmhiWarning::class.java)
+    private val newsList: List<KrisinformationFeed> = parse("krisinformation_news.json")
 
-    private val newsList: List<KrisinformationFeed> = parse("krisinformation_news.json", KrisinformationFeed::class.java)
-
-    private fun <T> parse(fileName: String, type: Class<T>): List<T> {
-        val json: String = javaClass.classLoader!!.getResource(fileName).readText()
-        return moshi
-            .adapter<List<T>>(Types.newParameterizedType(List::class.java, type))
-            .fromJson(json)!!
-    }
+    private inline fun <reified T> parse(fileName: String): List<T> =
+        defaultJson.decodeFromString(
+            javaClass.classLoader!!.getResource(fileName).readText()
+        )
 
     @Test
     fun `smhi warning areas are kept only when they affect a selected district`() {

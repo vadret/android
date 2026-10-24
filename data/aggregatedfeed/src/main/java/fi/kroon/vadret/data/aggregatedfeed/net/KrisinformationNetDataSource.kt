@@ -1,25 +1,28 @@
 package fi.kroon.vadret.data.aggregatedfeed.net
 
 import fi.kroon.vadret.data.aggregatedfeed.model.KrisinformationFeed
-import retrofit2.Response
-import retrofit2.http.GET
-import retrofit2.http.Query
+import fi.kroon.vadret.util.KRISINFORMATION_API_URL
+import fi.kroon.vadret.util.extension.bodyOrNull
+import io.ktor.client.HttpClient
+import io.ktor.client.request.get
+import io.ktor.client.request.parameter
+import javax.inject.Inject
 
 /**
  *  [counties] is a comma separated list of county codes,
  *  national items are returned regardless.
  */
-interface KrisinformationNetDataSource {
+class KrisinformationNetDataSource @Inject constructor(
+    private val client: HttpClient
+) {
 
-    @GET("news")
-    suspend fun getNews(
-        @Query("counties")
-        counties: String
-    ): Response<List<KrisinformationFeed>>
+    suspend fun getNews(counties: String): List<KrisinformationFeed>? =
+        client.get("${KRISINFORMATION_API_URL}news") {
+            parameter("counties", counties)
+        }.bodyOrNull()
 
-    @GET("vmas")
-    suspend fun getVmas(
-        @Query("counties")
-        counties: String
-    ): Response<List<KrisinformationFeed>>
+    suspend fun getVmas(counties: String): List<KrisinformationFeed>? =
+        client.get("${KRISINFORMATION_API_URL}vmas") {
+            parameter("counties", counties)
+        }.bodyOrNull()
 }

@@ -1,51 +1,51 @@
 package fi.kroon.vadret.data.nominatim.model
 
 import android.os.Parcelable
-import com.squareup.moshi.Json
-import com.squareup.moshi.JsonClass
 import kotlinx.parcelize.Parcelize
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
 @Parcelize
-@JsonClass(generateAdapter = true)
+@Serializable
 data class Nominatim(
 
-    @Json(name = "place_id")
-    val placeId: String,
+    @SerialName("place_id")
+    val placeId: Long,
 
-    @Json(name = "licence")
+    @SerialName("licence")
     val licence: String,
 
-    @Json(name = "osm_type")
+    @SerialName("osm_type")
     val osmType: String,
 
-    @Json(name = "osm_id")
-    val osmId: String,
+    @SerialName("osm_id")
+    val osmId: Long,
 
-    @Json(name = "boundingbox")
+    @SerialName("boundingbox")
     val boundingBox: List<String>,
 
-    @Json(name = "lat")
+    @SerialName("lat")
     val lat: String,
 
-    @Json(name = "lon")
+    @SerialName("lon")
     val lon: String,
 
-    @Json(name = "display_name")
+    @SerialName("display_name")
     val displayName: String,
 
-    @Json(name = "address")
+    @SerialName("address")
     val address: Address?,
 
-    @Json(name = "class")
+    @SerialName("class")
     val klass: String?,
 
-    @Json(name = "type")
+    @SerialName("type")
     val type: String?,
 
-    @Json(name = "importance")
-    val importance: String?,
+    @SerialName("importance")
+    val importance: Double?,
 
-    @Json(name = "icon")
+    @SerialName("icon")
     val icon: String?
 
 ) : Parcelable

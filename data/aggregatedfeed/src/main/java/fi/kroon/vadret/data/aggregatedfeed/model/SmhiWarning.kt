@@ -1,24 +1,24 @@
 package fi.kroon.vadret.data.aggregatedfeed.model
 
-import com.squareup.moshi.Json
-import com.squareup.moshi.JsonClass
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
 /**
  *  An impact based weather warning from SMHI's IBWW API,
  *  issued for one or more [warningAreas].
  */
-@JsonClass(generateAdapter = true)
+@Serializable
 data class SmhiWarning(
 
-    @Json(name = "id")
+    @SerialName("id")
     val id: Int,
 
-    @Json(name = "event")
+    @SerialName("event")
     val event: SmhiText,
 
-    @Json(name = "descriptions")
+    @SerialName("descriptions")
     val descriptions: List<SmhiDescription>?,
 
-    @Json(name = "warningAreas")
+    @SerialName("warningAreas")
     val warningAreas: List<SmhiWarningArea>?
 )

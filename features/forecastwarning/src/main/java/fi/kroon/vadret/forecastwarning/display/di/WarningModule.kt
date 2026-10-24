@@ -1,34 +1,20 @@
 package fi.kroon.vadret.forecastwarning.display.di
 
 import androidx.collection.LruCache
-import com.squareup.moshi.Moshi
-import dagger.Lazy
 import dagger.Module
 import dagger.Provides
 import fi.kroon.vadret.data.aggregatedfeed.cache.AggregatedFeedDiskCache
 import fi.kroon.vadret.data.aggregatedfeed.model.AggregatedFeed
-import fi.kroon.vadret.data.aggregatedfeed.net.KrisinformationNetDataSource
-import fi.kroon.vadret.data.aggregatedfeed.net.SmhiWarningNetDataSource
+import fi.kroon.vadret.data.common.DiskCache
 import fi.kroon.vadret.data.district.local.DistrictDao
-import fi.kroon.vadret.data.district.net.DistrictNetDataSource
 import fi.kroon.vadret.data.districtpreference.local.DistrictPreferenceDao
 import fi.kroon.vadret.data.feedsource.local.FeedSourceDao
 import fi.kroon.vadret.data.feedsourcepreference.local.FeedSourcePreferenceDao
 import fi.kroon.vadret.data.persistance.AppDatabase
-import fi.kroon.vadret.di.qualifiers.Alert
-import fi.kroon.vadret.di.qualifiers.KrisInformation
 import fi.kroon.vadret.forecastwarning.display.WarningView
-import fi.kroon.vadret.util.KRISINFORMATION_API_URL
 import fi.kroon.vadret.util.MEMORY_CACHE_SIZE
-import fi.kroon.vadret.util.SMHI_API_ALERT_URL
-import fi.kroon.vadret.util.extension.assertNoInitMainThread
-import fi.kroon.vadret.util.extension.delegatingCallFactory
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
-import okhttp3.OkHttpClient
-import okhttp3.internal.cache.DiskLruCache
-import retrofit2.Retrofit
-import retrofit2.converter.moshi.MoshiConverterFactory
 
 @Module
 @ExperimentalCoroutinesApi
@@ -45,28 +31,13 @@ object WarningModule {
 
     @Provides
     @WarningScope
-    fun provideDistrictViewApi(@Alert retrofit: Retrofit): DistrictNetDataSource =
-        retrofit.create(DistrictNetDataSource::class.java)
-
-    @Provides
-    @WarningScope
-    fun provideSmhiWarningApi(@Alert retrofit: Retrofit): SmhiWarningNetDataSource =
-        retrofit.create(SmhiWarningNetDataSource::class.java)
-
-    @Provides
-    @WarningScope
-    fun provideKrisinformationApi(@KrisInformation retrofit: Retrofit): KrisinformationNetDataSource =
-        retrofit.create(KrisinformationNetDataSource::class.java)
-
-    @Provides
-    @WarningScope
     fun provideAggregatedFeedLruCache(): LruCache<Long, List<AggregatedFeed>> = LruCache(
         MEMORY_CACHE_SIZE
     )
 
     @Provides
     @WarningScope
-    fun provideAggregatedFeedDiskCache(cache: DiskLruCache): AggregatedFeedDiskCache = AggregatedFeedDiskCache(cache)
+    fun provideAggregatedFeedDiskCache(cache: DiskCache): AggregatedFeedDiskCache = AggregatedFeedDiskCache(cache)
 
     @Provides
     @WarningScope
@@ -87,28 +58,4 @@ object WarningModule {
     @WarningScope
     fun provideFeedSourcePreferenceDao(appDatabase: AppDatabase): FeedSourcePreferenceDao =
         appDatabase.feedSourcePreferenceDao()
-
-    @Alert
-    @Provides
-    @WarningScope
-    fun provideRetrofitAlert(okHttpClient: Lazy<OkHttpClient>, moshi: Moshi): Retrofit {
-        assertNoInitMainThread()
-        return Retrofit.Builder()
-            .baseUrl(SMHI_API_ALERT_URL)
-            .addConverterFactory(MoshiConverterFactory.create(moshi))
-            .delegatingCallFactory(okHttpClient)
-            .build()
-    }
-
-    @KrisInformation
-    @Provides
-    @WarningScope
-    fun provideRetrofitKrisInformation(okHttpClient: Lazy<OkHttpClient>, moshi: Moshi): Retrofit {
-        assertNoInitMainThread()
-        return Retrofit.Builder()
-            .baseUrl(KRISINFORMATION_API_URL)
-            .addConverterFactory(MoshiConverterFactory.create(moshi))
-            .delegatingCallFactory(okHttpClient)
-            .build()
-    }
 }

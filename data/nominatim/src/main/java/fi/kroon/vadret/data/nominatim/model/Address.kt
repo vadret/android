@@ -1,38 +1,38 @@
 package fi.kroon.vadret.data.nominatim.model
 
 import android.os.Parcelable
-import com.squareup.moshi.Json
-import com.squareup.moshi.JsonClass
 import kotlinx.parcelize.Parcelize
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
 @Parcelize
-@JsonClass(generateAdapter = true)
+@Serializable
 data class Address(
 
-    @Json(name = "road")
-    val road: String,
+    @SerialName("road")
+    val road: String?,
 
-    @Json(name = "village")
+    @SerialName("village")
     val village: String?,
 
-    @Json(name = "county")
+    @SerialName("county")
     val county: String?,
 
-    @Json(name = "hamlet")
+    @SerialName("hamlet")
     val hamlet: String?,
 
-    @Json(name = "city")
+    @SerialName("city")
     val city: String?,
 
-    @Json(name = "state")
+    @SerialName("state")
     val state: String?,
 
-    @Json(name = "country")
+    @SerialName("country")
     val country: String,
 
-    @Json(name = "town")
+    @SerialName("town")
     val town: String?,
 
-    @Json(name = "country_code")
+    @SerialName("country_code")
     val countryCode: String
 ) : Parcelable

@@ -1,14 +1,14 @@
 package fi.kroon.vadret.data.aggregatedfeed.model
 
-import com.squareup.moshi.Json
-import com.squareup.moshi.JsonClass
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
-@JsonClass(generateAdapter = true)
+@Serializable
 data class KrisinformationLink(
 
-    @Json(name = "text")
+    @SerialName("text")
     val text: String?,
 
-    @Json(name = "url")
+    @SerialName("url")
     val url: String
 )
