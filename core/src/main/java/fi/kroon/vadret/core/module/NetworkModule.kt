@@ -56,18 +56,44 @@ object NetworkModule {
         maxSize = DEFAULT_CACHE_SIZE
     )
 
+    /**
+     *  Nominatim rejects the stock okhttp user agent with 403,
+     *  see https://operations.osmfoundation.org/policies/nominatim/
+     */
+    @Provides
+    @InternalApi
+    @CoreScope
+    fun provideUserAgent(
+        context: Context
+    ): String {
+        val versionName: String? = context.packageManager
+            .getPackageInfo(context.packageName, 0)
+            .versionName
+        return "${context.packageName}/$versionName"
+    }
+
     @Provides
     @CoreScope
     fun provideOkHttpClient(
         httpLoggingInterceptor: HttpLoggingInterceptor,
         @InternalApi
-        cache: Cache
+        cache: Cache,
+        @InternalApi
+        userAgent: String
     ): OkHttpClient = OkHttpClient
         .Builder()
         .connectTimeout(DEFAULT_CONNECTION_TIMEOUT, TimeUnit.MILLISECONDS)
         .readTimeout(READ_CONNECTION_TIMEOUT, TimeUnit.MILLISECONDS)
         .writeTimeout(WRITE_CONNECTION_TIMEOUT, TimeUnit.MILLISECONDS)
         .cache(cache)
+        .addInterceptor { chain ->
+            chain.proceed(
+                chain.request()
+                    .newBuilder()
+                    .header("User-Agent", userAgent)
+                    .build()
+            )
+        }
         .addInterceptor(httpLoggingInterceptor)
         .build()
 }

@@ -5,8 +5,8 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class TimeSerie(
-    @SerialName(value = "validTime")
-    val validTime: String,
-    @SerialName(value = "parameters")
-    val parameters: List<Parameter> = emptyList()
+    @SerialName(value = "time")
+    val time: String,
+    @SerialName(value = "data")
+    val data: WeatherData
 )

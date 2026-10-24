@@ -19,7 +19,7 @@ interface DistrictPreferenceDao {
     @Query(value = "SELECT * FROM district_preference")
     fun getAll(): Single<List<DistrictPreferenceEntity>>
 
-    @Query(value = "SELECT id AS Int FROM district_preference WHERE used_by = :usedBy AND is_enabled = 1")
+    @Query(value = "SELECT district_id FROM district_preference WHERE used_by = :usedBy AND is_enabled = 1")
     fun getAllEnabledIds(usedBy: String): Single<List<Int>>
 
     @Query(value = "SELECT * FROM district_preference WHERE id IN (:entityIds)")

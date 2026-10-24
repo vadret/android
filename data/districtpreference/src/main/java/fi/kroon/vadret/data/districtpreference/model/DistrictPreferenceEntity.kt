@@ -5,13 +5,14 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import fi.kroon.vadret.data.district.model.DistrictEntity
 import org.threeten.bp.OffsetDateTime
 
 @Entity(
     tableName = "district_preference",
     foreignKeys = [
         ForeignKey(
-            entity = DistrictPreferenceEntity::class,
+            entity = DistrictEntity::class,
             parentColumns = [
                 "id"
             ],

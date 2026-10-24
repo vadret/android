@@ -6,6 +6,8 @@ import fi.kroon.vadret.data.feedsourcepreference.model.FeedSourcePreferenceEntit
 import fi.kroon.vadret.forecastwarning.feedsource.GetAllFeedSourceTask
 import fi.kroon.vadret.forecastwarning.feedsourcepreference.SetFeedSourcePreferenceListTask
 import fi.kroon.vadret.util.APP_WARNING_FILTER_KEY
+import fi.kroon.vadret.util.FEED_SOURCE_KRISINFORMATION_ID
+import fi.kroon.vadret.util.FEED_SOURCE_SMHI_ID
 import fi.kroon.vadret.util.extension.flatMapSingle
 import io.reactivex.Single
 import se.fimbla.either.Either
@@ -19,8 +21,8 @@ class SetDefaultFeedSourcePreferenceEntityService @Inject constructor(
 ) {
 
     private companion object {
-        const val DEFAULT_FEEDSOURCE_ID_0 = 1
-        const val DEFAULT_FEEDSOURCE_ID_1 = 2
+        const val DEFAULT_FEEDSOURCE_ID_0 = FEED_SOURCE_KRISINFORMATION_ID
+        const val DEFAULT_FEEDSOURCE_ID_1 = FEED_SOURCE_SMHI_ID
     }
 
     data class Data(

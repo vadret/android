@@ -11,10 +11,7 @@ dependencies {
     api project(':data:common')
 
     implementation libs.dagger.runtime
-    implementation libs.moshi.core
-    implementation libs.retrofit.core
     implementation libs.room.common
 
     ksp libs.dagger.compiler
-    ksp libs.moshi.codegen
 }

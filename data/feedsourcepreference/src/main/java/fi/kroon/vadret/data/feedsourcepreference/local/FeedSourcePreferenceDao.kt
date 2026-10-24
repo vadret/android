@@ -19,7 +19,7 @@ interface FeedSourcePreferenceDao {
     @Query(value = "SELECT * FROM feed_source_preference")
     fun getAll(): Single<List<FeedSourcePreferenceEntity>>
 
-    @Query(value = "SELECT id AS Int FROM feed_source_preference WHERE used_by = :usedBy AND is_enabled = 1")
+    @Query(value = "SELECT feed_source_id FROM feed_source_preference WHERE used_by = :usedBy AND is_enabled = 1")
     fun getAllEnabledIds(usedBy: String): Single<List<Int>>
 
     @Query(value = "SELECT * FROM feed_source_preference WHERE id IN (:entityIds)")

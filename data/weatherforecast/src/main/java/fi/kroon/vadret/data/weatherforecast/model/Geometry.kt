@@ -8,5 +8,5 @@ data class Geometry(
     @SerialName(value = "type")
     val type: String = "Point",
     @SerialName(value = "coordinates")
-    val coordinates: List<List<Double>>
+    val coordinates: List<Double>
 )

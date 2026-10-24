@@ -1,10 +1,10 @@
 package fi.kroon.vadret.util
 
 // SMHI API REQUEST PARAMS
-const val PMP3G_CATEGORY = "pmp3g"
+const val SNOW1G_CATEGORY = "snow1g"
 const val POINT_GEOTYPE = "point"
 const val DEFAULT_TIME_ZONE = "GMT"
-const val SMHI_BASE_API_VERSION = 2
+const val SNOW1G_API_VERSION = 1
 
 // NOMINATIM API REQEUST PARAMS
 const val NOMINATIM_DATA_FORMAT = "json"
@@ -12,7 +12,7 @@ const val NOMINATIM_CITY_ZOOM_LEVEL = 16
 
 // API ENDPOINT URLS
 const val NOMINATIM_BASE_API_URL = "https://nominatim.openstreetmap.org/"
-const val KRISINFORMATION_API_URL = "https://api.krisinformation.se/v2/"
+const val KRISINFORMATION_API_URL = "https://api.krisinformation.se/v3/"
 const val SMHI_API_FORECAST_URL = "https://opendata-download-metfcst.smhi.se"
 const val SMHI_API_RADAR_URL = "https://opendata-download-radar.smhi.se"
 const val WIKIMEDIA_TILE_SOURCE_URL = "https://maps.wikimedia.org/osm-intl/"
@@ -20,11 +20,12 @@ const val SMHI_API_ALERT_URL = "https://opendata-download-warnings.smhi.se"
 
 // WARNING
 const val APP_WARNING_FILTER_KEY = "APP_WARNING_FILTER"
-const val DISTRICT_MAX = 58
-const val FEED_SOURCE_MAX = 3
+const val FEED_SOURCE_MAX = 2
+const val FEED_SOURCE_KRISINFORMATION_ID = 0
+const val FEED_SOURCE_SMHI_ID = 1
 
 // DATABASE
-const val DATABASE_VERSION = 1
+const val DATABASE_VERSION = 2
 const val DATABASE_NAME = "vadret.db"
 
 // RADAR
@@ -54,7 +55,6 @@ const val DEFAULT_LONGITUDE = "18.0686"
 const val DEFAULT_LOCALITY = "Stockholm"
 const val DEFAULT_MUNICIPALITY = "Stockholm"
 const val DEFAULT_COUNTY = "Stockholm"
-const val DISTRICT_VIEW_FILTER = "all"
 
 const val DEFAULT_FORECAST_FORMAT = "HOURLY"
 const val DEFAULT_UPDATE_INTERVAL = "1 hour"

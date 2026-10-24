@@ -2,7 +2,6 @@ package fi.kroon.vadret.forecastwarning
 
 import fi.kroon.vadret.data.district.local.DistrictDao
 import fi.kroon.vadret.data.failure.Failure
-import fi.kroon.vadret.util.FEED_SOURCE_MAX
 import fi.kroon.vadret.util.extension.asRight
 import io.reactivex.Single
 import se.fimbla.either.Either
@@ -14,6 +13,6 @@ class CountDistrictEntityTask @Inject constructor(
     operator fun invoke(): Single<Either<Failure, Boolean>> =
         dao.count()
             .map { rowCount: Int ->
-                (rowCount == FEED_SOURCE_MAX).asRight()
+                (rowCount > 0).asRight()
             }
 }

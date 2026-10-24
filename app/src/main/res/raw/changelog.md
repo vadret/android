@@ -5,6 +5,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.0.0] -- 2026-* 🍁
+
+- Drop support for Google flavor
+- Extract code into separate modules
+- Kotlin 2.4.21
+- Migrate to SMHI Snow1g API
+- Migrate to SMHI IBWW v1 API
+- KrisInformation v3
+
 ## [2.0.3] -- 2021-03-11 🦔
 
 This is a minor maintenance release that contains mostly bumped external libraries and removing

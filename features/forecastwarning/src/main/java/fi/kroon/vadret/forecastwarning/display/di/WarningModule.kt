@@ -7,12 +7,12 @@ import dagger.Module
 import dagger.Provides
 import fi.kroon.vadret.data.aggregatedfeed.cache.AggregatedFeedDiskCache
 import fi.kroon.vadret.data.aggregatedfeed.model.AggregatedFeed
-import fi.kroon.vadret.data.aggregatedfeed.net.AggregatedFeedNetDataSource
+import fi.kroon.vadret.data.aggregatedfeed.net.KrisinformationNetDataSource
+import fi.kroon.vadret.data.aggregatedfeed.net.SmhiWarningNetDataSource
 import fi.kroon.vadret.data.district.local.DistrictDao
 import fi.kroon.vadret.data.district.net.DistrictNetDataSource
 import fi.kroon.vadret.data.districtpreference.local.DistrictPreferenceDao
 import fi.kroon.vadret.data.feedsource.local.FeedSourceDao
-import fi.kroon.vadret.data.feedsource.net.FeedSourceNetDataSource
 import fi.kroon.vadret.data.feedsourcepreference.local.FeedSourcePreferenceDao
 import fi.kroon.vadret.data.persistance.AppDatabase
 import fi.kroon.vadret.di.qualifiers.Alert
@@ -51,13 +51,13 @@ object WarningModule {
 
     @Provides
     @WarningScope
-    fun provideFeedSourceApi(@KrisInformation retrofit: Retrofit): FeedSourceNetDataSource =
-        retrofit.create(FeedSourceNetDataSource::class.java)
+    fun provideSmhiWarningApi(@Alert retrofit: Retrofit): SmhiWarningNetDataSource =
+        retrofit.create(SmhiWarningNetDataSource::class.java)
 
     @Provides
     @WarningScope
-    fun provideAggregatedFeedApi(@KrisInformation retrofit: Retrofit): AggregatedFeedNetDataSource =
-        retrofit.create(AggregatedFeedNetDataSource::class.java)
+    fun provideKrisinformationApi(@KrisInformation retrofit: Retrofit): KrisinformationNetDataSource =
+        retrofit.create(KrisinformationNetDataSource::class.java)
 
     @Provides
     @WarningScope

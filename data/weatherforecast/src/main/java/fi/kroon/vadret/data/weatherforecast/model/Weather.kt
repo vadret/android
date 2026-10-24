@@ -6,8 +6,8 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class Weather(
 
-    @SerialName(value = "approvedTime")
-    val approvedTime: String,
+    @SerialName(value = "createdTime")
+    val createdTime: String,
 
     @SerialName(value = "referenceTime")
     val referenceTime: String,

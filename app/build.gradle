@@ -34,7 +34,7 @@ android {
         minSdk libs.versions.android.minSdk.get().toInteger()
         targetSdk libs.versions.android.targetSdk.get().toInteger()
         versionCode 30
-        versionName "2.0.3"
+        versionName "3.0.0alpha01"
         vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner "androidx.top.runner.AndroidJUnitRunner"
         multiDexEnabled true

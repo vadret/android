@@ -130,10 +130,6 @@ class WeatherForecastAdapter @Inject constructor() : RecyclerView.Adapter<Recycl
             val humidityPercentString = "${item.humidityPercent}$percentSymbol"
             itemBinding.humidityPercent.text = humidityPercentString
 
-            item.precipitationCode?.let { precipitationCodeInt: Int ->
-                itemBinding.precipitationCode.setText(getPrecipitationResourceId(precipitationCodeInt))
-            } ?: itemBinding.precipitationCode.toGone()
-
             if (item.sunriseDateTime != null && item.sunsetDateTime != null) {
                 val format = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT)
                 itemBinding.sunriseDateTime.text = item.sunriseDateTime.toLocalTime().format(format)
@@ -143,10 +139,9 @@ class WeatherForecastAdapter @Inject constructor() : RecyclerView.Adapter<Recycl
                 itemBinding.sunsetDateTime.setText(R.string.sun_wont_set_today)
             }
 
-            item.precipitationCode?.let { intCode ->
-                if (intCode > 0) {
-                    itemBinding.precipitationCode.setText(getPrecipitationResourceId(intCode))
-                }
+            item.precipitationCode?.takeIf { it > 0 }?.let { intCode ->
+                itemBinding.precipitationCode.setText(getPrecipitationResourceId(intCode))
+                itemBinding.precipitationCode.toVisible()
             } ?: itemBinding.precipitationCode.toGone()
         }
     }
@@ -172,9 +167,9 @@ class WeatherForecastAdapter @Inject constructor() : RecyclerView.Adapter<Recycl
                 itemBinding.feelsLikeTemperature.toVisible()
                 itemBinding.feelsLikeTempUnit.toVisible()
             } ?: run {
-                itemBinding.feelsLikeTemperature.toInvisible()
-                itemBinding.feelsLike.toInvisible()
-                itemBinding.feelsLikeTempUnit.toInvisible()
+                itemBinding.feelsLikeTemperature.toGone()
+                itemBinding.feelsLike.toGone()
+                itemBinding.feelsLikeTempUnit.toGone()
             }
         }
     }

@@ -1,7 +1,7 @@
 package fi.kroon.vadret.data.district
 
 import dagger.Lazy
-import fi.kroon.vadret.data.district.model.DistrictView
+import fi.kroon.vadret.data.district.model.District
 import fi.kroon.vadret.data.district.net.DistrictNetDataSource
 import fi.kroon.vadret.data.exception.ErrorHandler
 import fi.kroon.vadret.data.exception.ExceptionHandler
@@ -26,11 +26,11 @@ class DistrictRepository @Inject constructor(
      *  When [response.body] is null [NetworkResponseEmpty] is
      *  returned.
      */
-    operator fun invoke(): Single<Either<Failure, DistrictView>> =
+    operator fun invoke(): Single<Either<Failure, List<District>>> =
         when (networkHandler.isConnected) {
             true -> {
                 networkDataSource.get()()
-                    .map { response: Response<DistrictView> ->
+                    .map { response: Response<List<District>> ->
                         response
                             .body()
                             ?.asRight()

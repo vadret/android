@@ -1,0 +1,198 @@
+[
+ {
+  "id": 3378,
+  "normalProbability": true,
+  "event": {
+   "sv": "Vind",
+   "en": "Wind",
+   "code": "WIND",
+   "mhoClassification": {
+    "sv": "Meteorologi",
+    "en": "Meteorology",
+    "code": "MET"
+   }
+  },
+  "descriptions": [],
+  "warningAreas": [
+   {
+    "id": 10696,
+    "approximateStart": "2026-10-25T07:00:00.535Z",
+    "approximateEnd": "2026-10-25T17:00:00.223Z",
+    "published": "2026-10-23T09:11:36.941Z",
+    "normalProbability": true,
+    "pushNotice": true,
+    "areaName": {
+     "sv": "Östra delarna av Stockholms län och Sörmlands län",
+     "en": "Eastern parts of Stockholm County and Sörmland County"
+    },
+    "warningLevel": {
+     "sv": "Gul",
+     "en": "Yellow",
+     "code": "YELLOW"
+    },
+    "eventDescription": {
+     "sv": "Vind",
+     "en": "Wind",
+     "code": "WIND"
+    },
+    "affectedAreas": [
+     {
+      "id": 4,
+      "sv": "Södermanlands län",
+      "en": "Södermanland County"
+     },
+     {
+      "id": 1,
+      "sv": "Stockholms län",
+      "en": "Stockholm County"
+     }
+    ],
+    "descriptions": [
+     {
+      "title": {
+       "sv": "Vad händer?",
+       "en": "What happens?",
+       "code": "HAPPENS"
+      },
+      "text": {
+       "sv": "Söndag morgon tilltar sydvinden i samband med att ett omfattande lågtryck kommer",
+       "en": "Sunday morning the southerly wind will increase in connection with a large-scale"
+      }
+     },
+     {
+      "title": {
+       "sv": "Händelsebeskrivning",
+       "en": "Description of incident",
+       "code": "INCIDENT"
+      },
+      "text": {
+       "sv": "Under söndagen blåsigt väder med mycket hårda vindbyar.",
+       "en": "During Sunday windy weather with very strong gusts."
+      }
+     },
+     {
+      "title": {
+       "sv": "Vad ska jag tänka på?",
+       "en": "What should I think about?",
+       "code": "AFFECT"
+      },
+      "text": {
+       "sv": "Vägar kan blockeras av nedfallna träd eller grenar.\nDet finns risk för försening",
+       "en": "Roads may be blocked by fallen trees or branches.\nThere is a risk of delays or c"
+      }
+     },
+     {
+      "title": {
+       "sv": "Kommentar",
+       "en": "Comments",
+       "code": "COMMENTS"
+      },
+      "text": {
+       "sv": "Även utanför varnat området väntas blåsigt väder, om än inte så blåsigt som inom",
+       "en": "Windy weather is also expected outside the warning area, although not as windy a"
+      }
+     },
+     {
+      "title": {
+       "sv": "Var?",
+       "en": "Where?",
+       "code": "WHERE"
+      },
+      "text": {
+       "sv": "Östra delarna av Stockholms län och Sörmlands län",
+       "en": "Eastern parts of Stockholm County and Sörmland County"
+      }
+     }
+    ],
+    "created": "2026-10-23T09:11:36.941Z"
+   },
+   {
+    "id": 10697,
+    "approximateStart": "2026-10-25T07:00:00.535Z",
+    "approximateEnd": "2026-10-25T18:00:00.223Z",
+    "published": "2026-10-24T13:25:27.553Z",
+    "normalProbability": true,
+    "pushNotice": true,
+    "areaName": {
+     "sv": "Gotland",
+     "en": "Gotland"
+    },
+    "warningLevel": {
+     "sv": "Gul",
+     "en": "Yellow",
+     "code": "YELLOW"
+    },
+    "eventDescription": {
+     "sv": "Vind",
+     "en": "Wind",
+     "code": "WIND"
+    },
+    "affectedAreas": [
+     {
+      "id": 9,
+      "sv": "Gotlands län",
+      "en": "Gotland County"
+     }
+    ],
+    "descriptions": [
+     {
+      "title": {
+       "sv": "Vad händer?",
+       "en": "What happens?",
+       "code": "HAPPENS"
+      },
+      "text": {
+       "sv": "Söndag morgon tilltar sydvinden i samband med att ett omfattande lågtryck kommer",
+       "en": "Sunday morning the southerly wind will increase in connection with a large low p"
+      }
+     },
+     {
+      "title": {
+       "sv": "Händelsebeskrivning",
+       "en": "Description of incident",
+       "code": "INCIDENT"
+      },
+      "text": {
+       "sv": "Under söndagen blåsigt väder med mycket hårda vindbyar.",
+       "en": "During Sunday windy weather with very strong gusts."
+      }
+     },
+     {
+      "title": {
+       "sv": "Vad ska jag tänka på?",
+       "en": "What should I think about?",
+       "code": "AFFECT"
+      },
+      "text": {
+       "sv": "Vägar kan blockeras av nedfallna träd eller grenar.\nDet finns risk för försening",
+       "en": "Roads may be blocked by fallen trees or branches.\nThere is a risk of delays or c"
+      }
+     },
+     {
+      "title": {
+       "sv": "Kommentar",
+       "en": "Comments",
+       "code": "COMMENTS"
+      },
+      "text": {
+       "sv": "Även regn väntas under söndagen. ",
+       "en": "Rain is also expected on Sunday."
+      }
+     },
+     {
+      "title": {
+       "sv": "Var?",
+       "en": "Where?",
+       "code": "WHERE"
+      },
+      "text": {
+       "sv": "Gotland",
+       "en": "Gotland"
+      }
+     }
+    ],
+    "created": "2026-10-23T09:11:36.941Z"
+   }
+  ]
+ }
+]

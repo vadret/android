@@ -2,7 +2,6 @@ package fi.kroon.vadret.forecastwarning.district
 
 import fi.kroon.vadret.data.district.model.District
 import fi.kroon.vadret.data.district.model.DistrictEntity
-import fi.kroon.vadret.data.district.model.DistrictView
 import fi.kroon.vadret.data.failure.Failure
 import fi.kroon.vadret.forecastwarning.CountDistrictEntityTask
 import fi.kroon.vadret.util.extension.asSingle
@@ -53,13 +52,13 @@ class GetDistrictNetService @Inject constructor(
     private fun getDistrictNet(either: Either<Failure, Data>): Single<Either<Failure, Data>> =
         either.flatMapSingle { data: Data ->
             getDistrictNetTask()
-                .map { result: Either<Failure, DistrictView> ->
-                    result.map { districtView: DistrictView ->
-                        Timber.d("GET DISTRICT VIEW NET")
-                        districtView.districtList.forEach {
+                .map { result: Either<Failure, List<District>> ->
+                    result.map { districtList: List<District> ->
+                        Timber.d("GET DISTRICT LIST NET")
+                        districtList.forEach {
                             Timber.d("$it")
                         }
-                        data.copy(districtList = districtView.districtList)
+                        data.copy(districtList = districtList)
                     }
                 }
         }

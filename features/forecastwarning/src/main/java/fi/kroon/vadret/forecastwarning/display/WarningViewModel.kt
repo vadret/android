@@ -2,6 +2,7 @@ package fi.kroon.vadret.forecastwarning.display
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import fi.kroon.vadret.data.aggregatedfeed.exception.AggregatedFeedFailure
 import fi.kroon.vadret.data.district.exception.DistrictFailure
 import fi.kroon.vadret.data.failure.Failure
 import fi.kroon.vadret.forecastwarning.CountDistrictPreferenceEntityTask
@@ -70,7 +71,8 @@ class WarningViewModel @Inject constructor(
 
     private suspend fun onWarningFilterResult(result: String) {
         if (result == RESULT_OK) {
-            stateModel = stateModel.copy(renderEvent = WarningView.RenderEvent.None)
+            // the cached feed was fetched with the previous filter
+            stateModel = stateModel.copy(renderEvent = WarningView.RenderEvent.None, forceNet = true)
             onViewInitialisedEvent(null)
         } else {
             stateModel = stateModel.copy(renderEvent = WarningView.RenderEvent.None)
@@ -113,8 +115,7 @@ class WarningViewModel @Inject constructor(
             .await()
             .onResult(
                 { failure: Failure ->
-                    Timber.e("Failure: $failure")
-                    state.emit(stateModel)
+                    displayError(failure)
                 },
                 { feedSourceListAvailable: Boolean ->
                     Timber.d("FEED SOURCE PREFS ARE AVAILABLE: $feedSourceListAvailable")
@@ -133,15 +134,14 @@ class WarningViewModel @Inject constructor(
                                 .await()
                                 .onResult(
                                     { failure: Failure ->
-                                        Timber.e("Failure: $failure")
-                                        state.emit(stateModel)
+                                        displayError(failure)
                                     },
                                     { feedSourceIsAvailable: Boolean ->
                                         when (feedSourceIsAvailable) {
                                             true -> loadLastChecked()
                                             false -> {
                                                 Timber.e("This is a deeply erronous state, this should really not happen")
-                                                state.emit(stateModel)
+                                                displayError(AggregatedFeedFailure.LoadingPreferenceFailed)
                                             }
                                         }
                                     }
@@ -156,8 +156,7 @@ class WarningViewModel @Inject constructor(
             .await()
             .onResult(
                 { failure: Failure ->
-                    Timber.e("Failure: $failure")
-                    state.emit(stateModel)
+                    displayError(failure)
                 },
                 { districtPreferenceAvailable: Boolean ->
                     Timber.d("DISTRICT PREFS ARE AVAILABLE: $districtPreferenceAvailable")
@@ -168,15 +167,14 @@ class WarningViewModel @Inject constructor(
                                 .await()
                                 .onResult(
                                     { failure: Failure ->
-                                        Timber.e("Failure: $failure")
-                                        state.emit(stateModel)
+                                        displayError(failure)
                                     },
                                     { districtPreferencesAvailable: Boolean ->
                                         when (districtPreferencesAvailable) {
                                             true -> setDefaultFeedSourcePreference()
                                             false -> {
                                                 Timber.e("This is a deeply erronous state, this should really not happen")
-                                                state.emit(stateModel)
+                                                displayError(AggregatedFeedFailure.LoadingPreferenceFailed)
                                             }
                                         }
                                     }
@@ -259,8 +257,7 @@ class WarningViewModel @Inject constructor(
             .await()
             .onResult(
                 { failure: Failure ->
-                    Timber.e("failure: $failure")
-                    state.emit(stateModel)
+                    displayError(failure)
                 },
                 { timeStamp: Long ->
                     loadDistrictIds(timeStamp = timeStamp)
@@ -273,8 +270,7 @@ class WarningViewModel @Inject constructor(
             .await()
             .onResult(
                 { failure: Failure ->
-                    Timber.e("failure: $failure")
-                    state.emit(stateModel)
+                    displayError(failure)
                 },
                 { districtIds: List<Int> ->
                     loadFeedSourceIds(
@@ -293,8 +289,7 @@ class WarningViewModel @Inject constructor(
             .await()
             .onResult(
                 { failure: Failure ->
-                    Timber.e("failure: $failure")
-                    state.emit(stateModel)
+                    displayError(failure)
                 },
                 { feedSourceIds: List<Int> ->
                     loadAggregatedFeed(
@@ -319,13 +314,7 @@ class WarningViewModel @Inject constructor(
         ).await()
             .onResult(
                 { failure: Failure ->
-                    Timber.e("Failure: $failure")
-                    val errorCode: Int = getErrorCode(failure)
-                    val renderEvent: WarningView.RenderEvent.DisplayError =
-                        WarningView.RenderEvent.DisplayError(errorCode)
-
-                    stateModel = stateModel.copy(renderEvent = renderEvent)
-                    state.emit(stateModel)
+                    displayError(failure)
                 },
                 { data: GetAggregatedFeedService.Data ->
 
@@ -362,8 +351,7 @@ class WarningViewModel @Inject constructor(
             .await()
             .onResult(
                 { failure: Failure ->
-                    Timber.e("failure: $failure")
-                    state.emit(stateModel)
+                    displayError(failure)
                 },
                 { districtIsAvailable: Boolean ->
                     when (districtIsAvailable) {
@@ -386,8 +374,7 @@ class WarningViewModel @Inject constructor(
             .await()
             .onResult(
                 { failure: Failure ->
-                    Timber.e("failure: $failure")
-                    state.emit(stateModel)
+                    displayError(failure)
                 },
                 { feedSourceIsAvailable: Boolean ->
                     when (feedSourceIsAvailable) {
@@ -403,6 +390,19 @@ class WarningViewModel @Inject constructor(
                     }
                 }
             )
+    }
+
+    /**
+     *  Emitting [stateModel] unchanged on failure would replay
+     *  its last render event, and when that is
+     *  [WarningView.RenderEvent.StartProgressBarEffect] loading
+     *  restarts in a tight loop.
+     */
+    private suspend fun displayError(failure: Failure) {
+        Timber.e("Failure: $failure")
+        val errorCode: Int = getErrorCode(failure)
+        stateModel = stateModel.copy(renderEvent = WarningView.RenderEvent.DisplayError(errorCode))
+        state.emit(stateModel)
     }
 
     private suspend fun onFailureHandledEvent() = endLoadingWarning()

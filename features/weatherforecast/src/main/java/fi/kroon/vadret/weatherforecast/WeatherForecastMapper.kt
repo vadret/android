@@ -1,8 +1,8 @@
 package fi.kroon.vadret.weatherforecast
 
 import fi.kroon.vadret.data.location.model.Location
-import fi.kroon.vadret.data.weatherforecast.model.Parameter
 import fi.kroon.vadret.data.weatherforecast.model.TimeSerie
+import fi.kroon.vadret.data.weatherforecast.model.WeatherData
 import fi.kroon.vadret.util.common.SunsetUtil
 import fi.kroon.vadret.util.common.WindChill
 import fi.kroon.vadret.util.extension.parseToLocalDate
@@ -41,7 +41,7 @@ object WeatherForecastMapper {
         for (timeSerie: TimeSerie in timeSerieList) {
 
             if (weatherForecastHeadlineModel == null) {
-                weatherForecastHeadlineModel = getWeatherForecastHeadlineModel(timeSerie.parameters)
+                weatherForecastHeadlineModel = getWeatherForecastHeadlineModel(timeSerie.data)
                 weatherForecastModelList.add(weatherForecastHeadlineModel)
             }
 
@@ -52,7 +52,7 @@ object WeatherForecastMapper {
 
             if (weatherForecastDateItemModel == null) {
                 weatherForecastDateItemModel = WeatherForecastDateItemModel(
-                    timeSerieList.first().validTime.parseToLocalDate()
+                    timeSerieList.first().time.parseToLocalDate()
                 )
             }
 
@@ -67,37 +67,25 @@ object WeatherForecastMapper {
                 temp = null
             }
 
-            if (timeSerie.validTime.parseToLocalDate() == weatherForecastDateItemModel.date) {
+            if (timeSerie.time.parseToLocalDate() == weatherForecastDateItemModel.date) {
                 val weatherForecastItemModel = getWeatherForecastItemModel(timeSerie)
                 weatherForecastModelList.add(weatherForecastItemModel)
             } else {
                 temp = timeSerie
                 weatherForecastDateItemModel = WeatherForecastDateItemModel(
-                    timeSerie.validTime.parseToLocalDate()
+                    timeSerie.time.parseToLocalDate()
                 )
             }
         }
         return weatherForecastModelList.toList()
     }
 
-    private fun getWeatherForecastHeadlineModel(parameters: List<Parameter>): WeatherForecastHeadlineModel {
-        var weatherDescription: Int? = null
-        var windDirection: Double? = null
-        var windSpeed: Double? = null
-
-        parameters.forEach { parameter: Parameter ->
-            when (parameter.name) {
-                "wd" -> windDirection = parameter.values.first()
-                "ws" -> windSpeed = parameter.values.first()
-                "Wsymb2" -> weatherDescription = parameter.values.first().toInt()
-            }
-        }
-        return WeatherForecastHeadlineModel(
-            headline = weatherDescription,
-            windSpeed = windSpeed,
-            windDirection = windDirection
+    private fun getWeatherForecastHeadlineModel(data: WeatherData): WeatherForecastHeadlineModel =
+        WeatherForecastHeadlineModel(
+            headline = data.symbolCode,
+            windSpeed = data.windSpeed,
+            windDirection = data.windFromDirection
         )
-    }
 
     private fun getWeatherForecastSplashItemModel(timeSerie: TimeSerie, location: Location): WeatherForecastSplashItemModel {
 
@@ -114,62 +102,33 @@ object WeatherForecastMapper {
             sunsetDateTime = OffsetDateTime.ofInstant(sunsetDateTimeInstant, ZoneId.systemDefault())
         }
 
-        var humidityPercent: Int = 0
-        var temperature: Double = 0.0
-        var windSpeed: Double = 0.0
-        var windDirection: Double? = null
-        var feelsLikeTemperature: String? = null
-        var weatherIcon: Int = 0
-        var weatherDescription: Int = 0
-        var precipitationCode: Int? = 0
-        var thunderRisk: Int = 0
-
-        for (param in timeSerie.parameters) {
-            when (param.name) {
-                "t" -> temperature = param.values.first()
-                "r" -> humidityPercent = param.values.first().toInt()
-                "wd" -> windDirection = param.values.first()
-                "ws" -> windSpeed = param.values.first()
-                "tstm" -> thunderRisk = param.values.first().toInt()
-                "pcat" -> precipitationCode = param.values.first().toInt()
-                "Wsymb2" -> weatherIcon = param.values.first().toInt()
-            }
-        }
-        weatherDescription = weatherIcon
+        val data: WeatherData = timeSerie.data
+        val temperature: Double = data.airTemperature
+        val windSpeed: Double = data.windSpeed
+        val weatherIcon: Int = data.symbolCode
 
         return WeatherForecastSplashItemModel(
             sunriseDateTime = sunriseDateTime,
             sunsetDateTime = sunsetDateTime,
-            humidityPercent = humidityPercent,
+            humidityPercent = data.relativeHumidity,
             temperature = temperature,
             windSpeed = windSpeed,
-            windDirection = windDirection,
+            windDirection = data.windFromDirection,
             feelsLikeTemperature = WindChill.calculate(temperature, windSpeed),
             weatherIcon = weatherIcon,
-            weatherDescription = weatherDescription,
-            precipitationCode = precipitationCode,
-            thunderRisk = thunderRisk
+            weatherDescription = weatherIcon,
+            precipitationCode = data.precipitationType,
+            thunderRisk = data.thunderstormProbability
         )
     }
 
     private fun getWeatherForecastItemModel(timeSerie: TimeSerie): WeatherForecastItemModel {
-        var temperature: Double = 0.0
-        val time: String = Instant.parse(timeSerie.validTime).atZone(ZoneId.systemDefault()).toLocalTime().toString()
-        var feelsLikeTemperature: String? = null
-        var windSpeed: Double = 0.0
+        val data: WeatherData = timeSerie.data
+        val time: String = Instant.parse(timeSerie.time).atZone(ZoneId.systemDefault()).toLocalTime().toString()
+        val temperature: Double = data.airTemperature
+        val windSpeed: Double = data.windSpeed
+        val weatherIcon: Int = data.symbolCode
         val precipitationType: Int = 0
-        var weatherIcon: Int = 0
-        var weatherDescription: Int = 0
-
-        for (param in timeSerie.parameters) {
-            when (param.name) {
-                "t" -> temperature = param.values.first()
-                "ws" -> windSpeed = param.values.first()
-                "Wsymb2" -> weatherIcon = param.values.first().toInt()
-            }
-        }
-
-        weatherDescription = weatherIcon
 
         return WeatherForecastItemModel(
             temperature = temperature,
@@ -178,7 +137,7 @@ object WeatherForecastMapper {
             precipitationType = precipitationType,
             windSpeed = windSpeed,
             weatherIcon = weatherIcon,
-            weatherDescription = weatherDescription
+            weatherDescription = weatherIcon
         )
     }
 }

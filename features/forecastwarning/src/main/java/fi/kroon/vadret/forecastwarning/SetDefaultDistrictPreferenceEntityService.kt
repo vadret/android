@@ -23,7 +23,8 @@ class SetDefaultDistrictPreferenceEntityService @Inject constructor(
     )
 
     private companion object {
-        const val DEFAULT_DISTRICT_ID = 25
+        // Stockholms län
+        const val DEFAULT_DISTRICT_ID = 1
     }
 
     operator fun invoke(): Single<Either<Failure, Boolean>> =

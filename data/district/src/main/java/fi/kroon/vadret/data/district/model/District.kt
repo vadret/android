@@ -3,21 +3,19 @@ package fi.kroon.vadret.data.district.model
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
+/**
+ *  A warning area from SMHI's IBWW metadata, either
+ *  a county or a sea district.
+ */
 @JsonClass(generateAdapter = true)
 data class District(
+
     @Json(name = "id")
-    val id: String,
+    val id: Int,
 
-    @Json(name = "sort_order")
-    val sortOrder: String,
-
-    @Json(name = "category")
-    val category: String,
-
-    @Json(name = "name")
+    @Json(name = "sv")
     val name: String,
 
-    @Json(name = "geometry")
-    val geometry: Geometry
-
+    @Json(name = "code")
+    val code: String
 )

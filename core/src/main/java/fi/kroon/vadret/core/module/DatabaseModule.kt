@@ -19,5 +19,10 @@ object DatabaseModule {
         context,
         AppDatabase::class.java,
         DATABASE_NAME
-    ).build()
+    )
+        // The database only caches warning districts and feed sources,
+        // which are refetched, and their ids changed with the move to
+        // SMHI's IBWW and Krisinformation's v3 APIs
+        .fallbackToDestructiveMigration(dropAllTables = true)
+        .build()
 }

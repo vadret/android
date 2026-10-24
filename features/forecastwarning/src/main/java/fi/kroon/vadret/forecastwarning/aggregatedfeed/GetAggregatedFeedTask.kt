@@ -13,7 +13,7 @@ class GetAggregatedFeedTask @Inject constructor(
 ) {
     operator fun invoke(counties: List<Int>, feeds: List<Int>): Single<Either<Failure, List<AggregatedFeed>>> =
         repo(
-            counties = counties.joinToString(","),
-            feeds = feeds.joinToString(",")
+            counties = counties,
+            feeds = feeds
         )
 }
