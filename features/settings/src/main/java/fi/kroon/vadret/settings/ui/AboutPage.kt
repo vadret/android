@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
@@ -17,6 +18,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -35,6 +38,8 @@ import fi.kroon.vadret.settings.model.AboutRow
 import fi.kroon.vadret.ui.VadretCard
 import fi.kroon.vadret.ui.VadretTheme
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 private const val HEADER_KEY = "header"
 private const val ROWS_KEY = "rows"
@@ -74,25 +79,32 @@ internal fun AboutPage(
 @Composable
 private fun AboutHeader(modifier: Modifier = Modifier) {
     val context: Context = LocalContext.current
-    val appIcon: ImageBitmap = remember(context) {
-        context.packageManager
-            .getApplicationIcon(context.packageName)
-            .toBitmap()
-            .asImageBitmap()
+    val appIcon: ImageBitmap? by produceState<ImageBitmap?>(initialValue = null, context) {
+        value = withContext(context = Dispatchers.Default) {
+            context.packageManager
+                .getApplicationIcon(context.packageName)
+                .toBitmap()
+                .asImageBitmap()
+        }
     }
+    val loadedAppIcon: ImageBitmap? = appIcon
     VadretCard(modifier = modifier) {
         Row(
             horizontalArrangement = Arrangement.spacedBy(space = VadretTheme.spacing.large),
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.padding(all = VadretTheme.spacing.large)
         ) {
-            Image(
-                bitmap = appIcon,
-                contentDescription = null,
-                modifier = Modifier
-                    .size(size = appIconSize)
-                    .clip(shape = CircleShape)
-            )
+            if (loadedAppIcon != null) {
+                Image(
+                    bitmap = loadedAppIcon,
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(size = appIconSize)
+                        .clip(shape = CircleShape)
+                )
+            } else {
+                Spacer(modifier = Modifier.size(size = appIconSize))
+            }
             Column {
                 Text(
                     text = stringResource(id = R.string.app_name),

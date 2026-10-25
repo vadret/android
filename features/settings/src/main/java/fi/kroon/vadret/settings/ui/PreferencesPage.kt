@@ -16,6 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import fi.kroon.vadret.core.R
@@ -160,9 +161,9 @@ private fun SwitchRow(
             checked = isChecked,
             onCheckedChange = onCheckedChange,
             colors = SwitchDefaults.colors(
-                uncheckedThumbColor = VadretTheme.colorScheme.onSurfaceVariant,
-                uncheckedBorderColor = VadretTheme.colorScheme.onSurfaceVariant,
-                uncheckedTrackColor = VadretTheme.colorScheme.outlineVariant
+                uncheckedThumbColor = VadretTheme.colorScheme.onPrimary,
+                uncheckedBorderColor = Color.Transparent,
+                uncheckedTrackColor = VadretTheme.colorScheme.primary
             )
         )
     }
