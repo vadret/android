@@ -10,6 +10,7 @@ import fi.kroon.vadret.radar.extension.toWindTimeFrames
 import fi.kroon.vadret.radar.model.Radar
 import fi.kroon.vadret.radar.model.RadarFrame
 import fi.kroon.vadret.radar.model.RadarLayer
+import fi.kroon.vadret.radar.model.WindTimeFrame
 import fi.kroon.vadret.radar.wind.WindField
 import fi.kroon.vadret.radar.wind.WindFieldRenderer
 import fi.kroon.vadret.ui.extension.launchReplacing
@@ -27,6 +28,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.updateAndGet
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.datetime.TimeZone
@@ -55,6 +57,8 @@ class RadarViewModel internal constructor(
 
     private val isStarted: AtomicBoolean = AtomicBoolean(false)
     private val isWindRequested: AtomicBoolean = AtomicBoolean(false)
+    private val locale: AtomicReference<Locale> = AtomicReference(Locale.getDefault())
+    private val radar: AtomicReference<Radar?> = AtomicReference(null)
     private val windForecast: AtomicReference<WindForecast?> = AtomicReference(null)
     private val playJob: AtomicReference<Job?> = AtomicReference(null)
     private val frameJob: AtomicReference<Job?> = AtomicReference(null)
@@ -62,6 +66,8 @@ class RadarViewModel internal constructor(
     fun onEvent(event: RadarEvent) {
         when (event) {
             RadarEvent.OnStart -> onStart()
+
+            is RadarEvent.OnLocaleChanged -> onLocaleChanged(locale = event.locale)
 
             RadarEvent.OnPlayButtonClicked -> onPlayButtonClicked()
 
@@ -87,14 +93,10 @@ class RadarViewModel internal constructor(
             getRadarTask()
                 .onResult(
                     onError = { failure: Failure -> displayError(failure = failure) },
-                    onSuccess = { radar: Radar ->
-                        val frames: ImmutableList<RadarFrame> = radar
-                            .toRadarFrames(
-                                now = clock.now(),
-                                timeZone = TimeZone.currentSystemDefault(),
-                                locale = Locale.getDefault()
-                            ).toImmutableList()
-                        state.update { state: RadarState ->
+                    onSuccess = { loadedRadar: Radar ->
+                        radar.set(loadedRadar)
+                        val updatedState: RadarState = state.updateAndGet { state: RadarState ->
+                            val frames: ImmutableList<RadarFrame> = loadedRadar.toFrames()
                             state.copy(
                                 precipitationFrames = frames,
                                 precipitationIndex = frames.lastIndex.coerceAtLeast(minimumValue = 0),
@@ -103,12 +105,39 @@ class RadarViewModel internal constructor(
                         }
                         showFrame(
                             layer = RadarLayer.PRECIPITATION,
-                            index = frames.lastIndex
+                            index = updatedState.precipitationFrames.lastIndex
                         )
                     }
                 )
         }
     }
+
+    private fun onLocaleChanged(locale: Locale) {
+        if (this.locale.getAndSet(locale) == locale) {
+            return
+        }
+        viewModelScope.launch(context = coroutineDispatcher) {
+            state.update { state: RadarState ->
+                state.copy(
+                    precipitationFrames = radar.get()?.toFrames() ?: state.precipitationFrames,
+                    windFrames = windForecast.get()?.toTimeFrames() ?: state.windFrames
+                )
+            }
+        }
+    }
+
+    private fun Radar.toFrames(): ImmutableList<RadarFrame> =
+        toRadarFrames(
+            now = clock.now(),
+            timeZone = TimeZone.currentSystemDefault(),
+            locale = locale.get()
+        ).toImmutableList()
+
+    private fun WindForecast.toTimeFrames(): ImmutableList<WindTimeFrame> =
+        toWindTimeFrames(
+            timeZone = TimeZone.currentSystemDefault(),
+            locale = locale.get()
+        ).toImmutableList()
 
     private fun loadDeviceLocation() {
         viewModelScope.launch(context = coroutineDispatcher) {
@@ -150,11 +179,7 @@ class RadarViewModel internal constructor(
                         windForecast.set(forecast)
                         state.update { state: RadarState ->
                             state.copy(
-                                windFrames = forecast
-                                    .toWindTimeFrames(
-                                        timeZone = TimeZone.currentSystemDefault(),
-                                        locale = Locale.getDefault()
-                                    ).toImmutableList(),
+                                windFrames = forecast.toTimeFrames(),
                                 windIndex = 0
                             )
                         }

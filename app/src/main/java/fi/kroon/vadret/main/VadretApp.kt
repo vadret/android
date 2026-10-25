@@ -1,5 +1,9 @@
 package fi.kroon.vadret.main
 
+import androidx.compose.animation.ContentTransform
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.consumeWindowInsets
@@ -55,6 +59,9 @@ internal fun VadretApp(modifier: Modifier = Modifier) {
                 rememberSaveableStateHolderNavEntryDecorator(),
                 rememberViewModelStoreNavEntryDecorator()
             ),
+            transitionSpec = { instantTransition() },
+            popTransitionSpec = { instantTransition() },
+            predictivePopTransitionSpec = { instantTransition() },
             entryProvider = entryProvider {
                 entry<WeatherKey> { WeatherForecastRoute() }
                 entry<WarningKey> { WarningRoute() }
@@ -67,6 +74,8 @@ internal fun VadretApp(modifier: Modifier = Modifier) {
         )
     }
 }
+
+private fun instantTransition(): ContentTransform = EnterTransition.None togetherWith ExitTransition.None
 
 private fun selectTab(
     backStack: NavBackStack<NavKey>,

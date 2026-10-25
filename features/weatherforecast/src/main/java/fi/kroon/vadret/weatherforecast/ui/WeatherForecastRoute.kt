@@ -18,6 +18,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import fi.kroon.vadret.di.koinViewModel
@@ -31,6 +32,7 @@ import fi.kroon.vadret.weatherforecast.model.CurrentWeather
 import fi.kroon.vadret.weatherforecast.model.ForecastDay
 import fi.kroon.vadret.weatherforecast.model.SearchState
 import kotlinx.collections.immutable.ImmutableList
+import java.util.Locale
 
 private const val SEARCH_KEY = "search"
 private const val CURRENT_WEATHER_KEY = "current-weather"
@@ -58,6 +60,10 @@ fun WeatherForecastScreen(
     onEvent: (WeatherForecastEvent) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val locale: Locale = LocalConfiguration.current.locales[0]
+    LaunchedEffect(locale) {
+        onEvent(WeatherForecastEvent.OnLocaleChanged(locale = locale))
+    }
     LaunchedEffect(Unit) {
         onEvent(WeatherForecastEvent.OnShown)
     }

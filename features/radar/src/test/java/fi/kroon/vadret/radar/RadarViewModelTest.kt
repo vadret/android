@@ -6,8 +6,10 @@ import fi.kroon.vadret.common.Failure
 import fi.kroon.vadret.core.R
 import fi.kroon.vadret.location.model.Location
 import fi.kroon.vadret.radar.model.Radar
+import fi.kroon.vadret.radar.model.RadarFrame
 import fi.kroon.vadret.radar.model.RadarImage
 import fi.kroon.vadret.radar.model.RadarLayer
+import fi.kroon.vadret.radar.model.WindTimeFrame
 import fi.kroon.vadret.radar.wind.WindField
 import fi.kroon.vadret.radar.wind.WindFieldRenderer
 import fi.kroon.vadret.radar.wind.WindFieldValues
@@ -30,6 +32,7 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import java.util.Locale
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -372,5 +375,55 @@ class RadarViewModelTest {
             advanceUntilIdle()
 
             assertEquals(expected = 0, actual = radarViewModel.state.value.precipitationIndex)
+        }
+
+    @Test
+    fun `a new language rewrites the weekdays and keeps the chosen frame`() =
+        testScope.runTest {
+            val radarViewModel: RadarViewModel = viewModel(isStarted = false)
+            radarViewModel.onEvent(event = RadarEvent.OnLocaleChanged(locale = Locale.ENGLISH))
+            radarViewModel.onEvent(event = RadarEvent.OnStart)
+            advanceUntilIdle()
+            radarViewModel.onEvent(event = RadarEvent.OnIndexChanged(index = 1))
+            radarViewModel.onEvent(event = RadarEvent.OnLayerSelected(layer = RadarLayer.WIND))
+            advanceUntilIdle()
+            val english: RadarState = radarViewModel.state.value
+
+            radarViewModel.onEvent(event = RadarEvent.OnLocaleChanged(locale = Locale.forLanguageTag("sv-SE")))
+            advanceUntilIdle()
+            val swedish: RadarState = radarViewModel.state.value
+
+            assertEquals(expected = listOf("Saturday"), actual = english.precipitationFrames.map { frame: RadarFrame -> frame.weekday }.distinct())
+            assertEquals(expected = listOf("Saturday"), actual = english.windFrames.map { frame: WindTimeFrame -> frame.weekday }.distinct())
+            assertEquals(expected = listOf("lördag"), actual = swedish.precipitationFrames.map { frame: RadarFrame -> frame.weekday }.distinct())
+            assertEquals(expected = listOf("lördag"), actual = swedish.windFrames.map { frame: WindTimeFrame -> frame.weekday }.distinct())
+            assertEquals(expected = 1, actual = swedish.precipitationIndex)
+        }
+
+    @Test
+    fun `the same language again leaves the state alone`() =
+        testScope.runTest {
+            val radarViewModel: RadarViewModel = viewModel(isStarted = false)
+            radarViewModel.onEvent(event = RadarEvent.OnLocaleChanged(locale = Locale.ENGLISH))
+            radarViewModel.onEvent(event = RadarEvent.OnStart)
+            advanceUntilIdle()
+            val before: RadarState = radarViewModel.state.value
+
+            radarViewModel.onEvent(event = RadarEvent.OnLocaleChanged(locale = Locale.ENGLISH))
+            advanceUntilIdle()
+
+            assertSame(expected = before, actual = radarViewModel.state.value)
+        }
+
+    @Test
+    fun `a language chosen before anything loaded is used once it loads`() =
+        testScope.runTest {
+            val radarViewModel: RadarViewModel = viewModel(isStarted = false)
+            radarViewModel.onEvent(event = RadarEvent.OnLocaleChanged(locale = Locale.forLanguageTag("sv-SE")))
+            advanceUntilIdle()
+            radarViewModel.onEvent(event = RadarEvent.OnStart)
+            advanceUntilIdle()
+
+            assertEquals(expected = listOf("lördag"), actual = radarViewModel.state.value.precipitationFrames.map { frame: RadarFrame -> frame.weekday }.distinct())
         }
 }

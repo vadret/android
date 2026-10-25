@@ -52,6 +52,8 @@ class WeatherForecastViewModel internal constructor(
         field = MutableStateFlow(value = WeatherForecastState())
 
     private val loadedLocationMode: AtomicReference<Boolean?> = AtomicReference(null)
+    private val locale: AtomicReference<Locale> = AtomicReference(Locale.getDefault())
+    private val placeForecast: AtomicReference<PlaceForecast?> = AtomicReference(null)
     private val isObservingLocationChoices: AtomicBoolean = AtomicBoolean(false)
     private val loadJob: AtomicReference<Job?> = AtomicReference(null)
     private val searchJob: AtomicReference<Job?> = AtomicReference(null)
@@ -59,6 +61,8 @@ class WeatherForecastViewModel internal constructor(
     fun onEvent(event: WeatherForecastEvent) {
         when (event) {
             WeatherForecastEvent.OnShown -> onShown()
+
+            is WeatherForecastEvent.OnLocaleChanged -> onLocaleChanged(locale = event.locale)
 
             WeatherForecastEvent.OnRefresh -> onRefresh()
 
@@ -197,20 +201,34 @@ class WeatherForecastViewModel internal constructor(
     }
 
     private fun displayForecast(placeForecast: PlaceForecast) {
-        val forecast: WeatherForecast = placeForecast.toWeatherForecast(
-            now = clock.now(),
-            timeZone = TimeZone.currentSystemDefault(),
-            locale = Locale.getDefault()
-        )
+        this.placeForecast.set(placeForecast)
         state.update { state: WeatherForecastState ->
             state.copy(
-                forecast = forecast,
+                forecast = placeForecast.toForecast(),
                 localityName = placeForecast.placeName,
                 isLoading = false,
                 isRefreshing = false
             )
         }
     }
+
+    private fun onLocaleChanged(locale: Locale) {
+        if (this.locale.getAndSet(locale) == locale) {
+            return
+        }
+        viewModelScope.launch(context = coroutineDispatcher) {
+            state.update { state: WeatherForecastState ->
+                state.copy(forecast = placeForecast.get()?.toForecast() ?: state.forecast)
+            }
+        }
+    }
+
+    private fun PlaceForecast.toForecast(): WeatherForecast =
+        toWeatherForecast(
+            now = clock.now(),
+            timeZone = TimeZone.currentSystemDefault(),
+            locale = locale.get()
+        )
 
     private fun onSearchDismissed() {
         searchJob.getAndSet(null)?.cancel()

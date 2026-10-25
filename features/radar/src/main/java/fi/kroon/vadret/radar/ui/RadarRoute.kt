@@ -21,6 +21,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -66,6 +67,10 @@ fun RadarScreen(
     modifier: Modifier = Modifier
 ) {
     val snackbarHostState: SnackbarHostState = remember { SnackbarHostState() }
+    val locale: Locale = LocalConfiguration.current.locales[0]
+    LaunchedEffect(locale) {
+        onEvent(RadarEvent.OnLocaleChanged(locale = locale))
+    }
     LaunchedEffect(Unit) {
         onEvent(RadarEvent.OnStart)
     }

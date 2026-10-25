@@ -5,6 +5,7 @@ import fi.kroon.vadret.common.Failure
 import fi.kroon.vadret.core.R
 import fi.kroon.vadret.testing.FixedClock
 import fi.kroon.vadret.weatherforecast.model.FavoriteChoice
+import fi.kroon.vadret.weatherforecast.model.ForecastDay
 import fi.kroon.vadret.weatherforecast.model.LocationChoices
 import fi.kroon.vadret.weatherforecast.model.SearchState
 import io.github.sphrak.either.extension.asLeft
@@ -20,6 +21,7 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import java.util.Locale
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -270,5 +272,33 @@ class WeatherForecastViewModelTest {
             advanceUntilIdle()
 
             assertEquals(expected = 0, actual = favoriteRepository.favorites.subscriptionCount.value)
+        }
+
+    @Test
+    fun `a new language rewrites the day headings of the loaded forecast`() =
+        testScope.runTest {
+            weatherForecastViewModel.onEvent(event = WeatherForecastEvent.OnLocaleChanged(locale = Locale.ENGLISH))
+            weatherForecastViewModel.onEvent(event = WeatherForecastEvent.OnShown)
+            advanceUntilIdle()
+            val english: ForecastDay = weatherForecastViewModel.state.value.forecast.days.first()
+
+            weatherForecastViewModel.onEvent(event = WeatherForecastEvent.OnLocaleChanged(locale = Locale.forLanguageTag("sv-SE")))
+            advanceUntilIdle()
+            val swedish: ForecastDay = weatherForecastViewModel.state.value.forecast.days.first()
+
+            assertEquals(expected = "Saturday" to "October 24, 2026", actual = english.weekday to english.dateText)
+            assertEquals(expected = "Lördag" to "24 oktober 2026", actual = swedish.weekday to swedish.dateText)
+            assertEquals(expected = "Stockholm", actual = weatherForecastViewModel.state.value.localityName)
+        }
+
+    @Test
+    fun `a new language before any forecast changes nothing`() =
+        testScope.runTest {
+            val before: WeatherForecastState = weatherForecastViewModel.state.value
+
+            weatherForecastViewModel.onEvent(event = WeatherForecastEvent.OnLocaleChanged(locale = Locale.forLanguageTag("sv-SE")))
+            advanceUntilIdle()
+
+            assertEquals(expected = before, actual = weatherForecastViewModel.state.value)
         }
 }
