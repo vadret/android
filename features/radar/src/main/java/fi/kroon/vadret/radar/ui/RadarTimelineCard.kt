@@ -61,7 +61,7 @@ private val precipitationLegend: List<Color> = listOf(
     Color(color = 0xFFEC5A2A)
 )
 
-private val windLegend: List<Color> = listOf(
+private val dayWindLegend: List<Color> = listOf(
     Color(color = 0xFF3B46A0),
     Color(color = 0xFF3E6EBE),
     Color(color = 0xFF3496AF),
@@ -71,6 +71,18 @@ private val windLegend: List<Color> = listOf(
     Color(color = 0xFFD28246),
     Color(color = 0xFFC34B78),
     Color(color = 0xFF963CAA)
+)
+
+private val nightWindLegend: List<Color> = listOf(
+    Color(color = 0xFF0E1430),
+    Color(color = 0xFF122050),
+    Color(color = 0xFF163070),
+    Color(color = 0xFF1A428C),
+    Color(color = 0xFF1E56A2),
+    Color(color = 0xFF266EB8),
+    Color(color = 0xFF3284CA),
+    Color(color = 0xFF4298D8),
+    Color(color = 0xFF58ACE4)
 )
 
 @Composable
@@ -255,8 +267,8 @@ private fun PlayButton(
     Surface(
         onClick = onClick,
         shape = CircleShape,
-        color = VadretTheme.colorScheme.primary,
-        contentColor = VadretTheme.colorScheme.onPrimary,
+        color = VadretTheme.colorScheme.primaryContainer,
+        contentColor = VadretTheme.colorScheme.onPrimaryContainer,
         modifier = modifier.size(size = playButtonSize)
     ) {
         Box(contentAlignment = Alignment.Center) {
@@ -341,7 +353,11 @@ private fun Legend(
         }
 
         RadarLayer.WIND -> {
-            colors = windLegend
+            colors = if (VadretTheme.isDark) {
+                nightWindLegend
+            } else {
+                dayWindLegend
+            }
             startLabel = stringResource(id = R.string.wind_speed_minimum)
             endLabel = stringResource(id = R.string.wind_speed_maximum)
         }

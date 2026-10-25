@@ -21,7 +21,7 @@ fun VadretCard(
         color = VadretTheme.colorScheme.surface,
         border = BorderStroke(
             width = cardBorderWidth,
-            color = VadretTheme.colors.cardBorder
+            color = VadretTheme.colorScheme.outlineVariant
         ),
         modifier = modifier.fillMaxWidth()
     ) {

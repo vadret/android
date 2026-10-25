@@ -13,6 +13,7 @@ import fi.kroon.vadret.radar.model.WindTimeFrame
 import fi.kroon.vadret.radar.wind.WindField
 import fi.kroon.vadret.radar.wind.WindFieldRenderer
 import fi.kroon.vadret.radar.wind.WindFieldValues
+import fi.kroon.vadret.radar.wind.WindPalette
 import fi.kroon.vadret.testing.FixedClock
 import fi.kroon.vadret.wind.model.WindForecast
 import fi.kroon.vadret.wind.model.WindFrame
@@ -84,12 +85,15 @@ private class FakeGetDeviceLocationTask(
 private class FakeWindFieldRenderer : WindFieldRenderer {
 
     val renderedFrames = mutableListOf<WindFrame>()
+    val renderedPalettes = mutableListOf<WindPalette>()
 
     override suspend fun render(
         windGrid: WindGrid,
-        windFrame: WindFrame
+        windFrame: WindFrame,
+        windPalette: WindPalette
     ): WindField {
         renderedFrames.add(windFrame)
+        renderedPalettes.add(windPalette)
         return WindField(
             values = WindFieldValues(
                 width = 1,
@@ -294,6 +298,38 @@ class RadarViewModelTest {
             assertEquals(expected = 0, actual = state.windIndex)
             assertEquals(expected = windForecast.frames.first(), actual = windFieldRenderer.renderedFrames.first())
             assertEquals(expected = false, actual = state.isLoading)
+        }
+
+    @Test
+    fun `the dark theme colours the wind field with the night palette`() =
+        testScope.runTest {
+            val radarViewModel: RadarViewModel = viewModel()
+            radarViewModel.onEvent(event = RadarEvent.OnDarkThemeChanged(isDarkTheme = true))
+            advanceUntilIdle()
+
+            radarViewModel.onEvent(event = RadarEvent.OnLayerSelected(layer = RadarLayer.WIND))
+            advanceUntilIdle()
+
+            assertEquals(expected = listOf(WindPalette.NIGHT), actual = windFieldRenderer.renderedPalettes)
+        }
+
+    @Test
+    fun `switching theme repaints the shown wind field only when the palette changes`() =
+        testScope.runTest {
+            val radarViewModel: RadarViewModel = viewModel()
+            advanceUntilIdle()
+            radarViewModel.onEvent(event = RadarEvent.OnLayerSelected(layer = RadarLayer.WIND))
+            advanceUntilIdle()
+
+            radarViewModel.onEvent(event = RadarEvent.OnDarkThemeChanged(isDarkTheme = false))
+            radarViewModel.onEvent(event = RadarEvent.OnDarkThemeChanged(isDarkTheme = true))
+            advanceUntilIdle()
+
+            assertEquals(
+                expected = listOf(WindPalette.DAY, WindPalette.NIGHT),
+                actual = windFieldRenderer.renderedPalettes
+            )
+            assertEquals(expected = windForecast.frames.first(), actual = windFieldRenderer.renderedFrames.last())
         }
 
     @Test

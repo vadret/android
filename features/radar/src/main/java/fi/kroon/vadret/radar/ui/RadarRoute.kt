@@ -51,6 +51,7 @@ private val attributionPadding = PaddingValues(
 )
 private const val WIND_SPEED_FORMAT = "%.1f"
 private const val COVER_FADE_MILLISECONDS = 250
+private const val ATTRIBUTION_BACKGROUND_ALPHA = 0.85f
 
 @Composable
 fun RadarRoute(
@@ -75,6 +76,10 @@ internal fun RadarScreen(
     val locale: Locale = LocalConfiguration.current.locales[0]
     LaunchedEffect(locale) {
         onEvent(RadarEvent.OnLocaleChanged(locale = locale))
+    }
+    val isDarkTheme: Boolean = VadretTheme.isDark
+    LaunchedEffect(isDarkTheme) {
+        onEvent(RadarEvent.OnDarkThemeChanged(isDarkTheme = isDarkTheme))
     }
     LaunchedEffect(Unit) {
         onEvent(RadarEvent.OnStart)
@@ -165,10 +170,10 @@ private fun RadarBottomPanel(
         Text(
             text = stringResource(id = R.string.openstreetmap_copyright_notice),
             style = VadretTheme.textStyles.attribution,
-            color = VadretTheme.colors.onMapAttribution,
+            color = VadretTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier
                 .background(
-                    color = VadretTheme.colors.mapAttribution,
+                    color = VadretTheme.colorScheme.surface.copy(alpha = ATTRIBUTION_BACKGROUND_ALPHA),
                     shape = attributionShape
                 ).padding(paddingValues = attributionPadding)
         )

@@ -7,6 +7,7 @@ internal interface WindFieldRenderer {
 
     suspend fun render(
         windGrid: WindGrid,
-        windFrame: WindFrame
+        windFrame: WindFrame,
+        windPalette: WindPalette
     ): WindField
 }

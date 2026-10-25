@@ -17,11 +17,16 @@ import androidx.compose.ui.unit.sp
 import fi.kroon.vadret.theme.model.Theme
 
 private val LocalVadretColors = staticCompositionLocalOf { lightVadretColors }
+private val LocalVadretIsDark = staticCompositionLocalOf { false }
 private val LocalVadretSpacing = staticCompositionLocalOf { VadretSpacing() }
 private val LocalVadretTextStyles = staticCompositionLocalOf { VadretTextStyles() }
 
-private val accent = Color(color = 0xFF6779CA)
 private val lightAccent = Color(color = 0xFF3F51B5)
+private val darkAccent = Color(color = 0xFFA1B3E6)
+private val darkAccentContainer = Color(color = 0xFF1F2D52)
+private val darkSurface = Color(color = 0xFF1C1E25)
+private val lightText = Color(color = 0xFFE6E7EC)
+private val amoledSurfaceContainer = Color(color = 0xFF141414)
 
 private val vadretShapes = Shapes(
     medium = RoundedCornerShape(size = 2.dp),
@@ -49,8 +54,6 @@ private val vadretTypography = Typography(
 )
 private val mutedText = Color(color = 0xFF5A5E6B)
 private val darkText = Color(color = 0xFF1B1C21)
-private val lightText = Color(color = 0xFFE6E6E6)
-private val lightHint = Color(color = 0xFFCECECE)
 
 private val lightScheme: ColorScheme = lightColorScheme(
     primary = lightAccent,
@@ -58,7 +61,7 @@ private val lightScheme: ColorScheme = lightColorScheme(
     primaryContainer = lightAccent,
     onPrimaryContainer = Color.White,
     secondaryContainer = Color(color = 0xFFE3E6F8),
-    onSecondaryContainer = darkText,
+    onSecondaryContainer = lightAccent,
     background = Color(color = 0xFFF3F4F8),
     onBackground = darkText,
     surface = Color.White,
@@ -74,35 +77,35 @@ private val lightScheme: ColorScheme = lightColorScheme(
 )
 
 private val darkScheme: ColorScheme = darkColorScheme(
-    primary = accent,
-    onPrimary = Color.White,
-    primaryContainer = accent,
-    onPrimaryContainer = Color.White,
-    secondaryContainer = Color(color = 0xFF4A4F66),
-    onSecondaryContainer = lightText,
-    background = Color(color = 0xFF373737),
+    primary = darkAccent,
+    onPrimary = Color(color = 0xFF141833),
+    primaryContainer = darkAccentContainer,
+    onPrimaryContainer = Color(color = 0xFFE6E9F2),
+    secondaryContainer = darkAccentContainer,
+    onSecondaryContainer = darkAccent,
+    background = Color(color = 0xFF111318),
     onBackground = lightText,
-    surface = Color(color = 0xFF3D3D3D),
+    surface = darkSurface,
     onSurface = lightText,
-    onSurfaceVariant = lightHint,
-    surfaceContainer = Color(color = 0xFF3D3D3D),
-    surfaceContainerLow = Color(color = 0xFF585858)
+    onSurfaceVariant = Color(color = 0xFFA3A7B5),
+    outline = Color(color = 0xFF353946),
+    outlineVariant = Color(color = 0xFF2A2D37),
+    surfaceContainerLowest = darkSurface,
+    surfaceContainerLow = darkSurface,
+    surfaceContainer = darkSurface,
+    surfaceContainerHigh = darkSurface,
+    surfaceContainerHighest = Color(color = 0xFF2A2E3A)
 )
 
-private val amoledScheme: ColorScheme = darkColorScheme(
-    primary = accent,
-    onPrimary = Color.White,
-    primaryContainer = accent,
-    onPrimaryContainer = Color.White,
-    secondaryContainer = Color(color = 0xFF2A2D3A),
-    onSecondaryContainer = lightText,
+private val amoledScheme: ColorScheme = darkScheme.copy(
     background = Color.Black,
-    onBackground = lightText,
     surface = Color.Black,
-    onSurface = lightText,
-    onSurfaceVariant = lightHint,
+    outline = Color(color = 0xFF333333),
+    outlineVariant = Color(color = 0xFF262626),
+    surfaceContainerLowest = Color.Black,
+    surfaceContainerLow = amoledSurfaceContainer,
     surfaceContainer = Color.Black,
-    surfaceContainerLow = Color(color = 0xFF141414)
+    surfaceContainerHigh = amoledSurfaceContainer
 )
 
 @Composable
@@ -112,6 +115,7 @@ fun VadretTheme(
 ) {
     CompositionLocalProvider(
         LocalVadretColors provides theme.toVadretColors(),
+        LocalVadretIsDark provides theme.isDark(),
         LocalVadretSpacing provides VadretSpacing(),
         LocalVadretTextStyles provides VadretTextStyles()
     ) {
@@ -145,6 +149,11 @@ object VadretTheme {
         @Composable
         @ReadOnlyComposable
         get() = LocalVadretColors.current
+
+    val isDark: Boolean
+        @Composable
+        @ReadOnlyComposable
+        get() = LocalVadretIsDark.current
 
     val spacing: VadretSpacing
         @Composable

@@ -47,14 +47,20 @@ class WindRasterTest {
 
     @Test
     fun `an even field is even everywhere`() {
-        val windFieldValues: WindFieldValues = windRaster.render(windFrame = frame(windSpeeds = List(size = 4) { 7f }))
+        val windFieldValues: WindFieldValues = windRaster.render(
+            windFrame = frame(windSpeeds = List(size = 4) { 7f }),
+            windPalette = WindPalette.DAY
+        )
 
         assertTrue(actual = windFieldValues.speeds.all { speed: Float -> abs(x = speed - 7f) < TOLERANCE })
     }
 
     @Test
     fun `speeds blend between the west and east edges`() {
-        val windFieldValues: WindFieldValues = windRaster.render(windFrame = frame(windSpeeds = listOf(0f, 10f, 0f, 10f)))
+        val windFieldValues: WindFieldValues = windRaster.render(
+            windFrame = frame(windSpeeds = listOf(0f, 10f, 0f, 10f)),
+            windPalette = WindPalette.DAY
+        )
         val row: Int = windRaster.height / 2
 
         val west: Float = windFieldValues.speeds[row * RASTER_WIDTH]
@@ -66,7 +72,10 @@ class WindRasterTest {
 
     @Test
     fun `wind from the north blows south`() {
-        val windFieldValues: WindFieldValues = windRaster.render(windFrame = frame(windSpeeds = List(size = 4) { 5f }))
+        val windFieldValues: WindFieldValues = windRaster.render(
+            windFrame = frame(windSpeeds = List(size = 4) { 5f }),
+            windPalette = WindPalette.DAY
+        )
         val pixel: Int = windRaster.height / 2 * RASTER_WIDTH + RASTER_WIDTH / 2
 
         assertEquals(expected = 0f, actual = windFieldValues.eastward[pixel], absoluteTolerance = TOLERANCE)
@@ -79,7 +88,8 @@ class WindRasterTest {
             windFrame = frame(
                 windSpeeds = List(size = 4) { 5f },
                 windFromDirections = List(size = 4) { 270f }
-            )
+            ),
+            windPalette = WindPalette.DAY
         )
         val pixel: Int = windRaster.height / 2 * RASTER_WIDTH + RASTER_WIDTH / 2
 
@@ -99,7 +109,10 @@ class WindRasterTest {
 
         val windFieldValues: WindFieldValues = threeColumnGrid
             .toWindRaster(width = RASTER_WIDTH)
-            .render(windFrame = frame(windSpeeds = listOf(Float.NaN, 5f, 5f, 5f, 5f, 5f)))
+            .render(
+                windFrame = frame(windSpeeds = listOf(Float.NaN, 5f, 5f, 5f, 5f, 5f)),
+                windPalette = WindPalette.DAY
+            )
 
         assertTrue(actual = windFieldValues.speeds.any { speed: Float -> speed.isNaN() })
         assertTrue(actual = windFieldValues.speeds.any { speed: Float -> !speed.isNaN() })
@@ -119,7 +132,10 @@ class WindRasterTest {
 
         val windFieldValues: WindFieldValues = smallGrid
             .toWindRaster(width = RASTER_WIDTH)
-            .render(windFrame = frame(windSpeeds = List(size = 4) { 3f }))
+            .render(
+                windFrame = frame(windSpeeds = List(size = 4) { 3f }),
+                windPalette = WindPalette.DAY
+            )
 
         assertTrue(actual = windFieldValues.speeds.first().isNaN())
         assertTrue(actual = windFieldValues.speeds.any { speed: Float -> speed == 3f })
@@ -131,7 +147,8 @@ class WindRasterTest {
             windFrame = frame(
                 windSpeeds = List(size = 4) { 4f },
                 windFromDirections = List(size = 4) { 270f }
-            )
+            ),
+            windPalette = WindPalette.DAY
         )
 
         val windAtLocation: WindAtLocation? = windFieldValues.windAt(latitude = 59.33, longitude = 18.07)
@@ -143,7 +160,10 @@ class WindRasterTest {
 
     @Test
     fun `wind outside the radar area is unknown`() {
-        val windFieldValues: WindFieldValues = windRaster.render(windFrame = frame(windSpeeds = List(size = 4) { 4f }))
+        val windFieldValues: WindFieldValues = windRaster.render(
+            windFrame = frame(windSpeeds = List(size = 4) { 4f }),
+            windPalette = WindPalette.DAY
+        )
 
         assertNull(actual = windFieldValues.windAt(latitude = 45.0, longitude = 18.0))
     }

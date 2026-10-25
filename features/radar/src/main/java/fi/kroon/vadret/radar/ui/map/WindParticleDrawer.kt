@@ -1,7 +1,6 @@
 package fi.kroon.vadret.radar.ui.map
 
 import android.graphics.Canvas
-import android.graphics.Color
 import android.graphics.Paint
 import android.os.Build
 import fi.kroon.vadret.radar.wind.RasterArea
@@ -15,16 +14,15 @@ import kotlin.random.Random
 
 private const val PARTICLES_PER_SQUARE_DP = 900f / (360f * 645f)
 private const val MAXIMUM_PARTICLE_COUNT = 1800
-private const val PARTICLE_ALPHA = 0.85f
+private const val DAY_PARTICLE_COLOR = 0xD9FFFFFF.toInt()
 private const val TRAIL_FADE = 0.88f
 private const val SCREEN_DP_PER_METER_PER_SECOND = 0.12f
 private const val LINE_WIDTH_DP = 1f
 private const val FLOATS_PER_SEGMENT = 4
 private const val VERTICES_PER_SEGMENT = 6
 private const val FLOATS_PER_VERTEX = 2
-private const val FULL_ALPHA = 255
 private const val ALPHA_SHIFT = 24
-private const val WHITE_RGB = 0x00FFFFFF
+private const val RGB_MASK = 0x00FFFFFF
 private const val HALF = 2f
 
 internal class WindParticleDrawer(
@@ -32,6 +30,7 @@ internal class WindParticleDrawer(
 ) {
 
     var windField: WindField? = null
+    var particleColor: Int = DAY_PARTICLE_COLOR
 
     private var windParticles: WindParticles? = null
     private var segments: FloatArray = FloatArray(size = 0)
@@ -42,7 +41,6 @@ internal class WindParticleDrawer(
     private val halfLineWidth: Float = LINE_WIDTH_DP * density / HALF
     private val trianglePaint: Paint = Paint()
     private val linePaint: Paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = Color.WHITE
         strokeWidth = LINE_WIDTH_DP * density
     }
 
@@ -188,9 +186,9 @@ internal class WindParticleDrawer(
         return vertex + 1
     }
 
-    private fun trailColor(age: Int): Int = (trailAlpha(age = age) shl ALPHA_SHIFT) or WHITE_RGB
+    private fun trailColor(age: Int): Int = (trailAlpha(age = age) shl ALPHA_SHIFT) or (particleColor and RGB_MASK)
 
-    private fun trailAlpha(age: Int): Int = (FULL_ALPHA * PARTICLE_ALPHA * TRAIL_FADE.pow(age)).toInt()
+    private fun trailAlpha(age: Int): Int = ((particleColor ushr ALPHA_SHIFT) * TRAIL_FADE.pow(age)).toInt()
 
     private fun drawLines(
         canvas: Canvas,
@@ -205,7 +203,7 @@ internal class WindParticleDrawer(
                 segments[offset + 2] = rasterProjection.screenX(rasterX = particles.x(particle = particle, age = age))
                 segments[offset + 3] = rasterProjection.screenY(rasterY = particles.y(particle = particle, age = age))
             }
-            linePaint.alpha = trailAlpha(age = age)
+            linePaint.color = trailColor(age = age)
             canvas.drawLines(segments, linePaint)
         }
     }

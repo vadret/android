@@ -58,7 +58,7 @@ internal fun LocationChip(
             color = VadretTheme.colorScheme.surface,
             border = BorderStroke(
                 width = chipBorderWidth,
-                color = VadretTheme.colors.chipBorder
+                color = VadretTheme.colorScheme.outline
             ),
             modifier = Modifier.height(height = chipHeight)
         ) {

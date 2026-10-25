@@ -1,7 +1,6 @@
 package fi.kroon.vadret.radar.ui.map
 
 import android.graphics.Canvas
-import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.PointF
 import android.graphics.RectF
@@ -39,7 +38,6 @@ internal class LocationMarkerDrawer(
 
     private val labelBounds: RectF = RectF()
     private val borderPaint: Paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = Color.WHITE
         setShadowLayer(SHADOW_RADIUS_DP * density, 0f, SHADOW_OFFSET_DP * density, SHADOW_COLOR)
     }
     private val dotPaint: Paint = Paint(Paint.ANTI_ALIAS_FLAG)
@@ -51,8 +49,10 @@ internal class LocationMarkerDrawer(
 
     fun setColors(
         markerColor: Int,
+        surfaceColor: Int,
         labelTextColor: Int
     ) {
+        borderPaint.color = surfaceColor
         dotPaint.color = markerColor
         textPaint.color = labelTextColor
         arrow.setTint(markerColor)

@@ -22,6 +22,7 @@ import org.maplibre.android.maps.MapLibreMap
 import org.maplibre.android.maps.MapView
 import org.maplibre.android.maps.Style
 import org.maplibre.android.style.layers.Layer
+import org.maplibre.android.style.layers.PropertyFactory
 import org.maplibre.android.style.layers.SymbolLayer
 
 private const val MINIMUM_ZOOM_LEVEL = 4.0
@@ -30,6 +31,11 @@ private const val PRECIPITATION_LAYER_ID = "vadret-precipitation"
 private const val PRECIPITATION_OPACITY = 1f
 private const val WIND_LAYER_ID = "vadret-wind"
 private const val WIND_OPACITY = 0.8f
+private const val BACKGROUND_LAYER_ID = "background"
+private const val WATER_LAYER_ID = "water"
+private const val DARK_LAND_COLOR = "#181512"
+private const val DARK_WATER_COLOR = "#21364B"
+private const val DARK_LABEL_COLOR = "#FFFFFF"
 
 internal class RadarMapView(
     context: Context,
@@ -59,6 +65,7 @@ internal class RadarMapView(
     private var isMapLoaded: Boolean = false
     private var onMapLoaded: (() -> Unit)? = null
     private var map: MapLibreMap? = null
+    private var isDark: Boolean = false
 
     init {
         addView(mapView)
@@ -80,14 +87,20 @@ internal class RadarMapView(
         }
     }
 
-    fun setColors(
-        markerColor: Int,
-        labelTextColor: Int
-    ) {
+    fun setAppearance(radarMapAppearance: RadarMapAppearance) {
         locationMarkerDrawer.setColors(
-            markerColor = markerColor,
-            labelTextColor = labelTextColor
+            markerColor = radarMapAppearance.markerColor,
+            surfaceColor = radarMapAppearance.surfaceColor,
+            labelTextColor = radarMapAppearance.labelTextColor
         )
+        windParticleDrawer.particleColor = radarMapAppearance.particleColor
+        if (radarMapAppearance.isDark != isDark) {
+            isDark = radarMapAppearance.isDark
+            val readyMap: MapLibreMap? = map
+            if (readyMap != null) {
+                loadStyle(map = readyMap)
+            }
+        }
         overlayView.invalidate()
     }
 
@@ -150,9 +163,23 @@ internal class RadarMapView(
         overlayView.map = map
         map.addOnCameraMoveListener { overlayView.invalidate() }
         map.addOnCameraIdleListener { reportCameraIdle(map = map) }
-        map.setStyle(Style.Builder().fromUri("https://tiles.openfreemap.org/styles/positron")) { style: Style ->
+        loadStyle(map = map)
+    }
+
+    private fun loadStyle(map: MapLibreMap) {
+        precipitationLayer = null
+        windLayer = null
+        val styleUri: String = if (isDark) {
+            "https://tiles.openfreemap.org/styles/dark"
+        } else {
+            "https://tiles.openfreemap.org/styles/positron"
+        }
+        map.setStyle(Style.Builder().fromUri(styleUri)) { style: Style ->
             style.localizeLabels(language = resources.configuration.locales[0].language)
-            val labelLayerId: String? = style.layers.firstOrNull { styleLayer: Layer -> styleLayer is SymbolLayer }?.id
+            if (isDark) {
+                style.useDarkMapColors()
+            }
+            val labelLayerId: String? = style.labelLayerAboveBaseMap()
             precipitationLayer = RadarImageLayer(
                 style = style,
                 layerId = PRECIPITATION_LAYER_ID,
@@ -200,6 +227,20 @@ internal class RadarMapView(
         val radarCamera: RadarCamera = map.cameraPosition.toRadarCamera() ?: return
         onCameraIdle(radarCamera)
     }
+}
+
+private fun Style.labelLayerAboveBaseMap(): String? {
+    val styleLayers: List<Layer> = layers
+    val lastBaseMapIndex: Int = styleLayers.indexOfLast { styleLayer: Layer -> styleLayer !is SymbolLayer }
+    return styleLayers.getOrNull(index = lastBaseMapIndex + 1)?.id
+}
+
+private fun Style.useDarkMapColors() {
+    getLayer(BACKGROUND_LAYER_ID)?.setProperties(PropertyFactory.backgroundColor(DARK_LAND_COLOR))
+    getLayer(WATER_LAYER_ID)?.setProperties(PropertyFactory.fillColor(DARK_WATER_COLOR))
+    layers
+        .filterIsInstance<SymbolLayer>()
+        .forEach { symbolLayer: SymbolLayer -> symbolLayer.setProperties(PropertyFactory.textColor(DARK_LABEL_COLOR)) }
 }
 
 private fun createMapView(context: Context): MapView {

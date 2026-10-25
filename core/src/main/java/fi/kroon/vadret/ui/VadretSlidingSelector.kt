@@ -54,9 +54,10 @@ fun VadretSlidingSelector(
     role: Role,
     modifier: Modifier = Modifier,
     isEqualWidth: Boolean = false,
+    unselectedContentColor: Color = VadretTheme.colorScheme.onSurfaceVariant,
     optionContent: @Composable RowScope.(index: Int, contentColor: Color) -> Unit
 ) {
-    val indicatorColor: Color = VadretTheme.colorScheme.primary
+    val indicatorColor: Color = VadretTheme.colorScheme.primaryContainer
     val optionBounds: SnapshotStateList<OptionBounds?> = remember(optionCount) {
         mutableStateListOf<OptionBounds?>().apply { repeat(times = optionCount) { add(null) } }
     }
@@ -99,9 +100,9 @@ fun VadretSlidingSelector(
             val isSelected: Boolean = index == selectedIndex
             val contentColor: Color by animateColorAsState(
                 targetValue = if (isSelected) {
-                    VadretTheme.colorScheme.onPrimary
+                    VadretTheme.colorScheme.onPrimaryContainer
                 } else {
-                    VadretTheme.colorScheme.onSurfaceVariant
+                    unselectedContentColor
                 },
                 label = "selectorContent"
             )

@@ -53,7 +53,7 @@ internal fun VadretNavigationBar(
         modifier = modifier.fillMaxWidth()
     ) {
         Column(modifier = Modifier.windowInsetsPadding(insets = WindowInsets.navigationBars)) {
-            HorizontalDivider(color = VadretTheme.colors.cardBorder)
+            HorizontalDivider(color = VadretTheme.colorScheme.outlineVariant)
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -138,7 +138,7 @@ private fun navigationItemColors(isSelected: Boolean): NavigationItemColors =
     if (isSelected) {
         NavigationItemColors(
             indicator = VadretTheme.colorScheme.secondaryContainer,
-            icon = VadretTheme.colorScheme.primary,
+            icon = VadretTheme.colorScheme.onSecondaryContainer,
             label = VadretTheme.colorScheme.onSurface,
             labelStyle = VadretTheme.textStyles.labelStrong
         )

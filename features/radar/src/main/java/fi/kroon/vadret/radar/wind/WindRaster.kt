@@ -32,7 +32,10 @@ internal class WindRaster(
     private val weights: FloatArray
 ) {
 
-    fun render(windFrame: WindFrame): WindFieldValues {
+    fun render(
+        windFrame: WindFrame,
+        windPalette: WindPalette
+    ): WindFieldValues {
         val pointCount: Int = windFrame.windSpeeds.size
         val pointSpeeds = FloatArray(size = pointCount) { index: Int -> windFrame.windSpeeds[index] }
         val pointEastward = FloatArray(size = pointCount)
@@ -55,7 +58,10 @@ internal class WindRaster(
                 if (speed.isNaN()) {
                     TRANSPARENT
                 } else {
-                    WindColorScale.argb(windSpeed = speed)
+                    WindColorScale.argb(
+                        windSpeed = speed,
+                        windPalette = windPalette
+                    )
                 }
             }
         )

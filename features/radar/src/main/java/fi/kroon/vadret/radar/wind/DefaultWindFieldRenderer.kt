@@ -22,10 +22,14 @@ internal class DefaultWindFieldRenderer(
 
     override suspend fun render(
         windGrid: WindGrid,
-        windFrame: WindFrame
+        windFrame: WindFrame,
+        windPalette: WindPalette
     ): WindField =
         withContext(context = coroutineDispatcher) {
-            val windFieldValues: WindFieldValues = windRaster(windGrid = windGrid).render(windFrame = windFrame)
+            val windFieldValues: WindFieldValues = windRaster(windGrid = windGrid).render(
+                windFrame = windFrame,
+                windPalette = windPalette
+            )
             WindField(
                 values = windFieldValues,
                 bitmap = Bitmap.createBitmap(

@@ -1,5 +1,6 @@
 package fi.kroon.vadret.radar.ui
 
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -13,6 +14,7 @@ import androidx.compose.material3.HorizontalFloatingToolbar
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -57,7 +59,8 @@ internal fun RadarLayerToolbar(
             selectedIndex = selectedLayer.ordinal,
             onOptionSelected = { index: Int -> onLayerSelected(RadarLayer.entries[index]) },
             role = Role.RadioButton,
-            modifier = Modifier.fillMaxHeight()
+            modifier = Modifier.fillMaxHeight(),
+            unselectedContentColor = VadretTheme.colorScheme.onSurface
         ) { index: Int, contentColor: Color ->
             LayerLabel(
                 layer = RadarLayer.entries[index],
@@ -75,6 +78,14 @@ private fun LayerLabel(
     contentColor: Color,
     modifier: Modifier = Modifier
 ) {
+    val iconTint: Color by animateColorAsState(
+        targetValue = if (isSelected) {
+            VadretTheme.colorScheme.onPrimaryContainer
+        } else {
+            VadretTheme.colorScheme.onSurfaceVariant
+        },
+        label = "layerIcon"
+    )
     Row(
         horizontalArrangement = Arrangement.spacedBy(space = layerIconGap),
         verticalAlignment = Alignment.CenterVertically,
@@ -83,7 +94,7 @@ private fun LayerLabel(
         Icon(
             painter = painterResource(id = layer.iconResourceId(isSelected = isSelected)),
             contentDescription = null,
-            tint = contentColor,
+            tint = iconTint,
             modifier = Modifier.size(size = layerIconSize)
         )
         Text(

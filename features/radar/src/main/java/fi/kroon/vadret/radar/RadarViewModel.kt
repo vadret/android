@@ -13,6 +13,7 @@ import fi.kroon.vadret.radar.model.RadarLayer
 import fi.kroon.vadret.radar.model.WindTimeFrame
 import fi.kroon.vadret.radar.wind.WindField
 import fi.kroon.vadret.radar.wind.WindFieldRenderer
+import fi.kroon.vadret.radar.wind.WindPalette
 import fi.kroon.vadret.ui.extension.launchReplacing
 import fi.kroon.vadret.ui.extension.messageResourceId
 import fi.kroon.vadret.wind.model.WindForecast
@@ -58,6 +59,7 @@ class RadarViewModel internal constructor(
     private val isStarted: AtomicBoolean = AtomicBoolean(value = false)
     private val isWindRequested: AtomicBoolean = AtomicBoolean(value = false)
     private val locale: AtomicReference<Locale> = AtomicReference(value = Locale.getDefault())
+    private val windPalette: AtomicReference<WindPalette> = AtomicReference(value = WindPalette.DAY)
     private val radar: AtomicReference<Radar?> = AtomicReference(value = null)
     private val windForecast: AtomicReference<WindForecast?> = AtomicReference(value = null)
     private val playJob: AtomicReference<Job?> = AtomicReference(value = null)
@@ -68,6 +70,8 @@ class RadarViewModel internal constructor(
             RadarEvent.OnStart -> onStart()
 
             is RadarEvent.OnLocaleChanged -> onLocaleChanged(locale = event.locale)
+
+            is RadarEvent.OnDarkThemeChanged -> onDarkThemeChanged(isDarkTheme = event.isDarkTheme)
 
             RadarEvent.OnMapLoaded -> state.update { state: RadarState ->
                 state.copy(isMapLoaded = true)
@@ -128,6 +132,20 @@ class RadarViewModel internal constructor(
                     windFrames = windForecast.load()?.toTimeFrames() ?: state.windFrames
                 )
             }
+        }
+    }
+
+    private fun onDarkThemeChanged(isDarkTheme: Boolean) {
+        val palette: WindPalette = if (isDarkTheme) {
+            WindPalette.NIGHT
+        } else {
+            WindPalette.DAY
+        }
+        if (windPalette.exchange(newValue = palette) == palette || state.value.windField == null) {
+            return
+        }
+        viewModelScope.launch(context = coroutineDispatcher) {
+            loadWindFrame(index = state.value.windIndex)
         }
     }
 
@@ -262,7 +280,8 @@ class RadarViewModel internal constructor(
         val windFrame: WindFrame = forecast.frames.getOrNull(index = index) ?: return false
         val windField: WindField = windFieldRenderer.render(
             windGrid = forecast.grid,
-            windFrame = windFrame
+            windFrame = windFrame,
+            windPalette = windPalette.load()
         )
         state.update { state: RadarState ->
             state.copy(

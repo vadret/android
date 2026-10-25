@@ -33,7 +33,7 @@ internal fun RadarSlider(
     modifier: Modifier = Modifier
 ) {
     val activeColor: Color = VadretTheme.colorScheme.primary
-    val inactiveColor: Color = VadretTheme.colorScheme.secondaryContainer
+    val inactiveColor: Color = VadretTheme.colorScheme.surfaceContainerHighest
     val sliderState: SliderState = remember(valueRange) {
         SliderState(
             value = value,

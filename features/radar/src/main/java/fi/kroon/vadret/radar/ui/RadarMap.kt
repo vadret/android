@@ -14,6 +14,7 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.viewinterop.AndroidView
 import fi.kroon.vadret.location.model.Location
 import fi.kroon.vadret.radar.model.RadarLayer
+import fi.kroon.vadret.radar.ui.map.RadarMapAppearance
 import fi.kroon.vadret.radar.ui.map.RadarMapStore
 import fi.kroon.vadret.radar.ui.map.RadarMapView
 import fi.kroon.vadret.radar.wind.WindAtLocation
@@ -21,6 +22,8 @@ import fi.kroon.vadret.radar.wind.WindField
 import fi.kroon.vadret.ui.VadretTheme
 
 private const val PARTICLE_FRAME_NANOS = 33_000_000L
+private const val DAY_PARTICLE_COLOR = 0xD9FFFFFF.toInt()
+private const val NIGHT_PARTICLE_COLOR = 0xB3D2DCFF.toInt()
 
 @Composable
 internal fun RadarMap(
@@ -34,8 +37,18 @@ internal fun RadarMap(
     modifier: Modifier = Modifier
 ) {
     val radarMapStore: RadarMapStore = LocalRadarMapStore.current
-    val markerColor: Int = VadretTheme.colorScheme.primary.toArgb()
-    val labelTextColor: Int = VadretTheme.colors.onMapLabel.toArgb()
+    val isDark: Boolean = VadretTheme.isDark
+    val radarMapAppearance = RadarMapAppearance(
+        isDark = isDark,
+        markerColor = VadretTheme.colorScheme.primary.toArgb(),
+        surfaceColor = VadretTheme.colorScheme.surface.toArgb(),
+        labelTextColor = VadretTheme.colorScheme.onSurface.toArgb(),
+        particleColor = if (isDark) {
+            NIGHT_PARTICLE_COLOR
+        } else {
+            DAY_PARTICLE_COLOR
+        }
+    )
     val currentOnMapLoaded: () -> Unit by rememberUpdatedState(newValue = onMapLoaded)
     val radarMapView: RadarMapView = remember(radarMapStore) { radarMapStore.radarMapView() }
     MapShownEffect(
@@ -51,10 +64,7 @@ internal fun RadarMap(
     AndroidView(
         factory = { radarMapView },
         update = { view: RadarMapView ->
-            view.setColors(
-                markerColor = markerColor,
-                labelTextColor = labelTextColor
-            )
+            view.setAppearance(radarMapAppearance = radarMapAppearance)
             view.show(
                 layer = layer,
                 precipitationOverlay = precipitationOverlay,
