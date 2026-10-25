@@ -9,9 +9,23 @@
 # Vädret
 A simple weather app that uses the Swedish weather service [SMHI](https://opendata-download-metfcst.smhi.se/) to fetch weather data, and [Krisinformation](https://www.krisinformation.se/en) for emergency information from Swedish authorities. MVI written entirely in Kotlin. Icons used in this project can be found [here](https://github.com/vadret/assets). The data is licensed under [Creative commons Erkännande 4.0 SE](https://www.smhi.se/klimatdata/oppna-data/information-om-oppna-data/villkor-for-anvandning-1.30622).
 
-![Weather](https://raw.githubusercontent.com/vadret/android/master/assets/weather.png)
-![Warning](https://raw.githubusercontent.com/vadret/android/master/assets/warning.png)
-![Radar](https://raw.githubusercontent.com/vadret/android/master/assets/radar.png)
+**Light mode**
+
+<p>
+  <img src="assets/screenshots/weather-light.webp" width="24%" alt="Weather in light mode">
+  <img src="assets/screenshots/warnings-light.webp" width="24%" alt="Warnings in light mode">
+  <img src="assets/screenshots/radar-precipitation-light.webp" width="24%" alt="Radar with precipitation in light mode">
+  <img src="assets/screenshots/radar-wind-light.webp" width="24%" alt="Radar with wind in light mode">
+</p>
+
+**Dark mode**
+
+<p>
+  <img src="assets/screenshots/weather-dark.webp" width="24%" alt="Weather in dark mode">
+  <img src="assets/screenshots/warnings-dark.webp" width="24%" alt="Warnings in dark mode">
+  <img src="assets/screenshots/radar-precipitation-dark.webp" width="24%" alt="Radar with precipitation in dark mode">
+  <img src="assets/screenshots/radar-wind-dark.webp" width="24%" alt="Radar with wind in dark mode">
+</p>
 
 ## Download app
 
