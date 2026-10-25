@@ -7,7 +7,12 @@ import androidx.compose.ui.graphics.Color
 data class VadretColors(
     val divider: Color,
     val icon: Color,
+    val precipitation: Color,
     val accent: Color = lightAccent,
+    val temperatureCold: Color = Color(color = 0xFF5AA9D6),
+    val temperatureCool: Color = Color(color = 0xFF7F8EEE),
+    val temperatureMild: Color = Color(color = 0xFFA58AD8),
+    val temperatureWarm: Color = Color(color = 0xFFE8A35A),
     val warningMessage: Color = Color(color = 0xFFDFE3F3),
     val onWarningMessage: Color = Color(color = 0xFF263056),
     val warningYellow: Color = Color(color = 0xFFFFE27A),
@@ -30,15 +35,18 @@ data class VadretColors(
 
 internal val lightVadretColors: VadretColors = VadretColors(
     divider = Color(color = 0xFFEEF0F4),
-    icon = Color(color = 0xFF4A4F5E)
+    icon = Color(color = 0xFF4A4F5E),
+    precipitation = Color(color = 0xFF2F6FE0)
 )
 
 internal val darkVadretColors: VadretColors = VadretColors(
     divider = Color(color = 0xFF262933),
-    icon = Color(color = 0xFFC4C8D4)
+    icon = Color(color = 0xFFC4C8D4),
+    precipitation = Color(color = 0xFF7FB0FF)
 )
 
 internal val amoledVadretColors: VadretColors = VadretColors(
     divider = Color(color = 0xFF1E1E1E),
-    icon = Color(color = 0xFFC4C8D4)
+    icon = Color(color = 0xFFC4C8D4),
+    precipitation = Color(color = 0xFF7FB0FF)
 )

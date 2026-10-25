@@ -4,8 +4,11 @@ import fi.kroon.vadret.common.ErrorCode
 import fi.kroon.vadret.common.Failure
 import fi.kroon.vadret.core.R
 import fi.kroon.vadret.testing.FixedClock
+import fi.kroon.vadret.weatherforecast.model.ComingDay
 import fi.kroon.vadret.weatherforecast.model.FavoriteChoice
+import fi.kroon.vadret.weatherforecast.model.Forecast
 import fi.kroon.vadret.weatherforecast.model.ForecastDay
+import fi.kroon.vadret.weatherforecast.model.ForecastView
 import fi.kroon.vadret.weatherforecast.model.LocationChoices
 import fi.kroon.vadret.weatherforecast.model.SearchState
 import io.github.sphrak.either.extension.asLeft
@@ -26,9 +29,22 @@ import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import kotlin.time.Instant
+
+private val threeDays: List<Forecast> = listOf(
+    noon,
+    noon.copy(
+        validAt = Instant.parse(input = "2026-10-25T12:00:00Z"),
+        intervalStartedAt = Instant.parse(input = "2026-10-25T11:00:00Z")
+    ),
+    noon.copy(
+        validAt = Instant.parse(input = "2026-10-26T12:00:00Z"),
+        intervalStartedAt = Instant.parse(input = "2026-10-26T11:00:00Z")
+    )
+)
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class WeatherForecastViewModelTest {
@@ -324,5 +340,125 @@ class WeatherForecastViewModelTest {
             advanceUntilIdle()
 
             assertEquals(expected = before, actual = weatherForecastViewModel.state.value)
+        }
+
+    @Test
+    fun `days is the default view and hours can be picked`() =
+        testScope.runTest {
+            assertEquals(expected = ForecastView.DAYS, actual = weatherForecastViewModel.state.value.forecastView)
+
+            weatherForecastViewModel.onEvent(event = WeatherForecastEvent.OnForecastViewSelected(forecastView = ForecastView.HOURS))
+            advanceUntilIdle()
+            assertEquals(expected = ForecastView.HOURS, actual = weatherForecastViewModel.state.value.forecastView)
+
+            weatherForecastViewModel.onEvent(event = WeatherForecastEvent.OnForecastViewSelected(forecastView = ForecastView.DAYS))
+            advanceUntilIdle()
+            assertEquals(expected = ForecastView.DAYS, actual = weatherForecastViewModel.state.value.forecastView)
+        }
+
+    @Test
+    fun `a toggled day opens and closes again`() =
+        testScope.runTest {
+            weatherForecastViewModel.onEvent(event = WeatherForecastEvent.OnShown)
+            advanceUntilIdle()
+
+            weatherForecastViewModel.onEvent(event = WeatherForecastEvent.OnDayToggled(dayKey = "coming-day-2026-10-24"))
+            advanceUntilIdle()
+            assertEquals(expected = listOf(true), actual = expansion())
+            assertTrue(actual = weatherForecastViewModel.state.value.isEveryDayExpanded)
+
+            weatherForecastViewModel.onEvent(event = WeatherForecastEvent.OnDayToggled(dayKey = "coming-day-2026-10-24"))
+            advanceUntilIdle()
+            assertEquals(expected = listOf(false), actual = expansion())
+            assertFalse(actual = weatherForecastViewModel.state.value.isEveryDayExpanded)
+        }
+
+    @Test
+    fun `expand all opens every day and then closes them all`() =
+        testScope.runTest {
+            weatherForecastRepository.forecasts = threeDays.asRight()
+            weatherForecastViewModel.onEvent(event = WeatherForecastEvent.OnShown)
+            advanceUntilIdle()
+            weatherForecastViewModel.onEvent(event = WeatherForecastEvent.OnDayToggled(dayKey = "coming-day-2026-10-25"))
+            advanceUntilIdle()
+            assertFalse(actual = weatherForecastViewModel.state.value.isEveryDayExpanded)
+
+            weatherForecastViewModel.onEvent(event = WeatherForecastEvent.OnAllDaysToggled)
+            advanceUntilIdle()
+            assertEquals(expected = listOf(true, true, true), actual = expansion())
+            assertTrue(actual = weatherForecastViewModel.state.value.isEveryDayExpanded)
+
+            weatherForecastViewModel.onEvent(event = WeatherForecastEvent.OnAllDaysToggled)
+            advanceUntilIdle()
+            assertEquals(expected = listOf(false, false, false), actual = expansion())
+            assertFalse(actual = weatherForecastViewModel.state.value.isEveryDayExpanded)
+        }
+
+    @Test
+    fun `expand all without a forecast opens nothing`() =
+        testScope.runTest {
+            weatherForecastViewModel.onEvent(event = WeatherForecastEvent.OnAllDaysToggled)
+            advanceUntilIdle()
+
+            assertEquals(expected = emptyList(), actual = expansion())
+            assertFalse(actual = weatherForecastViewModel.state.value.isEveryDayExpanded)
+        }
+
+    @Test
+    fun `a refresh keeps the open days`() =
+        testScope.runTest {
+            weatherForecastRepository.forecasts = threeDays.asRight()
+            weatherForecastViewModel.onEvent(event = WeatherForecastEvent.OnShown)
+            advanceUntilIdle()
+            weatherForecastViewModel.onEvent(event = WeatherForecastEvent.OnDayToggled(dayKey = "coming-day-2026-10-25"))
+            advanceUntilIdle()
+
+            weatherForecastViewModel.onEvent(event = WeatherForecastEvent.OnRefresh)
+            advanceUntilIdle()
+
+            assertEquals(expected = 2, actual = weatherForecastRepository.requestedCoordinates.size)
+            assertEquals(expected = listOf(false, true, false), actual = expansion())
+        }
+
+    @Test
+    fun `another place starts with every day closed`() =
+        testScope.runTest {
+            favoriteRepository.favorites.value = listOf(kirunaFavorite)
+            weatherForecastViewModel.onEvent(event = WeatherForecastEvent.OnShown)
+            advanceUntilIdle()
+            weatherForecastViewModel.onEvent(event = WeatherForecastEvent.OnAllDaysToggled)
+            advanceUntilIdle()
+
+            weatherForecastViewModel.onEvent(event = WeatherForecastEvent.OnFavoriteClicked(favorite = kirunaFavorite))
+            advanceUntilIdle()
+
+            assertEquals(expected = "Kiruna", actual = weatherForecastViewModel.state.value.localityName)
+            assertEquals(expected = listOf(false), actual = expansion())
+            assertFalse(actual = weatherForecastViewModel.state.value.isEveryDayExpanded)
+        }
+
+    @Test
+    fun `a new language keeps the open days`() =
+        testScope.runTest {
+            weatherForecastViewModel.onEvent(event = WeatherForecastEvent.OnLocaleChanged(locale = Locale.ENGLISH))
+            weatherForecastViewModel.onEvent(event = WeatherForecastEvent.OnShown)
+            advanceUntilIdle()
+            weatherForecastViewModel.onEvent(event = WeatherForecastEvent.OnAllDaysToggled)
+            advanceUntilIdle()
+
+            weatherForecastViewModel.onEvent(event = WeatherForecastEvent.OnLocaleChanged(locale = Locale.forLanguageTag("sv-SE")))
+            advanceUntilIdle()
+
+            assertEquals(
+                expected = "Lör",
+                actual = weatherForecastViewModel.state.value.forecast.comingDays.single().weekdayText
+            )
+            assertEquals(expected = listOf(true), actual = expansion())
+            assertTrue(actual = weatherForecastViewModel.state.value.isEveryDayExpanded)
+        }
+
+    private fun expansion(): List<Boolean> =
+        weatherForecastViewModel.state.value.forecast.comingDays.map { comingDay: ComingDay ->
+            comingDay.isExpanded
         }
 }

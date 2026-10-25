@@ -39,19 +39,8 @@
     <string name="wsymb2_moderate_snowfall">Moderate snowfall</string>
     <string name="wsymb2_heavy_snowfall">Heavy snowfall</string>
 
-    <string name="ws_with">with</string>
-    <string name="ws_mostly">mostly</string>
     <string name="ws_today">Today</string>
     <string name="ws_winds">winds</string>
-    <string name="ws_wind">wind</string>
-
-    <string name="ws_calm">calm</string>
-    <string name="ws_weak">weak</string>
-    <string name="ws_moderate">moderate</string>
-    <string name="ws_fresh">fresh</string>
-    <string name="ws_strong">strong</string>
-    <string name="ws_windstorms">storm</string>
-    <string name="ws_hurricanes">hurricane</string>
 
     <!-- Test strings -->
     <string name="test_locality_name" translatable="false">Norrköping Test</string>
@@ -87,18 +76,6 @@
     <string name="empty_wind_direction" translatable="false"></string>
 
     <string name="no_url_available">No URL available</string>
-    <string name="prsort_snow">Snow</string>
-    <string name="prsort_snow_and_rain">Snow and rain</string>
-    <string name="prsort_rain">Rain</string>
-    <string name="prsort_drizzle">Drizzle</string>
-    <string name="prsort_freezing_rain">Freezing rain</string>
-    <string name="prsort_freezing_drizzle">Freezing drizzle</string>
-    <string name="prsort_thunderstorm">Thunderstorm</string>
-    <string name="prsort_mixed_ice">Mixed/ice</string>
-    <string name="prsort_wet_snow">Wet snow</string>
-    <string name="prsort_ice_pellets">Ice pellets</string>
-    <string name="prsort_graupel">Graupel</string>
-    <string name="prsort_hail">Hail</string>
 
     <string name="io_exception" translatable="false">IOException</string>
     <string name="network_failure">Network Failure</string>
@@ -132,9 +109,6 @@
 
     <string name="sunset">Sunset</string>
     <string name="sunrise">Sunrise</string>
-
-    <string name="sun_wont_rise_today">Sun won\'t rise today</string>
-    <string name="sun_wont_set_today">Sun won\'t set today</string>
 
     <string name="percent" translatable="false">%</string>
     <string name="m_s" translatable="false">m/s</string>
@@ -249,8 +223,6 @@
     <string name="remove_favorite">Remove %1$s</string>
     <string name="selected">Selected</string>
     <string name="humidity">Humidity</string>
-    <string name="precipitation_short">Precip.</string>
-    <string name="precipitation_none">None</string>
     <string name="filter_warnings">Filter warnings</string>
     <string name="warning_level_message">Message</string>
     <string name="warning_level_yellow">Yellow warning</string>
@@ -270,4 +242,18 @@
     <string name="pause">Pause</string>
     <string name="no_wind_available">No wind forecast available</string>
     <string name="licenses_intro">Vädret is built with the following open source projects.</string>
+    <string name="forecast_days">Days</string>
+    <string name="forecast_hours">Hours</string>
+    <string name="today">Today</string>
+    <string name="expand_all">Expand all</string>
+    <string name="collapse_all">Collapse all</string>
+    <string name="expanded">Expanded</string>
+    <string name="collapsed">Collapsed</string>
+    <string name="polar_night">Polar night</string>
+    <string name="midnight_sun">Midnight sun</string>
+    <string name="millimeter" translatable="false">mm</string>
+    <plurals name="coming_days_title">
+        <item quantity="one">Next %d day</item>
+        <item quantity="other">Next %d days</item>
+    </plurals>
 </resources>

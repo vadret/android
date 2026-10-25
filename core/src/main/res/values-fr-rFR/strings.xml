@@ -31,12 +31,6 @@
     <string name="wsymb2_light_snowfall">Légère chute de neige</string>
     <string name="wsymb2_moderate_snowfall">Chutes de neige modérées</string>
     <string name="wsymb2_heavy_snowfall">Forte chute de neige</string>
-    <string name="prsort_snow">Neige</string>
-    <string name="prsort_snow_and_rain">Neige et pluie</string>
-    <string name="prsort_rain">Pluie</string>
-    <string name="prsort_drizzle">Crachin</string>
-    <string name="prsort_freezing_rain">Pluie verglaçante</string>
-    <string name="prsort_freezing_drizzle">Crachin verglaçant</string>
     <string name="io_exception">IOException</string>
     <string name="network_failure">Problème réseau</string>
     <string name="no_weather_available">Pas de météo disponible</string>
@@ -69,8 +63,6 @@
     <string name="remove_favorite">Supprimer %1$s</string>
     <string name="selected">Sélectionné</string>
     <string name="humidity">Humidité</string>
-    <string name="precipitation_short">Précip.</string>
-    <string name="precipitation_none">Aucune</string>
     <string name="precipitation">Précipitations</string>
     <string name="now">Maintenant</string>
     <string name="warning_level_yellow">Vigilance jaune</string>
@@ -78,4 +70,17 @@
     <string name="warning_level_red">Vigilance rouge</string>
     <string name="warning_level_message">Message</string>
     <string name="licenses_intro">Vädret est construit avec les projets open source suivants.</string>
+    <string name="forecast_days">Jours</string>
+    <string name="forecast_hours">Heures</string>
+    <string name="today">Aujourd\'hui</string>
+    <string name="expand_all">Tout développer</string>
+    <string name="collapse_all">Tout réduire</string>
+    <string name="expanded">Développé</string>
+    <string name="collapsed">Réduit</string>
+    <string name="polar_night">Nuit polaire</string>
+    <string name="midnight_sun">Soleil de minuit</string>
+    <plurals name="coming_days_title">
+        <item quantity="one">%d prochain jour</item>
+        <item quantity="other">%d prochains jours</item>
+    </plurals>
 </resources>

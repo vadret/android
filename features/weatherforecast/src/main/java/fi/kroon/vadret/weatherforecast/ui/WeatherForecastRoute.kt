@@ -28,8 +28,10 @@ import fi.kroon.vadret.ui.VadretTopAppBar
 import fi.kroon.vadret.weatherforecast.WeatherForecastEvent
 import fi.kroon.vadret.weatherforecast.WeatherForecastState
 import fi.kroon.vadret.weatherforecast.WeatherForecastViewModel
+import fi.kroon.vadret.weatherforecast.model.ComingDay
 import fi.kroon.vadret.weatherforecast.model.CurrentWeather
 import fi.kroon.vadret.weatherforecast.model.ForecastDay
+import fi.kroon.vadret.weatherforecast.model.ForecastView
 import fi.kroon.vadret.weatherforecast.model.SearchState
 import kotlinx.collections.immutable.ImmutableList
 import java.util.Locale
@@ -39,6 +41,9 @@ private const val CURRENT_WEATHER_KEY = "current-weather"
 private const val DAY_HEADER_KEY_PREFIX = "header-"
 private const val DAY_HEADER_CONTENT_TYPE = "day-header"
 private const val DAY_CONTENT_TYPE = "day"
+private const val FORECAST_VIEW_KEY = "forecast-view"
+private const val COMING_DAYS_HEADER_KEY = "coming-days-header"
+private const val COMING_DAYS_KEY = "coming-days"
 
 @Composable
 fun WeatherForecastRoute(
@@ -53,7 +58,6 @@ fun WeatherForecastRoute(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun WeatherForecastScreen(
     state: WeatherForecastState,
@@ -137,12 +141,74 @@ internal fun WeatherForecastScreen(
                         CurrentWeatherCard(currentWeather = currentWeather)
                     }
                 }
-                forecastDays(forecastDays = state.forecast.days)
+                forecast(
+                    state = state,
+                    onEvent = onEvent
+                )
             }
             if (state.isLoading) {
                 VadretProgressBar(modifier = Modifier.align(alignment = Alignment.TopCenter))
             }
         }
+    }
+}
+
+private fun LazyListScope.forecast(
+    state: WeatherForecastState,
+    onEvent: (WeatherForecastEvent) -> Unit
+) {
+    if (state.forecast.days.isEmpty()) {
+        return
+    }
+    item(
+        key = FORECAST_VIEW_KEY,
+        contentType = FORECAST_VIEW_KEY
+    ) {
+        ForecastViewSelector(
+            forecastView = state.forecastView,
+            onForecastViewSelected = { forecastView: ForecastView ->
+                onEvent(WeatherForecastEvent.OnForecastViewSelected(forecastView = forecastView))
+            }
+        )
+    }
+    when (state.forecastView) {
+        ForecastView.DAYS -> comingDays(
+            state = state,
+            onEvent = onEvent
+        )
+
+        ForecastView.HOURS -> forecastDays(forecastDays = state.forecast.days)
+    }
+}
+
+private fun LazyListScope.comingDays(
+    state: WeatherForecastState,
+    onEvent: (WeatherForecastEvent) -> Unit
+) {
+    val comingDays: ImmutableList<ComingDay> = state.forecast.comingDays
+    if (comingDays.isEmpty()) {
+        return
+    }
+    item(
+        key = COMING_DAYS_HEADER_KEY,
+        contentType = COMING_DAYS_HEADER_KEY
+    ) {
+        ComingDaysHeader(
+            dayCount = comingDays.size,
+            isEveryDayExpanded = state.isEveryDayExpanded,
+            onAllDaysToggled = { onEvent(WeatherForecastEvent.OnAllDaysToggled) }
+        )
+    }
+    item(
+        key = COMING_DAYS_KEY,
+        contentType = COMING_DAYS_KEY
+    ) {
+        ComingDaysCard(
+            comingDays = comingDays,
+            onDayToggled = { dayKey: String ->
+                onEvent(WeatherForecastEvent.OnDayToggled(dayKey = dayKey))
+            }
+        )
     }
 }
 

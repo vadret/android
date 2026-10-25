@@ -16,5 +16,7 @@ internal data class ForecastDataDto(
     @SerialName(value = "predominant_precipitation_type_at_surface")
     val precipitationType: Int,
     @SerialName(value = "symbol_code")
-    val symbolCode: Int
+    val symbolCode: Int,
+    @SerialName(value = "precipitation_amount_mean")
+    val precipitationAmountMean: Double? = null
 )

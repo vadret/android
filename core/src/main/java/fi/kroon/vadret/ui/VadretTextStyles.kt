@@ -24,8 +24,8 @@ private fun textStyle(
 @Immutable
 data class VadretTextStyles(
     val temperature: TextStyle = textStyle(
-        fontSize = 64,
-        lineHeight = 64,
+        fontSize = 52,
+        lineHeight = 52,
         fontWeight = FontWeight.Light
     ).copy(letterSpacing = (-2).sp),
     val title: TextStyle = textStyle(

@@ -28,12 +28,6 @@
     <string name="wsymb2_light_snowfall">Let snefald</string>
     <string name="wsymb2_moderate_snowfall">Moderat snefald</string>
     <string name="wsymb2_heavy_snowfall">Tungt snefald</string>
-    <string name="prsort_snow">Sne</string>
-    <string name="prsort_snow_and_rain">Sne og regn</string>
-    <string name="prsort_rain">Regn</string>
-    <string name="prsort_drizzle">Støvregn</string>
-    <string name="prsort_freezing_rain">Frysende regn</string>
-    <string name="prsort_freezing_drizzle">Frysning dyser</string>
     <string name="io_exception">IOException</string>
     <string name="network_failure">Netværksfejl</string>
     <string name="no_weather_available">Ingen vejr tilgængelig</string>
@@ -76,8 +70,6 @@
     <string name="remove_favorite">Fjern %1$s</string>
     <string name="selected">Valgt</string>
     <string name="humidity">Luftfugtighed</string>
-    <string name="precipitation_short">Nedbør</string>
-    <string name="precipitation_none">Ingen</string>
     <string name="precipitation">Nedbør</string>
     <string name="now">Nu</string>
     <string name="warning_level_yellow">Gul varsling</string>
@@ -85,4 +77,17 @@
     <string name="warning_level_red">Rød varsling</string>
     <string name="warning_level_message">Meddelelse</string>
     <string name="licenses_intro">Vädret er bygget med følgende open source-projekter.</string>
+    <string name="forecast_days">Dage</string>
+    <string name="forecast_hours">Timer</string>
+    <string name="today">I dag</string>
+    <string name="expand_all">Udvid alle</string>
+    <string name="collapse_all">Skjul alle</string>
+    <string name="expanded">Udvidet</string>
+    <string name="collapsed">Skjult</string>
+    <string name="polar_night">Polarnat</string>
+    <string name="midnight_sun">Midnatssol</string>
+    <plurals name="coming_days_title">
+        <item quantity="one">Næste %d dag</item>
+        <item quantity="other">Næste %d dage</item>
+    </plurals>
 </resources>

@@ -1,5 +1,6 @@
 package fi.kroon.vadret.weatherforecast
 
+import androidx.compose.runtime.Immutable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import fi.kroon.vadret.autocomplete.model.AutoCompleteItem
@@ -8,6 +9,10 @@ import fi.kroon.vadret.favorite.model.Favorite
 import fi.kroon.vadret.ui.extension.launchReplacing
 import fi.kroon.vadret.ui.extension.messageResourceId
 import fi.kroon.vadret.weatherforecast.extension.toWeatherForecast
+import fi.kroon.vadret.weatherforecast.extension.withComingDays
+import fi.kroon.vadret.weatherforecast.extension.withDayToggled
+import fi.kroon.vadret.weatherforecast.extension.withEveryDayExpanded
+import fi.kroon.vadret.weatherforecast.extension.withForecast
 import fi.kroon.vadret.weatherforecast.model.LocationChoices
 import fi.kroon.vadret.weatherforecast.model.PlaceForecast
 import fi.kroon.vadret.weatherforecast.model.SearchState
@@ -35,6 +40,7 @@ import kotlin.time.Duration.Companion.milliseconds
 
 private val searchDebounce: Duration = 70.milliseconds
 
+@Immutable
 class WeatherForecastViewModel internal constructor(
     private val getLocationModeTask: GetLocationModeTask,
     private val setLocationModeTask: SetLocationModeTask,
@@ -70,6 +76,14 @@ class WeatherForecastViewModel internal constructor(
                 state.copy(errorMessageResourceId = null)
             }
 
+            is WeatherForecastEvent.OnForecastViewSelected -> state.update { state: WeatherForecastState ->
+                state.copy(forecastView = event.forecastView)
+            }
+
+            is WeatherForecastEvent.OnDayToggled -> onDayToggled(dayKey = event.dayKey)
+
+            WeatherForecastEvent.OnAllDaysToggled -> onAllDaysToggled()
+
             is WeatherForecastEvent.OnLocationPermissionResult -> onLocationPermissionResult(isGranted = event.isGranted)
 
             WeatherForecastEvent.OnAutomaticLocationClicked -> state.update { state: WeatherForecastState ->
@@ -91,6 +105,26 @@ class WeatherForecastViewModel internal constructor(
             is WeatherForecastEvent.OnSearchQueryChanged -> onSearchQueryChanged(query = event.query)
 
             is WeatherForecastEvent.OnSuggestionClicked -> onSuggestionClicked(autoCompleteItem = event.autoCompleteItem)
+        }
+    }
+
+    private fun onDayToggled(dayKey: String) {
+        viewModelScope.launch(context = coroutineDispatcher) {
+            state.update { state: WeatherForecastState ->
+                state.withComingDays(comingDays = state.forecast.comingDays.withDayToggled(dayKey = dayKey))
+            }
+        }
+    }
+
+    private fun onAllDaysToggled() {
+        viewModelScope.launch(context = coroutineDispatcher) {
+            state.update { state: WeatherForecastState ->
+                state.withComingDays(
+                    comingDays = state.forecast.comingDays.withEveryDayExpanded(
+                        isExpanded = !state.isEveryDayExpanded
+                    )
+                )
+            }
         }
     }
 
@@ -201,14 +235,18 @@ class WeatherForecastViewModel internal constructor(
     }
 
     private fun displayForecast(placeForecast: PlaceForecast) {
-        this.placeForecast.store(newValue = placeForecast)
+        val previousPlaceForecast: PlaceForecast? = this.placeForecast.exchange(newValue = placeForecast)
+        val isSamePlace: Boolean = previousPlaceForecast?.placeName == placeForecast.placeName
         state.update { state: WeatherForecastState ->
-            state.copy(
-                forecast = placeForecast.toForecast(),
-                localityName = placeForecast.placeName,
-                isLoading = false,
-                isRefreshing = false
-            )
+            state
+                .withForecast(
+                    forecast = placeForecast.toForecast(),
+                    isSamePlace = isSamePlace
+                ).copy(
+                    localityName = placeForecast.placeName,
+                    isLoading = false,
+                    isRefreshing = false
+                )
         }
     }
 
@@ -217,8 +255,12 @@ class WeatherForecastViewModel internal constructor(
             return
         }
         viewModelScope.launch(context = coroutineDispatcher) {
+            val loadedPlaceForecast: PlaceForecast = placeForecast.load() ?: return@launch
             state.update { state: WeatherForecastState ->
-                state.copy(forecast = placeForecast.load()?.toForecast() ?: state.forecast)
+                state.withForecast(
+                    forecast = loadedPlaceForecast.toForecast(),
+                    isSamePlace = true
+                )
             }
         }
     }

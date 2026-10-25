@@ -6,7 +6,6 @@ import fi.kroon.vadret.weatherforecast.model.ForecastDay
 import fi.kroon.vadret.weatherforecast.model.ForecastHour
 import fi.kroon.vadret.weatherforecast.model.PlaceForecast
 import fi.kroon.vadret.weatherforecast.model.WeatherForecast
-import fi.kroon.vadret.weatherforecast.util.SunriseSunset
 import fi.kroon.vadret.weatherforecast.util.SunsetUtil
 import fi.kroon.vadret.weatherforecast.util.WeatherForecastUtil
 import fi.kroon.vadret.weatherforecast.util.WindChill
@@ -52,15 +51,15 @@ internal fun PlaceForecast.toWeatherForecast(
         format.timeZone = javaTimeZone
     }
     return WeatherForecast(
-        current = first.toCurrentWeather(
-            isDaytime = isDaytime(at = first.validAt),
-            sunriseSunset = SunsetUtil.getSunriseSunset(
-                day = now,
-                latitude = latitude,
-                longitude = longitude
-            ),
+        current = first.toCurrentWeather(isDaytime = isDaytime(at = first.validAt)),
+        comingDays = forecasts.toComingDays(
+            now = now,
+            timeZone = timeZone,
+            locale = locale,
+            latitude = latitude,
+            longitude = longitude,
             timeFormat = timeFormat
-        ),
+        ).toImmutableList(),
         days = toForecastDays(
             timeZone = timeZone,
             locale = locale,
@@ -103,11 +102,7 @@ private fun PlaceForecast.toForecastDays(
             )
         }
 
-private fun Forecast.toCurrentWeather(
-    isDaytime: Boolean,
-    sunriseSunset: SunriseSunset?,
-    timeFormat: DateFormat
-): CurrentWeather =
+private fun Forecast.toCurrentWeather(isDaytime: Boolean): CurrentWeather =
     CurrentWeather(
         temperature = airTemperature,
         feelsLikeTemperature = feelsLikeTemperature(),
@@ -116,17 +111,11 @@ private fun Forecast.toCurrentWeather(
             isDaytime = isDaytime
         ),
         descriptionResourceId = WeatherForecastUtil.getWsymb2ResourceId(symbolCode = symbolCode),
-        windSpeedClassResourceId = WeatherForecastUtil.getWindSpeedClassResourceId(windSpeed = windSpeed),
         windDirectionResourceId = WeatherForecastUtil.handleWindDirection(degree = windFromDirection),
         windSpeed = windSpeed,
         windArrowRotation = (windFromDirection.toFloat() + WIND_ARROW_ROTATION_OFFSET) % DEGREES_IN_CIRCLE,
-        humidityPercent = relativeHumidity,
-        precipitationResourceId = WeatherForecastUtil.getPrecipitationResourceId(precipitationType = precipitationType),
-        sunriseText = sunriseSunset?.sunrise?.format(timeFormat = timeFormat),
-        sunsetText = sunriseSunset?.sunset?.format(timeFormat = timeFormat)
+        humidityPercent = relativeHumidity
     )
-
-private fun Instant.format(timeFormat: DateFormat): String = timeFormat.format(Date(toEpochMilliseconds()))
 
 private fun Forecast.feelsLikeTemperature(): String? =
     WindChill.calculate(

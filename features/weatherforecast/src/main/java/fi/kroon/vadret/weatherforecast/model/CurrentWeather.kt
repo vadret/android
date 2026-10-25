@@ -11,14 +11,8 @@ data class CurrentWeather(
     @StringRes
     val descriptionResourceId: Int,
     @StringRes
-    val windSpeedClassResourceId: Int,
-    @StringRes
     val windDirectionResourceId: Int,
     val windSpeed: Double,
     val windArrowRotation: Float,
-    val humidityPercent: Int,
-    @StringRes
-    val precipitationResourceId: Int,
-    val sunriseText: String?,
-    val sunsetText: String?
+    val humidityPercent: Int
 )

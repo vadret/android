@@ -19,6 +19,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
+import kotlin.time.Duration.Companion.hours
 import kotlin.time.Instant
 
 private val stockholm: TimeZone = TimeZone.of(zoneId = "Europe/Stockholm")
@@ -26,17 +27,18 @@ private val stockholm: TimeZone = TimeZone.of(zoneId = "Europe/Stockholm")
 private fun forecast(
     validAt: Instant,
     symbolCode: Int = 6,
-    precipitationType: Int = 0,
     windFromDirection: Double = 160.0
 ): Forecast =
     Forecast(
         validAt = validAt,
+        intervalStartedAt = validAt - 1.hours,
         airTemperature = 10.9,
         windFromDirection = windFromDirection,
         windSpeed = 5.4,
         relativeHumidity = 86,
-        precipitationType = precipitationType,
-        symbolCode = symbolCode
+        precipitationType = 0,
+        symbolCode = symbolCode,
+        precipitationAmount = 0.0
     )
 
 class PlaceForecastTest {
@@ -125,9 +127,6 @@ class PlaceForecastTest {
         assertEquals(expected = R.drawable.ic_cloud, actual = currentWeather.iconResourceId)
         assertEquals(expected = 86, actual = currentWeather.humidityPercent)
         assertEquals(expected = 5.4, actual = currentWeather.windSpeed)
-        assertEquals(expected = R.string.precipitation_none, actual = currentWeather.precipitationResourceId)
-        assertNotNull(actual = currentWeather.sunriseText)
-        assertNotNull(actual = currentWeather.sunsetText)
     }
 
     @Test
@@ -144,19 +143,6 @@ class PlaceForecastTest {
                     windFromDirection = 292.0
                 )
             ).windArrowRotation
-        )
-    }
-
-    @Test
-    fun `precipitation is named by type`() {
-        assertEquals(
-            expected = R.string.prsort_snow,
-            actual = currentWeather(
-                forecast = forecast(
-                    validAt = Instant.parse(input = "2026-10-24T12:00:00Z"),
-                    precipitationType = 5
-                )
-            ).precipitationResourceId
         )
     }
 
@@ -212,5 +198,6 @@ class PlaceForecastTest {
 
         assertNull(actual = weatherForecast.current)
         assertEquals(expected = emptyList(), actual = weatherForecast.days)
+        assertEquals(expected = emptyList(), actual = weatherForecast.comingDays)
     }
 }

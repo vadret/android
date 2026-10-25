@@ -31,12 +31,6 @@
     <string name="no_weather_available">Prognoza nie jest dostępna</string>
     <string name="network_failure">Błąd sieci</string>
     <string name="io_exception">Błąd We/Wy</string>
-    <string name="prsort_freezing_drizzle">Mżawka marznąca</string>
-    <string name="prsort_freezing_rain">Deszcz marznący</string>
-    <string name="prsort_drizzle">Mżawka</string>
-    <string name="prsort_rain">Deszcz</string>
-    <string name="prsort_snow_and_rain">Śnieg z deszczem</string>
-    <string name="prsort_snow">Śnieg</string>
     <string name="wsymb2_heavy_snowfall">Intensywny opad śniegu</string>
     <string name="wsymb2_moderate_snowfall">Umiarkowany opad śniegu</string>
     <string name="wsymb2_light_snowfall">Lekki opad śniegu</string>
@@ -63,8 +57,6 @@
     <string name="remove_favorite">Usuń %1$s</string>
     <string name="selected">Wybrane</string>
     <string name="humidity">Wilgotność</string>
-    <string name="precipitation_short">Opady</string>
-    <string name="precipitation_none">Brak</string>
     <string name="precipitation">Opady</string>
     <string name="now">Teraz</string>
     <string name="warning_level_yellow">Żółte ostrzeżenie</string>
@@ -72,4 +64,19 @@
     <string name="warning_level_red">Czerwone ostrzeżenie</string>
     <string name="warning_level_message">Komunikat</string>
     <string name="licenses_intro">Vädret korzysta z następujących projektów open source.</string>
+    <string name="forecast_days">Dni</string>
+    <string name="forecast_hours">Godziny</string>
+    <string name="today">Dzisiaj</string>
+    <string name="expand_all">Rozwiń wszystkie</string>
+    <string name="collapse_all">Zwiń wszystkie</string>
+    <string name="expanded">Rozwinięte</string>
+    <string name="collapsed">Zwinięte</string>
+    <string name="polar_night">Noc polarna</string>
+    <string name="midnight_sun">Dzień polarny</string>
+    <plurals name="coming_days_title">
+        <item quantity="one">Następny %d dzień</item>
+        <item quantity="few">Następne %d dni</item>
+        <item quantity="many">Następnych %d dni</item>
+        <item quantity="other">Następne %d dni</item>
+    </plurals>
 </resources>

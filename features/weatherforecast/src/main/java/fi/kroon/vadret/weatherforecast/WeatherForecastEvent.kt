@@ -2,6 +2,7 @@ package fi.kroon.vadret.weatherforecast
 
 import fi.kroon.vadret.autocomplete.model.AutoCompleteItem
 import fi.kroon.vadret.favorite.model.Favorite
+import fi.kroon.vadret.weatherforecast.model.ForecastView
 import java.util.Locale
 
 sealed interface WeatherForecastEvent {
@@ -10,6 +11,9 @@ sealed interface WeatherForecastEvent {
     data class OnLocaleChanged(val locale: Locale) : WeatherForecastEvent
     data object OnRefresh : WeatherForecastEvent
     data object OnErrorShown : WeatherForecastEvent
+    data class OnForecastViewSelected(val forecastView: ForecastView) : WeatherForecastEvent
+    data class OnDayToggled(val dayKey: String) : WeatherForecastEvent
+    data object OnAllDaysToggled : WeatherForecastEvent
     data class OnLocationPermissionResult(val isGranted: Boolean) : WeatherForecastEvent
     data object OnAutomaticLocationClicked : WeatherForecastEvent
     data class OnFavoriteClicked(val favorite: Favorite) : WeatherForecastEvent

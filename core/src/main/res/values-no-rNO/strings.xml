@@ -34,12 +34,6 @@
     <string name="no_weather_available">Ingen vær tilgjengelig</string>
     <string name="network_failure">Nettverksfeil</string>
     <string name="io_exception">IOException</string>
-    <string name="prsort_freezing_drizzle">Frysing dråpe</string>
-    <string name="prsort_freezing_rain">Underkjølt regn</string>
-    <string name="prsort_drizzle">Duskregn</string>
-    <string name="prsort_rain">Regn</string>
-    <string name="prsort_snow_and_rain">Snø og regn</string>
-    <string name="prsort_snow">Snø</string>
     <string name="wsymb2_heavy_snowfall">Tungt snøfall</string>
     <string name="wsymb2_moderate_snowfall">Moderat snøfall</string>
     <string name="wsymb2_light_snowfall">Lett snøfall</string>
@@ -74,8 +68,6 @@
     <string name="remove_favorite">Fjern %1$s</string>
     <string name="selected">Valgt</string>
     <string name="humidity">Luftfuktighet</string>
-    <string name="precipitation_short">Nedbør</string>
-    <string name="precipitation_none">Ingen</string>
     <string name="precipitation">Nedbør</string>
     <string name="now">Nå</string>
     <string name="warning_level_yellow">Gult farevarsel</string>
@@ -83,4 +75,17 @@
     <string name="warning_level_red">Rødt farevarsel</string>
     <string name="warning_level_message">Melding</string>
     <string name="licenses_intro">Vädret er bygget med følgende åpen kildekode-prosjekter.</string>
+    <string name="forecast_days">Dager</string>
+    <string name="forecast_hours">Timer</string>
+    <string name="today">I dag</string>
+    <string name="expand_all">Vis alle</string>
+    <string name="collapse_all">Skjul alle</string>
+    <string name="expanded">Utvidet</string>
+    <string name="collapsed">Skjult</string>
+    <string name="polar_night">Mørketid</string>
+    <string name="midnight_sun">Midnattssol</string>
+    <plurals name="coming_days_title">
+        <item quantity="one">Neste %d dag</item>
+        <item quantity="other">Neste %d dager</item>
+    </plurals>
 </resources>

@@ -3,6 +3,7 @@ package fi.kroon.vadret.weatherforecast
 import fi.kroon.vadret.autocomplete.AutoCompleteRepository
 import fi.kroon.vadret.autocomplete.model.AutoCompleteItem
 import fi.kroon.vadret.common.Failure
+import fi.kroon.vadret.core.R
 import fi.kroon.vadret.favorite.FavoriteRepository
 import fi.kroon.vadret.favorite.model.Favorite
 import fi.kroon.vadret.location.LocationRepository
@@ -11,11 +12,14 @@ import fi.kroon.vadret.location.model.LocationPreference
 import fi.kroon.vadret.location.model.StoredLocation
 import fi.kroon.vadret.nominatim.NominatimRepository
 import fi.kroon.vadret.nominatim.model.Locality
+import fi.kroon.vadret.weatherforecast.model.ComingDay
 import fi.kroon.vadret.weatherforecast.model.Forecast
+import fi.kroon.vadret.weatherforecast.model.SunTimes
 import io.github.sphrak.either.Either
 import io.github.sphrak.either.extension.asLeft
 import io.github.sphrak.either.extension.asRight
 import io.github.sphrak.either.extension.successOrNull
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
@@ -51,13 +55,37 @@ internal val kirunaFavorite = Favorite(
 
 internal val noon = Forecast(
     validAt = Instant.parse(input = "2026-10-24T12:00:00Z"),
+    intervalStartedAt = Instant.parse(input = "2026-10-24T11:00:00Z"),
     airTemperature = 4.0,
     windFromDirection = 270.0,
     windSpeed = 3.0,
     relativeHumidity = 70,
     precipitationType = 0,
-    symbolCode = 1
+    symbolCode = 1,
+    precipitationAmount = 0.0
 )
+
+internal fun comingDay(
+    dayKey: String,
+    isExpanded: Boolean = false
+): ComingDay =
+    ComingDay(
+        key = dayKey,
+        isToday = false,
+        weekdayText = "Mon",
+        dateText = "16 Nov",
+        iconResourceId = R.drawable.ic_cloud,
+        descriptionResourceId = R.string.wsymb2_overcast,
+        precipitationText = null,
+        lowTemperatureText = "1",
+        highTemperatureText = "5",
+        temperatureRangeStart = 0f,
+        temperatureRangeEnd = 1f,
+        windSpeedText = "3.0",
+        sunTimes = SunTimes.PolarNight,
+        hours = persistentListOf(),
+        isExpanded = isExpanded
+    )
 
 internal class FakeLocationRepository(
     isAutomatic: Either<Failure, Boolean> = false.asRight(),

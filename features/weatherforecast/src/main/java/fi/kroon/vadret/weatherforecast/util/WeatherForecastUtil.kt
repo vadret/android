@@ -8,44 +8,6 @@ private val logger: Logger = LoggerFactory.getLogger(tag = "fi.kroon.vadret.weat
 
 internal object WeatherForecastUtil {
 
-    fun getPrecipitationResourceId(precipitationType: Int): Int =
-        when (precipitationType) {
-            0 -> R.string.precipitation_none
-            1 -> R.string.prsort_rain
-            2 -> R.string.prsort_thunderstorm
-            3 -> R.string.prsort_freezing_rain
-            4 -> R.string.prsort_mixed_ice
-            5 -> R.string.prsort_snow
-            6 -> R.string.prsort_wet_snow
-            7 -> R.string.prsort_snow_and_rain
-            8 -> R.string.prsort_ice_pellets
-            9 -> R.string.prsort_graupel
-            10 -> R.string.prsort_hail
-            11 -> R.string.prsort_drizzle
-            12 -> R.string.prsort_freezing_drizzle
-            else -> R.string.precipitation_none
-        }
-
-    /**
-     *  Calm winds: < 0.2 m/s
-     *  Weak winds: 0.3 - 3.3 m/s
-     *  Moderate winds: 3.4 - 7.9 m/s
-     *  Fresh breezes: 8.0 - 13.8 m/s
-     *  Strong winds: 13.9 - 24.4 m/s
-     *  Storm winds: 24.5 - 32.6 m/s
-     *  Hurricane: > 32.7 m/s
-     */
-    fun getWindSpeedClassResourceId(windSpeed: Double): Int =
-        when {
-            (windSpeed <= 0.2) -> R.string.ws_calm
-            (windSpeed in 0.3..3.3) -> R.string.ws_weak
-            (windSpeed in 3.4..7.9) -> R.string.ws_moderate
-            (windSpeed in 8.0..13.8) -> R.string.ws_fresh
-            (windSpeed in 13.9..24.4) -> R.string.ws_strong
-            (windSpeed in 24.5..32.7) -> R.string.ws_windstorms
-            else -> R.string.ws_hurricanes
-        }
-
     fun getWeatherSymbolIconResourceId(
         symbolCode: Int,
         isDaytime: Boolean

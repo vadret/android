@@ -28,12 +28,6 @@
     <string name="wsymb2_light_snowfall">Lätt snöfall</string>
     <string name="wsymb2_moderate_snowfall">Måttligt snöfall</string>
     <string name="wsymb2_heavy_snowfall">Kraftigt snöfall</string>
-    <string name="prsort_snow">Snö</string>
-    <string name="prsort_snow_and_rain">Snö och regn</string>
-    <string name="prsort_rain">Regn</string>
-    <string name="prsort_drizzle">Duggregn</string>
-    <string name="prsort_freezing_rain">Underkylt regn</string>
-    <string name="prsort_freezing_drizzle">Underkylt duggregn</string>
     <string name="network_failure">Nätverksfel</string>
     <string name="no_weather_available">Inget väder tillgängligt</string>
     <string name="wsymb2_thunderstorm">Åskväder</string>
@@ -125,24 +119,12 @@
     <string name="sunrise">Gryning</string>
     <string name="sunset">Skymning</string>
     <string name="unknown_area">Okänd plats</string>
-    <string name="sun_wont_rise_today">Ingen gryning idag</string>
-    <string name="sun_wont_set_today">Ingen skymning idag</string>
     <string name="location_provider_disabled">Platstjänst är inaktiverad</string>
     <string name="failed_loading_file">Kunde ej läsa in filen</string>
     <string name="no_url_available">Ingen länk tillgänglig</string>
     <string name="display">Display</string>
     <string name="wind">Vind</string>
-    <string name="ws_calm">lugna</string>
-    <string name="ws_fresh">friska</string>
-    <string name="ws_hurricanes">orkan</string>
-    <string name="ws_moderate">måttlig</string>
-    <string name="ws_strong">hårda</string>
-    <string name="ws_weak">svaga</string>
-    <string name="ws_mostly">mestadels</string>
-    <string name="ws_with">med</string>
-    <string name="ws_windstorms">storm</string>
     <string name="ws_winds">vindar</string>
-    <string name="ws_wind">vind</string>
     <string name="widget_interval_bihourly">Varannan timme</string>
     <string name="widget_interval_every_six_hour">Varje 6:e timme</string>
     <string name="widget_interval_every_three_hour">Varje 3:e timme</string>
@@ -176,8 +158,6 @@
     <string name="remove_favorite">Ta bort %1$s</string>
     <string name="selected">Vald</string>
     <string name="humidity">Luftfuktighet</string>
-    <string name="precipitation_short">Nederb.</string>
-    <string name="precipitation_none">Ingen</string>
     <string name="filter_warnings">Filtrera varningar</string>
     <string name="warning_level_message">Meddelande</string>
     <string name="warning_level_yellow">Gul varning</string>
@@ -197,4 +177,17 @@
     <string name="pause">Pausa</string>
     <string name="no_wind_available">Ingen vindprognos tillgänglig</string>
     <string name="licenses_intro">Vädret är byggt med följande projekt med öppen källkod.</string>
+    <string name="forecast_days">Dagar</string>
+    <string name="forecast_hours">Timmar</string>
+    <string name="today">Idag</string>
+    <string name="expand_all">Visa alla</string>
+    <string name="collapse_all">Dölj alla</string>
+    <string name="expanded">Utfälld</string>
+    <string name="collapsed">Infälld</string>
+    <string name="polar_night">Polarnatt</string>
+    <string name="midnight_sun">Midnattssol</string>
+    <plurals name="coming_days_title">
+        <item quantity="one">Kommande %d dag</item>
+        <item quantity="other">Kommande %d dagar</item>
+    </plurals>
 </resources>

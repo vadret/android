@@ -22,14 +22,14 @@ import fi.kroon.vadret.ui.VadretCard
 import fi.kroon.vadret.ui.VadretTheme
 import fi.kroon.vadret.weatherforecast.model.CurrentWeather
 
-private val weatherIconSize = 56.dp
-private val statIconSize = 16.dp
-private val cardTopPadding = 20.dp
+private val weatherIconSize = 52.dp
+private val windArrowSize = 15.dp
+private val cardTopPadding = 16.dp
+private val cardBottomPadding = 14.dp
 private val contentInset = 4.dp
-private val descriptionTopPadding = 10.dp
-private val dividerTopPadding = 16.dp
-private val dividerBottomPadding = 14.dp
-private val statRowSpacing = 14.dp
+private val descriptionTopPadding = 6.dp
+private val dividerTopPadding = 14.dp
+private val dividerBottomPadding = 12.dp
 private val statLabelSpacing = 2.dp
 
 @Composable
@@ -44,7 +44,7 @@ internal fun CurrentWeatherCard(
                 start = VadretTheme.spacing.large,
                 end = VadretTheme.spacing.large,
                 top = cardTopPadding,
-                bottom = VadretTheme.spacing.large
+                bottom = cardBottomPadding
             )
         ) {
             Row(
@@ -53,12 +53,19 @@ internal fun CurrentWeatherCard(
                     .fillMaxWidth()
                     .padding(horizontal = contentInset)
             ) {
-                Text(
-                    text = "${currentWeather.temperature}$degree",
-                    style = VadretTheme.textStyles.temperature,
-                    color = VadretTheme.colorScheme.onSurface,
-                    modifier = Modifier.weight(weight = 1f)
-                )
+                Column(modifier = Modifier.weight(weight = 1f)) {
+                    Text(
+                        text = "${currentWeather.temperature}$degree",
+                        style = VadretTheme.textStyles.temperature,
+                        color = VadretTheme.colorScheme.onSurface
+                    )
+                    Text(
+                        text = stringResource(id = currentWeather.descriptionResourceId),
+                        style = VadretTheme.textStyles.detail,
+                        color = VadretTheme.colorScheme.onSurface,
+                        modifier = Modifier.padding(top = descriptionTopPadding)
+                    )
+                }
                 Icon(
                     painter = painterResource(id = currentWeather.iconResourceId),
                     contentDescription = stringResource(id = currentWeather.descriptionResourceId),
@@ -66,16 +73,6 @@ internal fun CurrentWeatherCard(
                     modifier = Modifier.size(size = weatherIconSize)
                 )
             }
-            Text(
-                text = weatherDescription(currentWeather = currentWeather),
-                style = VadretTheme.textStyles.body,
-                color = VadretTheme.colorScheme.onSurface,
-                modifier = Modifier.padding(
-                    start = contentInset,
-                    end = contentInset,
-                    top = descriptionTopPadding
-                )
-            )
             HorizontalDivider(
                 color = VadretTheme.colors.divider,
                 modifier = Modifier.padding(
@@ -83,85 +80,41 @@ internal fun CurrentWeatherCard(
                     bottom = dividerBottomPadding
                 )
             )
-            CurrentWeatherStats(
-                currentWeather = currentWeather,
-                modifier = Modifier.padding(horizontal = contentInset)
-            )
-        }
-    }
-}
-
-@Composable
-private fun weatherDescription(currentWeather: CurrentWeather): String {
-    val description: String = stringResource(id = currentWeather.descriptionResourceId)
-    val withText: String = stringResource(id = R.string.ws_with)
-    val mostlyText: String = stringResource(id = R.string.ws_mostly)
-    val windSpeedClass: String = stringResource(id = currentWeather.windSpeedClassResourceId)
-    val windDirection: String = stringResource(id = currentWeather.windDirectionResourceId)
-    val windText: String = stringResource(id = R.string.ws_wind)
-    return "$description $withText $mostlyText $windSpeedClass $windDirection $windText."
-}
-
-@Composable
-private fun CurrentWeatherStats(
-    currentWeather: CurrentWeather,
-    modifier: Modifier = Modifier
-) {
-    val degree: String = stringResource(id = R.string.degree)
-    Column(
-        verticalArrangement = Arrangement.spacedBy(space = statRowSpacing),
-        modifier = modifier.fillMaxWidth()
-    ) {
-        Row(horizontalArrangement = Arrangement.spacedBy(space = VadretTheme.spacing.small)) {
-            Stat(
-                iconResourceId = R.drawable.ic_device_thermostat,
-                label = stringResource(id = R.string.feels_like),
-                value = "${currentWeather.feelsLikeTemperature ?: currentWeather.temperature}$degree"
-            )
-            Stat(
-                iconResourceId = R.drawable.ic_air,
-                label = stringResource(id = R.string.wind),
-                value = "${currentWeather.windSpeed} ${stringResource(id = R.string.m_s)}",
-                trailing = {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_north),
-                        contentDescription = stringResource(id = currentWeather.windDirectionResourceId),
-                        tint = VadretTheme.colorScheme.primary,
-                        modifier = Modifier
-                            .size(size = statIconSize)
-                            .rotate(degrees = currentWeather.windArrowRotation)
-                    )
-                }
-            )
-            Stat(
-                iconResourceId = R.drawable.ic_humidity_percentage,
-                label = stringResource(id = R.string.humidity),
-                value = "${currentWeather.humidityPercent}${stringResource(id = R.string.percent)}"
-            )
-        }
-        Row(horizontalArrangement = Arrangement.spacedBy(space = VadretTheme.spacing.small)) {
-            Stat(
-                iconResourceId = R.drawable.ic_rainy,
-                label = stringResource(id = R.string.precipitation_short),
-                value = stringResource(id = currentWeather.precipitationResourceId)
-            )
-            Stat(
-                iconResourceId = R.drawable.ic_wb_twilight,
-                label = stringResource(id = R.string.sunrise),
-                value = currentWeather.sunriseText ?: stringResource(id = R.string.sun_wont_rise_today)
-            )
-            Stat(
-                iconResourceId = R.drawable.ic_nights_stay,
-                label = stringResource(id = R.string.sunset),
-                value = currentWeather.sunsetText ?: stringResource(id = R.string.sun_wont_set_today)
-            )
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(space = VadretTheme.spacing.small),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = contentInset)
+            ) {
+                Stat(
+                    label = stringResource(id = R.string.feels_like),
+                    value = "${currentWeather.feelsLikeTemperature ?: currentWeather.temperature}$degree"
+                )
+                Stat(
+                    label = stringResource(id = R.string.wind),
+                    value = "${currentWeather.windSpeed} ${stringResource(id = R.string.m_s)}",
+                    trailing = {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_north),
+                            contentDescription = stringResource(id = currentWeather.windDirectionResourceId),
+                            tint = VadretTheme.colorScheme.primary,
+                            modifier = Modifier
+                                .size(size = windArrowSize)
+                                .rotate(degrees = currentWeather.windArrowRotation)
+                        )
+                    }
+                )
+                Stat(
+                    label = stringResource(id = R.string.humidity),
+                    value = "${currentWeather.humidityPercent}${stringResource(id = R.string.percent)}"
+                )
+            }
         }
     }
 }
 
 @Composable
 private fun RowScope.Stat(
-    iconResourceId: Int,
     label: String,
     value: String,
     modifier: Modifier = Modifier,
@@ -171,22 +124,11 @@ private fun RowScope.Stat(
         verticalArrangement = Arrangement.spacedBy(space = statLabelSpacing),
         modifier = modifier.weight(weight = 1f)
     ) {
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(space = VadretTheme.spacing.extraSmall),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(
-                painter = painterResource(id = iconResourceId),
-                contentDescription = null,
-                tint = VadretTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.size(size = statIconSize)
-            )
-            Text(
-                text = label,
-                style = VadretTheme.textStyles.label,
-                color = VadretTheme.colorScheme.onSurfaceVariant
-            )
-        }
+        Text(
+            text = label,
+            style = VadretTheme.textStyles.label,
+            color = VadretTheme.colorScheme.onSurfaceVariant
+        )
         Row(
             horizontalArrangement = Arrangement.spacedBy(space = VadretTheme.spacing.extraSmall),
             verticalAlignment = Alignment.CenterVertically

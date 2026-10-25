@@ -2,12 +2,21 @@
 [![github-releases](https://img.shields.io/github/v/release/sphrak/vadret)](https://github.com/vadret/android/releases/)
 [![ktlint](https://img.shields.io/badge/code%20style-%E2%9D%A4-FF4081.svg)](https://ktlint.github.io/)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/vadret/android/blob/master/LICENSE)
-[![CodeFactor](https://www.codefactor.io/repository/github/vadret/android/badge)](https://www.codefactor.io/repository/github/vadret/android)
 
-![Vädret](https://raw.githubusercontent.com/vadret/android/master/assets/logo.png)
+<img src="https://raw.githubusercontent.com/vadret/android/master/assets/logo.png" alt="Vädret" width="128">
 
 # Vädret
 A simple weather app that uses the Swedish weather service [SMHI](https://opendata-download-metfcst.smhi.se/) to fetch weather data, and [Krisinformation](https://www.krisinformation.se/en) for emergency information from Swedish authorities. MVI written entirely in Kotlin. Icons used in this project can be found [here](https://github.com/vadret/assets). The data is licensed under [Creative commons Erkännande 4.0 SE](https://www.smhi.se/klimatdata/oppna-data/information-om-oppna-data/villkor-for-anvandning-1.30622).
+
+[<img src="https://f-droid.org/badge/get-it-on.png"
+      alt="Get it on F-Droid"
+      height="80">](https://f-droid.org/packages/fi.kroon.vadret/)
+[<img src="https://raw.githubusercontent.com/vadret/android/master/assets/get-github.png"
+      alt="Get it on Github"
+      height="80">](https://github.com/vadret/android/releases)
+
+_**Note**: While both distribution channels track the same branch, each release are signed with different keys.
+Thus you cannot install the F-droid version and upgrade via Github Releases unless you first uninstall the F-droid version._
 
 **Light mode**
 
@@ -26,18 +35,6 @@ A simple weather app that uses the Swedish weather service [SMHI](https://openda
   <img src="assets/screenshots/radar-precipitation-dark.webp" width="24%" alt="Radar with precipitation in dark mode">
   <img src="assets/screenshots/radar-wind-dark.webp" width="24%" alt="Radar with wind in dark mode">
 </p>
-
-## Download app
-
-[<img src="https://f-droid.org/badge/get-it-on.png"
-      alt="Get it on F-Droid"
-      height="80">](https://f-droid.org/packages/fi.kroon.vadret/)
-[<img src="https://raw.githubusercontent.com/vadret/android/master/assets/get-github.png"
-      alt="Get it on Github"
-      height="80">](https://github.com/vadret/android/releases)
-
-_**Note**: While both distribution channels track the same branch, each release are signed with different keys.
-Thus you cannot install the F-droid version and upgrade via Github Releases unless you first uninstall the F-droid version._
 
 ## Changelog
 Changelog available [here](https://github.com/vadret/android/blob/master/app/src/main/res/raw/changelog.md) in [keep-a-changelog](https://keepachangelog.com/en/1.0.0/) format.

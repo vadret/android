@@ -31,12 +31,6 @@
     <string name="wsymb2_light_snowfall">Leichter Schneefall</string>
     <string name="wsymb2_moderate_snowfall">Mäßiger Schneefall</string>
     <string name="wsymb2_heavy_snowfall">Kräftiger Schneefall</string>
-    <string name="prsort_snow">Schnee</string>
-    <string name="prsort_snow_and_rain">Schnee und Regen</string>
-    <string name="prsort_rain">Regen</string>
-    <string name="prsort_drizzle">Nieselregen</string>
-    <string name="prsort_freezing_rain">Gefrierender Regen</string>
-    <string name="prsort_freezing_drizzle">Sprühregen</string>
     <string name="io_exception">I/O Exception</string>
     <string name="network_failure">Netzwerkfehler</string>
     <string name="no_weather_available">Kein Wetter verfügbar</string>
@@ -115,8 +109,6 @@
     <string name="days_ago">Vor tagen</string>
     <string name="an_hour_ago">vor einer Stunde</string>
     <string name="a_minute_ago">vor einer Minute</string>
-    <string name="sun_wont_rise_today">Sun wird heute nicht steigen</string>
-    <string name="sun_wont_set_today">Sun wird heute nicht gesetzt</string>
     <string name="issued">ausgegeben</string>
     <string name="automatic_location">Automatisch</string>
     <string name="choose_location">Ort wählen</string>
@@ -124,8 +116,6 @@
     <string name="remove_favorite">%1$s entfernen</string>
     <string name="selected">Ausgewählt</string>
     <string name="humidity">Luftfeuchtigkeit</string>
-    <string name="precipitation_short">Niederschl.</string>
-    <string name="precipitation_none">Kein</string>
     <string name="precipitation">Niederschlag</string>
     <string name="now">Jetzt</string>
     <string name="warning_level_yellow">Gelbe Warnung</string>
@@ -133,4 +123,17 @@
     <string name="warning_level_red">Rote Warnung</string>
     <string name="warning_level_message">Mitteilung</string>
     <string name="licenses_intro">Vädret basiert auf den folgenden Open-Source-Projekten.</string>
+    <string name="forecast_days">Tage</string>
+    <string name="forecast_hours">Stunden</string>
+    <string name="today">Heute</string>
+    <string name="expand_all">Alle aufklappen</string>
+    <string name="collapse_all">Alle zuklappen</string>
+    <string name="expanded">Aufgeklappt</string>
+    <string name="collapsed">Zugeklappt</string>
+    <string name="polar_night">Polarnacht</string>
+    <string name="midnight_sun">Mitternachtssonne</string>
+    <plurals name="coming_days_title">
+        <item quantity="one">Nächster %d Tag</item>
+        <item quantity="other">Nächste %d Tage</item>
+    </plurals>
 </resources>

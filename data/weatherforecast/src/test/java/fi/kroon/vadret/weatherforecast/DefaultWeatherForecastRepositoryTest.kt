@@ -26,12 +26,31 @@ private val jsonHeaders = headersOf(HttpHeaders.ContentType, "application/json")
 
 private fun timeSeries(
     time: String,
-    airTemperature: Double
+    airTemperature: Double,
+    intervalStartTime: String = time,
+    precipitationAmountMean: String? = "0.3"
+): String =
+    timeSeriesWithAmount(
+        time = time,
+        intervalStartTime = intervalStartTime,
+        airTemperature = airTemperature,
+        precipitationAmountField = if (precipitationAmountMean == null) {
+            ""
+        } else {
+            "\"precipitation_amount_mean\": $precipitationAmountMean,"
+        }
+    )
+
+private fun timeSeriesWithAmount(
+    time: String,
+    intervalStartTime: String,
+    airTemperature: Double,
+    precipitationAmountField: String
 ): String =
     """
     {
       "time": "$time",
-      "intervalParametersStartTime": "$time",
+      "intervalParametersStartTime": "$intervalStartTime",
       "data": {
         "air_temperature": $airTemperature,
         "wind_from_direction": 225.0,
@@ -42,6 +61,7 @@ private fun timeSeries(
         "probability_of_precipitation": 40,
         "precipitation_amount_min": 0.0,
         "precipitation_amount_max": 0.4,
+        $precipitationAmountField
         "symbol_code": 18
       }
     }
@@ -85,12 +105,22 @@ class DefaultWeatherForecastRepositoryTest {
     @Test
     fun `the time series become forecasts in time order`() =
         runTest {
+            val laterHour: String = timeSeries(
+                time = "2026-10-24T12:00:00Z",
+                airTemperature = 8.5,
+                intervalStartTime = "2026-10-24T11:00:00Z"
+            )
+            val earlierHour: String = timeSeries(
+                time = "2026-10-24T11:00:00Z",
+                airTemperature = 7.0,
+                intervalStartTime = "2026-10-24T10:00:00Z"
+            )
             val body = """
             {
               "createdTime": "2026-10-24T10:00:00Z",
               "timeSeries": [
-                ${timeSeries(time = "2026-10-24T12:00:00Z", airTemperature = 8.5)},
-                ${timeSeries(time = "2026-10-24T11:00:00Z", airTemperature = 7.0)}
+                $laterHour,
+                $earlierHour
               ]
             }
             """.trimIndent()
@@ -109,25 +139,84 @@ class DefaultWeatherForecastRepositoryTest {
                 expected = listOf(
                     Forecast(
                         validAt = Instant.parse(input = "2026-10-24T11:00:00Z"),
+                        intervalStartedAt = Instant.parse(input = "2026-10-24T10:00:00Z"),
                         airTemperature = 7.0,
                         windFromDirection = 225.0,
                         windSpeed = 4.2,
                         relativeHumidity = 81,
                         precipitationType = 1,
-                        symbolCode = 18
+                        symbolCode = 18,
+                        precipitationAmount = 0.3
                     ),
                     Forecast(
                         validAt = Instant.parse(input = "2026-10-24T12:00:00Z"),
+                        intervalStartedAt = Instant.parse(input = "2026-10-24T11:00:00Z"),
                         airTemperature = 8.5,
                         windFromDirection = 225.0,
                         windSpeed = 4.2,
                         relativeHumidity = 81,
                         precipitationType = 1,
-                        symbolCode = 18
+                        symbolCode = 18,
+                        precipitationAmount = 0.3
                     )
                 ).asRight(),
                 actual = result
             )
+        }
+
+    @Test
+    fun `a missing or impossible precipitation amount is unknown`() =
+        runTest {
+            val body = """
+            {
+              "timeSeries": [
+                ${timeSeries(time = "2026-10-24T11:00:00Z", airTemperature = 7.0, precipitationAmountMean = "9999")},
+                ${timeSeries(time = "2026-10-24T12:00:00Z", airTemperature = 7.0, precipitationAmountMean = null)},
+                ${timeSeries(time = "2026-10-24T13:00:00Z", airTemperature = 7.0, precipitationAmountMean = "-0.1")},
+                ${timeSeries(time = "2026-10-24T14:00:00Z", airTemperature = 7.0, precipitationAmountMean = "1.2")}
+              ]
+            }
+            """.trimIndent()
+
+            val result: Either<Failure, List<Forecast>> = repository {
+                respond(
+                    content = body,
+                    headers = jsonHeaders
+                )
+            }.getForecasts(
+                latitude = 59.3293,
+                longitude = 18.0686
+            )
+
+            assertEquals(
+                expected = listOf(null, null, null, 1.2),
+                actual = (result as Either.Right).b.map { forecast: Forecast -> forecast.precipitationAmount }
+            )
+        }
+
+    @Test
+    fun `a time series without its interval start is an invalid response`() =
+        runTest {
+            withRecordedLogs { recordingLogSink ->
+                val result: Either<Failure, List<Forecast>> = repository {
+                    respond(
+                        content = """{"timeSeries":[{"time":"2026-10-24T12:00:00Z","data":{}}]}""",
+                        headers = jsonHeaders
+                    )
+                }.getForecasts(
+                    latitude = 59.3293,
+                    longitude = 18.0686
+                )
+
+                assertEquals(
+                    expected = Failure(errorCode = ErrorCode.INVALID_RESPONSE).asLeft(),
+                    actual = result
+                )
+                assertEquals(
+                    expected = listOf(LogLevel.WARN),
+                    actual = recordingLogSink.lines.map { line: LogLine -> line.level }
+                )
+            }
         }
 
     @Test

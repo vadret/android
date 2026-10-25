@@ -31,12 +31,6 @@
     <string name="wsymb2_light_snowfall">Kevyt lumisade</string>
     <string name="wsymb2_moderate_snowfall">Kohtalainen lumisade</string>
     <string name="wsymb2_heavy_snowfall">Rankka lumisade</string>
-    <string name="prsort_snow">Lunta</string>
-    <string name="prsort_snow_and_rain">Lunta ja sadetta</string>
-    <string name="prsort_rain">Sadetta</string>
-    <string name="prsort_drizzle">Tihkusadetta</string>
-    <string name="prsort_freezing_rain">Jäätävää sadetta</string>
-    <string name="prsort_freezing_drizzle">Jäätävä tihkusade</string>
     <string name="io_exception">I/O Poikkeus</string>
     <string name="network_failure">Verkkovirhe</string>
     <string name="no_weather_available">Säätä ei löydy</string>
@@ -78,8 +72,6 @@
     <string name="remove_favorite">Poista %1$s</string>
     <string name="selected">Valittu</string>
     <string name="humidity">Kosteus</string>
-    <string name="precipitation_short">Sade</string>
-    <string name="precipitation_none">Ei</string>
     <string name="precipitation">Sade</string>
     <string name="now">Nyt</string>
     <string name="warning_level_yellow">Keltainen varoitus</string>
@@ -87,4 +79,17 @@
     <string name="warning_level_red">Punainen varoitus</string>
     <string name="warning_level_message">Tiedote</string>
     <string name="licenses_intro">Vädret on rakennettu seuraavien avoimen lähdekoodin projektien varaan.</string>
+    <string name="forecast_days">Päivät</string>
+    <string name="forecast_hours">Tunnit</string>
+    <string name="today">Tänään</string>
+    <string name="expand_all">Laajenna kaikki</string>
+    <string name="collapse_all">Pienennä kaikki</string>
+    <string name="expanded">Laajennettu</string>
+    <string name="collapsed">Pienennetty</string>
+    <string name="polar_night">Kaamos</string>
+    <string name="midnight_sun">Keskiyön aurinko</string>
+    <plurals name="coming_days_title">
+        <item quantity="one">Seuraava %d päivä</item>
+        <item quantity="other">Seuraavat %d päivää</item>
+    </plurals>
 </resources>
