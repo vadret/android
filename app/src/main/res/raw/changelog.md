@@ -294,7 +294,8 @@ they did not work very well and weren't used a lot. The release includes a total
 - Radar imagery
 - 10 day weather forecast
 
-[Unreleased]: https://github.com/vadret/android/compare/2.0.3...HEAD
+[Unreleased]: https://github.com/vadret/android/compare/3.0.0...HEAD
+[3.0.0]: https://github.com/vadret/android/compare/2.0.3...3.0.0
 [2.0.3]: https://github.com/vadret/android/compare/2.0.2...2.0.3
 [2.0.2]: https://github.com/vadret/android/compare/2.0.1...2.0.2
 [2.0.1]: https://github.com/vadret/android/compare/2.0.0...2.0.1
