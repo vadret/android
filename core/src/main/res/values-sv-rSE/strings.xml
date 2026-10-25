@@ -46,7 +46,7 @@
     <string name="slogan">Öppen kod, öppna data</string>
     <string name="no_network_available">Nätverket ej tillgängligt</string>
     <string name="about_app_about_title">Om appen</string>
-    <string name="about_app_libraries_tab_title">Bibliotek</string>
+    <string name="about_app_libraries_tab_title">Licenser</string>
     <string name="about_app_description">Väderapp för Sverige!</string>
     <string name="version_row_title">Version</string>
     <string name="license_row_title">Licens</string>
@@ -196,4 +196,5 @@
     <string name="play">Spela</string>
     <string name="pause">Pausa</string>
     <string name="no_wind_available">Ingen vindprognos tillgänglig</string>
+    <string name="licenses_intro">Vädret är byggt med följande projekt med öppen källkod.</string>
 </resources>

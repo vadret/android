@@ -77,4 +77,5 @@
     <string name="warning_level_orange">Vigilance orange</string>
     <string name="warning_level_red">Vigilance rouge</string>
     <string name="warning_level_message">Message</string>
+    <string name="licenses_intro">Vädret est construit avec les projets open source suivants.</string>
 </resources>

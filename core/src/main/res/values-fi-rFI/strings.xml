@@ -86,4 +86,5 @@
     <string name="warning_level_orange">Oranssi varoitus</string>
     <string name="warning_level_red">Punainen varoitus</string>
     <string name="warning_level_message">Tiedote</string>
+    <string name="licenses_intro">Vädret on rakennettu seuraavien avoimen lähdekoodin projektien varaan.</string>
 </resources>

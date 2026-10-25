@@ -11,5 +11,7 @@ data class AboutRow(
     @StringRes
     val hintResourceId: Int?,
     @StringRes
-    val urlResourceId: Int
+    val urlResourceId: Int,
+    @DrawableRes
+    val trailingIconResourceId: Int?
 )

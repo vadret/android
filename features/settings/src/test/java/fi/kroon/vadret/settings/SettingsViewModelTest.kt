@@ -2,17 +2,21 @@ package fi.kroon.vadret.settings
 
 import fi.kroon.vadret.common.ErrorCode
 import fi.kroon.vadret.common.Failure
+import fi.kroon.vadret.core.R
 import fi.kroon.vadret.library.LibraryRepository
 import fi.kroon.vadret.library.model.Library
 import fi.kroon.vadret.location.LocationRepository
 import fi.kroon.vadret.location.model.Location
 import fi.kroon.vadret.location.model.LocationPreference
 import fi.kroon.vadret.location.model.StoredLocation
+import fi.kroon.vadret.settings.model.LibraryGroup
+import fi.kroon.vadret.settings.model.LocationRow
 import fi.kroon.vadret.theme.ThemeRepository
 import fi.kroon.vadret.theme.model.Theme
 import io.github.sphrak.either.Either
 import io.github.sphrak.either.extension.asLeft
 import io.github.sphrak.either.extension.asRight
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -64,19 +68,26 @@ private class FakeLocationRepository(
 }
 
 private class FakeLibraryRepository : LibraryRepository {
-    override fun getLibraries(): Either<Nothing, List<Library>> =
-        listOf(
-            Library(
-                author = "JetBrains",
-                title = "Ktor",
-                description = "HTTP client",
-                projectUrl = "https://ktor.io/",
-                sourceUrl = null,
-                licenseUrl = "https://ktor.io/license",
-                license = "Apache License, Version 2.0"
-            )
-        ).asRight()
+    override fun getLibraries(): Either<Nothing, List<Library>> = listOf(ktor, coil, kotlinxDatetime).asRight()
 }
+
+private fun library(
+    author: String,
+    title: String
+): Library =
+    Library(
+        author = author,
+        title = title,
+        description = "$title description",
+        projectUrl = "https://example.org/$title",
+        sourceUrl = null,
+        licenseUrl = "https://example.org/$title/license",
+        license = "Apache 2.0"
+    )
+
+private val ktor: Library = library(author = "JetBrains", title = "Ktor")
+private val coil: Library = library(author = "Coil Contributors", title = "Coil")
+private val kotlinxDatetime: Library = library(author = "JetBrains", title = "kotlinx-datetime")
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class SettingsViewModelTest {
@@ -126,7 +137,23 @@ class SettingsViewModelTest {
                 ),
                 actual = state.settings
             )
-            assertEquals(expected = listOf("Ktor"), actual = state.libraries.map { library: Library -> library.title })
+            assertEquals(
+                expected = listOf(
+                    LibraryGroup(author = "JetBrains", libraries = persistentListOf(ktor, kotlinxDatetime)),
+                    LibraryGroup(author = "Coil Contributors", libraries = persistentListOf(coil))
+                ),
+                actual = state.libraryGroups
+            )
+            assertEquals(
+                expected = listOf(
+                    LocationRow(titleResourceId = R.string.setting_city, value = stockholm.locality),
+                    LocationRow(titleResourceId = R.string.setting_municipality, value = stockholm.municipality),
+                    LocationRow(titleResourceId = R.string.setting_county, value = stockholm.county),
+                    LocationRow(titleResourceId = R.string.setting_latitude, value = stockholm.latitude.toString()),
+                    LocationRow(titleResourceId = R.string.setting_longitude, value = stockholm.longitude.toString())
+                ),
+                actual = state.locationRows
+            )
             assertEquals(expected = 4, actual = state.aboutRows.size)
         }
 
@@ -181,5 +208,19 @@ class SettingsViewModelTest {
 
             assertEquals(expected = false, actual = settingsViewModel.state.value.isThemeDialogVisible)
             assertEquals(expected = Theme.LIGHT, actual = settingsViewModel.state.value.settings?.theme)
+        }
+
+    @Test
+    fun `a clicked library is shown until it is dismissed`() =
+        testScope.runTest {
+            val settingsViewModel: SettingsViewModel = viewModel()
+            advanceUntilIdle()
+
+            settingsViewModel.onEvent(event = SettingsEvent.OnLibraryClicked(library = coil))
+            val shown: Library? = settingsViewModel.state.value.selectedLibrary
+            settingsViewModel.onEvent(event = SettingsEvent.OnLibraryDismissed)
+
+            assertEquals(expected = coil, actual = shown)
+            assertNull(actual = settingsViewModel.state.value.selectedLibrary)
         }
 }

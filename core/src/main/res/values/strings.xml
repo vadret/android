@@ -141,7 +141,7 @@
     <string name="degree" translatable="false">°</string>
 
     <string name="about_app_about_title">About app</string>
-    <string name="about_app_libraries_tab_title">Libraries</string>
+    <string name="about_app_libraries_tab_title">Licenses</string>
     <string name="about_app_description">Weather app for Sweden</string>
 
     <string name="cd_about_app_icon" translatable="false">AboutAppImage</string>
@@ -269,4 +269,5 @@
     <string name="play">Play</string>
     <string name="pause">Pause</string>
     <string name="no_wind_available">No wind forecast available</string>
+    <string name="licenses_intro">Vädret is built with the following open source projects.</string>
 </resources>

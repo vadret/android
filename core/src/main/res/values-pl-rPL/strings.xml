@@ -71,4 +71,5 @@
     <string name="warning_level_orange">Pomarańczowe ostrzeżenie</string>
     <string name="warning_level_red">Czerwone ostrzeżenie</string>
     <string name="warning_level_message">Komunikat</string>
+    <string name="licenses_intro">Vädret korzysta z następujących projektów open source.</string>
 </resources>

@@ -2,13 +2,13 @@ package fi.kroon.vadret.library.local
 
 import fi.kroon.vadret.library.model.Library
 
-private const val GPL_V2 = "GPLv2"
-private const val APACHE_2 = "Apache License, Version 2.0"
+private const val GPL_V2 = "GPL 2.0"
+private const val APACHE_2 = "Apache 2.0"
 private const val CREATIVE_COMMONS_4 = "CC BY 4.0"
-private const val OPEN_DATABASE_LICENSE = "Open Data Commons Open Database License"
-private const val MIT = "MIT License"
-private const val BSD_2 = "BSD 2-Clause License"
-private const val BSD_3_AND_CREATIVE_COMMONS_4 = "BSD 3-Clause License and CC BY 4.0"
+private const val OPEN_DATABASE_LICENSE = "ODbL 1.0"
+private const val MIT = "MIT"
+private const val BSD_2 = "BSD 2-Clause"
+private const val BSD_3_AND_CREATIVE_COMMONS_4 = "BSD 3-Clause, CC BY 4.0"
 
 internal class DefaultLibraryInMemoryDataSource : LibraryInMemoryDataSource {
 
@@ -123,8 +123,8 @@ internal class DefaultLibraryInMemoryDataSource : LibraryInMemoryDataSource {
         ),
         Library(
             author = "Osmdroid",
-            title = "Osmdroid",
-            description = "A special thanks \u2764\uFE0F to osmdroid, the free replacement for Android's MapView that drew Vädret's radar map for many years. The project is archived now.",
+            title = "Osmdroid \u2764\uFE0F",
+            description = "A special thanks to osmdroid, the free replacement for Android's MapView that drew Vädret's radar map for many years. The project is archived now.",
             projectUrl = "http://osmdroid.github.io/osmdroid/",
             sourceUrl = "https://github.com/osmdroid/osmdroid",
             licenseUrl = "https://github.com/osmdroid/osmdroid/blob/master/LICENSE",

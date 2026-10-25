@@ -2,32 +2,24 @@ package fi.kroon.vadret.settings.ui
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.material3.PrimaryTabRow
-import androidx.compose.material3.Tab
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import fi.kroon.vadret.core.R
 import fi.kroon.vadret.di.koinViewModel
+import fi.kroon.vadret.library.model.Library
 import fi.kroon.vadret.settings.SettingsEvent
 import fi.kroon.vadret.settings.SettingsState
 import fi.kroon.vadret.settings.SettingsViewModel
+import fi.kroon.vadret.ui.VadretTheme
 import fi.kroon.vadret.ui.VadretTopAppBar
 import kotlinx.coroutines.launch
-
-private enum class SettingsPage(val titleResourceId: Int) {
-    PREFERENCES(titleResourceId = R.string.settings),
-    LIBRARIES(titleResourceId = R.string.about_app_libraries_tab_title),
-    ABOUT(titleResourceId = R.string.about_app_about_title)
-}
 
 @Composable
 fun SettingsRoute(
@@ -56,17 +48,13 @@ fun SettingsScreen(
 
     Column(modifier = modifier.fillMaxSize()) {
         VadretTopAppBar()
-        PrimaryTabRow(selectedTabIndex = pagerState.currentPage) {
-            SettingsPage.entries.forEach { page: SettingsPage ->
-                Tab(
-                    selected = pagerState.currentPage == page.ordinal,
-                    onClick = {
-                        coroutineScope.launch { pagerState.animateScrollToPage(page = page.ordinal) }
-                    },
-                    text = { Text(text = stringResource(id = page.titleResourceId)) }
-                )
-            }
-        }
+        SettingsTabs(
+            selectedPage = SettingsPage.entries[pagerState.currentPage],
+            onPageClick = { page: SettingsPage ->
+                coroutineScope.launch { pagerState.animateScrollToPage(page = page.ordinal) }
+            },
+            modifier = Modifier.padding(horizontal = VadretTheme.spacing.large)
+        )
         HorizontalPager(
             state = pagerState,
             modifier = Modifier.fillMaxSize()
@@ -77,11 +65,22 @@ fun SettingsScreen(
                     onEvent = onEvent
                 )
 
-                SettingsPage.LIBRARIES -> LibrariesPage(libraries = state.libraries)
+                SettingsPage.LIBRARIES -> LibrariesPage(
+                    libraryGroups = state.libraryGroups,
+                    onLibraryClick = { library: Library -> onEvent(SettingsEvent.OnLibraryClicked(library = library)) }
+                )
 
                 SettingsPage.ABOUT -> AboutPage(aboutRows = state.aboutRows)
             }
         }
+    }
+
+    val selectedLibrary: Library? = state.selectedLibrary
+    if (selectedLibrary != null) {
+        LibrarySheet(
+            library = selectedLibrary,
+            onDismiss = { onEvent(SettingsEvent.OnLibraryDismissed) }
+        )
     }
 
     val settings = state.settings

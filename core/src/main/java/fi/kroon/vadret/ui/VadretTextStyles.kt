@@ -43,6 +43,10 @@ data class VadretTextStyles(
         lineHeight = 22,
         fontWeight = FontWeight.Medium
     ),
+    val listItem: TextStyle = textStyle(
+        fontSize = 16,
+        lineHeight = 22
+    ),
     val body: TextStyle = textStyle(
         fontSize = 15,
         lineHeight = 22

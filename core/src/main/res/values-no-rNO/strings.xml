@@ -82,4 +82,5 @@
     <string name="warning_level_orange">Oransje farevarsel</string>
     <string name="warning_level_red">Rødt farevarsel</string>
     <string name="warning_level_message">Melding</string>
+    <string name="licenses_intro">Vädret er bygget med følgende åpen kildekode-prosjekter.</string>
 </resources>

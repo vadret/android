@@ -1,80 +1,83 @@
 package fi.kroon.vadret.settings.ui
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Button
-import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalUriHandler
-import androidx.compose.ui.platform.UriHandler
 import androidx.compose.ui.res.stringResource
 import fi.kroon.vadret.core.R
 import fi.kroon.vadret.library.model.Library
+import fi.kroon.vadret.settings.model.LibraryGroup
+import fi.kroon.vadret.ui.VadretCard
 import fi.kroon.vadret.ui.VadretTheme
 import kotlinx.collections.immutable.ImmutableList
 
-private const val LIBRARY_CONTENT_TYPE = "library"
+private const val INTRO_KEY = "intro"
+private const val INTRO_CONTENT_TYPE = "intro"
+private const val LIBRARY_GROUP_CONTENT_TYPE = "library-group"
 
 @Composable
 internal fun LibrariesPage(
-    libraries: ImmutableList<Library>,
+    libraryGroups: ImmutableList<LibraryGroup>,
+    onLibraryClick: (Library) -> Unit,
     modifier: Modifier = Modifier
 ) {
     LazyColumn(
-        contentPadding = PaddingValues(all = VadretTheme.spacing.small),
-        verticalArrangement = Arrangement.spacedBy(space = VadretTheme.spacing.small),
+        contentPadding = PaddingValues(
+            start = VadretTheme.spacing.large,
+            end = VadretTheme.spacing.large,
+            bottom = VadretTheme.spacing.large
+        ),
         modifier = modifier.fillMaxSize()
     ) {
+        item(key = INTRO_KEY, contentType = INTRO_CONTENT_TYPE) {
+            Text(
+                text = stringResource(id = R.string.licenses_intro),
+                style = VadretTheme.textStyles.body,
+                color = VadretTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(
+                    start = VadretTheme.spacing.small,
+                    end = VadretTheme.spacing.small,
+                    top = VadretTheme.spacing.large
+                )
+            )
+        }
         items(
-            items = libraries,
-            key = { library: Library -> library.title },
-            contentType = { LIBRARY_CONTENT_TYPE }
-        ) { library: Library ->
-            LibraryCard(library = library)
+            items = libraryGroups,
+            key = { libraryGroup: LibraryGroup -> libraryGroup.author },
+            contentType = { LIBRARY_GROUP_CONTENT_TYPE }
+        ) { libraryGroup: LibraryGroup ->
+            LibraryGroupSection(
+                libraryGroup = libraryGroup,
+                onLibraryClick = onLibraryClick
+            )
         }
     }
 }
 
 @Composable
-private fun LibraryCard(
-    library: Library,
+private fun LibraryGroupSection(
+    libraryGroup: LibraryGroup,
+    onLibraryClick: (Library) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val uriHandler: UriHandler = LocalUriHandler.current
-    val sourceUrl: String? = library.sourceUrl
-    ElevatedCard(modifier = modifier.fillMaxWidth()) {
-        Column(modifier = Modifier.padding(all = VadretTheme.spacing.large)) {
-            Text(
-                text = library.title,
-                style = VadretTheme.typography.titleLarge
-            )
-            Text(
-                text = library.description,
-                style = VadretTheme.typography.bodyMedium,
-                color = VadretTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(vertical = VadretTheme.spacing.small)
-            )
-            FlowRow(horizontalArrangement = Arrangement.spacedBy(space = VadretTheme.spacing.small)) {
-                Button(onClick = { uriHandler.openUri(uri = library.projectUrl) }) {
-                    Text(text = stringResource(id = R.string.project_third_party))
+    Column(modifier = modifier) {
+        SettingsSectionHeader(text = libraryGroup.author)
+        VadretCard {
+            libraryGroup.libraries.forEachIndexed { index: Int, library: Library ->
+                if (index > 0) {
+                    SettingsRowDivider()
                 }
-                Button(onClick = { uriHandler.openUri(uri = library.licenseUrl) }) {
-                    Text(text = stringResource(id = R.string.license_third_party))
-                }
-                if (sourceUrl != null) {
-                    Button(onClick = { uriHandler.openUri(uri = sourceUrl) }) {
-                        Text(text = stringResource(id = R.string.source_third_party))
-                    }
-                }
+                SettingsValueRow(
+                    title = library.title,
+                    value = library.license,
+                    onClick = { onLibraryClick(library) }
+                )
             }
         }
     }

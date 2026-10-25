@@ -132,4 +132,5 @@
     <string name="warning_level_orange">Orange Warnung</string>
     <string name="warning_level_red">Rote Warnung</string>
     <string name="warning_level_message">Mitteilung</string>
+    <string name="licenses_intro">Vädret basiert auf den folgenden Open-Source-Projekten.</string>
 </resources>

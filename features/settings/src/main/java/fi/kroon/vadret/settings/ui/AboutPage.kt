@@ -9,17 +9,18 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.ElevatedCard
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
@@ -27,18 +28,22 @@ import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.platform.UriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.drawable.toBitmap
 import fi.kroon.vadret.core.R
 import fi.kroon.vadret.settings.model.AboutRow
+import fi.kroon.vadret.ui.VadretCard
 import fi.kroon.vadret.ui.VadretTheme
 import kotlinx.collections.immutable.ImmutableList
 
-private const val ABOUT_ROW_CONTENT_TYPE = "about-row"
+private const val HEADER_KEY = "header"
+private const val ROWS_KEY = "rows"
 private const val HEADER_CONTENT_TYPE = "header"
-private val appIconSize = 64.dp
+private const val ROWS_CONTENT_TYPE = "rows"
+private val appIconSize = 56.dp
 private val rowIconSize = 24.dp
+private val trailingIconSize = 20.dp
+private val rowMinimumHeight = 56.dp
 
 @Composable
 internal fun AboutPage(
@@ -47,18 +52,21 @@ internal fun AboutPage(
 ) {
     LazyColumn(
         contentPadding = PaddingValues(all = VadretTheme.spacing.large),
-        verticalArrangement = Arrangement.spacedBy(space = VadretTheme.spacing.small),
+        verticalArrangement = Arrangement.spacedBy(space = VadretTheme.spacing.medium),
         modifier = modifier.fillMaxSize()
     ) {
-        item(key = HEADER_CONTENT_TYPE, contentType = HEADER_CONTENT_TYPE) {
+        item(key = HEADER_KEY, contentType = HEADER_CONTENT_TYPE) {
             AboutHeader()
         }
-        items(
-            items = aboutRows,
-            key = { aboutRow: AboutRow -> aboutRow.titleResourceId },
-            contentType = { ABOUT_ROW_CONTENT_TYPE }
-        ) { aboutRow: AboutRow ->
-            AboutRowCard(aboutRow = aboutRow)
+        item(key = ROWS_KEY, contentType = ROWS_CONTENT_TYPE) {
+            VadretCard {
+                aboutRows.forEachIndexed { index: Int, aboutRow: AboutRow ->
+                    if (index > 0) {
+                        SettingsRowDivider()
+                    }
+                    AboutRowItem(aboutRow = aboutRow)
+                }
+            }
         }
     }
 }
@@ -72,25 +80,28 @@ private fun AboutHeader(modifier: Modifier = Modifier) {
             .toBitmap()
             .asImageBitmap()
     }
-    ElevatedCard(modifier = modifier.fillMaxWidth()) {
+    VadretCard(modifier = modifier) {
         Row(
+            horizontalArrangement = Arrangement.spacedBy(space = VadretTheme.spacing.large),
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.padding(all = VadretTheme.spacing.large)
         ) {
             Image(
                 bitmap = appIcon,
                 contentDescription = null,
-                modifier = Modifier.size(size = appIconSize)
+                modifier = Modifier
+                    .size(size = appIconSize)
+                    .clip(shape = CircleShape)
             )
-            Column(modifier = Modifier.padding(start = VadretTheme.spacing.large)) {
+            Column {
                 Text(
                     text = stringResource(id = R.string.app_name),
-                    style = VadretTheme.typography.titleLarge
+                    style = VadretTheme.textStyles.title,
+                    color = VadretTheme.colorScheme.onSurface
                 )
                 Text(
                     text = stringResource(id = R.string.about_app_description),
-                    style = VadretTheme.typography.bodyLarge,
-                    fontStyle = FontStyle.Italic,
+                    style = VadretTheme.textStyles.body,
                     color = VadretTheme.colorScheme.onSurfaceVariant
                 )
             }
@@ -99,41 +110,53 @@ private fun AboutHeader(modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun AboutRowCard(
+private fun AboutRowItem(
     aboutRow: AboutRow,
     modifier: Modifier = Modifier
 ) {
     val uriHandler: UriHandler = LocalUriHandler.current
     val url: String = stringResource(id = aboutRow.urlResourceId)
     val hintResourceId: Int? = aboutRow.hintResourceId
-    ElevatedCard(modifier = modifier.fillMaxWidth()) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable { uriHandler.openUri(uri = url) }
-                .padding(all = VadretTheme.spacing.large)
-        ) {
+    val trailingIconResourceId: Int? = aboutRow.trailingIconResourceId
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(space = VadretTheme.spacing.large),
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier
+            .fillMaxWidth()
+            .heightIn(min = rowMinimumHeight)
+            .clickable { uriHandler.openUri(uri = url) }
+            .padding(
+                horizontal = VadretTheme.spacing.large,
+                vertical = VadretTheme.spacing.medium
+            )
+    ) {
+        Icon(
+            painter = painterResource(id = aboutRow.iconResourceId),
+            contentDescription = null,
+            tint = VadretTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.size(size = rowIconSize)
+        )
+        Column(modifier = Modifier.weight(weight = 1f)) {
+            Text(
+                text = stringResource(id = aboutRow.titleResourceId),
+                style = VadretTheme.textStyles.listItem,
+                color = VadretTheme.colorScheme.onSurface
+            )
+            if (hintResourceId != null) {
+                Text(
+                    text = stringResource(id = hintResourceId),
+                    style = VadretTheme.textStyles.detail,
+                    color = VadretTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        }
+        if (trailingIconResourceId != null) {
             Icon(
-                painter = painterResource(id = aboutRow.iconResourceId),
+                painter = painterResource(id = trailingIconResourceId),
                 contentDescription = null,
                 tint = VadretTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.size(size = rowIconSize)
+                modifier = Modifier.size(size = trailingIconSize)
             )
-            Column(modifier = Modifier.padding(start = VadretTheme.spacing.extraLarge)) {
-                Text(
-                    text = stringResource(id = aboutRow.titleResourceId),
-                    style = VadretTheme.typography.titleMedium
-                )
-                if (hintResourceId != null) {
-                    Text(
-                        text = stringResource(id = hintResourceId),
-                        style = VadretTheme.typography.bodyMedium,
-                        fontStyle = FontStyle.Italic,
-                        color = VadretTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-            }
         }
     }
 }

@@ -61,10 +61,8 @@ git history.
 * [More information here](https://github.com/vadret/android/blob/master/CONTRIBUTING.md)
 
 ## Localization
-This project uses [crowdin](https://crowdin.com/) as localization management platform. You
-can checkout this project [here](https://crowdin.com/project/vadret) to start translating.
-After your translation(s) has been approved, feel free to submit a pull request with your
-name added to `TRANSLATORS` file.
+Translations live in `core/src/main/res/values-<language>/strings.xml`. To add a language or fix a
+translation, open a pull request and add your name to the `TRANSLATORS` file.
 
 ## License
 

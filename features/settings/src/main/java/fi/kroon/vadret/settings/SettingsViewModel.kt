@@ -4,9 +4,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import fi.kroon.vadret.common.Failure
 import fi.kroon.vadret.library.model.Library
+import fi.kroon.vadret.settings.extension.toLibraryGroups
+import fi.kroon.vadret.settings.extension.toLocationRows
 import fi.kroon.vadret.theme.model.Theme
 import io.github.sphrak.either.extension.onResult
-import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -42,6 +43,14 @@ class SettingsViewModel internal constructor(
             }
 
             is SettingsEvent.OnThemeSelected -> onThemeSelected(theme = event.theme)
+
+            is SettingsEvent.OnLibraryClicked -> state.update { state: SettingsState ->
+                state.copy(selectedLibrary = event.library)
+            }
+
+            SettingsEvent.OnLibraryDismissed -> state.update { state: SettingsState ->
+                state.copy(selectedLibrary = null)
+            }
         }
     }
 
@@ -59,7 +68,10 @@ class SettingsViewModel internal constructor(
             onError = { _: Failure -> },
             onSuccess = { settings: Settings ->
                 state.update { state: SettingsState ->
-                    state.copy(settings = settings)
+                    state.copy(
+                        settings = settings,
+                        locationRows = settings.toLocationRows()
+                    )
                 }
             }
         )
@@ -70,7 +82,7 @@ class SettingsViewModel internal constructor(
             onError = { },
             onSuccess = { libraries: List<Library> ->
                 state.update { state: SettingsState ->
-                    state.copy(libraries = libraries.toImmutableList())
+                    state.copy(libraryGroups = libraries.toLibraryGroups())
                 }
             }
         )
