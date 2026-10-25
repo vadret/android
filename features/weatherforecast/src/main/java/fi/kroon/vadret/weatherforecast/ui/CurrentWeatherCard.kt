@@ -3,7 +3,6 @@ package fi.kroon.vadret.weatherforecast.ui
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -81,10 +80,8 @@ internal fun CurrentWeatherCard(
                 )
             )
             Row(
-                horizontalArrangement = Arrangement.spacedBy(space = VadretTheme.spacing.small),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = contentInset)
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                modifier = Modifier.fillMaxWidth().padding(vertical = 20.dp)
             ) {
                 Stat(
                     label = stringResource(id = R.string.feels_like),
@@ -114,15 +111,16 @@ internal fun CurrentWeatherCard(
 }
 
 @Composable
-private fun RowScope.Stat(
+private fun Stat(
     label: String,
     value: String,
     modifier: Modifier = Modifier,
     trailing: @Composable () -> Unit = {}
 ) {
     Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(space = statLabelSpacing),
-        modifier = modifier.weight(weight = 1f)
+        modifier = modifier
     ) {
         Text(
             text = label,

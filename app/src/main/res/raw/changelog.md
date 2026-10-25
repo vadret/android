@@ -5,6 +5,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- New 'Coming days' view
+
 ## [3.0.0] Boelo -- 2026-10-25 🍁
 
 ### Added
