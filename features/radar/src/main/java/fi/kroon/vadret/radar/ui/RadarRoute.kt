@@ -9,13 +9,11 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
@@ -98,61 +96,55 @@ internal fun RadarScreen(
         deviceLocation = state.deviceLocation
     )
 
-    Scaffold(
-        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
-        contentWindowInsets = WindowInsets(),
-        modifier = modifier
-    ) { innerPadding: PaddingValues ->
-        Box(
-            modifier = Modifier
-                .padding(paddingValues = innerPadding)
-                .fillMaxSize()
+    Box(modifier = modifier.fillMaxSize()) {
+        RadarMap(
+            layer = state.layer,
+            precipitationOverlay = state.precipitationOverlay,
+            windField = state.windField,
+            deviceLocation = state.deviceLocation,
+            windAtLocation = windAtLocation,
+            windSpeedText = windAtLocation?.windSpeedText(unit = stringResource(id = R.string.m_s)),
+            onMapLoaded = { onEvent(RadarEvent.OnMapLoaded) },
+            modifier = Modifier.fillMaxSize()
+        )
+        AnimatedVisibility(
+            visible = state.isInitialLoading,
+            enter = EnterTransition.None,
+            exit = fadeOut(animationSpec = tween(durationMillis = COVER_FADE_MILLISECONDS)),
+            modifier = Modifier.fillMaxSize()
         ) {
-            RadarMap(
-                layer = state.layer,
-                precipitationOverlay = state.precipitationOverlay,
-                windField = state.windField,
-                deviceLocation = state.deviceLocation,
-                windAtLocation = windAtLocation,
-                windSpeedText = windAtLocation?.windSpeedText(unit = stringResource(id = R.string.m_s)),
-                onMapLoaded = { onEvent(RadarEvent.OnMapLoaded) },
-                modifier = Modifier.fillMaxSize()
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(color = VadretTheme.colorScheme.background)
             )
-            AnimatedVisibility(
-                visible = state.isInitialLoading,
-                enter = EnterTransition.None,
-                exit = fadeOut(animationSpec = tween(durationMillis = COVER_FADE_MILLISECONDS)),
-                modifier = Modifier.fillMaxSize()
-            ) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(color = VadretTheme.colorScheme.background)
-                )
-            }
-            if (state.isLoading || state.isInitialLoading) {
-                VadretProgressBar(
-                    modifier = Modifier
-                        .align(alignment = Alignment.TopCenter)
-                        .statusBarsPadding()
-                )
-            }
-            RadarLayerToolbar(
-                selectedLayer = state.layer,
-                onLayerSelected = { layer: RadarLayer -> onEvent(RadarEvent.OnLayerSelected(layer = layer)) },
+        }
+        if (state.isLoading || state.isInitialLoading) {
+            VadretProgressBar(
                 modifier = Modifier
                     .align(alignment = Alignment.TopCenter)
                     .statusBarsPadding()
-                    .padding(top = toolbarTopPadding)
-            )
-            RadarBottomPanel(
-                state = state,
-                onEvent = onEvent,
-                modifier = Modifier
-                    .align(alignment = Alignment.BottomCenter)
-                    .padding(all = VadretTheme.spacing.medium)
             )
         }
+        RadarLayerToolbar(
+            selectedLayer = state.layer,
+            onLayerSelected = { layer: RadarLayer -> onEvent(RadarEvent.OnLayerSelected(layer = layer)) },
+            modifier = Modifier
+                .align(alignment = Alignment.TopCenter)
+                .statusBarsPadding()
+                .padding(top = toolbarTopPadding)
+        )
+        RadarBottomPanel(
+            state = state,
+            onEvent = onEvent,
+            modifier = Modifier
+                .align(alignment = Alignment.BottomCenter)
+                .padding(all = VadretTheme.spacing.medium)
+        )
+        SnackbarHost(
+            hostState = snackbarHostState,
+            modifier = Modifier.align(alignment = Alignment.BottomCenter)
+        )
     }
 }
 

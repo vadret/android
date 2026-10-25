@@ -66,6 +66,8 @@ internal class RadarMapView(
     private var onMapLoaded: (() -> Unit)? = null
     private var map: MapLibreMap? = null
     private var isDark: Boolean = false
+    private var appearance: RadarMapAppearance? = null
+    private val imageLayersUpdate = Runnable { showImageLayers() }
 
     init {
         addView(mapView)
@@ -88,6 +90,10 @@ internal class RadarMapView(
     }
 
     fun setAppearance(radarMapAppearance: RadarMapAppearance) {
+        if (radarMapAppearance == appearance) {
+            return
+        }
+        appearance = radarMapAppearance
         locationMarkerDrawer.setColors(
             markerColor = radarMapAppearance.markerColor,
             surfaceColor = radarMapAppearance.surfaceColor,
@@ -120,7 +126,8 @@ internal class RadarMapView(
         locationMarkerDrawer.windAtLocation = windAtLocation
         locationMarkerDrawer.windSpeedText = windSpeedText
         overlayView.isWindShown = layer == RadarLayer.WIND
-        showImageLayers()
+        removeCallbacks(imageLayersUpdate)
+        post(imageLayersUpdate)
         overlayView.invalidate()
     }
 
@@ -148,6 +155,7 @@ internal class RadarMapView(
     }
 
     fun destroy() {
+        removeCallbacks(imageLayersUpdate)
         moveTo(state = Lifecycle.State.CREATED)
         mapView.onDestroy()
     }

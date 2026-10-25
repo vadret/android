@@ -30,6 +30,7 @@ internal class RadarImageLayer(
 ) {
 
     private var shownBitmap: Bitmap? = null
+    private var shownVisibility: String? = null
 
     fun show(
         bitmap: Bitmap?,
@@ -49,6 +50,10 @@ internal class RadarImageLayer(
         } else {
             Property.NONE
         }
+        if (visibility == shownVisibility) {
+            return
+        }
+        shownVisibility = visibility
         style.getLayer(layerId)?.setProperties(PropertyFactory.visibility(visibility))
     }
 
