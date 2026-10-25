@@ -34,7 +34,7 @@ import androidx.compose.ui.layout.positionInParent
 import androidx.compose.ui.semantics.Role
 import kotlinx.coroutines.launch
 
-private const val HALF = 2f
+private const val PILL_CORNER_RADIUS_FRACTION = 0.5f
 
 private val indicatorSpring: AnimationSpec<Float> = spring(
     dampingRatio = Spring.DampingRatioNoBouncy,
@@ -85,11 +85,12 @@ fun VadretSlidingSelector(
             .selectableGroup()
             .drawBehind {
                 if (isIndicatorPlaced) {
+                    val pillCornerRadius: Float = size.height * PILL_CORNER_RADIUS_FRACTION
                     drawRoundRect(
                         color = indicatorColor,
                         topLeft = Offset(x = indicatorLeft.value, y = 0f),
                         size = Size(width = indicatorWidth.value, height = size.height),
-                        cornerRadius = CornerRadius(x = size.height / HALF, y = size.height / HALF)
+                        cornerRadius = CornerRadius(x = pillCornerRadius, y = pillCornerRadius)
                     )
                 }
             }
@@ -118,7 +119,8 @@ fun VadretSlidingSelector(
                             left = coordinates.positionInParent().x,
                             width = coordinates.size.width.toFloat()
                         )
-                    }.clip(shape = CircleShape)
+                    }
+                    .clip(shape = CircleShape)
                     .selectable(
                         selected = isSelected,
                         role = role,

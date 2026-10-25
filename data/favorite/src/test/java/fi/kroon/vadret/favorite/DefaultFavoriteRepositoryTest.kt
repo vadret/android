@@ -15,6 +15,8 @@ import fi.kroon.vadret.testing.LogLine
 import fi.kroon.vadret.testing.SequentialIdGenerator
 import fi.kroon.vadret.testing.withRecordedLogs
 import io.github.sphrak.either.Either
+import io.github.sphrak.either.extension.asLeft
+import io.github.sphrak.either.extension.asRight
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
@@ -97,7 +99,10 @@ class DefaultFavoriteRepositoryTest {
     @Test
     fun `adding a place returns it with a generated id`() =
         testScope.runTest {
-            assertEquals(expected = Either.Right(b = kista), actual = favoriteRepository.add(favorite = kista))
+            assertEquals(
+                expected = kista.asRight(),
+                actual = favoriteRepository.add(favorite = kista)
+            )
         }
 
     @Test
@@ -105,8 +110,14 @@ class DefaultFavoriteRepositoryTest {
         testScope.runTest {
             favoriteRepository.add(favorite = kista)
 
-            assertEquals(expected = Either.Right(b = kista), actual = favoriteRepository.add(favorite = kista))
-            assertEquals(expected = Either.Right(b = listOf(kista)), actual = favoriteRepository.observeFavorites().first())
+            assertEquals(
+                expected = kista.asRight(),
+                actual = favoriteRepository.add(favorite = kista)
+            )
+            assertEquals(
+                expected = listOf(kista).asRight(),
+                actual = favoriteRepository.observeFavorites().first()
+            )
         }
 
     @Test
@@ -117,7 +128,10 @@ class DefaultFavoriteRepositoryTest {
             favoriteRepository.add(favorite = kista.copy(favoriteId = "favorite-2"))
 
             assertEquals(
-                expected = Either.Right(b = listOf(kista.copy(favoriteId = "favorite-2"), solna.copy(favoriteId = "favorite-1"))),
+                expected = listOf(
+                    kista.copy(favoriteId = "favorite-2"),
+                    solna.copy(favoriteId = "favorite-1")
+                ).asRight(),
                 actual = favoriteRepository.observeFavorites().first()
             )
         }
@@ -128,8 +142,14 @@ class DefaultFavoriteRepositoryTest {
             favoriteRepository.add(favorite = kista)
             favoriteRepository.add(favorite = solna)
 
-            assertEquals(expected = Either.Right(b = Unit), actual = favoriteRepository.removeFavorite(favoriteId = kista.favoriteId))
-            assertEquals(expected = Either.Right(b = listOf(solna)), actual = favoriteRepository.observeFavorites().first())
+            assertEquals(
+                expected = Unit.asRight(),
+                actual = favoriteRepository.removeFavorite(favoriteId = kista.favoriteId)
+            )
+            assertEquals(
+                expected = listOf(solna).asRight(),
+                actual = favoriteRepository.observeFavorites().first()
+            )
         }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -152,10 +172,10 @@ class DefaultFavoriteRepositoryTest {
 
             assertEquals<List<Either<Failure, List<Favorite>>>>(
                 expected = listOf(
-                    Either.Right(b = emptyList()),
-                    Either.Right(b = listOf(kista)),
-                    Either.Right(b = listOf(kista, solna)),
-                    Either.Right(b = listOf(solna))
+                    emptyList<Favorite>().asRight(),
+                    listOf(kista).asRight(),
+                    listOf(kista, solna).asRight(),
+                    listOf(solna).asRight()
                 ),
                 actual = emitted
             )
@@ -176,11 +196,11 @@ class DefaultFavoriteRepositoryTest {
                 )
 
                 assertEquals(
-                    expected = List(size = 3) { Either.Left(a = Failure(errorCode = ErrorCode.STORAGE_FAILED)) },
+                    expected = List(size = results.size) { Failure(errorCode = ErrorCode.STORAGE_FAILED).asLeft() },
                     actual = results
                 )
                 assertEquals(
-                    expected = List(size = 3) { "fi.kroon.vadret.favorite" to LogLevel.WARN },
+                    expected = List(size = results.size) { "fi.kroon.vadret.favorite" to LogLevel.WARN },
                     actual = recordingLogSink.lines.map { line: LogLine -> line.tag to line.level }
                 )
             }
@@ -194,7 +214,10 @@ class DefaultFavoriteRepositoryTest {
             )
 
             withRecordedLogs { recordingLogSink ->
-                assertEquals(expected = Either.Left(a = Failure.unknown()), actual = failingFavoriteRepository.add(favorite = kista))
+                assertEquals(
+                    expected = Failure.unknown().asLeft(),
+                    actual = failingFavoriteRepository.add(favorite = kista)
+                )
                 assertEquals(expected = LogLevel.ERROR, actual = recordingLogSink.lines.single().level)
             }
         }

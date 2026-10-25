@@ -1,10 +1,12 @@
 package fi.kroon.vadret.common
 
 import java.io.File
+import java.io.IOException
 import java.nio.file.Files
 import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
@@ -47,6 +49,19 @@ class DefaultDiskCacheTest {
         )
 
         assertEquals(expected = "second", actual = diskCache.read(key = "radar.json"))
+        assertEquals(expected = listOf("radar.json"), actual = directory.list()?.toList())
+    }
+
+    @Test
+    fun `a write that cannot replace the entry throws and leaves no temporary file`() {
+        File(directory, "radar.json").mkdirs()
+
+        assertFailsWith<IOException> {
+            diskCache.write(
+                key = "radar.json",
+                value = "{}"
+            )
+        }
         assertEquals(expected = listOf("radar.json"), actual = directory.list()?.toList())
     }
 

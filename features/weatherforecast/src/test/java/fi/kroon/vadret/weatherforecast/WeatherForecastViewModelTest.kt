@@ -133,7 +133,10 @@ class WeatherForecastViewModelTest {
             weatherForecastViewModel.onEvent(event = WeatherForecastEvent.OnShown)
             advanceUntilIdle()
 
-            assertEquals(expected = R.string.data_not_available_at_this_location, actual = weatherForecastViewModel.state.value.errorMessageResourceId)
+            assertEquals(
+                expected = R.string.data_not_available_at_this_location,
+                actual = weatherForecastViewModel.state.value.errorMessageResourceId
+            )
             weatherForecastViewModel.onEvent(event = WeatherForecastEvent.OnErrorShown)
             assertNull(actual = weatherForecastViewModel.state.value.errorMessageResourceId)
         }
@@ -148,7 +151,13 @@ class WeatherForecastViewModelTest {
             advanceUntilIdle()
 
             assertEquals(expected = listOf("Ki" to 10), actual = autoCompleteRepository.searches)
-            assertEquals(expected = SearchState(query = "Ki", suggestions = persistentListOf(kiruna)), actual = weatherForecastViewModel.state.value.search)
+            assertEquals(
+                expected = SearchState(
+                    query = "Ki",
+                    suggestions = persistentListOf(kiruna)
+                ),
+                actual = weatherForecastViewModel.state.value.search
+            )
         }
 
     @Test
@@ -159,7 +168,13 @@ class WeatherForecastViewModelTest {
             advanceUntilIdle()
 
             assertTrue(actual = autoCompleteRepository.searches.isEmpty())
-            assertEquals(expected = SearchState(query = " ", suggestions = persistentListOf()), actual = weatherForecastViewModel.state.value.search)
+            assertEquals(
+                expected = SearchState(
+                    query = " ",
+                    suggestions = persistentListOf()
+                ),
+                actual = weatherForecastViewModel.state.value.search
+            )
         }
 
     @Test
@@ -219,7 +234,10 @@ class WeatherForecastViewModelTest {
             assertEquals(expected = "Kiruna", actual = state.localityName)
             assertEquals(expected = false, actual = state.isRefreshing)
             assertEquals(expected = 67.8558 to 20.2253, actual = weatherForecastRepository.requestedCoordinates.last())
-            assertEquals(expected = listOf(true), actual = state.locationChoices.favorites.map { favoriteChoice: FavoriteChoice -> favoriteChoice.isSelected })
+            assertEquals(
+                expected = listOf(true),
+                actual = state.locationChoices.favorites.map { favoriteChoice: FavoriteChoice -> favoriteChoice.isSelected }
+            )
         }
 
     @Test
@@ -232,7 +250,10 @@ class WeatherForecastViewModelTest {
             weatherForecastViewModel.onEvent(event = WeatherForecastEvent.OnFavoriteRemoveClicked(favoriteId = kirunaFavorite.favoriteId))
             advanceUntilIdle()
 
-            assertEquals(expected = persistentListOf(), actual = weatherForecastViewModel.state.value.locationChoices.favorites)
+            assertEquals(
+                expected = persistentListOf(),
+                actual = weatherForecastViewModel.state.value.locationChoices.favorites
+            )
         }
 
     @Test
@@ -245,7 +266,10 @@ class WeatherForecastViewModelTest {
             weatherForecastViewModel.onEvent(event = WeatherForecastEvent.OnFavoriteRemoveClicked(favoriteId = kirunaFavorite.favoriteId))
             advanceUntilIdle()
 
-            assertEquals(expected = R.string.unhandled_error, actual = weatherForecastViewModel.state.value.errorMessageResourceId)
+            assertEquals(
+                expected = R.string.unhandled_error,
+                actual = weatherForecastViewModel.state.value.errorMessageResourceId
+            )
         }
 
     @Test

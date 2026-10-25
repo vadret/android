@@ -82,7 +82,10 @@ class DefaultAutoCompleteLocalDataSourceTest {
     fun `a coordinate that is not a number throws`() =
         testScope.runTest {
             assertFailsWith<NumberFormatException> {
-                dataSource(places = "Locality,Municipality,County,Latitude,Longitude\nA,B,C,north,east").search(prefix = "A", limit = 10)
+                dataSource(places = "Locality,Municipality,County,Latitude,Longitude\nA,B,C,north,east").search(
+                    prefix = "A",
+                    limit = 10
+                )
             }
         }
 }

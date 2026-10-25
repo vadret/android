@@ -15,8 +15,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import fi.kroon.vadret.core.R
+import fi.kroon.vadret.settings.extension.labelResourceId
 import fi.kroon.vadret.theme.model.Theme
 import fi.kroon.vadret.ui.VadretTheme
+import android.R as AndroidR
 
 @Composable
 internal fun ThemeDialog(
@@ -57,7 +59,7 @@ internal fun ThemeDialog(
         },
         confirmButton = {
             TextButton(onClick = onDismiss) {
-                Text(text = stringResource(id = android.R.string.cancel))
+                Text(text = stringResource(id = AndroidR.string.cancel))
             }
         },
         modifier = modifier

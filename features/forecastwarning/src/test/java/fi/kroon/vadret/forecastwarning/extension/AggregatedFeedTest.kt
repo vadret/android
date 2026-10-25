@@ -118,7 +118,12 @@ class AggregatedFeedTest {
         ).toWarningItem(now = now).details
 
         assertEquals(
-            expected = listOf(WarningDetail.Labelled(labelResourceId = R.string.warning_detail_description, text = "Kuling")),
+            expected = listOf(
+                WarningDetail.Labelled(
+                    labelResourceId = R.string.warning_detail_description,
+                    text = "Kuling"
+                )
+            ),
             actual = details
         )
     }

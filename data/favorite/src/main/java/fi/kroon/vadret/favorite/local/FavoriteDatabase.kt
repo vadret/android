@@ -3,7 +3,7 @@ package fi.kroon.vadret.favorite.local
 import androidx.room3.Database
 import androidx.room3.RoomDatabase
 
-internal const val FAVORITE_DATABASE_VERSION = 1
+private const val FAVORITE_DATABASE_VERSION = 1
 
 @Database(
     entities = [FavoriteEntity::class],

@@ -10,7 +10,7 @@ import kotlinx.serialization.SerializationException
 import java.io.IOException
 import java.net.UnknownHostException
 
-fun Exception.networkErrorCode(): ErrorCode? =
+internal fun Exception.networkErrorCode(): ErrorCode? =
     when (this) {
         is ResponseException -> response.status.value.toHttpErrorCode()
 

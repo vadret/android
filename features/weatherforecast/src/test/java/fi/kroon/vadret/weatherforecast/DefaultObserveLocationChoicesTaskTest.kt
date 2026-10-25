@@ -8,6 +8,8 @@ import fi.kroon.vadret.location.model.StoredLocation
 import fi.kroon.vadret.weatherforecast.model.FavoriteChoice
 import fi.kroon.vadret.weatherforecast.model.LocationChoices
 import io.github.sphrak.either.Either
+import io.github.sphrak.either.extension.asLeft
+import io.github.sphrak.either.extension.asRight
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
@@ -66,16 +68,14 @@ class DefaultObserveLocationChoicesTaskTest {
                 favorite = bergaDanderyd
             )
 
-            assertEquals(
-                expected = Either.Right(
-                    b = LocationChoices(
-                        isAutomatic = true,
-                        favorites = persistentListOf(
-                            FavoriteChoice(favorite = bergaDanderyd, isSelected = false),
-                            FavoriteChoice(favorite = bergaLinkoping, isSelected = false)
-                        )
+            assertEquals<Either<Failure, LocationChoices>>(
+                expected = LocationChoices(
+                    isAutomatic = true,
+                    favorites = persistentListOf(
+                        FavoriteChoice(favorite = bergaDanderyd, isSelected = false),
+                        FavoriteChoice(favorite = bergaLinkoping, isSelected = false)
                     )
-                ),
+                ).asRight(),
                 actual = observeLocationChoicesTask().first()
             )
         }
@@ -88,16 +88,14 @@ class DefaultObserveLocationChoicesTaskTest {
                 favorite = bergaLinkoping
             )
 
-            assertEquals(
-                expected = Either.Right(
-                    b = LocationChoices(
-                        isAutomatic = false,
-                        favorites = persistentListOf(
-                            FavoriteChoice(favorite = bergaDanderyd, isSelected = false),
-                            FavoriteChoice(favorite = bergaLinkoping, isSelected = true)
-                        )
+            assertEquals<Either<Failure, LocationChoices>>(
+                expected = LocationChoices(
+                    isAutomatic = false,
+                    favorites = persistentListOf(
+                        FavoriteChoice(favorite = bergaDanderyd, isSelected = false),
+                        FavoriteChoice(favorite = bergaLinkoping, isSelected = true)
                     )
-                ),
+                ).asRight(),
                 actual = observeLocationChoicesTask().first()
             )
         }
@@ -125,7 +123,10 @@ class DefaultObserveLocationChoicesTaskTest {
             val failure = Failure(errorCode = ErrorCode.STORAGE_FAILED)
             favoriteRepository.failure = failure
 
-            assertEquals(expected = Either.Left(a = failure), actual = observeLocationChoicesTask().first())
+            assertEquals<Either<Failure, LocationChoices>>(
+                expected = failure.asLeft(),
+                actual = observeLocationChoicesTask().first()
+            )
         }
 
     private fun Either<Failure, LocationChoices>.successOrEmpty(): List<FavoriteChoice> =

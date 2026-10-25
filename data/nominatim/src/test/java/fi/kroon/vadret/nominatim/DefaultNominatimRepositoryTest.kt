@@ -7,6 +7,8 @@ import fi.kroon.vadret.nominatim.remote.DefaultNominatimRemoteDataSource
 import fi.kroon.vadret.testing.mockHttpClient
 import fi.kroon.vadret.testing.withRecordedLogs
 import io.github.sphrak.either.Either
+import io.github.sphrak.either.extension.asLeft
+import io.github.sphrak.either.extension.asRight
 import io.ktor.client.engine.mock.MockRequestHandler
 import io.ktor.client.engine.mock.respond
 import io.ktor.client.request.HttpRequestData
@@ -36,7 +38,13 @@ class DefaultNominatimRepositoryTest {
             )
         )
 
-    private fun respondingWith(body: String): NominatimRepository = repository { respond(content = body, headers = jsonHeaders) }
+    private fun respondingWith(body: String): NominatimRepository =
+        repository {
+            respond(
+                content = body,
+                headers = jsonHeaders
+            )
+        }
 
     @Test
     fun `the reverse lookup asks for the coordinates at city zoom`() =
@@ -47,9 +55,17 @@ class DefaultNominatimRepositoryTest {
             )
 
             val url = requests.single().url
-            assertEquals(expected = "https://nominatim.openstreetmap.org/reverse", actual = url.toString().substringBefore('?'))
             assertEquals(
-                expected = mapOf("format" to "json", "lat" to "57.7089", "lon" to "11.9746", "zoom" to "16"),
+                expected = "https://nominatim.openstreetmap.org/reverse",
+                actual = url.toString().substringBefore(delimiter = '?')
+            )
+            assertEquals(
+                expected = mapOf(
+                    "format" to "json",
+                    "lat" to "57.7089",
+                    "lon" to "11.9746",
+                    "zoom" to "16"
+                ),
                 actual = url.parameters.names().associateWith { name: String -> url.parameters[name] }
             )
         }
@@ -73,7 +89,7 @@ class DefaultNominatimRepositoryTest {
             }
 
             assertEquals(
-                expected = bodies.mapValues { (_, name: String?) -> Either.Right(b = Locality(name = name)) },
+                expected = bodies.mapValues { (_, name: String?) -> Locality(name = name).asRight() },
                 actual = actual
             )
         }
@@ -82,13 +98,29 @@ class DefaultNominatimRepositoryTest {
     fun `http and network failures are told apart`() =
         runTest {
             withRecordedLogs {
-                val forbidden: Either<Failure, Locality> = repository { respond(content = "", status = HttpStatusCode.Forbidden) }
-                    .getLocality(latitude = 57.0, longitude = 12.0)
+                val forbidden: Either<Failure, Locality> = repository {
+                    respond(
+                        content = "",
+                        status = HttpStatusCode.Forbidden
+                    )
+                }.getLocality(
+                    latitude = 57.0,
+                    longitude = 12.0
+                )
                 val offline: Either<Failure, Locality> = repository { throw UnknownHostException("nominatim.openstreetmap.org") }
-                    .getLocality(latitude = 57.0, longitude = 12.0)
+                    .getLocality(
+                        latitude = 57.0,
+                        longitude = 12.0
+                    )
 
-                assertEquals(expected = Either.Left(a = Failure(errorCode = ErrorCode.HTTP_FORBIDDEN)), actual = forbidden)
-                assertEquals(expected = Either.Left(a = Failure(errorCode = ErrorCode.NETWORK_UNAVAILABLE)), actual = offline)
+                assertEquals(
+                    expected = Failure(errorCode = ErrorCode.HTTP_FORBIDDEN).asLeft(),
+                    actual = forbidden
+                )
+                assertEquals(
+                    expected = Failure(errorCode = ErrorCode.NETWORK_UNAVAILABLE).asLeft(),
+                    actual = offline
+                )
             }
         }
 }

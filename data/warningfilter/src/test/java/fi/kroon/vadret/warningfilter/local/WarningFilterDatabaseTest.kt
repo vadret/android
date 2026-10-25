@@ -61,9 +61,25 @@ class WarningFilterDatabaseTest {
     @Test
     fun `inserting a stored district keeps the stored row`() =
         testScope.runTest {
-            districtDao.insert(districtEntities = listOf(district(districtId = 1, name = "Stockholms län", isEnabled = true)))
+            districtDao.insert(
+                districtEntities = listOf(
+                    district(
+                        districtId = 1,
+                        name = "Stockholms län",
+                        isEnabled = true
+                    )
+                )
+            )
 
-            districtDao.insert(districtEntities = listOf(district(districtId = 1, name = "Renamed", isEnabled = false)))
+            districtDao.insert(
+                districtEntities = listOf(
+                    district(
+                        districtId = 1,
+                        name = "Renamed",
+                        isEnabled = false
+                    )
+                )
+            )
 
             assertEquals(
                 expected = listOf(district(districtId = 1, name = "Stockholms län", isEnabled = true)),

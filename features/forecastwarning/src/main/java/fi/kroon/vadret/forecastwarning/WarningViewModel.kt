@@ -1,5 +1,6 @@
 package fi.kroon.vadret.forecastwarning
 
+import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import fi.kroon.vadret.aggregatedfeed.model.AggregatedFeed
@@ -37,14 +38,14 @@ class WarningViewModel internal constructor(
     private val coroutineDispatcher: CoroutineDispatcher
 ) : ViewModel() {
 
-    val state: StateFlow<WarningState>
+    internal val state: StateFlow<WarningState>
         field = MutableStateFlow(value = WarningState())
 
     private val filterDispatcher: CoroutineDispatcher = coroutineDispatcher.limitedParallelism(parallelism = 1)
     private val isStarted: AtomicBoolean = AtomicBoolean(value = false)
     private val loadJob: AtomicReference<Job?> = AtomicReference(value = null)
 
-    fun onEvent(event: WarningEvent) {
+    internal fun onEvent(event: WarningEvent) {
         when (event) {
             WarningEvent.OnStart -> onStart()
 
@@ -176,10 +177,7 @@ class WarningViewModel internal constructor(
             .map { feedSourceOption: FeedSourceOption -> feedSourceOption.feedSource }
             .toSet()
         if (enabledDistrictIds.isEmpty() || enabledFeedSources.isEmpty()) {
-            showFilterError(
-                filter = filter,
-                errorMessageResourceId = R.string.filter_must_select_one
-            )
+            showFilterError(errorMessageResourceId = R.string.filter_must_select_one)
             return false
         }
         return setWarningFilterTask(
@@ -187,10 +185,7 @@ class WarningViewModel internal constructor(
             enabledFeedSources = enabledFeedSources
         ).onResult(
             onError = { failure: Failure ->
-                showFilterError(
-                    filter = filter,
-                    errorMessageResourceId = failure.messageResourceId()
-                )
+                showFilterError(errorMessageResourceId = failure.messageResourceId())
                 false
             },
             onSuccess = {
@@ -205,12 +200,14 @@ class WarningViewModel internal constructor(
         )
     }
 
-    private fun showFilterError(
-        filter: WarningFilterState,
-        errorMessageResourceId: Int
-    ) {
+    private fun showFilterError(@StringRes errorMessageResourceId: Int) {
         state.update { state: WarningState ->
-            state.copy(filter = filter.copy(errorMessageResourceId = errorMessageResourceId))
+            val filter: WarningFilterState? = state.filter
+            if (filter != null) {
+                state.copy(filter = filter.copy(errorMessageResourceId = errorMessageResourceId))
+            } else {
+                state
+            }
         }
     }
 

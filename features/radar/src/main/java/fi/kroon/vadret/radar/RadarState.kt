@@ -10,7 +10,7 @@ import fi.kroon.vadret.radar.wind.WindField
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 
-data class RadarState(
+internal data class RadarState(
     val layer: RadarLayer = RadarLayer.PRECIPITATION,
     val precipitationFrames: ImmutableList<RadarFrame> = persistentListOf(),
     val precipitationIndex: Int = 0,

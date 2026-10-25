@@ -24,6 +24,8 @@ import androidx.compose.ui.unit.dp
 import fi.kroon.vadret.aggregatedfeed.model.WarningLevel
 import fi.kroon.vadret.core.R
 import fi.kroon.vadret.forecastwarning.extension.displayName
+import fi.kroon.vadret.forecastwarning.extension.iconResourceId
+import fi.kroon.vadret.forecastwarning.extension.labelResourceId
 import fi.kroon.vadret.forecastwarning.model.WarningDetail
 import fi.kroon.vadret.forecastwarning.model.WarningItem
 import fi.kroon.vadret.ui.VadretCard

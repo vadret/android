@@ -1,3 +1,3 @@
 package fi.kroon.vadret.warningfilter.exception
 
-internal class DistrictsNotAvailableException : Exception("SMHI listed no warning districts")
+internal class DistrictsNotAvailableException internal constructor() : Exception("SMHI listed no warning districts")

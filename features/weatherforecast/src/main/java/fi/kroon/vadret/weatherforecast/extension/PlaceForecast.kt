@@ -115,13 +115,13 @@ private fun Forecast.toCurrentWeather(
             symbolCode = symbolCode,
             isDaytime = isDaytime
         ),
-        descriptionResourceId = WeatherForecastUtil.getWsymb2ResourceId(index = symbolCode),
+        descriptionResourceId = WeatherForecastUtil.getWsymb2ResourceId(symbolCode = symbolCode),
         windSpeedClassResourceId = WeatherForecastUtil.getWindSpeedClassResourceId(windSpeed = windSpeed),
         windDirectionResourceId = WeatherForecastUtil.handleWindDirection(degree = windFromDirection),
         windSpeed = windSpeed,
         windArrowRotation = (windFromDirection.toFloat() + WIND_ARROW_ROTATION_OFFSET) % DEGREES_IN_CIRCLE,
         humidityPercent = relativeHumidity,
-        precipitationResourceId = WeatherForecastUtil.getPrecipitationResourceId(prSort = precipitationType),
+        precipitationResourceId = WeatherForecastUtil.getPrecipitationResourceId(precipitationType = precipitationType),
         sunriseText = sunriseSunset?.sunrise?.format(timeFormat = timeFormat),
         sunsetText = sunriseSunset?.sunset?.format(timeFormat = timeFormat)
     )
@@ -146,7 +146,7 @@ private fun Forecast.toForecastHour(
             .format(format = hourFormat),
         temperature = airTemperature,
         feelsLikeTemperature = feelsLikeTemperature(),
-        descriptionResourceId = WeatherForecastUtil.getWsymb2ResourceId(index = symbolCode),
+        descriptionResourceId = WeatherForecastUtil.getWsymb2ResourceId(symbolCode = symbolCode),
         iconResourceId = WeatherForecastUtil.getWeatherSymbolIconResourceId(
             symbolCode = symbolCode,
             isDaytime = isDaytime

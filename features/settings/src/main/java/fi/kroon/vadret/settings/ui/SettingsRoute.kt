@@ -35,7 +35,7 @@ fun SettingsRoute(
 }
 
 @Composable
-fun SettingsScreen(
+internal fun SettingsScreen(
     state: SettingsState,
     onEvent: (SettingsEvent) -> Unit,
     modifier: Modifier = Modifier
@@ -67,7 +67,9 @@ fun SettingsScreen(
 
                 SettingsPage.LIBRARIES -> LibrariesPage(
                     libraryGroups = state.libraryGroups,
-                    onLibraryClick = { library: Library -> onEvent(SettingsEvent.OnLibraryClicked(library = library)) }
+                    onLibraryClick = { library: Library ->
+                        onEvent(SettingsEvent.OnLibraryClicked(library = library))
+                    }
                 )
 
                 SettingsPage.ABOUT -> AboutPage(aboutRows = state.aboutRows)

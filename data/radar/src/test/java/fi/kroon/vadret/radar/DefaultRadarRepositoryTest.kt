@@ -20,6 +20,8 @@ import fi.kroon.vadret.testing.LogLine
 import fi.kroon.vadret.testing.mockHttpClient
 import fi.kroon.vadret.testing.withRecordedLogs
 import io.github.sphrak.either.Either
+import io.github.sphrak.either.extension.asLeft
+import io.github.sphrak.either.extension.asRight
 import io.ktor.client.engine.mock.respond
 import io.ktor.client.request.HttpRequestData
 import io.ktor.http.HttpHeaders
@@ -90,8 +92,14 @@ class DefaultRadarRepositoryTest {
 
     private val fetchedRadar = Radar(
         images = listOf(
-            RadarImage(imageUrl = "https://smhi.se/1350.tif", validAt = Instant.parse(input = "2026-10-24T13:50:00Z")),
-            RadarImage(imageUrl = "https://smhi.se/1355.tif", validAt = Instant.parse(input = "2026-10-24T13:55:00Z"))
+            RadarImage(
+                imageUrl = "https://smhi.se/1350.tif",
+                validAt = Instant.parse(input = "2026-10-24T13:50:00Z")
+            ),
+            RadarImage(
+                imageUrl = "https://smhi.se/1355.tif",
+                validAt = Instant.parse(input = "2026-10-24T13:55:00Z")
+            )
         )
     )
 
@@ -99,7 +107,10 @@ class DefaultRadarRepositoryTest {
         fetchedAt: Instant,
         date: String = "2026-10-24",
         images: List<RadarImageEntity> = listOf(
-            RadarImageEntity(imageUrl = "https://smhi.se/cached.tif", validAtEpochMillis = now.toEpochMilliseconds())
+            RadarImageEntity(
+                imageUrl = "https://smhi.se/cached.tif",
+                validAtEpochMillis = now.toEpochMilliseconds()
+            )
         )
     ) {
         diskCache.write(
@@ -118,8 +129,20 @@ class DefaultRadarRepositoryTest {
     fun `without a cache today's radar is fetched with unreadable files skipped`() =
         testScope.runTest {
             withRecordedLogs { recordingLogSink ->
-                assertEquals<Either<Failure, Radar>>(expected = Either.Right(b = fetchedRadar), actual = radarRepository.getRadar())
-                assertEquals(expected = listOf(LocalDate(year = 2026, month = 10, day = 24)), actual = radarRemoteDataSource.requestedDates)
+                assertEquals<Either<Failure, Radar>>(
+                    expected = fetchedRadar.asRight(),
+                    actual = radarRepository.getRadar()
+                )
+                assertEquals(
+                    expected = listOf(
+                        LocalDate(
+                            year = 2026,
+                            month = 10,
+                            day = 24
+                        )
+                    ),
+                    actual = radarRemoteDataSource.requestedDates
+                )
                 assertEquals(
                     expected = listOf(LogLevel.WARN, LogLevel.WARN),
                     actual = recordingLogSink.lines.map { line: LogLine -> line.level }
@@ -133,7 +156,10 @@ class DefaultRadarRepositoryTest {
             radarRepository.getRadar()
             clock.now = now + 14.minutes
 
-            assertEquals<Either<Failure, Radar>>(expected = Either.Right(b = fetchedRadar), actual = radarRepository.getRadar())
+            assertEquals<Either<Failure, Radar>>(
+                expected = fetchedRadar.asRight(),
+                actual = radarRepository.getRadar()
+            )
             assertEquals(expected = 1, actual = radarRemoteDataSource.requestedDates.size)
         }
 
@@ -152,7 +178,10 @@ class DefaultRadarRepositoryTest {
                 radarRepository.getRadar()
             }
 
-            assertEquals(expected = List(size = caches.size) { Either.Right(b = fetchedRadar) }, actual = results)
+            assertEquals(
+                expected = List(size = caches.size) { fetchedRadar.asRight() },
+                actual = results
+            )
             assertEquals(expected = caches.size, actual = radarRemoteDataSource.requestedDates.size)
         }
 
@@ -165,13 +194,21 @@ class DefaultRadarRepositoryTest {
                     value = RadarCacheEntity(
                         fetchedAtEpochMillis = now.toEpochMilliseconds(),
                         date = "2026-10-24",
-                        images = listOf(RadarImageEntity(imageUrl = "https://smhi.se/cached.png", validAtEpochMillis = now.toEpochMilliseconds()))
+                        images = listOf(
+                            RadarImageEntity(
+                                imageUrl = "https://smhi.se/cached.png",
+                                validAtEpochMillis = now.toEpochMilliseconds()
+                            )
+                        )
                     )
                 )
             )
 
             withRecordedLogs {
-                assertEquals<Either<Failure, Radar>>(expected = Either.Right(b = fetchedRadar), actual = radarRepository.getRadar())
+                assertEquals<Either<Failure, Radar>>(
+                    expected = fetchedRadar.asRight(),
+                    actual = radarRepository.getRadar()
+                )
             }
             assertEquals(expected = 1, actual = radarRemoteDataSource.requestedDates.size)
         }
@@ -179,10 +216,16 @@ class DefaultRadarRepositoryTest {
     @Test
     fun `an unreadable cache is dropped and fetched again`() =
         testScope.runTest {
-            diskCache.write(key = CACHE_KEY, value = "serialized java object")
+            diskCache.write(
+                key = CACHE_KEY,
+                value = "serialized java object"
+            )
 
             withRecordedLogs {
-                assertEquals<Either<Failure, Radar>>(expected = Either.Right(b = fetchedRadar), actual = radarRepository.getRadar())
+                assertEquals<Either<Failure, Radar>>(
+                    expected = fetchedRadar.asRight(),
+                    actual = radarRepository.getRadar()
+                )
             }
             assertEquals(expected = 1, actual = radarRemoteDataSource.requestedDates.size)
         }
@@ -197,7 +240,10 @@ class DefaultRadarRepositoryTest {
                     httpClient = lazy {
                         mockHttpClient { request: HttpRequestData ->
                             requests.add(request)
-                            respond(content = """{"files":[]}""", headers = headersOf(HttpHeaders.ContentType, "application/json"))
+                            respond(
+                                content = """{"files":[]}""",
+                                headers = headersOf(HttpHeaders.ContentType, "application/json")
+                            )
                         }
                     }
                 ),
@@ -208,7 +254,10 @@ class DefaultRadarRepositoryTest {
                 clock = clock
             )
 
-            assertEquals<Either<Failure, Radar>>(expected = Either.Right(b = Radar(images = emptyList())), actual = remoteRepository.getRadar())
+            assertEquals<Either<Failure, Radar>>(
+                expected = Radar(images = emptyList()).asRight(),
+                actual = remoteRepository.getRadar()
+            )
             assertEquals(
                 expected = "https://opendata-download-radar.smhi.se/api/version/latest/area/sweden/product/comp/2026/1/5?format=tif&timeZone=GMT",
                 actual = requests.single().url.toString()
@@ -226,7 +275,16 @@ class DefaultRadarRepositoryTest {
             withRecordedLogs {
                 val actual: Map<HttpStatusCode, Either<Failure, Radar>> = statuses.keys.associateWith { status: HttpStatusCode ->
                     DefaultRadarRepository(
-                        radarRemoteDataSource = DefaultRadarRemoteDataSource(httpClient = lazy { mockHttpClient { respond(content = "", status = status) } }),
+                        radarRemoteDataSource = DefaultRadarRemoteDataSource(
+                            httpClient = lazy {
+                                mockHttpClient {
+                                    respond(
+                                        content = "",
+                                        status = status
+                                    )
+                                }
+                            }
+                        ),
                         radarLocalDataSource = DefaultRadarLocalDataSource(
                             diskCache = FakeDiskCache(),
                             coroutineDispatcher = StandardTestDispatcher(testScheduler)
@@ -236,7 +294,7 @@ class DefaultRadarRepositoryTest {
                 }
 
                 assertEquals(
-                    expected = statuses.mapValues { (_, errorCode: ErrorCode) -> Either.Left(a = Failure(errorCode = errorCode)) },
+                    expected = statuses.mapValues { (_, errorCode: ErrorCode) -> Failure(errorCode = errorCode).asLeft() },
                     actual = actual
                 )
             }

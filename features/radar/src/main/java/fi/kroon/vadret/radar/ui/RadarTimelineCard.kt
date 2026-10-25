@@ -305,15 +305,24 @@ private fun TimelineColumn(
             horizontalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier.fillMaxWidth()
         ) {
-            listOf(timeline.startLabel, timeline.middleLabel, timeline.endLabel).forEach { label: String ->
-                Text(
-                    text = label,
-                    style = VadretTheme.textStyles.label,
-                    color = VadretTheme.colorScheme.onSurfaceVariant
-                )
-            }
+            TimelineLabel(text = timeline.startLabel)
+            TimelineLabel(text = timeline.middleLabel)
+            TimelineLabel(text = timeline.endLabel)
         }
     }
+}
+
+@Composable
+private fun TimelineLabel(
+    text: String,
+    modifier: Modifier = Modifier
+) {
+    Text(
+        text = text,
+        style = VadretTheme.textStyles.label,
+        color = VadretTheme.colorScheme.onSurfaceVariant,
+        modifier = modifier
+    )
 }
 
 @Composable

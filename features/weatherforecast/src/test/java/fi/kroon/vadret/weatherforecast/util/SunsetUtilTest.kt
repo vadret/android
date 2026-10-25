@@ -20,36 +20,36 @@ class SunsetUtilTest {
     @Test
     fun `stockholm sunrise and sunset on 24 october 2026`() {
         val sunriseSunset: SunriseSunset? = SunsetUtil.getSunriseSunset(
-            day = Instant.parse("2026-10-24T10:00:00Z"),
+            day = Instant.parse(input = "2026-10-24T10:00:00Z"),
             latitude = stockholmLatitude,
             longitude = stockholmLongitude
         )
 
-        assertNotNull(sunriseSunset)
-        assertWithin(expected = Instant.parse("2026-10-24T05:47:00Z"), actual = sunriseSunset.sunrise)
-        assertWithin(expected = Instant.parse("2026-10-24T15:18:00Z"), actual = sunriseSunset.sunset)
+        assertNotNull(actual = sunriseSunset)
+        assertWithin(expected = Instant.parse(input = "2026-10-24T05:47:00Z"), actual = sunriseSunset.sunrise)
+        assertWithin(expected = Instant.parse(input = "2026-10-24T15:18:00Z"), actual = sunriseSunset.sunset)
     }
 
     @Test
     fun `no sunrise during polar night in kiruna`() {
         val sunriseSunset: SunriseSunset? = SunsetUtil.getSunriseSunset(
-            day = Instant.parse("2026-12-21T12:00:00Z"),
+            day = Instant.parse(input = "2026-12-21T12:00:00Z"),
             latitude = kirunaLatitude,
             longitude = kirunaLongitude
         )
 
-        assertNull(sunriseSunset)
+        assertNull(actual = sunriseSunset)
     }
 
     @Test
     fun `no sunset during midnight sun in kiruna`() {
         val sunriseSunset: SunriseSunset? = SunsetUtil.getSunriseSunset(
-            day = Instant.parse("2026-06-21T12:00:00Z"),
+            day = Instant.parse(input = "2026-06-21T12:00:00Z"),
             latitude = kirunaLatitude,
             longitude = kirunaLongitude
         )
 
-        assertNull(sunriseSunset)
+        assertNull(actual = sunriseSunset)
     }
 
     @Test
@@ -78,14 +78,14 @@ class SunsetUtilTest {
 
     private fun isSunUpInStockholm(at: String): Boolean =
         SunsetUtil.isSunUp(
-            at = Instant.parse(at),
+            at = Instant.parse(input = at),
             latitude = stockholmLatitude,
             longitude = stockholmLongitude
         )
 
     private fun isSunUpInKiruna(at: String): Boolean =
         SunsetUtil.isSunUp(
-            at = Instant.parse(at),
+            at = Instant.parse(input = at),
             latitude = kirunaLatitude,
             longitude = kirunaLongitude
         )

@@ -202,6 +202,12 @@ internal class FakeAutoCompleteRepository(
         limit: Int
     ): Either<Failure, List<AutoCompleteItem>> {
         searches.add(prefix to limit)
-        return items.filter { autoCompleteItem: AutoCompleteItem -> autoCompleteItem.locality.startsWith(prefix = prefix, ignoreCase = true) }.asRight()
+        return items
+            .filter { autoCompleteItem: AutoCompleteItem ->
+                autoCompleteItem.locality.startsWith(
+                    prefix = prefix,
+                    ignoreCase = true
+                )
+            }.asRight()
     }
 }

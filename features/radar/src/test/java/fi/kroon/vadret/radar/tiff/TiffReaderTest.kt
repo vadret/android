@@ -31,7 +31,12 @@ private fun tiff(
     val extraOffset: Int = directoryOffset + Short.SIZE_BYTES + entries.size * ENTRY_SIZE + Int.SIZE_BYTES
     val extraSize: Int = entries.sumOf { entry: TiffEntry -> entry.outOfLineSize() }
     val buffer: ByteBuffer = ByteBuffer.allocate(extraOffset + extraSize).order(byteOrder)
-    buffer.put(if (byteOrder == ByteOrder.LITTLE_ENDIAN) "II".toByteArray() else "MM".toByteArray())
+    val byteOrderMark: ByteArray = if (byteOrder == ByteOrder.LITTLE_ENDIAN) {
+        "II".toByteArray()
+    } else {
+        "MM".toByteArray()
+    }
+    buffer.put(byteOrderMark)
     buffer.putShort(42)
     buffer.putInt(directoryOffset)
     buffer.put(imageData)

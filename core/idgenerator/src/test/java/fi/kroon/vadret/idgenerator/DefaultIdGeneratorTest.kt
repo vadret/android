@@ -7,6 +7,8 @@ import kotlin.test.assertTrue
 private const val GENERATED_ID_COUNT = 1000
 private const val UUID_VERSION_INDEX = 14
 
+private val uuidPattern: Regex = Regex(pattern = "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}")
+
 class DefaultIdGeneratorTest {
 
     private val idGenerator: IdGenerator = IdGenerator()
@@ -22,7 +24,7 @@ class DefaultIdGeneratorTest {
     fun `generated ids are version 7 uuids`() {
         val id: String = idGenerator.generate()
 
-        assertTrue(actual = id.matches(regex = Regex(pattern = "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}")))
+        assertTrue(actual = id.matches(regex = uuidPattern))
         assertEquals(expected = '7', actual = id[UUID_VERSION_INDEX])
     }
 }

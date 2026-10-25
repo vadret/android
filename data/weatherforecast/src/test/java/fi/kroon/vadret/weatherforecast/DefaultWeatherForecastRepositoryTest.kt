@@ -9,6 +9,8 @@ import fi.kroon.vadret.testing.withRecordedLogs
 import fi.kroon.vadret.weatherforecast.model.Forecast
 import fi.kroon.vadret.weatherforecast.remote.DefaultWeatherForecastRemoteDataSource
 import io.github.sphrak.either.Either
+import io.github.sphrak.either.extension.asLeft
+import io.github.sphrak.either.extension.asRight
 import io.ktor.client.engine.mock.MockRequestHandler
 import io.ktor.client.engine.mock.respond
 import io.ktor.client.request.HttpRequestData
@@ -64,11 +66,15 @@ class DefaultWeatherForecastRepositoryTest {
     @Test
     fun `the forecast is asked for at six decimals at most`() =
         runTest {
-            repository { respond(content = """{"timeSeries":[]}""", headers = jsonHeaders) }
-                .getForecasts(
-                    latitude = 59.32938123,
-                    longitude = 18.0686
+            repository {
+                respond(
+                    content = """{"timeSeries":[]}""",
+                    headers = jsonHeaders
                 )
+            }.getForecasts(
+                latitude = 59.32938123,
+                longitude = 18.0686
+            )
 
             assertEquals(
                 expected = "https://opendata-download-metfcst.smhi.se/api/category/snow1g/version/1/geotype/point/lon/18.0686/lat/59.329381/data.json",
@@ -89,35 +95,37 @@ class DefaultWeatherForecastRepositoryTest {
             }
             """.trimIndent()
 
-            val result: Either<Failure, List<Forecast>> = repository { respond(content = body, headers = jsonHeaders) }
-                .getForecasts(
-                    latitude = 59.3293,
-                    longitude = 18.0686
+            val result: Either<Failure, List<Forecast>> = repository {
+                respond(
+                    content = body,
+                    headers = jsonHeaders
                 )
+            }.getForecasts(
+                latitude = 59.3293,
+                longitude = 18.0686
+            )
 
             assertEquals<Either<Failure, List<Forecast>>>(
-                expected = Either.Right(
-                    b = listOf(
-                        Forecast(
-                            validAt = Instant.parse(input = "2026-10-24T11:00:00Z"),
-                            airTemperature = 7.0,
-                            windFromDirection = 225.0,
-                            windSpeed = 4.2,
-                            relativeHumidity = 81,
-                            precipitationType = 1,
-                            symbolCode = 18
-                        ),
-                        Forecast(
-                            validAt = Instant.parse(input = "2026-10-24T12:00:00Z"),
-                            airTemperature = 8.5,
-                            windFromDirection = 225.0,
-                            windSpeed = 4.2,
-                            relativeHumidity = 81,
-                            precipitationType = 1,
-                            symbolCode = 18
-                        )
+                expected = listOf(
+                    Forecast(
+                        validAt = Instant.parse(input = "2026-10-24T11:00:00Z"),
+                        airTemperature = 7.0,
+                        windFromDirection = 225.0,
+                        windSpeed = 4.2,
+                        relativeHumidity = 81,
+                        precipitationType = 1,
+                        symbolCode = 18
+                    ),
+                    Forecast(
+                        validAt = Instant.parse(input = "2026-10-24T12:00:00Z"),
+                        airTemperature = 8.5,
+                        windFromDirection = 225.0,
+                        windSpeed = 4.2,
+                        relativeHumidity = 81,
+                        precipitationType = 1,
+                        symbolCode = 18
                     )
-                ),
+                ).asRight(),
                 actual = result
             )
         }
@@ -127,10 +135,30 @@ class DefaultWeatherForecastRepositoryTest {
         runTest {
             withRecordedLogs { recordingLogSink ->
                 val results: List<Either<Failure, List<Forecast>>> = listOf(
-                    repository { respond(content = "", status = HttpStatusCode.NotFound) },
-                    repository { respond(content = "", status = HttpStatusCode.ServiceUnavailable) },
-                    repository { respond(content = """{"timeSeries":[${timeSeries(time = "noon", airTemperature = 1.0)}]}""", headers = jsonHeaders) },
-                    repository { respond(content = """{"unexpected":true}""", headers = jsonHeaders) }
+                    repository {
+                        respond(
+                            content = "",
+                            status = HttpStatusCode.NotFound
+                        )
+                    },
+                    repository {
+                        respond(
+                            content = "",
+                            status = HttpStatusCode.ServiceUnavailable
+                        )
+                    },
+                    repository {
+                        respond(
+                            content = """{"timeSeries":[${timeSeries(time = "noon", airTemperature = 1.0)}]}""",
+                            headers = jsonHeaders
+                        )
+                    },
+                    repository {
+                        respond(
+                            content = """{"unexpected":true}""",
+                            headers = jsonHeaders
+                        )
+                    }
                 ).map { weatherForecastRepository: WeatherForecastRepository ->
                     weatherForecastRepository.getForecasts(
                         latitude = 70.0,
@@ -144,11 +172,11 @@ class DefaultWeatherForecastRepositoryTest {
                         ErrorCode.HTTP_SERVICE_UNAVAILABLE,
                         ErrorCode.INVALID_RESPONSE,
                         ErrorCode.INVALID_RESPONSE
-                    ).map { errorCode: ErrorCode -> Either.Left(a = Failure(errorCode = errorCode)) },
+                    ).map { errorCode: ErrorCode -> Failure(errorCode = errorCode).asLeft() },
                     actual = results
                 )
                 assertEquals(
-                    expected = List(size = 4) { LogLevel.WARN },
+                    expected = List(size = results.size) { LogLevel.WARN },
                     actual = recordingLogSink.lines.map { line: LogLine -> line.level }
                 )
             }

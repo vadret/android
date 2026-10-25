@@ -4,6 +4,7 @@ import fi.kroon.vadret.aggregatedfeed.model.FeedSource
 import fi.kroon.vadret.common.ErrorCode
 import fi.kroon.vadret.common.Failure
 import fi.kroon.vadret.logging.LogLevel
+import fi.kroon.vadret.testing.LogLine
 import fi.kroon.vadret.testing.withRecordedLogs
 import fi.kroon.vadret.warningfilter.local.DefaultWarningFilterLocalDataSource
 import fi.kroon.vadret.warningfilter.local.WarningFilterDatabase
@@ -15,6 +16,8 @@ import fi.kroon.vadret.warningfilter.model.WarningFilter
 import fi.kroon.vadret.warningfilter.remote.DistrictDto
 import fi.kroon.vadret.warningfilter.remote.DistrictRemoteDataSource
 import io.github.sphrak.either.Either
+import io.github.sphrak.either.extension.asLeft
+import io.github.sphrak.either.extension.asRight
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
@@ -68,20 +71,38 @@ class DefaultWarningFilterRepositoryTest {
     fun `the first filter has Stockholm and every feed source selected`() =
         testScope.runTest {
             assertEquals<Either<Failure, WarningFilter>>(
-                expected = Either.Right(
-                    b = WarningFilter(
-                        districts = listOf(
-                            DistrictOption(districtId = 41, name = "Bottenviken", category = DistrictCategory.SEA_DISTRICT, isEnabled = false),
-                            DistrictOption(districtId = 99, name = "Fjällen", category = DistrictCategory.OTHER, isEnabled = false),
-                            DistrictOption(districtId = 1, name = "Stockholms län", category = DistrictCategory.COUNTY, isEnabled = true),
-                            DistrictOption(districtId = 3, name = "Uppsala län", category = DistrictCategory.COUNTY, isEnabled = false)
+                expected = WarningFilter(
+                    districts = listOf(
+                        DistrictOption(
+                            districtId = 41,
+                            name = "Bottenviken",
+                            category = DistrictCategory.SEA_DISTRICT,
+                            isEnabled = false
                         ),
-                        feedSources = listOf(
-                            FeedSourceOption(feedSource = FeedSource.KRISINFORMATION, isEnabled = true),
-                            FeedSourceOption(feedSource = FeedSource.SMHI, isEnabled = true)
+                        DistrictOption(
+                            districtId = 99,
+                            name = "Fjällen",
+                            category = DistrictCategory.OTHER,
+                            isEnabled = false
+                        ),
+                        DistrictOption(
+                            districtId = 1,
+                            name = "Stockholms län",
+                            category = DistrictCategory.COUNTY,
+                            isEnabled = true
+                        ),
+                        DistrictOption(
+                            districtId = 3,
+                            name = "Uppsala län",
+                            category = DistrictCategory.COUNTY,
+                            isEnabled = false
                         )
+                    ),
+                    feedSources = listOf(
+                        FeedSourceOption(feedSource = FeedSource.KRISINFORMATION, isEnabled = true),
+                        FeedSourceOption(feedSource = FeedSource.SMHI, isEnabled = true)
                     )
-                ),
+                ).asRight(),
                 actual = warningFilterRepository.getWarningFilter()
             )
         }
@@ -129,7 +150,7 @@ class DefaultWarningFilterRepositoryTest {
 
             withRecordedLogs { recordingLogSink ->
                 assertEquals(
-                    expected = Either.Left(a = Failure(errorCode = ErrorCode.DISTRICTS_NOT_AVAILABLE)),
+                    expected = Failure(errorCode = ErrorCode.DISTRICTS_NOT_AVAILABLE).asLeft(),
                     actual = warningFilterRepository.getWarningFilter()
                 )
                 assertEquals(expected = LogLevel.WARN, actual = recordingLogSink.lines.single().level)
@@ -144,10 +165,31 @@ class DefaultWarningFilterRepositoryTest {
         testScope.runTest {
             districtRemoteDataSource.exception = UnknownHostException("opendata-download-warnings.smhi.se")
 
-            withRecordedLogs {
+            withRecordedLogs { recordingLogSink ->
                 assertEquals(
-                    expected = Either.Left(a = Failure(errorCode = ErrorCode.NETWORK_UNAVAILABLE)),
+                    expected = Failure(errorCode = ErrorCode.NETWORK_UNAVAILABLE).asLeft(),
                     actual = warningFilterRepository.getWarningFilter()
+                )
+                assertEquals(
+                    expected = listOf(LogLevel.WARN),
+                    actual = recordingLogSink.lines.map { line: LogLine -> line.level }
+                )
+            }
+        }
+
+    @Test
+    fun `an unexpected failure while fetching districts is unknown and logged as an error`() =
+        testScope.runTest {
+            districtRemoteDataSource.exception = IllegalStateException("unexpected")
+
+            withRecordedLogs { recordingLogSink ->
+                assertEquals(
+                    expected = Failure.unknown().asLeft(),
+                    actual = warningFilterRepository.getWarningFilter()
+                )
+                assertEquals(
+                    expected = listOf(LogLevel.ERROR),
+                    actual = recordingLogSink.lines.map { line: LogLine -> line.level }
                 )
             }
         }

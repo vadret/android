@@ -1,10 +1,3 @@
 package fi.kroon.vadret
 
-import android.content.Context
-
-class VadretApplication : BaseApplication() {
-
-    companion object {
-        operator fun get(context: Context): VadretApplication = context.applicationContext as VadretApplication
-    }
-}
+class VadretApplication : BaseApplication()

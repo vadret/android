@@ -18,8 +18,8 @@ internal class DefaultRadarReprojection : RadarReprojection {
     private val mercatorSouth: Double = WebMercator.y(latitude = RADAR_SOUTH_LATITUDE)
     private val longitudeSpan: Double = RADAR_EAST_LONGITUDE - RADAR_WEST_LONGITUDE
 
-    val outputWidth: Int = OUTPUT_WIDTH
-    val outputHeight: Int = (OUTPUT_WIDTH * (mercatorNorth - mercatorSouth) / Math.toRadians(longitudeSpan)).roundToInt()
+    private val outputWidth: Int = OUTPUT_WIDTH
+    private val outputHeight: Int = (OUTPUT_WIDTH * (mercatorNorth - mercatorSouth) / Math.toRadians(longitudeSpan)).roundToInt()
 
     private val samplePointsBySize: ConcurrentHashMap<Long, SamplePoints> = ConcurrentHashMap()
 

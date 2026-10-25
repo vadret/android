@@ -66,7 +66,7 @@ fun RadarRoute(
 }
 
 @Composable
-fun RadarScreen(
+internal fun RadarScreen(
     state: RadarState,
     onEvent: (RadarEvent) -> Unit,
     modifier: Modifier = Modifier

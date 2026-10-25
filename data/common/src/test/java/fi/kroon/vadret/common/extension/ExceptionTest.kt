@@ -36,7 +36,12 @@ class ExceptionTest {
     private val logger: Logger = LoggerFactory.getLogger(tag = TAG)
 
     private suspend fun responseException(statusCode: Int): Exception {
-        val httpClient = mockHttpClient { respond(content = "", status = HttpStatusCode.fromValue(value = statusCode)) }
+        val httpClient = mockHttpClient {
+            respond(
+                content = "",
+                status = HttpStatusCode.fromValue(value = statusCode)
+            )
+        }
         return try {
             httpClient.get(urlString = "https://example.com") { expectSuccess = true }
             error("Expected $statusCode to throw")
@@ -78,7 +83,10 @@ class ExceptionTest {
     fun `other input and output failures are network failures`() {
         assertEquals(
             expected = listOf(ErrorCode.NETWORK_FAILURE, ErrorCode.NETWORK_FAILURE),
-            actual = listOf(IOException("reset"), SocketTimeoutException("slow")).map { exception: Exception -> exception.networkErrorCode() }
+            actual = listOf(
+                IOException("reset"),
+                SocketTimeoutException("slow")
+            ).map { exception: Exception -> exception.networkErrorCode() }
         )
     }
 
@@ -169,7 +177,10 @@ class ExceptionTest {
             )
 
             assertEquals(
-                expected = listOf(Failure(errorCode = ErrorCode.NETWORK_UNAVAILABLE), Failure.unknown()),
+                expected = listOf(
+                    Failure(errorCode = ErrorCode.NETWORK_UNAVAILABLE),
+                    Failure.unknown()
+                ),
                 actual = failures
             )
             assertEquals(

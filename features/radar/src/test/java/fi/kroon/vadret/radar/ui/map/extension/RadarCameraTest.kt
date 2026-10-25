@@ -1,5 +1,6 @@
-package fi.kroon.vadret.radar.ui.map
+package fi.kroon.vadret.radar.ui.map.extension
 
+import fi.kroon.vadret.radar.ui.map.RadarCamera
 import org.maplibre.android.camera.CameraPosition
 import kotlin.test.Test
 import kotlin.test.assertEquals

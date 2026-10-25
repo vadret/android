@@ -6,7 +6,7 @@ import fi.kroon.vadret.forecastwarning.model.WarningItem
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 
-data class WarningState(
+internal data class WarningState(
     val warnings: ImmutableList<WarningItem> = persistentListOf(),
     val isLoading: Boolean = true,
     val isRefreshing: Boolean = false,

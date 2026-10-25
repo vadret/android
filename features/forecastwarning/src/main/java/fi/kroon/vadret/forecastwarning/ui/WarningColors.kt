@@ -5,7 +5,6 @@ import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.graphics.Color
 import fi.kroon.vadret.aggregatedfeed.model.FeedSource
 import fi.kroon.vadret.aggregatedfeed.model.WarningLevel
-import fi.kroon.vadret.core.R
 import fi.kroon.vadret.ui.VadretTheme
 import fi.kroon.vadret.warningfilter.model.DistrictCategory
 
@@ -57,23 +56,6 @@ internal fun WarningLevel.levelColors(): LevelColors =
             container = VadretTheme.colors.warningRed,
             content = VadretTheme.colors.onWarningRed
         )
-    }
-
-internal fun WarningLevel.labelResourceId(): Int =
-    when (this) {
-        WarningLevel.MESSAGE -> R.string.warning_level_message
-        WarningLevel.YELLOW -> R.string.warning_level_yellow
-        WarningLevel.ORANGE -> R.string.warning_level_orange
-        WarningLevel.RED -> R.string.warning_level_red
-    }
-
-internal fun WarningLevel.iconResourceId(): Int =
-    when (this) {
-        WarningLevel.MESSAGE -> R.drawable.ic_info_filled
-
-        WarningLevel.YELLOW,
-        WarningLevel.ORANGE,
-        WarningLevel.RED -> R.drawable.ic_warning_filled
     }
 
 @Composable

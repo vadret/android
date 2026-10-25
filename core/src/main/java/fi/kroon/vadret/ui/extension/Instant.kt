@@ -8,30 +8,35 @@ import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Instant
 
-private const val TWO = 2
+private val momentsAgoLimit: Duration = 1.minutes
+private val aMinuteAgoLimit: Duration = 2.minutes
+private val minutesAgoLimit: Duration = 1.hours
+private val anHourAgoLimit: Duration = 2.hours
+private val hoursAgoLimit: Duration = 1.days
+private val yesterdayLimit: Duration = 2.days
 
 fun Instant.toElapsedTime(now: Instant): ElapsedTime {
     val elapsed: Duration = now - this
     return when {
         elapsed.isNegative() -> ElapsedTime(resourceId = R.string.in_the_future)
 
-        elapsed < 1.minutes -> ElapsedTime(resourceId = R.string.moments_ago)
+        elapsed < momentsAgoLimit -> ElapsedTime(resourceId = R.string.moments_ago)
 
-        elapsed < TWO.minutes -> ElapsedTime(resourceId = R.string.a_minute_ago)
+        elapsed < aMinuteAgoLimit -> ElapsedTime(resourceId = R.string.a_minute_ago)
 
-        elapsed < 1.hours -> ElapsedTime(
+        elapsed < minutesAgoLimit -> ElapsedTime(
             resourceId = R.string.minutes_ago,
             count = elapsed.inWholeMinutes
         )
 
-        elapsed < TWO.hours -> ElapsedTime(resourceId = R.string.an_hour_ago)
+        elapsed < anHourAgoLimit -> ElapsedTime(resourceId = R.string.an_hour_ago)
 
-        elapsed < 1.days -> ElapsedTime(
+        elapsed < hoursAgoLimit -> ElapsedTime(
             resourceId = R.string.hours_ago,
             count = elapsed.inWholeHours
         )
 
-        elapsed < TWO.days -> ElapsedTime(resourceId = R.string.yesterday)
+        elapsed < yesterdayLimit -> ElapsedTime(resourceId = R.string.yesterday)
 
         else -> ElapsedTime(
             resourceId = R.string.days_ago,

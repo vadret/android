@@ -52,7 +52,7 @@ class RadarViewModel internal constructor(
     private val coroutineDispatcher: CoroutineDispatcher
 ) : ViewModel() {
 
-    val state: StateFlow<RadarState>
+    internal val state: StateFlow<RadarState>
         field = MutableStateFlow(value = RadarState())
 
     private val isStarted: AtomicBoolean = AtomicBoolean(value = false)
@@ -63,7 +63,7 @@ class RadarViewModel internal constructor(
     private val playJob: AtomicReference<Job?> = AtomicReference(value = null)
     private val frameJob: AtomicReference<Job?> = AtomicReference(value = null)
 
-    fun onEvent(event: RadarEvent) {
+    internal fun onEvent(event: RadarEvent) {
         when (event) {
             RadarEvent.OnStart -> onStart()
 

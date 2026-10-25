@@ -12,6 +12,8 @@ import fi.kroon.vadret.radar.projection.RADAR_EAST_LONGITUDE
 import fi.kroon.vadret.radar.projection.RADAR_NORTH_LATITUDE
 import fi.kroon.vadret.radar.projection.RADAR_SOUTH_LATITUDE
 import fi.kroon.vadret.radar.projection.RADAR_WEST_LONGITUDE
+import fi.kroon.vadret.radar.ui.map.extension.toCameraPosition
+import fi.kroon.vadret.radar.ui.map.extension.toRadarCamera
 import fi.kroon.vadret.radar.wind.WindAtLocation
 import fi.kroon.vadret.radar.wind.WindField
 import org.maplibre.android.MapLibre
@@ -36,16 +38,16 @@ internal class RadarMapView(
 ) : FrameLayout(context) {
 
     private val density: Float = resources.displayMetrics.density
-    private val windParticles = WindParticleDrawer(density = density)
-    private val locationMarker = LocationMarkerDrawer(
+    private val windParticleDrawer = WindParticleDrawer(density = density)
+    private val locationMarkerDrawer = LocationMarkerDrawer(
         density = density,
         scaledDensity = density * resources.configuration.fontScale,
         arrow = mutableArrow(context = context)
     )
     private val overlayView = RadarOverlayView(
         context = context,
-        windParticles = windParticles,
-        locationMarker = locationMarker
+        windParticleDrawer = windParticleDrawer,
+        locationMarkerDrawer = locationMarkerDrawer
     )
     private val mapView: MapView = createMapView(context = context)
     private var precipitationLayer: RadarImageLayer? = null
@@ -56,6 +58,7 @@ internal class RadarMapView(
     private var lifecycleState: Lifecycle.State = Lifecycle.State.CREATED
     private var isMapLoaded: Boolean = false
     private var onMapLoaded: (() -> Unit)? = null
+    private var map: MapLibreMap? = null
 
     init {
         addView(mapView)
@@ -63,6 +66,11 @@ internal class RadarMapView(
         mapView.addOnDidFinishLoadingMapListener { markMapLoaded() }
         mapView.addOnDidFailLoadingMapListener { _: String? -> markMapLoaded() }
         mapView.getMapAsync { map: MapLibreMap -> onMapReady(map = map) }
+    }
+
+    override fun onAttachedToWindow() {
+        super.onAttachedToWindow()
+        post { map?.triggerRepaint() }
     }
 
     fun setOnMapLoadedListener(onMapLoaded: (() -> Unit)?) {
@@ -76,7 +84,7 @@ internal class RadarMapView(
         markerColor: Int,
         labelTextColor: Int
     ) {
-        locationMarker.setColors(
+        locationMarkerDrawer.setColors(
             markerColor = markerColor,
             labelTextColor = labelTextColor
         )
@@ -94,10 +102,10 @@ internal class RadarMapView(
         this.layer = layer
         this.precipitationOverlay = precipitationOverlay
         this.windField = windField
-        windParticles.windField = windField
-        locationMarker.location = deviceLocation
-        locationMarker.windAtLocation = windAtLocation
-        locationMarker.windSpeedText = windSpeedText
+        windParticleDrawer.windField = windField
+        locationMarkerDrawer.location = deviceLocation
+        locationMarkerDrawer.windAtLocation = windAtLocation
+        locationMarkerDrawer.windSpeedText = windSpeedText
         overlayView.isWindShown = layer == RadarLayer.WIND
         showImageLayers()
         overlayView.invalidate()
@@ -138,6 +146,7 @@ internal class RadarMapView(
 
     private fun onMapReady(map: MapLibreMap) {
         configure(map = map)
+        this.map = map
         overlayView.map = map
         map.addOnCameraMoveListener { overlayView.invalidate() }
         map.addOnCameraIdleListener { reportCameraIdle(map = map) }

@@ -1,6 +1,6 @@
 package fi.kroon.vadret.radar.model
 
-enum class RadarLayer {
+internal enum class RadarLayer {
     PRECIPITATION,
     WIND
 }

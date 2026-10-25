@@ -73,7 +73,10 @@ class PlaceForecastTest {
             )
         ).days
 
-        assertEquals(expected = listOf("day-2026-10-24", "day-2026-10-25"), actual = days.map { day: ForecastDay -> day.key })
+        assertEquals(
+            expected = listOf("day-2026-10-24", "day-2026-10-25"),
+            actual = days.map { day: ForecastDay -> day.key }
+        )
         assertEquals(
             expected = listOf(
                 listOf("hour-2026-10-24T20:00:00Z", "hour-2026-10-24T21:00:00Z"),
@@ -169,7 +172,12 @@ class PlaceForecastTest {
         ).days.flatMap { day: ForecastDay -> day.hours }
 
         assertEquals(
-            expected = listOf(R.drawable.ic_clear_day, R.drawable.ic_clear_night, R.drawable.ic_partly_cloudy_day, R.drawable.ic_partly_cloudy_night),
+            expected = listOf(
+                R.drawable.ic_clear_day,
+                R.drawable.ic_clear_night,
+                R.drawable.ic_partly_cloudy_day,
+                R.drawable.ic_partly_cloudy_night
+            ),
             actual = hours.map { hour: ForecastHour -> hour.iconResourceId }
         )
     }
@@ -179,10 +187,20 @@ class PlaceForecastTest {
         val symbolCodes: List<Int> = (5..27).toList()
 
         val dayIcons: List<Int> = weatherForecast(
-            forecasts = symbolCodes.map { symbolCode: Int -> forecast(validAt = Instant.parse(input = "2026-10-24T10:00:00Z"), symbolCode = symbolCode) }
+            forecasts = symbolCodes.map { symbolCode: Int ->
+                forecast(
+                    validAt = Instant.parse(input = "2026-10-24T10:00:00Z"),
+                    symbolCode = symbolCode
+                )
+            }
         ).days.flatMap { day: ForecastDay -> day.hours.map { hour: ForecastHour -> hour.iconResourceId } }
         val nightIcons: List<Int> = weatherForecast(
-            forecasts = symbolCodes.map { symbolCode: Int -> forecast(validAt = Instant.parse(input = "2026-10-24T20:00:00Z"), symbolCode = symbolCode) }
+            forecasts = symbolCodes.map { symbolCode: Int ->
+                forecast(
+                    validAt = Instant.parse(input = "2026-10-24T20:00:00Z"),
+                    symbolCode = symbolCode
+                )
+            }
         ).days.flatMap { day: ForecastDay -> day.hours.map { hour: ForecastHour -> hour.iconResourceId } }
 
         assertEquals(expected = dayIcons, actual = nightIcons)

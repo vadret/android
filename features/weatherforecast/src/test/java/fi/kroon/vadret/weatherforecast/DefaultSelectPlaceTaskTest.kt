@@ -31,7 +31,10 @@ class DefaultSelectPlaceTaskTest {
     @Test
     fun `the place becomes a favorite and the selected location`() =
         runTest {
-            assertEquals(expected = Either.Right(b = Unit), actual = selectPlaceTask(autoCompleteItem = kiruna))
+            assertEquals<Either<Failure, Unit>>(
+                expected = Unit.asRight(),
+                actual = selectPlaceTask(autoCompleteItem = kiruna)
+            )
             assertEquals(expected = listOf(kirunaFavorite), actual = favoriteRepository.favorites.value)
             assertEquals(expected = listOf("selected=Kiruna"), actual = locationRepository.writes)
             assertEquals(
@@ -58,7 +61,10 @@ class DefaultSelectPlaceTaskTest {
             val failure = Failure(errorCode = ErrorCode.STORAGE_FAILED)
             favoriteRepository.failure = failure
 
-            assertEquals(expected = Either.Left(a = failure), actual = selectPlaceTask(autoCompleteItem = kiruna))
+            assertEquals<Either<Failure, Unit>>(
+                expected = failure.asLeft(),
+                actual = selectPlaceTask(autoCompleteItem = kiruna)
+            )
             assertEquals(expected = emptyList(), actual = locationRepository.writes)
             assertEquals<Either<Failure, Boolean>>(expected = true.asRight(), actual = locationRepository.isAutomatic())
         }
@@ -69,7 +75,10 @@ class DefaultSelectPlaceTaskTest {
             val failure = Failure(errorCode = ErrorCode.STORAGE_FAILED)
             locationRepository.selectStoredLocationResult = failure.asLeft()
 
-            assertEquals(expected = Either.Left(a = failure), actual = selectPlaceTask(autoCompleteItem = kiruna))
+            assertEquals<Either<Failure, Unit>>(
+                expected = failure.asLeft(),
+                actual = selectPlaceTask(autoCompleteItem = kiruna)
+            )
             assertEquals<Either<Failure, Boolean>>(expected = true.asRight(), actual = locationRepository.isAutomatic())
         }
 }

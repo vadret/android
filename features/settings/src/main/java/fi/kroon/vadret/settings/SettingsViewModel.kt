@@ -23,16 +23,18 @@ class SettingsViewModel internal constructor(
     private val coroutineDispatcher: CoroutineDispatcher
 ) : ViewModel() {
 
-    val state: StateFlow<SettingsState>
+    internal val state: StateFlow<SettingsState>
         field = MutableStateFlow(value = SettingsState())
 
     private val isStarted: AtomicBoolean = AtomicBoolean(value = false)
 
-    fun onEvent(event: SettingsEvent) {
+    internal fun onEvent(event: SettingsEvent) {
         when (event) {
             SettingsEvent.OnStart -> onStart()
 
-            is SettingsEvent.OnLocationModeToggled -> onLocationModeToggled(isAutomaticLocation = event.isAutomaticLocation)
+            is SettingsEvent.OnLocationModeToggled -> onLocationModeToggled(
+                isAutomaticLocation = event.isAutomaticLocation
+            )
 
             SettingsEvent.OnThemeRowClicked -> state.update { state: SettingsState ->
                 state.copy(isThemeDialogVisible = true)

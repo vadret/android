@@ -45,7 +45,12 @@ internal class DefaultWindRepository(
         val referenceTime: Instant = Instant.parse(input = windRemoteDataSource.getCreatedTime().referenceTime)
         val firstValidAt: Instant = firstValidAt(referenceTime = referenceTime)
         val cachedWindForecast: WindForecastEntity? = windLocalDataSource.getWindForecast()
-        return if (cachedWindForecast != null && cachedWindForecast.isFor(referenceTime = referenceTime, firstValidAt = firstValidAt)) {
+        val isCurrent: Boolean = cachedWindForecast != null &&
+            cachedWindForecast.isFor(
+                referenceTime = referenceTime,
+                firstValidAt = firstValidAt
+            )
+        return if (cachedWindForecast != null && isCurrent) {
             cachedWindForecast
         } else {
             val fetchedWindForecast: WindForecastEntity = fetchWindForecast(
@@ -159,5 +164,8 @@ internal class DefaultWindRepository(
         referenceTimeEpochMillis == referenceTime.toEpochMilliseconds() &&
             firstValidAtEpochMillis == firstValidAt.toEpochMilliseconds()
 
-    private fun Instant.floorToHour(): Instant = Instant.fromEpochMilliseconds(epochMilliseconds = toEpochMilliseconds() - Math.floorMod(toEpochMilliseconds(), MILLISECONDS_IN_HOUR))
+    private fun Instant.floorToHour(): Instant =
+        Instant.fromEpochMilliseconds(
+            epochMilliseconds = toEpochMilliseconds() - Math.floorMod(toEpochMilliseconds(), MILLISECONDS_IN_HOUR)
+        )
 }

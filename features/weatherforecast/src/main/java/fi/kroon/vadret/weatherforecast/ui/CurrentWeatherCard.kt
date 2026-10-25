@@ -92,15 +92,15 @@ internal fun CurrentWeatherCard(
 }
 
 @Composable
-private fun weatherDescription(currentWeather: CurrentWeather): String =
-    listOf(
-        stringResource(id = currentWeather.descriptionResourceId),
-        stringResource(id = R.string.ws_with),
-        stringResource(id = R.string.ws_mostly),
-        stringResource(id = currentWeather.windSpeedClassResourceId),
-        stringResource(id = currentWeather.windDirectionResourceId),
-        stringResource(id = R.string.ws_wind)
-    ).joinToString(separator = " ", postfix = ".")
+private fun weatherDescription(currentWeather: CurrentWeather): String {
+    val description: String = stringResource(id = currentWeather.descriptionResourceId)
+    val withText: String = stringResource(id = R.string.ws_with)
+    val mostlyText: String = stringResource(id = R.string.ws_mostly)
+    val windSpeedClass: String = stringResource(id = currentWeather.windSpeedClassResourceId)
+    val windDirection: String = stringResource(id = currentWeather.windDirectionResourceId)
+    val windText: String = stringResource(id = R.string.ws_wind)
+    return "$description $withText $mostlyText $windSpeedClass $windDirection $windText."
+}
 
 @Composable
 private fun CurrentWeatherStats(

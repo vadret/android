@@ -3,7 +3,7 @@ package fi.kroon.vadret.settings.model
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 
-data class AboutRow(
+internal data class AboutRow(
     @DrawableRes
     val iconResourceId: Int,
     @StringRes

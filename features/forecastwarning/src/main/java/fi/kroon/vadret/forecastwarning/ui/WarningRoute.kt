@@ -53,7 +53,7 @@ fun WarningRoute(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun WarningScreen(
+internal fun WarningScreen(
     state: WarningState,
     onEvent: (WarningEvent) -> Unit,
     modifier: Modifier = Modifier

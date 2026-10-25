@@ -22,13 +22,17 @@ internal fun AggregatedFeed.toWarningItem(now: Instant): WarningItem {
         areaName = spacedAreaName,
         warningLevel = warningLevel,
         details = details
-            .filterNot { feedDetail: FeedDetail -> feedDetail.kind == FeedDetailKind.WHERE && feedDetail.text.withSpacedCommas() == spacedAreaName }
+            .filterNot { feedDetail: FeedDetail -> feedDetail.repeatsArea(spacedAreaName = spacedAreaName) }
             .map { feedDetail: FeedDetail -> feedDetail.toWarningDetail() }
             .toImmutableList(),
         source = source,
         elapsedTime = publishedAt.toElapsedTime(now = now)
     )
 }
+
+private fun FeedDetail.repeatsArea(spacedAreaName: String?): Boolean =
+    kind == FeedDetailKind.WHERE &&
+        text.withSpacedCommas() == spacedAreaName
 
 private fun FeedDetail.toWarningDetail(): WarningDetail =
     when (kind) {

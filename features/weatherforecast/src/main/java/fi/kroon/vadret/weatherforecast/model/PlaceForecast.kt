@@ -1,6 +1,6 @@
 package fi.kroon.vadret.weatherforecast.model
 
-data class PlaceForecast(
+internal data class PlaceForecast(
     val placeName: String?,
     val latitude: Double,
     val longitude: Double,

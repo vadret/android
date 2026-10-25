@@ -22,14 +22,21 @@ import fi.kroon.vadret.core.R
 import fi.kroon.vadret.settings.Settings
 import fi.kroon.vadret.settings.SettingsEvent
 import fi.kroon.vadret.settings.SettingsState
+import fi.kroon.vadret.settings.extension.labelResourceId
 import fi.kroon.vadret.settings.model.LocationRow
-import fi.kroon.vadret.theme.model.Theme
 import fi.kroon.vadret.ui.VadretCard
 import fi.kroon.vadret.ui.VadretTheme
 import kotlinx.collections.immutable.ImmutableList
 
+private const val FULL_ALPHA = 1f
 private const val DISABLED_ALPHA = 0.38f
 private const val HIDDEN_ALPHA = 0f
+private const val LOCATION_HEADER_KEY = "location-header"
+private const val GPS_KEY = "gps"
+private const val DISPLAY_HEADER_KEY = "display-header"
+private const val THEME_KEY = "theme"
+private const val CURRENT_LOCATION_HEADER_KEY = "current-location-header"
+private const val CURRENT_LOCATION_KEY = "current-location"
 
 private enum class PreferenceContentType {
     HEADER,
@@ -52,24 +59,26 @@ internal fun PreferencesPage(
         ),
         modifier = modifier.fillMaxSize()
     ) {
-        item(key = "location-header", contentType = PreferenceContentType.HEADER) {
+        item(key = LOCATION_HEADER_KEY, contentType = PreferenceContentType.HEADER) {
             SettingsSectionHeader(text = stringResource(id = R.string.setting_location_title))
         }
-        item(key = "gps", contentType = PreferenceContentType.CARD) {
+        item(key = GPS_KEY, contentType = PreferenceContentType.CARD) {
             VadretCard {
                 SwitchRow(
                     title = stringResource(id = R.string.use_gps_by_default),
                     checkedSummary = stringResource(id = R.string.gps_is_being_used),
                     uncheckedSummary = stringResource(id = R.string.gps_is_not_being_used),
                     isChecked = settings.isAutomaticLocation,
-                    onCheckedChange = { isChecked: Boolean -> onEvent(SettingsEvent.OnLocationModeToggled(isAutomaticLocation = isChecked)) }
+                    onCheckedChange = { isChecked: Boolean ->
+                        onEvent(SettingsEvent.OnLocationModeToggled(isAutomaticLocation = isChecked))
+                    }
                 )
             }
         }
-        item(key = "display-header", contentType = PreferenceContentType.HEADER) {
+        item(key = DISPLAY_HEADER_KEY, contentType = PreferenceContentType.HEADER) {
             SettingsSectionHeader(text = stringResource(id = R.string.display))
         }
-        item(key = "theme", contentType = PreferenceContentType.CARD) {
+        item(key = THEME_KEY, contentType = PreferenceContentType.CARD) {
             VadretCard {
                 SettingsValueRow(
                     title = stringResource(id = R.string.select_a_theme),
@@ -79,10 +88,10 @@ internal fun PreferencesPage(
                 )
             }
         }
-        item(key = "current-location-header", contentType = PreferenceContentType.HEADER) {
+        item(key = CURRENT_LOCATION_HEADER_KEY, contentType = PreferenceContentType.HEADER) {
             SettingsSectionHeader(text = stringResource(id = R.string.setting_current_location))
         }
-        item(key = "current-location", contentType = PreferenceContentType.CARD) {
+        item(key = CURRENT_LOCATION_KEY, contentType = PreferenceContentType.CARD) {
             LocationCard(
                 locationRows = state.locationRows,
                 isAutomaticLocation = settings.isAutomaticLocation
@@ -184,12 +193,5 @@ private fun locationAlpha(isAutomaticLocation: Boolean): Float =
     if (isAutomaticLocation) {
         DISABLED_ALPHA
     } else {
-        1f
-    }
-
-internal fun Theme.labelResourceId(): Int =
-    when (this) {
-        Theme.LIGHT -> R.string.light_key
-        Theme.DARK -> R.string.dark_key
-        Theme.AMOLED -> R.string.amoled_key
+        FULL_ALPHA
     }

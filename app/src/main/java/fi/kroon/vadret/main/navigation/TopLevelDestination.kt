@@ -7,16 +7,16 @@ import fi.kroon.vadret.core.R
 import kotlinx.serialization.Serializable
 
 @Serializable
-data object WeatherKey : NavKey
+internal data object WeatherKey : NavKey
 
 @Serializable
-data object WarningKey : NavKey
+internal data object WarningKey : NavKey
 
 @Serializable
-data object RadarKey : NavKey
+internal data object RadarKey : NavKey
 
 @Serializable
-data object SettingsKey : NavKey
+internal data object SettingsKey : NavKey
 
 internal enum class TopLevelDestination(
     val key: NavKey,

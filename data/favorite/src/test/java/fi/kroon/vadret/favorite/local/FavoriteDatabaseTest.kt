@@ -146,7 +146,10 @@ class FavoriteDatabaseTest {
         testScope.runTest {
             val favoriteEntity: FavoriteEntity = favorite(favoriteId = "a", locality = "Kista")
 
-            assertEquals(expected = favoriteEntity, actual = favoriteLocalDataSource.addFavorite(favoriteEntity = favoriteEntity))
+            assertEquals(
+                expected = favoriteEntity,
+                actual = favoriteLocalDataSource.addFavorite(favoriteEntity = favoriteEntity)
+            )
         }
 
     @Test
@@ -166,8 +169,20 @@ class FavoriteDatabaseTest {
     @Test
     fun `removing a favorite keeps the others`() =
         testScope.runTest {
-            favoriteLocalDataSource.addFavorite(favoriteEntity = favorite(favoriteId = "a", locality = "Kista", createdAt = 1L))
-            favoriteLocalDataSource.addFavorite(favoriteEntity = favorite(favoriteId = "b", locality = "Solna", createdAt = 2L))
+            favoriteLocalDataSource.addFavorite(
+                favoriteEntity = favorite(
+                    favoriteId = "a",
+                    locality = "Kista",
+                    createdAt = 1L
+                )
+            )
+            favoriteLocalDataSource.addFavorite(
+                favoriteEntity = favorite(
+                    favoriteId = "b",
+                    locality = "Solna",
+                    createdAt = 2L
+                )
+            )
 
             favoriteLocalDataSource.removeFavorite(favoriteId = "a")
 

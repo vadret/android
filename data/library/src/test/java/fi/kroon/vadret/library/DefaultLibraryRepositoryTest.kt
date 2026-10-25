@@ -30,6 +30,16 @@ class DefaultLibraryRepositoryTest {
     fun `libraries the app no longer uses are not credited`() {
         val titles: Set<String> = libraries.map { library: Library -> library.title }.toSet()
 
-        assertTrue(actual = titles.none { title: String -> title in setOf("Timber", "Corbind", "PermissionsDispatcher", "ThreetenABP", "Picasso") })
+        assertTrue(
+            actual = titles.none { title: String ->
+                title in setOf(
+                    "Timber",
+                    "Corbind",
+                    "PermissionsDispatcher",
+                    "ThreetenABP",
+                    "Picasso"
+                )
+            }
+        )
     }
 }

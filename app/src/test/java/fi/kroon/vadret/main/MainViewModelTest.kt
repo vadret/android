@@ -22,6 +22,7 @@ import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNull
 
 private class FakeObserveThemeTask : ObserveThemeTask {
 
@@ -35,6 +36,11 @@ class MainViewModelTest {
 
     private val testDispatcher: TestDispatcher = StandardTestDispatcher()
     private val testScope = TestScope(testDispatcher)
+    private val observeThemeTask = FakeObserveThemeTask()
+    private val mainViewModel = MainViewModel(
+        observeThemeTask = observeThemeTask,
+        coroutineDispatcher = testDispatcher
+    )
 
     @BeforeTest
     fun setUp() {
@@ -47,23 +53,48 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `the theme is null until read and then follows every change`() =
+    fun `the theme is null until started and then follows every change`() =
         testScope.runTest {
-            val observeThemeTask = FakeObserveThemeTask()
-            val mainViewModel = MainViewModel(
-                observeThemeTask = observeThemeTask,
-                coroutineDispatcher = testDispatcher
-            )
             val seen = mutableListOf<Theme?>()
             val job = launch { mainViewModel.theme.collect { theme: Theme? -> seen.add(theme) } }
             advanceUntilIdle()
 
+            mainViewModel.onEvent(event = MainEvent.OnStart)
+            advanceUntilIdle()
             observeThemeTask.themes.emit(value = Theme.DARK.asRight())
             advanceUntilIdle()
             observeThemeTask.themes.emit(value = Failure(errorCode = ErrorCode.UNKNOWN).asLeft())
             advanceUntilIdle()
             job.cancel()
 
-            assertEquals(expected = listOf(null, Theme.DARK, Theme.LIGHT), actual = seen)
+            assertEquals(
+                expected = listOf(null, Theme.DARK, Theme.LIGHT),
+                actual = seen
+            )
+        }
+
+    @Test
+    fun `nothing is observed before the start`() =
+        testScope.runTest {
+            advanceUntilIdle()
+
+            assertEquals(
+                expected = 0,
+                actual = observeThemeTask.themes.subscriptionCount.value
+            )
+            assertNull(actual = mainViewModel.theme.value)
+        }
+
+    @Test
+    fun `the theme is observed once however often it is started`() =
+        testScope.runTest {
+            mainViewModel.onEvent(event = MainEvent.OnStart)
+            mainViewModel.onEvent(event = MainEvent.OnStart)
+            advanceUntilIdle()
+
+            assertEquals(
+                expected = 1,
+                actual = observeThemeTask.themes.subscriptionCount.value
+            )
         }
 }

@@ -4,6 +4,8 @@ import android.content.Context
 import android.os.Looper
 import fi.kroon.vadret.common.defaultJson
 import fi.kroon.vadret.core.BuildConfig
+import fi.kroon.vadret.logging.Logger
+import fi.kroon.vadret.logging.LoggerFactory
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
@@ -22,6 +24,9 @@ private const val WRITE_TIMEOUT_MILLIS = 10_000L
 private const val CACHE_SIZE_BYTES: Long = 33_554_432L
 private const val CACHE_DIRECTORY = "okhttp_cache"
 private const val USER_AGENT_HEADER = "User-Agent"
+private const val NO_PACKAGE_INFO_FLAGS = 0
+
+private val logger: Logger = LoggerFactory.getLogger(tag = "fi.kroon.vadret.core")
 
 val networkModule: Module = module {
     single<HttpClient> { httpClient(context = get()) }
@@ -66,13 +71,15 @@ private fun okHttpClient(context: Context): OkHttpClient {
 
 private fun userAgent(context: Context): String {
     val versionName: String? = context.packageManager
-        .getPackageInfo(context.packageName, 0)
+        .getPackageInfo(context.packageName, NO_PACKAGE_INFO_FLAGS)
         .versionName
     return "${context.packageName}/$versionName"
 }
 
 private fun httpLoggingInterceptor(): HttpLoggingInterceptor =
-    HttpLoggingInterceptor().apply {
+    HttpLoggingInterceptor(
+        logger = HttpLoggingInterceptor.Logger { message: String -> logger.debug { message } }
+    ).apply {
         level = if (BuildConfig.DEBUG) {
             HttpLoggingInterceptor.Level.BODY
         } else {

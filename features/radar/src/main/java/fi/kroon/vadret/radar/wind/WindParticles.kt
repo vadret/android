@@ -27,7 +27,13 @@ internal class WindParticles(
         rasterPixelsPerMeterPerSecond: Float
     ) {
         if (!isSeeded) {
-            repeat(times = particleCount) { particle: Int -> respawn(particle = particle, windFieldValues = windFieldValues, visibleArea = visibleArea) }
+            repeat(times = particleCount) { particle: Int ->
+                respawn(
+                    particle = particle,
+                    windFieldValues = windFieldValues,
+                    visibleArea = visibleArea
+                )
+            }
             isSeeded = true
             return
         }
@@ -42,7 +48,11 @@ internal class WindParticles(
             val northward: Float = windFieldValues.valueAt(values = windFieldValues.northward, pixel = pixel)
             val isExpired: Boolean = ages[particle] > lifespans[particle] || eastward.isNaN() || northward.isNaN() || !visibleArea.contains(x = x, y = y)
             if (isExpired) {
-                respawn(particle = particle, windFieldValues = windFieldValues, visibleArea = visibleArea)
+                respawn(
+                    particle = particle,
+                    windFieldValues = windFieldValues,
+                    visibleArea = visibleArea
+                )
             } else {
                 historyX[slot(particle = particle, index = head)] = x + eastward * rasterPixelsPerMeterPerSecond
                 historyY[slot(particle = particle, index = head)] = y - northward * rasterPixelsPerMeterPerSecond

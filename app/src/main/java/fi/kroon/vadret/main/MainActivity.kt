@@ -9,7 +9,9 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import fi.kroon.vadret.BaseApplication
 import fi.kroon.vadret.di.LocalKoin
@@ -33,9 +35,12 @@ class MainActivity : ComponentActivity() {
     }
 
     @Composable
-    private fun ThemedApp() {
+    private fun ThemedApp(modifier: Modifier = Modifier) {
         val viewModel: MainViewModel = koinViewModel()
         val theme: Theme? by viewModel.theme.collectAsStateWithLifecycle()
+        LaunchedEffect(Unit) {
+            viewModel.onEvent(event = MainEvent.OnStart)
+        }
         val currentTheme: Theme = theme ?: return
         val isDark: Boolean = currentTheme.isDark()
 
@@ -48,7 +53,7 @@ class MainActivity : ComponentActivity() {
         }
 
         VadretTheme(theme = currentTheme) {
-            VadretApp()
+            VadretApp(modifier = modifier)
         }
     }
 

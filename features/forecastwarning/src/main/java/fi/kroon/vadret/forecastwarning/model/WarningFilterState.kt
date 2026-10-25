@@ -5,7 +5,7 @@ import fi.kroon.vadret.warningfilter.model.DistrictOption
 import fi.kroon.vadret.warningfilter.model.FeedSourceOption
 import kotlinx.collections.immutable.ImmutableList
 
-data class WarningFilterState(
+internal data class WarningFilterState(
     val feedSources: ImmutableList<FeedSourceOption>,
     val districts: ImmutableList<DistrictOption>,
     @StringRes

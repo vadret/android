@@ -22,6 +22,8 @@ import fi.kroon.vadret.testing.FixedClock
 import fi.kroon.vadret.testing.LogLine
 import fi.kroon.vadret.testing.withRecordedLogs
 import io.github.sphrak.either.Either
+import io.github.sphrak.either.extension.asLeft
+import io.github.sphrak.either.extension.asRight
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
@@ -84,7 +86,12 @@ private fun warningArea(
         warningLevel = warningLevel,
         eventDescription = text(sv = eventDescription),
         affectedAreas = districtIds.map { districtId: Int -> SmhiAffectedAreaDto(id = districtId) },
-        descriptions = listOf(SmhiDescriptionDto(title = text(sv = "Var?", code = "WHERE"), text = text(sv = "Kusten")))
+        descriptions = listOf(
+            SmhiDescriptionDto(
+                title = text(sv = "Var?", code = "WHERE"),
+                text = text(sv = "Kusten")
+            )
+        )
     )
 
 private fun news(
@@ -152,48 +159,69 @@ class DefaultAggregatedFeedRepositoryTest {
                 SmhiWarningDto(
                     id = 7,
                     event = text(sv = "Regn"),
-                    descriptions = listOf(SmhiDescriptionDto(title = text(sv = "Vad"), text = text(sv = "Skyfall"))),
+                    descriptions = listOf(
+                        SmhiDescriptionDto(
+                            title = text(sv = "Vad"),
+                            text = text(sv = "Skyfall")
+                        )
+                    ),
                     warningAreas = listOf(
-                        warningArea(id = 1, published = "2026-10-24T09:00:00Z", districtIds = listOf(14)),
-                        warningArea(id = 2, published = "2026-10-24T10:00:00Z", districtIds = listOf(1, 14), eventDescription = "Regn"),
-                        warningArea(id = 3, published = "2026-10-24T11:00:00Z", districtIds = listOf(14), warningLevel = text(sv = "Meddelande", code = "MESSAGE")),
-                        warningArea(id = 4, published = "2026-10-24T12:00:00Z", districtIds = listOf(1))
+                        warningArea(
+                            id = 1,
+                            published = "2026-10-24T09:00:00Z",
+                            districtIds = listOf(14)
+                        ),
+                        warningArea(
+                            id = 2,
+                            published = "2026-10-24T10:00:00Z",
+                            districtIds = listOf(1, 14),
+                            eventDescription = "Regn"
+                        ),
+                        warningArea(
+                            id = 3,
+                            published = "2026-10-24T11:00:00Z",
+                            districtIds = listOf(14),
+                            warningLevel = text(sv = "Meddelande", code = "MESSAGE")
+                        ),
+                        warningArea(
+                            id = 4,
+                            published = "2026-10-24T12:00:00Z",
+                            districtIds = listOf(1)
+                        )
                     )
                 )
             )
 
             assertEquals<Either<Failure, List<AggregatedFeed>>>(
-                expected = Either.Right(
-                    b = listOf(
-                        AggregatedFeed(
-                            identifier = "smhi-7-3",
-                            headline = "Mycket regn",
-                            areaName = "Västra Götaland",
-                            warningLevel = WarningLevel.MESSAGE,
-                            details = smhiDetails,
-                            source = FeedSource.SMHI,
-                            publishedAt = Instant.parse(input = "2026-10-24T11:00:00Z")
-                        ),
-                        AggregatedFeed(
-                            identifier = "smhi-7-2",
-                            headline = "Regn",
-                            areaName = "Västra Götaland",
-                            warningLevel = WarningLevel.YELLOW,
-                            details = smhiDetails,
-                            source = FeedSource.SMHI,
-                            publishedAt = Instant.parse(input = "2026-10-24T10:00:00Z")
-                        ),
-                        AggregatedFeed(
-                            identifier = "smhi-7-1",
-                            headline = "Mycket regn",
-                            areaName = "Västra Götaland",
-                            warningLevel = WarningLevel.YELLOW,
-                            details = smhiDetails,
-                            source = FeedSource.SMHI,
-                            publishedAt = Instant.parse(input = "2026-10-24T09:00:00Z")
-                        )
+                expected = listOf(
+                    AggregatedFeed(
+                        identifier = "smhi-7-3",
+                        headline = "Mycket regn",
+                        areaName = "Västra Götaland",
+                        warningLevel = WarningLevel.MESSAGE,
+                        details = smhiDetails,
+                        source = FeedSource.SMHI,
+                        publishedAt = Instant.parse(input = "2026-10-24T11:00:00Z")
+                    ),
+                    AggregatedFeed(
+                        identifier = "smhi-7-2",
+                        headline = "Regn",
+                        areaName = "Västra Götaland",
+                        warningLevel = WarningLevel.YELLOW,
+                        details = smhiDetails,
+                        source = FeedSource.SMHI,
+                        publishedAt = Instant.parse(input = "2026-10-24T10:00:00Z")
+                    ),
+                    AggregatedFeed(
+                        identifier = "smhi-7-1",
+                        headline = "Mycket regn",
+                        areaName = "Västra Götaland",
+                        warningLevel = WarningLevel.YELLOW,
+                        details = smhiDetails,
+                        source = FeedSource.SMHI,
+                        publishedAt = Instant.parse(input = "2026-10-24T09:00:00Z")
                     )
-                ),
+                ).asRight(),
                 actual = getFeed(feedSources = setOf(FeedSource.SMHI))
             )
         }
@@ -205,7 +233,13 @@ class DefaultAggregatedFeedRepositoryTest {
                 SmhiWarningDto(
                     id = 7,
                     event = text(sv = "Regn"),
-                    warningAreas = listOf(warningArea(id = 1, published = "2026-10-24T10:00:00Z", districtIds = listOf(14)))
+                    warningAreas = listOf(
+                        warningArea(
+                            id = 1,
+                            published = "2026-10-24T10:00:00Z",
+                            districtIds = listOf(14)
+                        )
+                    )
                 )
             )
             krisinformationRemoteDataSource.news = {
@@ -214,7 +248,9 @@ class DefaultAggregatedFeedRepositoryTest {
                     news(identifier = "vma", published = "2026-10-24T13:30:00+02:00")
                 )
             }
-            krisinformationRemoteDataSource.vmas = { listOf(news(identifier = "vma", published = "2026-10-24T13:30:00+02:00")) }
+            krisinformationRemoteDataSource.vmas = {
+                listOf(news(identifier = "vma", published = "2026-10-24T13:30:00+02:00"))
+            }
 
             assertEquals(
                 expected = listOf("krisinformation-vma", "smhi-7-1", "krisinformation-a"),
@@ -237,7 +273,10 @@ class DefaultAggregatedFeedRepositoryTest {
                             warningLevel = text(sv = code, code = code)
                         ).copy(
                             descriptions = listOf("HAPPENS", "INCIDENT", "WHERE", "AFFECT", "COMMENTS", "NEW").map { descriptionCode: String ->
-                                SmhiDescriptionDto(title = text(sv = descriptionCode, code = descriptionCode), text = text(sv = "Text"))
+                                SmhiDescriptionDto(
+                                    title = text(sv = descriptionCode, code = descriptionCode),
+                                    text = text(sv = "Text")
+                                )
                             }
                         )
                     }
@@ -284,7 +323,10 @@ class DefaultAggregatedFeedRepositoryTest {
             withRecordedLogs { recordingLogSink ->
                 val feed: List<AggregatedFeed> = (getFeed(feedSources = setOf(FeedSource.SMHI)) as Either.Right).b
 
-                assertEquals(expected = listOf(null), actual = feed.map { aggregatedFeed: AggregatedFeed -> aggregatedFeed.warningLevel })
+                assertEquals(
+                    expected = listOf(null),
+                    actual = feed.map { aggregatedFeed: AggregatedFeed -> aggregatedFeed.warningLevel }
+                )
                 assertEquals(expected = LogLevel.WARN, actual = recordingLogSink.lines.single().level)
             }
         }
@@ -294,37 +336,45 @@ class DefaultAggregatedFeedRepositoryTest {
         testScope.runTest {
             krisinformationRemoteDataSource.news = {
                 listOf(
-                    news(identifier = "a", published = "2026-10-24T08:00:00Z", preamble = " Ingress ", bodyText = "Brödtext"),
-                    news(identifier = "b", published = "2026-10-24T07:00:00Z", preamble = " ", bodyText = null)
+                    news(
+                        identifier = "a",
+                        published = "2026-10-24T08:00:00Z",
+                        preamble = " Ingress ",
+                        bodyText = "Brödtext"
+                    ),
+                    news(
+                        identifier = "b",
+                        published = "2026-10-24T07:00:00Z",
+                        preamble = " ",
+                        bodyText = null
+                    )
                 )
             }
 
             assertEquals<Either<Failure, List<AggregatedFeed>>>(
-                expected = Either.Right(
-                    b = listOf(
-                        AggregatedFeed(
-                            identifier = "krisinformation-a",
-                            headline = "Nyhet a",
-                            areaName = null,
-                            warningLevel = null,
-                            details = listOf(
-                                FeedDetail(kind = FeedDetailKind.SUMMARY, title = "", text = "Ingress"),
-                                FeedDetail(kind = FeedDetailKind.BODY, title = "", text = "Brödtext")
-                            ),
-                            source = FeedSource.KRISINFORMATION,
-                            publishedAt = Instant.parse(input = "2026-10-24T08:00:00Z")
+                expected = listOf(
+                    AggregatedFeed(
+                        identifier = "krisinformation-a",
+                        headline = "Nyhet a",
+                        areaName = null,
+                        warningLevel = null,
+                        details = listOf(
+                            FeedDetail(kind = FeedDetailKind.SUMMARY, title = "", text = "Ingress"),
+                            FeedDetail(kind = FeedDetailKind.BODY, title = "", text = "Brödtext")
                         ),
-                        AggregatedFeed(
-                            identifier = "krisinformation-b",
-                            headline = "Nyhet b",
-                            areaName = null,
-                            warningLevel = null,
-                            details = emptyList(),
-                            source = FeedSource.KRISINFORMATION,
-                            publishedAt = Instant.parse(input = "2026-10-24T07:00:00Z")
-                        )
+                        source = FeedSource.KRISINFORMATION,
+                        publishedAt = Instant.parse(input = "2026-10-24T08:00:00Z")
+                    ),
+                    AggregatedFeed(
+                        identifier = "krisinformation-b",
+                        headline = "Nyhet b",
+                        areaName = null,
+                        warningLevel = null,
+                        details = emptyList(),
+                        source = FeedSource.KRISINFORMATION,
+                        publishedAt = Instant.parse(input = "2026-10-24T07:00:00Z")
                     )
-                ),
+                ).asRight(),
                 actual = getFeed(feedSources = setOf(FeedSource.KRISINFORMATION))
             )
         }
@@ -340,7 +390,10 @@ class DefaultAggregatedFeedRepositoryTest {
             withRecordedLogs { recordingLogSink ->
                 assertEquals(expected = emptyList(), actual = getFeed().identifiers())
                 assertEquals(expected = 1, actual = smhiWarningRemoteDataSource.requestCount)
-                assertEquals(expected = listOf(LogLevel.WARN), actual = recordingLogSink.lines.map { line: LogLine -> line.level })
+                assertEquals(
+                    expected = listOf(LogLevel.WARN),
+                    actual = recordingLogSink.lines.map { line: LogLine -> line.level }
+                )
             }
         }
 
@@ -372,7 +425,9 @@ class DefaultAggregatedFeedRepositoryTest {
     @Test
     fun `a failing vma feed still shows news`() =
         testScope.runTest {
-            krisinformationRemoteDataSource.news = { listOf(news(identifier = "a", published = "2026-10-24T08:00:00Z")) }
+            krisinformationRemoteDataSource.news = {
+                listOf(news(identifier = "a", published = "2026-10-24T08:00:00Z"))
+            }
             krisinformationRemoteDataSource.vmas = { throw IOException("reset") }
 
             withRecordedLogs { recordingLogSink ->
@@ -389,10 +444,31 @@ class DefaultAggregatedFeedRepositoryTest {
         testScope.runTest {
             krisinformationRemoteDataSource.news = { throw UnknownHostException("api.krisinformation.se") }
 
-            withRecordedLogs {
+            withRecordedLogs { recordingLogSink ->
                 assertEquals(
-                    expected = Either.Left(a = Failure(errorCode = ErrorCode.NETWORK_UNAVAILABLE)),
+                    expected = Failure(errorCode = ErrorCode.NETWORK_UNAVAILABLE).asLeft(),
                     actual = getFeed()
+                )
+                assertEquals(
+                    expected = listOf(LogLevel.WARN),
+                    actual = recordingLogSink.lines.map { line: LogLine -> line.level }
+                )
+            }
+        }
+
+    @Test
+    fun `an unexpected failure is unknown and logged as an error`() =
+        testScope.runTest {
+            krisinformationRemoteDataSource.news = { throw IllegalStateException("unexpected") }
+
+            withRecordedLogs { recordingLogSink ->
+                assertEquals(
+                    expected = Failure.unknown().asLeft(),
+                    actual = getFeed()
+                )
+                assertEquals(
+                    expected = listOf(LogLevel.ERROR),
+                    actual = recordingLogSink.lines.map { line: LogLine -> line.level }
                 )
             }
         }

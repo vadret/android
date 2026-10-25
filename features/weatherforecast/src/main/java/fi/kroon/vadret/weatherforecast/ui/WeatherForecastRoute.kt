@@ -55,7 +55,7 @@ fun WeatherForecastRoute(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun WeatherForecastScreen(
+internal fun WeatherForecastScreen(
     state: WeatherForecastState,
     onEvent: (WeatherForecastEvent) -> Unit,
     modifier: Modifier = Modifier

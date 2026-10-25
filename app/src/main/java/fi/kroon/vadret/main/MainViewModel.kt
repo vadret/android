@@ -7,30 +7,37 @@ import fi.kroon.vadret.theme.model.Theme
 import io.github.sphrak.either.Either
 import io.github.sphrak.either.extension.onResult
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
+import kotlin.concurrent.atomics.AtomicBoolean
 
-private const val STOP_TIMEOUT_MILLIS = 5_000L
-
-class MainViewModel internal constructor(
-    observeThemeTask: ObserveThemeTask,
-    coroutineDispatcher: CoroutineDispatcher
+internal class MainViewModel(
+    private val observeThemeTask: ObserveThemeTask,
+    private val coroutineDispatcher: CoroutineDispatcher
 ) : ViewModel() {
 
-    val theme: StateFlow<Theme?> = observeThemeTask()
-        .map { result: Either<Failure, Theme> ->
-            result.onResult(
-                onError = { _: Failure -> Theme.LIGHT },
-                onSuccess = { theme: Theme -> theme }
-            )
+    val theme: StateFlow<Theme?>
+        field = MutableStateFlow<Theme?>(value = null)
+
+    private val isStarted: AtomicBoolean = AtomicBoolean(value = false)
+
+    fun onEvent(event: MainEvent) {
+        when (event) {
+            MainEvent.OnStart -> onStart()
         }
-        .flowOn(context = coroutineDispatcher)
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(stopTimeoutMillis = STOP_TIMEOUT_MILLIS),
-            initialValue = null
-        )
+    }
+
+    private fun onStart() {
+        if (isStarted.compareAndSet(expectedValue = false, newValue = true)) {
+            viewModelScope.launch(context = coroutineDispatcher) {
+                observeThemeTask().collect { result: Either<Failure, Theme> ->
+                    theme.value = result.onResult(
+                        onError = { _: Failure -> Theme.LIGHT },
+                        onSuccess = { observedTheme: Theme -> observedTheme }
+                    )
+                }
+            }
+        }
+    }
 }

@@ -2,7 +2,7 @@ package fi.kroon.vadret.forecastwarning.model
 
 import androidx.annotation.StringRes
 
-sealed interface WarningDetail {
+internal sealed interface WarningDetail {
 
     val text: String
 

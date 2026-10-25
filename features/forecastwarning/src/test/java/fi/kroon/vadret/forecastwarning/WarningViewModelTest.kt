@@ -93,7 +93,10 @@ class WarningViewModelTest {
             advanceUntilIdle()
 
             val state: WarningState = warningViewModel.state.value
-            assertEquals(expected = listOf("smhi-1-1"), actual = state.warnings.map { warningItem: WarningItem -> warningItem.identifier })
+            assertEquals(
+                expected = listOf("smhi-1-1"),
+                actual = state.warnings.map { warningItem: WarningItem -> warningItem.identifier }
+            )
             assertEquals(expected = false, actual = state.isLoading)
             assertEquals(expected = false, actual = state.isEmpty)
             assertEquals(expected = false, actual = aggregatedFeedRepository.requests.single().third)
@@ -111,7 +114,10 @@ class WarningViewModelTest {
 
             assertTrue(actual = emptyViewModel.state.value.isEmpty)
             assertEquals(expected = false, actual = failedViewModel.state.value.isEmpty)
-            assertEquals(expected = R.string.no_network_available, actual = failedViewModel.state.value.errorMessageResourceId)
+            assertEquals(
+                expected = R.string.no_network_available,
+                actual = failedViewModel.state.value.errorMessageResourceId
+            )
             failedViewModel.onEvent(event = WarningEvent.OnErrorShown)
             assertNull(actual = failedViewModel.state.value.errorMessageResourceId)
         }
@@ -126,7 +132,10 @@ class WarningViewModelTest {
             assertTrue(actual = warningViewModel.state.value.isRefreshing)
             advanceUntilIdle()
 
-            assertEquals(expected = listOf(false, true), actual = aggregatedFeedRepository.requests.map { request -> request.third })
+            assertEquals(
+                expected = listOf(false, true),
+                actual = aggregatedFeedRepository.requests.map { request -> request.third }
+            )
             assertEquals(expected = false, actual = warningViewModel.state.value.isRefreshing)
         }
 
@@ -143,8 +152,14 @@ class WarningViewModelTest {
             advanceUntilIdle()
 
             val filter: WarningFilterState? = warningViewModel.state.value.filter
-            assertEquals(expected = listOf(true, true), actual = filter?.districts?.map { districtOption -> districtOption.isEnabled })
-            assertEquals(expected = listOf(true, true), actual = filter?.feedSources?.map { feedSourceOption -> feedSourceOption.isEnabled })
+            assertEquals(
+                expected = listOf(true, true),
+                actual = filter?.districts?.map { districtOption -> districtOption.isEnabled }
+            )
+            assertEquals(
+                expected = listOf(true, true),
+                actual = filter?.feedSources?.map { feedSourceOption -> feedSourceOption.isEnabled }
+            )
             assertTrue(actual = warningFilterRepository.storedFilters.isEmpty())
         }
 
@@ -180,7 +195,10 @@ class WarningViewModelTest {
             warningViewModel.onEvent(event = WarningEvent.OnFilterApplied)
             advanceUntilIdle()
 
-            assertEquals(expected = R.string.filter_must_select_one, actual = warningViewModel.state.value.filter?.errorMessageResourceId)
+            assertEquals(
+                expected = R.string.filter_must_select_one,
+                actual = warningViewModel.state.value.filter?.errorMessageResourceId
+            )
             assertTrue(actual = warningFilterRepository.storedFilters.isEmpty())
 
             warningViewModel.onEvent(event = WarningEvent.OnFeedSourceToggled(feedSource = FeedSource.SMHI))
@@ -200,7 +218,10 @@ class WarningViewModelTest {
             warningViewModel.onEvent(event = WarningEvent.OnFilterApplied)
             advanceUntilIdle()
 
-            assertEquals(expected = R.string.unhandled_error, actual = warningViewModel.state.value.filter?.errorMessageResourceId)
+            assertEquals(
+                expected = R.string.unhandled_error,
+                actual = warningViewModel.state.value.filter?.errorMessageResourceId
+            )
             assertEquals(expected = 1, actual = aggregatedFeedRepository.requests.size)
         }
 
@@ -215,5 +236,39 @@ class WarningViewModelTest {
             warningViewModel.onEvent(event = WarningEvent.OnFilterDismissed)
 
             assertNull(actual = warningViewModel.state.value.filter)
+        }
+
+    @Test
+    fun `a filter that cannot be read stays closed and shows the error`() =
+        testScope.runTest {
+            val warningViewModel: WarningViewModel = viewModel()
+            advanceUntilIdle()
+            warningFilterRepository.warningFilter = Failure(errorCode = ErrorCode.DISTRICTS_NOT_AVAILABLE).asLeft()
+
+            warningViewModel.onEvent(event = WarningEvent.OnFilterButtonClicked)
+            advanceUntilIdle()
+
+            assertEquals(
+                expected = R.string.filter_failure_districts_not_available,
+                actual = warningViewModel.state.value.errorMessageResourceId
+            )
+            assertNull(actual = warningViewModel.state.value.filter)
+        }
+
+    @Test
+    fun `toggling or applying without an open filter changes nothing`() =
+        testScope.runTest {
+            val warningViewModel: WarningViewModel = viewModel()
+            advanceUntilIdle()
+            val stateBefore: WarningState = warningViewModel.state.value
+
+            warningViewModel.onEvent(event = WarningEvent.OnDistrictToggled(districtId = gotland.districtId))
+            warningViewModel.onEvent(event = WarningEvent.OnFeedSourceToggled(feedSource = FeedSource.KRISINFORMATION))
+            warningViewModel.onEvent(event = WarningEvent.OnFilterApplied)
+            advanceUntilIdle()
+
+            assertEquals(expected = stateBefore, actual = warningViewModel.state.value)
+            assertTrue(actual = warningFilterRepository.storedFilters.isEmpty())
+            assertEquals(expected = 1, actual = aggregatedFeedRepository.requests.size)
         }
 }

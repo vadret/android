@@ -3,7 +3,7 @@ package fi.kroon.vadret.radar
 import fi.kroon.vadret.radar.model.RadarLayer
 import java.util.Locale
 
-sealed interface RadarEvent {
+internal sealed interface RadarEvent {
     data object OnStart : RadarEvent
     data object OnMapLoaded : RadarEvent
     data class OnLocaleChanged(val locale: Locale) : RadarEvent

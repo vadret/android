@@ -19,7 +19,10 @@ class DefaultSelectFavoriteTaskTest {
     @Test
     fun `the favorite becomes the selected location`() =
         runTest {
-            assertEquals(expected = Either.Right(b = Unit), actual = selectFavoriteTask(favorite = kirunaFavorite))
+            assertEquals<Either<Failure, Unit>>(
+                expected = Unit.asRight(),
+                actual = selectFavoriteTask(favorite = kirunaFavorite)
+            )
             assertEquals(
                 expected = LocationPreference(
                     isAutomatic = false,
@@ -41,6 +44,9 @@ class DefaultSelectFavoriteTaskTest {
             val failure = Failure(errorCode = ErrorCode.STORAGE_FAILED)
             locationRepository.selectStoredLocationResult = failure.asLeft()
 
-            assertEquals(expected = Either.Left(a = failure), actual = selectFavoriteTask(favorite = kirunaFavorite))
+            assertEquals<Either<Failure, Unit>>(
+                expected = failure.asLeft(),
+                actual = selectFavoriteTask(favorite = kirunaFavorite)
+            )
         }
 }

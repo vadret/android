@@ -42,8 +42,16 @@ class WindParticlesTest {
 
         assertTrue(actual = windParticles.isSeeded)
         repeat(times = 50) { particle: Int ->
-            assertTrue(actual = wholeField.contains(x = windParticles.x(particle = particle, age = 0), y = windParticles.y(particle = particle, age = 0)))
-            assertEquals(expected = windParticles.x(particle = particle, age = 0), actual = windParticles.x(particle = particle, age = TRAIL_LENGTH - 1))
+            assertTrue(
+                actual = wholeField.contains(
+                    x = windParticles.x(particle = particle, age = 0),
+                    y = windParticles.y(particle = particle, age = 0)
+                )
+            )
+            assertEquals(
+                expected = windParticles.x(particle = particle, age = 0),
+                actual = windParticles.x(particle = particle, age = TRAIL_LENGTH - 1)
+            )
         }
     }
 
@@ -51,11 +59,19 @@ class WindParticlesTest {
     fun `particles move with the wind and keep a trail`() {
         val windParticles = WindParticles(particleCount = 1, random = Random(seed = 2))
         val field: WindFieldValues = uniformField(eastward = 0f, northward = 2f)
-        windParticles.advance(windFieldValues = field, visibleArea = wholeField, rasterPixelsPerMeterPerSecond = 0.1f)
+        windParticles.advance(
+            windFieldValues = field,
+            visibleArea = wholeField,
+            rasterPixelsPerMeterPerSecond = 0.1f
+        )
         val startX: Float = windParticles.x(particle = 0, age = 0)
         val startY: Float = windParticles.y(particle = 0, age = 0)
 
-        windParticles.advance(windFieldValues = field, visibleArea = wholeField, rasterPixelsPerMeterPerSecond = 0.1f)
+        windParticles.advance(
+            windFieldValues = field,
+            visibleArea = wholeField,
+            rasterPixelsPerMeterPerSecond = 0.1f
+        )
 
         assertEquals(expected = startX, actual = windParticles.x(particle = 0, age = 0), absoluteTolerance = 1e-5f)
         assertEquals(expected = startY - 0.2f, actual = windParticles.y(particle = 0, age = 0), absoluteTolerance = 1e-5f)
@@ -68,7 +84,11 @@ class WindParticlesTest {
         val field: WindFieldValues = uniformField(eastward = 100f, northward = 0f)
 
         repeat(times = 5) {
-            windParticles.advance(windFieldValues = field, visibleArea = wholeField, rasterPixelsPerMeterPerSecond = 1f)
+            windParticles.advance(
+                windFieldValues = field,
+                visibleArea = wholeField,
+                rasterPixelsPerMeterPerSecond = 1f
+            )
         }
 
         repeat(times = 20) { particle: Int ->
@@ -80,7 +100,11 @@ class WindParticlesTest {
     @Test
     fun `a reset seeds again`() {
         val windParticles = WindParticles(particleCount = 5, random = Random(seed = 4))
-        windParticles.advance(windFieldValues = uniformField(eastward = 0f, northward = 0f), visibleArea = wholeField, rasterPixelsPerMeterPerSecond = 1f)
+        windParticles.advance(
+            windFieldValues = uniformField(eastward = 0f, northward = 0f),
+            visibleArea = wholeField,
+            rasterPixelsPerMeterPerSecond = 1f
+        )
 
         windParticles.reset()
 

@@ -2,7 +2,7 @@ package fi.kroon.vadret.radar.wind
 
 import kotlin.math.atan2
 
-data class WindAtLocation(
+internal data class WindAtLocation(
     val windSpeed: Float,
     val towardDegrees: Float
 )

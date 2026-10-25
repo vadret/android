@@ -30,6 +30,7 @@ private val hourRowSpacing = 14.dp
 private val hourTimeWidth = 44.dp
 private val hourIconSize = 24.dp
 private val temperatureSpacing = 1.dp
+private const val DESCRIPTION_MAX_LINES = 2
 
 @Composable
 internal fun ForecastDayHeader(
@@ -108,7 +109,7 @@ private fun ForecastHourRow(
             text = stringResource(id = forecastHour.descriptionResourceId),
             style = VadretTheme.textStyles.body,
             color = VadretTheme.colorScheme.onSurface,
-            maxLines = 2,
+            maxLines = DESCRIPTION_MAX_LINES,
             modifier = Modifier.weight(weight = 1f)
         )
         Column(

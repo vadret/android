@@ -13,6 +13,7 @@ import fi.kroon.vadret.wind.model.WindFrame
 import fi.kroon.vadret.wind.model.WindGrid
 import fi.kroon.vadret.wind.remote.DefaultWindRemoteDataSource
 import io.github.sphrak.either.Either
+import io.github.sphrak.either.extension.asLeft
 import io.ktor.client.engine.mock.MockRequestHandleScope
 import io.ktor.client.engine.mock.respond
 import io.ktor.client.request.HttpRequestData
@@ -128,7 +129,10 @@ class DefaultWindRepositoryTest {
             val firstFrame: WindFrame = windForecast.frames.first()
             assertEquals(expected = listOf(1f, 2f, 3f, 4f, 5f), actual = firstFrame.windSpeeds.take(n = 5))
             assertTrue(actual = firstFrame.windSpeeds.last().isNaN())
-            assertEquals(expected = listOf(90f, 180f, 270f, 0f, 45f), actual = firstFrame.windFromDirections.take(n = 5))
+            assertEquals(
+                expected = listOf(90f, 180f, 270f, 0f, 45f),
+                actual = firstFrame.windFromDirections.take(n = 5)
+            )
         }
 
     @Test
@@ -137,7 +141,10 @@ class DefaultWindRepositoryTest {
             windRepository.getWindForecast()
 
             val withGeometry: List<HttpRequestData> = requests.filter { request: HttpRequestData -> request.url.parameters["with-geo"] == "true" }
-            assertEquals(expected = listOf("20261024T220000Z"), actual = withGeometry.map { request: HttpRequestData -> timeOf(path = request.url.encodedPath) })
+            assertEquals(
+                expected = listOf("20261024T220000Z"),
+                actual = withGeometry.map { request: HttpRequestData -> timeOf(path = request.url.encodedPath) }
+            )
             assertTrue(
                 actual = requests
                     .filter { request: HttpRequestData -> "/time/" in request.url.encodedPath }
@@ -160,10 +167,13 @@ class DefaultWindRepositoryTest {
 
             withRecordedLogs { recordingLogSink ->
                 assertEquals(
-                    expected = Either.Left(a = Failure(errorCode = ErrorCode.WIND_NOT_AVAILABLE)),
+                    expected = Failure(errorCode = ErrorCode.WIND_NOT_AVAILABLE).asLeft(),
                     actual = windRepository.getWindForecast()
                 )
-                assertEquals(expected = listOf(LogLevel.WARN), actual = recordingLogSink.lines.map { line: LogLine -> line.level })
+                assertEquals(
+                    expected = listOf(LogLevel.WARN),
+                    actual = recordingLogSink.lines.map { line: LogLine -> line.level }
+                )
             }
         }
 
@@ -197,10 +207,14 @@ class DefaultWindRepositoryTest {
         runTest {
             speedValues = "[1.0,2.0]"
 
-            withRecordedLogs {
+            withRecordedLogs { recordingLogSink ->
                 assertEquals(
-                    expected = Either.Left(a = Failure(errorCode = ErrorCode.INVALID_RESPONSE)),
+                    expected = Failure(errorCode = ErrorCode.INVALID_RESPONSE).asLeft(),
                     actual = windRepository.getWindForecast()
+                )
+                assertEquals(
+                    expected = listOf(LogLevel.WARN),
+                    actual = recordingLogSink.lines.map { line: LogLine -> line.level }
                 )
             }
         }
@@ -210,10 +224,14 @@ class DefaultWindRepositoryTest {
         runTest {
             coordinates = "[[10.0,55.0],[12.0,55.1],[10.1,57.0],[12.1,57.1],[14.1,57.2],[16.1,57.3]]"
 
-            withRecordedLogs {
+            withRecordedLogs { recordingLogSink ->
                 assertEquals(
-                    expected = Either.Left(a = Failure(errorCode = ErrorCode.INVALID_RESPONSE)),
+                    expected = Failure(errorCode = ErrorCode.INVALID_RESPONSE).asLeft(),
                     actual = windRepository.getWindForecast()
+                )
+                assertEquals(
+                    expected = listOf(LogLevel.WARN),
+                    actual = recordingLogSink.lines.map { line: LogLine -> line.level }
                 )
             }
         }
@@ -223,10 +241,14 @@ class DefaultWindRepositoryTest {
         runTest {
             coordinates = "[[10.0],[12.0,55.1],[14.0,55.2],[10.1,57.0],[12.1,57.1],[14.1,57.2]]"
 
-            withRecordedLogs {
+            withRecordedLogs { recordingLogSink ->
                 assertEquals(
-                    expected = Either.Left(a = Failure(errorCode = ErrorCode.INVALID_RESPONSE)),
+                    expected = Failure(errorCode = ErrorCode.INVALID_RESPONSE).asLeft(),
                     actual = windRepository.getWindForecast()
+                )
+                assertEquals(
+                    expected = listOf(LogLevel.WARN),
+                    actual = recordingLogSink.lines.map { line: LogLine -> line.level }
                 )
             }
         }

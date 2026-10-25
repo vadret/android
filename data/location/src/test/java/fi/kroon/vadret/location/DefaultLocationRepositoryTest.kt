@@ -16,6 +16,8 @@ import fi.kroon.vadret.logging.LogLevel
 import fi.kroon.vadret.testing.LogLine
 import fi.kroon.vadret.testing.withRecordedLogs
 import io.github.sphrak.either.Either
+import io.github.sphrak.either.extension.asLeft
+import io.github.sphrak.either.extension.asRight
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -107,12 +109,10 @@ class DefaultLocationRepositoryTest {
     fun `the device location is returned`() =
         runTest {
             assertEquals(
-                expected = Either.Right(
-                    b = Location(
-                        latitude = 57.7,
-                        longitude = 11.97
-                    )
-                ),
+                expected = Location(
+                    latitude = 57.7,
+                    longitude = 11.97
+                ).asRight(),
                 actual = repository().getDeviceLocation()
             )
         }
@@ -132,7 +132,7 @@ class DefaultLocationRepositoryTest {
                 }
 
                 assertEquals(
-                    expected = cases.mapValues { (_, errorCode: ErrorCode) -> Either.Left(a = Failure(errorCode = errorCode)) },
+                    expected = cases.mapValues { (_, errorCode: ErrorCode) -> Failure(errorCode = errorCode).asLeft() },
                     actual = actual
                 )
                 assertEquals(
@@ -147,7 +147,7 @@ class DefaultLocationRepositoryTest {
         runTest {
             withRecordedLogs { recordingLogSink ->
                 assertEquals(
-                    expected = Either.Left(a = Failure.unknown()),
+                    expected = Failure.unknown().asLeft(),
                     actual = repository(getLocation = { throw IllegalStateException("bug") }).getDeviceLocation()
                 )
                 assertEquals(expected = LogLevel.ERROR, actual = recordingLogSink.lines.single().level)
@@ -162,8 +162,8 @@ class DefaultLocationRepositoryTest {
             val before: Either<Failure, Boolean> = locationRepository.isAutomatic()
             locationRepository.setAutomatic(isAutomatic = false)
 
-            assertEquals(expected = Either.Right(b = true), actual = before)
-            assertEquals(expected = Either.Right(b = false), actual = locationRepository.isAutomatic())
+            assertEquals(expected = true.asRight(), actual = before)
+            assertEquals(expected = false.asRight(), actual = locationRepository.isAutomatic())
         }
 
     @Test
@@ -173,8 +173,8 @@ class DefaultLocationRepositoryTest {
 
             locationRepository.selectStoredLocation(storedLocation = kiruna)
 
-            assertEquals(expected = Either.Right(b = kiruna), actual = locationRepository.getStoredLocation())
-            assertEquals(expected = Either.Right(b = false), actual = locationRepository.isAutomatic())
+            assertEquals(expected = kiruna.asRight(), actual = locationRepository.getStoredLocation())
+            assertEquals(expected = false.asRight(), actual = locationRepository.isAutomatic())
         }
 
     @Test
@@ -192,24 +192,20 @@ class DefaultLocationRepositoryTest {
 
             assertEquals<List<Either<Failure, LocationPreference>>>(
                 expected = listOf(
-                    Either.Right(
-                        b = LocationPreference(
-                            isAutomatic = true,
-                            storedLocation = StoredLocation(
-                                locality = "Stockholm",
-                                municipality = "Stockholm",
-                                county = "Stockholm",
-                                latitude = 59.3293,
-                                longitude = 18.0686
-                            )
+                    LocationPreference(
+                        isAutomatic = true,
+                        storedLocation = StoredLocation(
+                            locality = "Stockholm",
+                            municipality = "Stockholm",
+                            county = "Stockholm",
+                            latitude = 59.3293,
+                            longitude = 18.0686
                         )
-                    ),
-                    Either.Right(
-                        b = LocationPreference(
-                            isAutomatic = false,
-                            storedLocation = kiruna
-                        )
-                    )
+                    ).asRight(),
+                    LocationPreference(
+                        isAutomatic = false,
+                        storedLocation = kiruna
+                    ).asRight()
                 ),
                 actual = emitted
             )
@@ -225,13 +221,15 @@ class DefaultLocationRepositoryTest {
 
             withRecordedLogs {
                 val results: List<Either<Failure, Any>> = listOf(
+                    locationRepository.isAutomatic(),
+                    locationRepository.setAutomatic(isAutomatic = true),
                     locationRepository.getStoredLocation(),
                     locationRepository.selectStoredLocation(storedLocation = kiruna),
                     locationRepository.observeLocationPreference().toList().single()
                 )
 
                 assertEquals(
-                    expected = List(size = 3) { Either.Left(a = Failure(errorCode = ErrorCode.STORAGE_FAILED)) },
+                    expected = List(size = results.size) { Failure(errorCode = ErrorCode.STORAGE_FAILED).asLeft() },
                     actual = results
                 )
             }

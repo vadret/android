@@ -39,7 +39,7 @@ private val defaultAboutRows: ImmutableList<AboutRow> = persistentListOf(
     )
 )
 
-data class SettingsState(
+internal data class SettingsState(
     val settings: Settings? = null,
     val locationRows: ImmutableList<LocationRow> = persistentListOf(),
     val libraryGroups: ImmutableList<LibraryGroup> = persistentListOf(),

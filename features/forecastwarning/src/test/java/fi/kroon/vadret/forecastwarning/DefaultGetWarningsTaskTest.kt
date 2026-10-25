@@ -25,7 +25,10 @@ class DefaultGetWarningsTaskTest {
         runTest {
             val result: Either<Failure, List<AggregatedFeed>> = getWarningsTask(isRefresh = true)
 
-            assertEquals<Either<Failure, List<AggregatedFeed>>>(expected = aggregatedFeedRepository.result, actual = result)
+            assertEquals<Either<Failure, List<AggregatedFeed>>>(
+                expected = aggregatedFeedRepository.result,
+                actual = result
+            )
             assertEquals(
                 expected = listOf(Triple(setOf(FeedSource.SMHI), setOf(1), true)),
                 actual = aggregatedFeedRepository.requests
@@ -38,7 +41,10 @@ class DefaultGetWarningsTaskTest {
             val failure = Failure(errorCode = ErrorCode.DISTRICTS_NOT_AVAILABLE)
             warningFilterRepository.warningFilter = failure.asLeft()
 
-            assertEquals(expected = Either.Left(a = failure), actual = getWarningsTask(isRefresh = false))
+            assertEquals<Either<Failure, List<AggregatedFeed>>>(
+                expected = failure.asLeft(),
+                actual = getWarningsTask(isRefresh = false)
+            )
             assertTrue(actual = aggregatedFeedRepository.requests.isEmpty())
         }
 }

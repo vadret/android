@@ -88,7 +88,7 @@ class DefaultGetWeatherForecastTaskTest {
             val withoutForecast: Either<Failure, PlaceForecast> = getWeatherForecastTask()
 
             assertEquals(
-                expected = listOf(modeFailure, locationFailure, forecastFailure).map { failure: Failure -> Either.Left(a = failure) },
+                expected = listOf(modeFailure, locationFailure, forecastFailure).map { failure: Failure -> failure.asLeft() },
                 actual = listOf(withoutMode, withoutLocation, withoutForecast)
             )
             assertTrue(actual = weatherForecastRepository.requestedCoordinates.size == 1)

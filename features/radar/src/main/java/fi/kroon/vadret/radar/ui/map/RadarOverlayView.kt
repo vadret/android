@@ -7,8 +7,8 @@ import org.maplibre.android.maps.MapLibreMap
 
 internal class RadarOverlayView(
     context: Context,
-    private val windParticles: WindParticleDrawer,
-    private val locationMarker: LocationMarkerDrawer
+    private val windParticleDrawer: WindParticleDrawer,
+    private val locationMarkerDrawer: LocationMarkerDrawer
 ) : View(context) {
 
     var map: MapLibreMap? = null
@@ -16,7 +16,7 @@ internal class RadarOverlayView(
 
     fun advanceWind() {
         val currentMap: MapLibreMap = map ?: return
-        windParticles.advance(
+        windParticleDrawer.advance(
             projection = currentMap.projection,
             screenWidth = width,
             screenHeight = height
@@ -27,12 +27,12 @@ internal class RadarOverlayView(
     override fun onDraw(canvas: Canvas) {
         val currentMap: MapLibreMap = map ?: return
         if (isWindShown) {
-            windParticles.draw(
+            windParticleDrawer.draw(
                 canvas = canvas,
                 projection = currentMap.projection
             )
         }
-        locationMarker.draw(
+        locationMarkerDrawer.draw(
             canvas = canvas,
             projection = currentMap.projection
         )

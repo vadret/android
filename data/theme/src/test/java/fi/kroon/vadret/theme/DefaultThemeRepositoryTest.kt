@@ -12,6 +12,8 @@ import fi.kroon.vadret.theme.local.DefaultThemeLocalDataSource
 import fi.kroon.vadret.theme.local.ThemeLocalDataSource
 import fi.kroon.vadret.theme.model.Theme
 import io.github.sphrak.either.Either
+import io.github.sphrak.either.extension.asLeft
+import io.github.sphrak.either.extension.asRight
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -36,7 +38,9 @@ private class FailingThemeLocalDataSource(
 class DefaultThemeRepositoryTest {
 
     private fun TestScope.themeRepository(): Pair<ThemeRepository, ThemeLocalDataSource> {
-        val themeLocalDataSource = DefaultThemeLocalDataSource(dataStore = testPreferencesDataStore(scope = backgroundScope))
+        val themeLocalDataSource = DefaultThemeLocalDataSource(
+            dataStore = testPreferencesDataStore(scope = backgroundScope)
+        )
         return DefaultThemeRepository(themeLocalDataSource = themeLocalDataSource) to themeLocalDataSource
     }
 
@@ -45,7 +49,10 @@ class DefaultThemeRepositoryTest {
         runTest {
             val (themeRepository: ThemeRepository, _) = themeRepository()
 
-            assertEquals(expected = Either.Right(b = Theme.LIGHT), actual = themeRepository.getTheme())
+            assertEquals(
+                expected = Theme.LIGHT.asRight(),
+                actual = themeRepository.getTheme()
+            )
         }
 
     @Test
@@ -58,7 +65,10 @@ class DefaultThemeRepositoryTest {
                 themeRepository.getTheme()
             }
 
-            assertEquals(expected = Theme.entries.map { theme: Theme -> Either.Right(b = theme) }, actual = themes)
+            assertEquals(
+                expected = Theme.entries.map { theme: Theme -> theme.asRight() },
+                actual = themes
+            )
         }
 
     @Test
@@ -66,9 +76,14 @@ class DefaultThemeRepositoryTest {
         runTest {
             val dataStore = testPreferencesDataStore(scope = backgroundScope)
             dataStore.edit { preferences -> preferences[stringPreferencesKey(name = "theme")] = "Light (No background)" }
-            val themeRepository: ThemeRepository = DefaultThemeRepository(themeLocalDataSource = DefaultThemeLocalDataSource(dataStore = dataStore))
+            val themeRepository: ThemeRepository = DefaultThemeRepository(
+                themeLocalDataSource = DefaultThemeLocalDataSource(dataStore = dataStore)
+            )
 
-            assertEquals(expected = Either.Right(b = Theme.LIGHT), actual = themeRepository.getTheme())
+            assertEquals(
+                expected = Theme.LIGHT.asRight(),
+                actual = themeRepository.getTheme()
+            )
         }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -91,7 +106,11 @@ class DefaultThemeRepositoryTest {
             job.join()
 
             assertEquals<List<Either<Failure, Theme>>>(
-                expected = listOf(Either.Right(b = Theme.LIGHT), Either.Right(b = Theme.DARK), Either.Right(b = Theme.AMOLED)),
+                expected = listOf(
+                    Theme.LIGHT.asRight(),
+                    Theme.DARK.asRight(),
+                    Theme.AMOLED.asRight()
+                ),
                 actual = emitted
             )
         }
@@ -111,11 +130,11 @@ class DefaultThemeRepositoryTest {
                 )
 
                 assertEquals(
-                    expected = List(size = 3) { Either.Left(a = Failure(errorCode = ErrorCode.STORAGE_FAILED)) },
+                    expected = List(size = results.size) { Failure(errorCode = ErrorCode.STORAGE_FAILED).asLeft() },
                     actual = results
                 )
                 assertEquals(
-                    expected = List(size = 3) { "fi.kroon.vadret.theme" to LogLevel.WARN },
+                    expected = List(size = results.size) { "fi.kroon.vadret.theme" to LogLevel.WARN },
                     actual = recordingLogSink.lines.map { line: LogLine -> line.tag to line.level }
                 )
             }
@@ -129,7 +148,10 @@ class DefaultThemeRepositoryTest {
             )
 
             withRecordedLogs { recordingLogSink ->
-                assertEquals(expected = Either.Left(a = Failure.unknown()), actual = themeRepository.getTheme())
+                assertEquals(
+                    expected = Failure.unknown().asLeft(),
+                    actual = themeRepository.getTheme()
+                )
                 assertEquals(expected = LogLevel.ERROR, actual = recordingLogSink.lines.single().level)
             }
         }

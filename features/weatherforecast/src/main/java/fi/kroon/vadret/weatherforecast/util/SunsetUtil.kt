@@ -19,6 +19,18 @@ internal object SunsetUtil {
     private const val DEGREES_IN_CIRCLE: Double = 360.0
     private const val DEGREES_IN_HALF_CIRCLE: Double = 180.0
     private const val MILLISECONDS_IN_DAY: Double = 86_400_000.0
+    private const val HALF_DAY: Double = 0.5
+    private const val MEAN_ANOMALY_AT_J2000_DEGREES: Double = 357.5291
+    private const val MEAN_ANOMALY_DEGREES_PER_DAY: Double = 0.98560028
+    private const val EQUATION_OF_CENTER_FIRST_HARMONIC_DEGREES: Double = 1.9148
+    private const val EQUATION_OF_CENTER_SECOND_HARMONIC_DEGREES: Double = 0.0200
+    private const val EQUATION_OF_CENTER_THIRD_HARMONIC_DEGREES: Double = 0.0003
+    private const val PERIHELION_ARGUMENT_DEGREES: Double = 102.9372
+    private const val EQUATION_OF_TIME_ECCENTRICITY_DAYS: Double = 0.0053
+    private const val EQUATION_OF_TIME_OBLIQUITY_DAYS: Double = 0.0069
+    private const val SECOND_HARMONIC: Double = 2.0
+    private const val THIRD_HARMONIC: Double = 3.0
+    private const val MINIMUM_COSINE: Double = -1.0
 
     fun getSunriseSunset(
         day: Instant,
@@ -65,7 +77,7 @@ internal object SunsetUtil {
                     day = at,
                     longitude = longitude
                 ).declination
-            ) < -1.0
+            ) < MINIMUM_COSINE
         }
     }
 
@@ -74,13 +86,21 @@ internal object SunsetUtil {
         longitude: Double
     ): SolarNoon {
         val westLongitude: Double = -longitude
-        val cycle: Double = floor(day.toJulianDate() - JULIAN_DATE_2000_01_01 - LEAP_SECONDS_DAYS - westLongitude / DEGREES_IN_CIRCLE + 0.5)
+        val daysSinceJ2000: Double = day.toJulianDate() - JULIAN_DATE_2000_01_01 - LEAP_SECONDS_DAYS - westLongitude / DEGREES_IN_CIRCLE
+        val cycle: Double = floor(daysSinceJ2000 + HALF_DAY)
         val approximateSolarNoon: Double = JULIAN_DATE_2000_01_01 + LEAP_SECONDS_DAYS + westLongitude / DEGREES_IN_CIRCLE + cycle
-        val meanAnomaly: Double = ((357.5291 + 0.98560028 * (approximateSolarNoon - JULIAN_DATE_2000_01_01)) % DEGREES_IN_CIRCLE).toRadians()
-        val equationOfCenter: Double = 1.9148 * sin(meanAnomaly) + 0.0200 * sin(2 * meanAnomaly) + 0.0003 * sin(3 * meanAnomaly)
-        val eclipticLongitude: Double = ((meanAnomaly.toDegrees() + 102.9372 + equationOfCenter + DEGREES_IN_HALF_CIRCLE) % DEGREES_IN_CIRCLE).toRadians()
+        val meanAnomalyDegrees: Double = (MEAN_ANOMALY_AT_J2000_DEGREES + MEAN_ANOMALY_DEGREES_PER_DAY * (approximateSolarNoon - JULIAN_DATE_2000_01_01)) % DEGREES_IN_CIRCLE
+        val meanAnomaly: Double = meanAnomalyDegrees.toRadians()
+        val equationOfCenter: Double = EQUATION_OF_CENTER_FIRST_HARMONIC_DEGREES * sin(meanAnomaly) +
+            EQUATION_OF_CENTER_SECOND_HARMONIC_DEGREES * sin(SECOND_HARMONIC * meanAnomaly) +
+            EQUATION_OF_CENTER_THIRD_HARMONIC_DEGREES * sin(THIRD_HARMONIC * meanAnomaly)
+        val eclipticLongitudeDegrees: Double = (meanAnomaly.toDegrees() + PERIHELION_ARGUMENT_DEGREES + equationOfCenter + DEGREES_IN_HALF_CIRCLE) % DEGREES_IN_CIRCLE
+        val eclipticLongitude: Double = eclipticLongitudeDegrees.toRadians()
+        val transit: Double = approximateSolarNoon +
+            EQUATION_OF_TIME_ECCENTRICITY_DAYS * sin(meanAnomaly) -
+            EQUATION_OF_TIME_OBLIQUITY_DAYS * sin(SECOND_HARMONIC * eclipticLongitude)
         return SolarNoon(
-            transit = approximateSolarNoon + 0.0053 * sin(meanAnomaly) - 0.0069 * sin(2 * eclipticLongitude),
+            transit = transit,
             declination = asin(sin(eclipticLongitude) * sin(EARTH_AXIAL_TILT_DEGREES.toRadians()))
         )
     }

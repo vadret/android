@@ -39,7 +39,7 @@ android {
         minSdk = libs.versions.android.minSdk.get().toInteger()
         targetSdk = libs.versions.android.targetSdk.get().toInteger()
         versionCode = appVersionCode
-        versionName = "3.0.0alpha05"
+        versionName = "3.0.0alpha06"
         vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner = "androidx.top.runner.AndroidJUnitRunner"
         multiDexEnabled = true
@@ -120,6 +120,12 @@ android {
     buildFeatures {
         buildConfig = true
         resValues = true
+    }
+}
+
+kotlin {
+    compilerOptions {
+        optIn.add('kotlin.concurrent.atomics.ExperimentalAtomicApi')
     }
 }
 

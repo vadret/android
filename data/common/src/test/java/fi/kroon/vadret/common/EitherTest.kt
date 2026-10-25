@@ -1,6 +1,8 @@
 package fi.kroon.vadret.common
 
 import io.github.sphrak.either.Either
+import io.github.sphrak.either.extension.asLeft
+import io.github.sphrak.either.extension.asRight
 import kotlinx.coroutines.CancellationException
 import java.io.IOException
 import kotlin.test.Test
@@ -13,7 +15,7 @@ class EitherTest {
     @Test
     fun `a value is kept on the right`() {
         assertEquals(
-            expected = Either.Right(b = 1),
+            expected = 1.asRight(),
             actual = either { 1 }
         )
     }
@@ -25,7 +27,7 @@ class EitherTest {
         val result: Either<Exception, Int> = either { throw exception }
 
         assertEquals(
-            expected = Either.Left(a = exception),
+            expected = exception.asLeft(),
             actual = result
         )
     }
@@ -45,7 +47,7 @@ class EitherTest {
             .catch { caught: Exception -> caught.message.orEmpty() }
 
         assertEquals(
-            expected = Either.Left(a = "broken"),
+            expected = "broken".asLeft(),
             actual = result
         )
     }
@@ -61,7 +63,7 @@ class EitherTest {
             }
 
         assertEquals(
-            expected = Either.Right(b = 1),
+            expected = 1.asRight(),
             actual = result
         )
         assertSame(expected = false, actual = isTransformed)

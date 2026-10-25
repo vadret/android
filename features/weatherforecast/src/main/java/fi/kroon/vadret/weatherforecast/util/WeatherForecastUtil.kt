@@ -8,8 +8,8 @@ private val logger: Logger = LoggerFactory.getLogger(tag = "fi.kroon.vadret.weat
 
 internal object WeatherForecastUtil {
 
-    fun getPrecipitationResourceId(prSort: Int): Int =
-        when (prSort) {
+    fun getPrecipitationResourceId(precipitationType: Int): Int =
+        when (precipitationType) {
             0 -> R.string.precipitation_none
             1 -> R.string.prsort_rain
             2 -> R.string.prsort_thunderstorm
@@ -91,8 +91,8 @@ internal object WeatherForecastUtil {
             }
         }
 
-    fun getWsymb2ResourceId(index: Int): Int =
-        when (index) {
+    fun getWsymb2ResourceId(symbolCode: Int): Int =
+        when (symbolCode) {
             1 -> R.string.wsymb2_clear_sky
 
             2 -> R.string.wsymb2_nearly_clear_sky

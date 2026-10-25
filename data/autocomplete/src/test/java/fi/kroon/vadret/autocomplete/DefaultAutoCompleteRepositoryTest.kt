@@ -1,13 +1,17 @@
 package fi.kroon.vadret.autocomplete
 
+import android.content.res.Resources
 import fi.kroon.vadret.autocomplete.local.AutoCompleteItemEntity
 import fi.kroon.vadret.autocomplete.local.AutoCompleteLocalDataSource
 import fi.kroon.vadret.autocomplete.model.AutoCompleteItem
 import fi.kroon.vadret.common.ErrorCode
 import fi.kroon.vadret.common.Failure
 import fi.kroon.vadret.logging.LogLevel
+import fi.kroon.vadret.testing.LogLine
 import fi.kroon.vadret.testing.withRecordedLogs
 import io.github.sphrak.either.Either
+import io.github.sphrak.either.extension.asLeft
+import io.github.sphrak.either.extension.asRight
 import kotlinx.coroutines.test.runTest
 import java.io.IOException
 import kotlin.test.Test
@@ -43,20 +47,21 @@ class DefaultAutoCompleteRepositoryTest {
                 }
             )
 
-            val result: Either<Failure, List<AutoCompleteItem>> = autoCompleteRepository.search(prefix = "Abi", limit = 3)
+            val result: Either<Failure, List<AutoCompleteItem>> = autoCompleteRepository.search(
+                prefix = "Abi",
+                limit = 3
+            )
 
             assertEquals<Either<Failure, List<AutoCompleteItem>>>(
-                expected = Either.Right(
-                    b = listOf(
-                        AutoCompleteItem(
-                            locality = "Abisko",
-                            municipality = "Kiruna",
-                            county = "Norrbotten",
-                            latitude = 68.349,
-                            longitude = 18.83
-                        )
+                expected = listOf(
+                    AutoCompleteItem(
+                        locality = "Abisko",
+                        municipality = "Kiruna",
+                        county = "Norrbotten",
+                        latitude = 68.349,
+                        longitude = 18.83
                     )
-                ),
+                ).asRight(),
                 actual = result
             )
             assertEquals(expected = listOf("Abi" to 3), actual = asked)
@@ -67,6 +72,7 @@ class DefaultAutoCompleteRepositoryTest {
         runTest {
             val exceptions: List<Exception> = listOf(
                 IOException("missing"),
+                Resources.NotFoundException("sweden"),
                 NumberFormatException("north"),
                 IllegalArgumentException("no column"),
                 IllegalStateException("closed")
@@ -76,16 +82,19 @@ class DefaultAutoCompleteRepositoryTest {
                 val results: List<Either<Failure, List<AutoCompleteItem>>> = exceptions.map { exception: Exception ->
                     DefaultAutoCompleteRepository(
                         autoCompleteLocalDataSource = FakeAutoCompleteLocalDataSource { _, _ -> throw exception }
-                    ).search(prefix = "A", limit = 1)
+                    ).search(
+                        prefix = "A",
+                        limit = 1
+                    )
                 }
 
                 assertEquals(
-                    expected = List(size = exceptions.size) { Either.Left(a = Failure(errorCode = ErrorCode.FILE_READ_FAILED)) },
+                    expected = List(size = exceptions.size) { Failure(errorCode = ErrorCode.FILE_READ_FAILED).asLeft() },
                     actual = results
                 )
                 assertEquals(
                     expected = List(size = exceptions.size) { LogLevel.WARN },
-                    actual = recordingLogSink.lines.map { line -> line.level }
+                    actual = recordingLogSink.lines.map { line: LogLine -> line.level }
                 )
             }
         }
@@ -96,9 +105,15 @@ class DefaultAutoCompleteRepositoryTest {
             withRecordedLogs { recordingLogSink ->
                 val result: Either<Failure, List<AutoCompleteItem>> = DefaultAutoCompleteRepository(
                     autoCompleteLocalDataSource = FakeAutoCompleteLocalDataSource { _, _ -> throw UnsupportedOperationException("bug") }
-                ).search(prefix = "A", limit = 1)
+                ).search(
+                    prefix = "A",
+                    limit = 1
+                )
 
-                assertEquals(expected = Either.Left(a = Failure.unknown()), actual = result)
+                assertEquals(
+                    expected = Failure.unknown().asLeft(),
+                    actual = result
+                )
                 assertEquals(expected = LogLevel.ERROR, actual = recordingLogSink.lines.single().level)
             }
         }

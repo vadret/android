@@ -12,6 +12,7 @@ android {
 
 dependencies {
     implementation project(':core:idgenerator')
+    implementation project(':core:logging')
     implementation project(':data:aggregatedfeed')
     implementation project(':data:autocomplete')
     implementation project(':data:common')
