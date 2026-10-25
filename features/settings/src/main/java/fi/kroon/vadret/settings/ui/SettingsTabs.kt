@@ -48,7 +48,7 @@ internal fun SettingsTabs(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(all = tabsInnerPadding)
-        ) { index: Int, contentColor: Color ->
+        ) { index: Int, contentColor: Color, _: Float ->
             Text(
                 text = stringResource(id = SettingsPage.entries[index].titleResourceId),
                 style = VadretTheme.textStyles.bodyStrong,

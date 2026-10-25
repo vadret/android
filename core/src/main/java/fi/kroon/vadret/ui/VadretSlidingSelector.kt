@@ -1,6 +1,5 @@
 package fi.kroon.vadret.ui
 
-import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.AnimationSpec
 import androidx.compose.animation.core.AnimationVector1D
@@ -12,7 +11,6 @@ import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -23,18 +21,22 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.layout.onPlaced
 import androidx.compose.ui.layout.positionInParent
 import androidx.compose.ui.semantics.Role
 import kotlinx.coroutines.launch
+import kotlin.math.max
+import kotlin.math.min
 
 private const val PILL_CORNER_RADIUS_FRACTION = 0.5f
+private const val UNCOVERED = 0f
+private const val COVERED = 1f
 
 private val indicatorSpring: AnimationSpec<Float> = spring(
     dampingRatio = Spring.DampingRatioNoBouncy,
@@ -55,9 +57,10 @@ fun VadretSlidingSelector(
     modifier: Modifier = Modifier,
     isEqualWidth: Boolean = false,
     unselectedContentColor: Color = VadretTheme.colorScheme.onSurfaceVariant,
-    optionContent: @Composable RowScope.(index: Int, contentColor: Color) -> Unit
+    optionContent: @Composable RowScope.(index: Int, contentColor: Color, coverage: Float) -> Unit
 ) {
     val indicatorColor: Color = VadretTheme.colorScheme.primaryContainer
+    val selectedContentColor: Color = VadretTheme.colorScheme.onPrimaryContainer
     val optionBounds: SnapshotStateList<OptionBounds?> = remember(optionCount) {
         mutableStateListOf<OptionBounds?>().apply { repeat(times = optionCount) { add(null) } }
     }
@@ -98,13 +101,21 @@ fun VadretSlidingSelector(
     ) {
         repeat(times = optionCount) { index: Int ->
             val isSelected: Boolean = index == selectedIndex
-            val contentColor: Color by animateColorAsState(
-                targetValue = if (isSelected) {
-                    VadretTheme.colorScheme.onPrimaryContainer
-                } else {
-                    unselectedContentColor
-                },
-                label = "selectorContent"
+            val bounds: OptionBounds? = optionBounds.getOrNull(index = index)
+            val coverage: Float = if (isIndicatorPlaced && bounds != null) {
+                bounds.coverage(
+                    indicatorLeft = indicatorLeft.value,
+                    indicatorWidth = indicatorWidth.value
+                )
+            } else if (isSelected) {
+                COVERED
+            } else {
+                UNCOVERED
+            }
+            val contentColor: Color = lerp(
+                start = unselectedContentColor,
+                stop = selectedContentColor,
+                fraction = coverage
             )
             val widthModifier: Modifier = if (isEqualWidth) {
                 Modifier.weight(weight = 1f)
@@ -121,17 +132,32 @@ fun VadretSlidingSelector(
                             width = coordinates.size.width.toFloat()
                         )
                     }
-                    .clip(shape = CircleShape)
                     .selectable(
                         selected = isSelected,
+                        interactionSource = null,
+                        indication = null,
                         role = role,
                         onClick = { onOptionSelected(index) }
                     )
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    optionContent(index, contentColor)
+                    optionContent(index, contentColor, coverage)
                 }
             }
         }
     }
+}
+
+private fun OptionBounds.coverage(
+    indicatorLeft: Float,
+    indicatorWidth: Float
+): Float {
+    if (width <= UNCOVERED) {
+        return UNCOVERED
+    }
+    val overlap: Float = min(left + width, indicatorLeft + indicatorWidth) - max(left, indicatorLeft)
+    return (overlap / width).coerceIn(
+        minimumValue = UNCOVERED,
+        maximumValue = COVERED
+    )
 }

@@ -1,6 +1,5 @@
 package fi.kroon.vadret.radar.ui
 
-import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -14,10 +13,10 @@ import androidx.compose.material3.HorizontalFloatingToolbar
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
@@ -26,6 +25,8 @@ import fi.kroon.vadret.core.R
 import fi.kroon.vadret.radar.model.RadarLayer
 import fi.kroon.vadret.ui.VadretSlidingSelector
 import fi.kroon.vadret.ui.VadretTheme
+
+private const val FILLED_ICON_COVERAGE = 0.5f
 
 private val toolbarPadding = PaddingValues(all = 4.dp)
 private val toolbarHeight = 44.dp
@@ -61,10 +62,10 @@ internal fun RadarLayerToolbar(
             role = Role.RadioButton,
             modifier = Modifier.fillMaxHeight(),
             unselectedContentColor = VadretTheme.colorScheme.onSurface
-        ) { index: Int, contentColor: Color ->
+        ) { index: Int, contentColor: Color, coverage: Float ->
             LayerLabel(
                 layer = RadarLayer.entries[index],
-                isSelected = index == selectedLayer.ordinal,
+                coverage = coverage,
                 contentColor = contentColor
             )
         }
@@ -74,17 +75,14 @@ internal fun RadarLayerToolbar(
 @Composable
 private fun LayerLabel(
     layer: RadarLayer,
-    isSelected: Boolean,
+    coverage: Float,
     contentColor: Color,
     modifier: Modifier = Modifier
 ) {
-    val iconTint: Color by animateColorAsState(
-        targetValue = if (isSelected) {
-            VadretTheme.colorScheme.onPrimaryContainer
-        } else {
-            VadretTheme.colorScheme.onSurfaceVariant
-        },
-        label = "layerIcon"
+    val iconTint: Color = lerp(
+        start = VadretTheme.colorScheme.onSurfaceVariant,
+        stop = VadretTheme.colorScheme.onPrimaryContainer,
+        fraction = coverage
     )
     Row(
         horizontalArrangement = Arrangement.spacedBy(space = layerIconGap),
@@ -92,7 +90,7 @@ private fun LayerLabel(
         modifier = modifier.padding(paddingValues = layerPadding)
     ) {
         Icon(
-            painter = painterResource(id = layer.iconResourceId(isSelected = isSelected)),
+            painter = painterResource(id = layer.iconResourceId(isSelected = coverage >= FILLED_ICON_COVERAGE)),
             contentDescription = null,
             tint = iconTint,
             modifier = Modifier.size(size = layerIconSize)
