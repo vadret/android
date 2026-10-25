@@ -1,7 +1,10 @@
 package fi.kroon.vadret.aggregatedfeed.extension
 
 import fi.kroon.vadret.aggregatedfeed.local.AggregatedFeedEntity
+import fi.kroon.vadret.aggregatedfeed.local.FeedDetailEntity
+import fi.kroon.vadret.aggregatedfeed.model.FeedDetailKind
 import fi.kroon.vadret.aggregatedfeed.model.FeedSource
+import fi.kroon.vadret.aggregatedfeed.model.WarningLevel
 import fi.kroon.vadret.aggregatedfeed.remote.SmhiAffectedAreaDto
 import fi.kroon.vadret.aggregatedfeed.remote.SmhiDescriptionDto
 import fi.kroon.vadret.aggregatedfeed.remote.SmhiWarningAreaDto
@@ -12,9 +15,13 @@ import kotlin.time.Instant
 
 private val logger: Logger = LoggerFactory.getLogger(tag = "fi.kroon.vadret.aggregatedfeed")
 
-private const val MESSAGE_LEVEL = "MESSAGE"
-private const val PREAMBLE_SEPARATOR = " - "
-private const val PARAGRAPH_SEPARATOR = "\n\n"
+private val detailKindsByCode: Map<String, FeedDetailKind> = mapOf(
+    "HAPPENS" to FeedDetailKind.WHAT_HAPPENS,
+    "INCIDENT" to FeedDetailKind.DESCRIPTION,
+    "WHERE" to FeedDetailKind.WHERE,
+    "AFFECT" to FeedDetailKind.ADVICE,
+    "COMMENTS" to FeedDetailKind.COMMENT
+)
 
 internal fun SmhiWarningDto.toAggregatedFeedEntities(districtIds: Set<Int>): List<AggregatedFeedEntity> =
     warningAreas
@@ -35,29 +42,27 @@ private fun SmhiWarningDto.toAggregatedFeedEntity(smhiWarningAreaDto: SmhiWarnin
     }
     return AggregatedFeedEntity(
         identifier = "smhi-$id-${smhiWarningAreaDto.id}",
-        headline = headline(smhiWarningAreaDto = smhiWarningAreaDto),
-        preamble = preamble(smhiWarningAreaDto = smhiWarningAreaDto),
-        bodyText = (smhiWarningAreaDto.descriptions.orEmpty() + descriptions.orEmpty())
-            .joinToString(separator = PARAGRAPH_SEPARATOR) { smhiDescriptionDto: SmhiDescriptionDto ->
-                "${smhiDescriptionDto.title.sv}\n${smhiDescriptionDto.text.sv}"
-            },
+        headline = smhiWarningAreaDto.eventDescription.sv,
+        areaName = smhiWarningAreaDto.areaName.sv,
+        warningLevel = smhiWarningAreaDto.toWarningLevel()?.name,
+        details = (smhiWarningAreaDto.descriptions.orEmpty() + descriptions.orEmpty())
+            .map { smhiDescriptionDto: SmhiDescriptionDto -> smhiDescriptionDto.toFeedDetailEntity() },
         source = FeedSource.SMHI.name,
         publishedAtEpochMillis = publishedAt.toEpochMilliseconds()
     )
 }
 
-private fun SmhiWarningDto.headline(smhiWarningAreaDto: SmhiWarningAreaDto): String =
-    if (smhiWarningAreaDto.warningLevel.code == MESSAGE_LEVEL) {
-        "${smhiWarningAreaDto.warningLevel.sv}: ${event.sv}"
-    } else {
-        "${smhiWarningAreaDto.warningLevel.sv} varning: ${event.sv}"
+private fun SmhiWarningAreaDto.toWarningLevel(): WarningLevel? {
+    val warningLevel: WarningLevel? = WarningLevel.entries.firstOrNull { level: WarningLevel -> level.name == this.warningLevel.code }
+    if (warningLevel == null) {
+        logger.warn { "Unknown SMHI warning level ${this.warningLevel.code} on warning area $id" }
     }
-
-private fun SmhiWarningDto.preamble(smhiWarningAreaDto: SmhiWarningAreaDto): String {
-    val eventDescription: String = smhiWarningAreaDto.eventDescription.sv
-    return if (eventDescription == event.sv) {
-        smhiWarningAreaDto.areaName.sv
-    } else {
-        smhiWarningAreaDto.areaName.sv + PREAMBLE_SEPARATOR + eventDescription
-    }
+    return warningLevel
 }
+
+private fun SmhiDescriptionDto.toFeedDetailEntity(): FeedDetailEntity =
+    FeedDetailEntity(
+        kind = (detailKindsByCode[title.code] ?: FeedDetailKind.OTHER).name,
+        title = title.sv,
+        text = text.sv
+    )

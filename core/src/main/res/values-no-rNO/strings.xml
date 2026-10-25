@@ -40,7 +40,6 @@
     <string name="prsort_rain">Regn</string>
     <string name="prsort_snow_and_rain">Snø og regn</string>
     <string name="prsort_snow">Snø</string>
-    <string name="prsort_no_precipitation">Ingen nedbør</string>
     <string name="wsymb2_heavy_snowfall">Tungt snøfall</string>
     <string name="wsymb2_moderate_snowfall">Moderat snøfall</string>
     <string name="wsymb2_light_snowfall">Lett snøfall</string>
@@ -69,4 +68,18 @@
     <string name="wsymb2_clear_sky">Klar himmel</string>
     <string name="radar">Radar</string>
     <string name="about_app">Handle om</string>
+    <string name="automatic_location">Automatisk</string>
+    <string name="choose_location">Velg sted</string>
+    <string name="add_place">Legg til sted…</string>
+    <string name="remove_favorite">Fjern %1$s</string>
+    <string name="selected">Valgt</string>
+    <string name="humidity">Luftfuktighet</string>
+    <string name="precipitation_short">Nedbør</string>
+    <string name="precipitation_none">Ingen</string>
+    <string name="precipitation">Nedbør</string>
+    <string name="now">Nå</string>
+    <string name="warning_level_yellow">Gult farevarsel</string>
+    <string name="warning_level_orange">Oransje farevarsel</string>
+    <string name="warning_level_red">Rødt farevarsel</string>
+    <string name="warning_level_message">Melding</string>
 </resources>

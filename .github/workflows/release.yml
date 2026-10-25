@@ -32,27 +32,10 @@ jobs:
           ORG_GRADLE_PROJECT_GitHubPackagesPassword: ${{ secrets.GITHUB_TOKEN }}
         run: |
           ./gradlew assembleGithubRelease
-      - name: Get the version
-        id: get_version
-        run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
+      - name: Create release with one APK per CPU type
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ steps.get_version.outputs.VERSION }}
-          release_name: ${{ steps.get_version.outputs.VERSION }}
-          body: |
-            ${{ steps.get_version.outputs.VERSION }}
-          draft: false
-          prerelease: false
-      - name: Upload release
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          asset_path: app/build/outputs/apk/github/release/app-github-release.apk
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_name: app-github-release.apk
-          asset_content_type: application/vnd.android.package-archive
+        run: |
+          gh release create "${GITHUB_REF_NAME}" app/build/outputs/apk/github/release/*.apk \
+            --title "${GITHUB_REF_NAME}" \
+            --notes "${GITHUB_REF_NAME}"

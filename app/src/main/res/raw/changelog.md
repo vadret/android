@@ -5,14 +5,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [3.0.0] -- 2026-* 🍁
+## [3.0.0] Boelo -- 2026-10- 🍁
 
-- Drop support for Google flavor
-- Extract code into separate modules
-- Kotlin 2.4.21
-- Migrate to SMHI Snow1g API
+### Added
+
+- New wind map feature 🌬️
+
+### Changed
+
+- Updated design
+- New map provider OpenFreeMap via MapLibre
+- Migrate all UI to Jetpack Compose
+- Replace RxJava2 w/ Kotlin Flow/Coroutines
+- Replace Retrofit w/ Ktor + OkHttp
+- Replace androidx.navigation with androidx.navigation3
+- Migrate to SMHI Snow1g API (Thank you @[kjel80](https://github.com/kjel80) ❤️)
 - Migrate to SMHI IBWW v1 API
-- KrisInformation v3
+- Migrate to KrisInformation v3
+- Extract code into separate modules
+- Updated to Kotlin 2.4.21
+
+### Removed
+
+- KAPT
+- Fragments
+- RxJava2
+- Dagger
+- Retrofit
+- OSMDroid (Rest in peace ❤️)
+- ViewBinding/XML layouts
+- Removed Google flavor
+- Remove crowdin integration
 
 ## [2.0.3] -- 2021-03-11 🦔
 

@@ -5,23 +5,26 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderState
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import fi.kroon.vadret.ui.VadretTheme
 
-private val thumbSize = 20.dp
+private val thumbSize = 16.dp
+private val thumbBorderWidth = 2.dp
+private val thumbElevation = 2.dp
 private val trackHeight = 4.dp
-private const val INACTIVE_TRACK_ALPHA = 0.24f
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun RadarSlider(
     value: Float,
@@ -29,34 +32,53 @@ internal fun RadarSlider(
     valueRange: ClosedFloatingPointRange<Float>,
     modifier: Modifier = Modifier
 ) {
-    val color: Color = VadretTheme.colorScheme.primary
+    val activeColor: Color = VadretTheme.colorScheme.primary
+    val inactiveColor: Color = VadretTheme.colorScheme.secondaryContainer
+    val sliderState: SliderState = remember(valueRange) {
+        SliderState(
+            value = value,
+            trackRange = valueRange
+        )
+    }
+    sliderState.value = value
     Slider(
-        value = value,
+        state = sliderState,
         onValueChange = onValueChange,
-        valueRange = valueRange,
         thumb = {
-            Box(
-                modifier = Modifier
-                    .size(size = thumbSize)
-                    .background(
-                        color = color,
-                        shape = CircleShape
-                    )
-            )
+            Surface(
+                shape = CircleShape,
+                color = VadretTheme.colorScheme.surface,
+                shadowElevation = thumbElevation,
+                modifier = Modifier.size(size = thumbSize)
+            ) {
+                Box(
+                    modifier = Modifier
+                        .padding(all = thumbBorderWidth)
+                        .background(
+                            color = activeColor,
+                            shape = CircleShape
+                        )
+                )
+            }
         },
-        track = { sliderState: SliderState ->
+        track = { state: SliderState ->
             Canvas(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(height = trackHeight)
             ) {
-                drawRect(color = color.copy(alpha = INACTIVE_TRACK_ALPHA))
-                drawRect(
-                    color = color,
+                val cornerRadius = CornerRadius(x = size.height / 2f, y = size.height / 2f)
+                drawRoundRect(
+                    color = inactiveColor,
+                    cornerRadius = cornerRadius
+                )
+                drawRoundRect(
+                    color = activeColor,
                     size = Size(
-                        width = size.width * sliderState.fraction(),
+                        width = size.width * state.fraction(),
                         height = size.height
-                    )
+                    ),
+                    cornerRadius = cornerRadius
                 )
             }
         },
@@ -64,11 +86,10 @@ internal fun RadarSlider(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 private fun SliderState.fraction(): Float {
-    val span: Float = valueRange.endInclusive - valueRange.start
+    val span: Float = trackRange.endInclusive - trackRange.start
     return if (span > 0f) {
-        ((value - valueRange.start) / span).coerceIn(
+        ((value - trackRange.start) / span).coerceIn(
             minimumValue = 0f,
             maximumValue = 1f
         )

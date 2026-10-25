@@ -28,7 +28,6 @@
     <string name="wsymb2_light_snowfall">Lätt snöfall</string>
     <string name="wsymb2_moderate_snowfall">Måttligt snöfall</string>
     <string name="wsymb2_heavy_snowfall">Kraftigt snöfall</string>
-    <string name="prsort_no_precipitation">Ingen nederbörd</string>
     <string name="prsort_snow">Snö</string>
     <string name="prsort_snow_and_rain">Snö och regn</string>
     <string name="prsort_rain">Regn</string>
@@ -76,7 +75,6 @@
     <string name="setting_language_description">Välj språk</string>
     <string name="setting_language_title">Språk</string>
     <string name="close_search">Stäng sökningen</string>
-    <string name="search">Sök</string>
     <string name="search_failed">Sökning misslyckades</string>
     <string name="setting_current_location">Nuvarande plats</string>
     <string name="alert_description">Beskrivning</string>
@@ -133,7 +131,7 @@
     <string name="failed_loading_file">Kunde ej läsa in filen</string>
     <string name="no_url_available">Ingen länk tillgänglig</string>
     <string name="display">Display</string>
-    <string name="wind">vind</string>
+    <string name="wind">Vind</string>
     <string name="ws_calm">lugna</string>
     <string name="ws_fresh">friska</string>
     <string name="ws_hurricanes">orkan</string>
@@ -172,4 +170,30 @@
     <string name="risk_for_thunder">Risk för åska</string>
     <string name="widget_use_gps_automatically">Använd min GPS automatiskt</string>
     <string name="warning_display_no_warnings_issued">Inga varning utfärdade för närvarande</string>
+    <string name="automatic_location">Automatisk</string>
+    <string name="choose_location">Välj plats</string>
+    <string name="add_place">Lägg till plats…</string>
+    <string name="remove_favorite">Ta bort %1$s</string>
+    <string name="selected">Vald</string>
+    <string name="humidity">Luftfuktighet</string>
+    <string name="precipitation_short">Nederb.</string>
+    <string name="precipitation_none">Ingen</string>
+    <string name="filter_warnings">Filtrera varningar</string>
+    <string name="warning_level_message">Meddelande</string>
+    <string name="warning_level_yellow">Gul varning</string>
+    <string name="warning_level_orange">Orange varning</string>
+    <string name="warning_level_red">Röd varning</string>
+    <string name="warning_detail_what_happens">Vad händer</string>
+    <string name="warning_detail_description">Beskrivning</string>
+    <string name="warning_detail_where">Var</string>
+    <string name="warning_detail_advice">Att tänka på</string>
+    <string name="warning_detail_comment">Kommentar</string>
+    <string name="precipitation">Nederbörd</string>
+    <string name="precipitation_light">Lätt</string>
+    <string name="precipitation_heavy">Kraftig</string>
+    <string name="now">Nu</string>
+    <string name="day_forecast">Prognos för %1$s</string>
+    <string name="play">Spela</string>
+    <string name="pause">Pausa</string>
+    <string name="no_wind_available">Ingen vindprognos tillgänglig</string>
 </resources>

@@ -8,3 +8,9 @@ insert_final_newline=false
 # possible values: number (e.g. 120) (package name, imports & comments are ignored), "off"
 # it's automatically set to 100 on `ktlint --android ...` (per Android Kotlin Style Guide)
 max_line_length=off
+ktlint_code_style=intellij_idea
+ktlint_standard_trailing-comma-on-call-site=disabled
+ktlint_standard_trailing-comma-on-declaration-site=disabled
+ktlint_function_naming_ignore_when_annotated_with=Composable
+ktlint_function_signature_rule_force_multiline_when_parameter_count_greater_or_equal_than=2
+ktlint_function_signature_body_expression_wrapping=multiline

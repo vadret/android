@@ -10,6 +10,5 @@ internal class DefaultObserveThemeTask(
     private val themeRepository: ThemeRepository
 ) : ObserveThemeTask {
 
-    override fun invoke(): Flow<Either<Failure, Theme>> =
-        themeRepository.observeTheme()
+    override fun invoke(): Flow<Either<Failure, Theme>> = themeRepository.observeTheme()
 }

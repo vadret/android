@@ -7,6 +7,7 @@ android {
 }
 
 dependencies {
+    implementation project(':core:idgenerator')
     implementation project(':core:logging')
     implementation project(':data:common')
 

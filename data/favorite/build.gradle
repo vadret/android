@@ -1,0 +1,23 @@
+plugins {
+    id 'vadret.android.library'
+    id 'com.google.devtools.ksp'
+}
+
+android {
+    namespace 'fi.kroon.vadret.data.favorite'
+}
+
+dependencies {
+    implementation project(':core:idgenerator')
+    implementation project(':core:logging')
+    implementation project(':data:common')
+
+    implementation libs.coroutines.core
+    implementation libs.either
+    implementation libs.room.runtime
+
+    ksp libs.room.compiler
+
+    testImplementation project(':core:testing')
+    testImplementation libs.sqlite.bundled.jvm
+}

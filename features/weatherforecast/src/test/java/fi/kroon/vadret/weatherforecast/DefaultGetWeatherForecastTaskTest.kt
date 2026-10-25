@@ -24,69 +24,73 @@ class DefaultGetWeatherForecastTaskTest {
     )
 
     @Test
-    fun `a stored place is forecast under its own name`() = runTest {
-        assertEquals<Either<Failure, PlaceForecast>>(
-            expected = PlaceForecast(
-                placeName = "Stockholm",
-                latitude = 59.3293,
-                longitude = 18.0686,
-                forecasts = listOf(noon)
-            ).asRight(),
-            actual = getWeatherForecastTask()
-        )
-    }
-
-    @Test
-    fun `the device location is forecast and named by OpenStreetMap`() = runTest {
-        locationRepository.isAutomatic = true.asRight()
-
-        assertEquals<Either<Failure, PlaceForecast>>(
-            expected = PlaceForecast(
-                placeName = "Göteborg",
-                latitude = 57.7,
-                longitude = 11.97,
-                forecasts = listOf(noon)
-            ).asRight(),
-            actual = getWeatherForecastTask()
-        )
-        assertEquals(expected = listOf(57.7 to 11.97), actual = weatherForecastRepository.requestedCoordinates)
-    }
-
-    @Test
-    fun `a place that cannot be named still gets its forecast`() = runTest {
-        locationRepository.isAutomatic = true.asRight()
-        val failures: List<Either<Failure, Locality>> = listOf(
-            Failure(errorCode = ErrorCode.HTTP_FORBIDDEN).asLeft(),
-            Locality(name = null).asRight()
-        )
-
-        val placeNames: List<String?> = failures.map { locality: Either<Failure, Locality> ->
-            nominatimRepository.locality = locality
-            (getWeatherForecastTask() as Either.Right).b.placeName
+    fun `a stored place is forecast under its own name`() =
+        runTest {
+            assertEquals<Either<Failure, PlaceForecast>>(
+                expected = PlaceForecast(
+                    placeName = "Stockholm",
+                    latitude = 59.3293,
+                    longitude = 18.0686,
+                    forecasts = listOf(noon)
+                ).asRight(),
+                actual = getWeatherForecastTask()
+            )
         }
 
-        assertEquals(expected = listOf(null, null), actual = placeNames)
-    }
+    @Test
+    fun `the device location is forecast and named by OpenStreetMap`() =
+        runTest {
+            locationRepository.isAutomatic = true.asRight()
+
+            assertEquals<Either<Failure, PlaceForecast>>(
+                expected = PlaceForecast(
+                    placeName = "Göteborg",
+                    latitude = 57.7,
+                    longitude = 11.97,
+                    forecasts = listOf(noon)
+                ).asRight(),
+                actual = getWeatherForecastTask()
+            )
+            assertEquals(expected = listOf(57.7 to 11.97), actual = weatherForecastRepository.requestedCoordinates)
+        }
 
     @Test
-    fun `failures before the forecast stop it`() = runTest {
-        val modeFailure = Failure(errorCode = ErrorCode.STORAGE_FAILED)
-        val locationFailure = Failure(errorCode = ErrorCode.LOCATION_PROVIDER_DISABLED)
-        val forecastFailure = Failure(errorCode = ErrorCode.WEATHER_FORECAST_NOT_AVAILABLE_FOR_LOCATION)
+    fun `a place that cannot be named still gets its forecast`() =
+        runTest {
+            locationRepository.isAutomatic = true.asRight()
+            val failures: List<Either<Failure, Locality>> = listOf(
+                Failure(errorCode = ErrorCode.HTTP_FORBIDDEN).asLeft(),
+                Locality(name = null).asRight()
+            )
 
-        locationRepository.isAutomatic = modeFailure.asLeft()
-        val withoutMode: Either<Failure, PlaceForecast> = getWeatherForecastTask()
-        locationRepository.isAutomatic = true.asRight()
-        locationRepository.deviceLocation = locationFailure.asLeft()
-        val withoutLocation: Either<Failure, PlaceForecast> = getWeatherForecastTask()
-        locationRepository.isAutomatic = false.asRight()
-        weatherForecastRepository.forecasts = forecastFailure.asLeft()
-        val withoutForecast: Either<Failure, PlaceForecast> = getWeatherForecastTask()
+            val placeNames: List<String?> = failures.map { locality: Either<Failure, Locality> ->
+                nominatimRepository.locality = locality
+                (getWeatherForecastTask() as Either.Right).b.placeName
+            }
 
-        assertEquals(
-            expected = listOf(modeFailure, locationFailure, forecastFailure).map { failure: Failure -> Either.Left(a = failure) },
-            actual = listOf(withoutMode, withoutLocation, withoutForecast)
-        )
-        assertTrue(actual = weatherForecastRepository.requestedCoordinates.size == 1)
-    }
+            assertEquals(expected = listOf(null, null), actual = placeNames)
+        }
+
+    @Test
+    fun `failures before the forecast stop it`() =
+        runTest {
+            val modeFailure = Failure(errorCode = ErrorCode.STORAGE_FAILED)
+            val locationFailure = Failure(errorCode = ErrorCode.LOCATION_PROVIDER_DISABLED)
+            val forecastFailure = Failure(errorCode = ErrorCode.WEATHER_FORECAST_NOT_AVAILABLE_FOR_LOCATION)
+
+            locationRepository.isAutomatic = modeFailure.asLeft()
+            val withoutMode: Either<Failure, PlaceForecast> = getWeatherForecastTask()
+            locationRepository.isAutomatic = true.asRight()
+            locationRepository.deviceLocation = locationFailure.asLeft()
+            val withoutLocation: Either<Failure, PlaceForecast> = getWeatherForecastTask()
+            locationRepository.isAutomatic = false.asRight()
+            weatherForecastRepository.forecasts = forecastFailure.asLeft()
+            val withoutForecast: Either<Failure, PlaceForecast> = getWeatherForecastTask()
+
+            assertEquals(
+                expected = listOf(modeFailure, locationFailure, forecastFailure).map { failure: Failure -> Either.Left(a = failure) },
+                actual = listOf(withoutMode, withoutLocation, withoutForecast)
+            )
+            assertTrue(actual = weatherForecastRepository.requestedCoordinates.size == 1)
+        }
 }

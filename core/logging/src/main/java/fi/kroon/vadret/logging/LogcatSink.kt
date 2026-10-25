@@ -2,15 +2,13 @@ package fi.kroon.vadret.logging
 
 import android.util.Log
 
-fun LogcatSink(minimumLevel: LogLevel): LogSink =
-    DefaultLogcatSink(minimumLevel = minimumLevel)
+fun logcatSink(minimumLevel: LogLevel): LogSink = DefaultLogcatSink(minimumLevel = minimumLevel)
 
 internal class DefaultLogcatSink(
     private val minimumLevel: LogLevel
 ) : LogSink {
 
-    override fun accepts(level: LogLevel): Boolean =
-        level >= minimumLevel
+    override fun accepts(level: LogLevel): Boolean = level >= minimumLevel
 
     override fun write(
         level: LogLevel,

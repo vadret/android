@@ -11,5 +11,4 @@ interface DiskCache {
     fun remove(key: String)
 }
 
-fun DiskCache(directory: File): DiskCache =
-    DefaultDiskCache(directory = directory)
+fun DiskCache(directory: File): DiskCache = DefaultDiskCache(directory = directory)

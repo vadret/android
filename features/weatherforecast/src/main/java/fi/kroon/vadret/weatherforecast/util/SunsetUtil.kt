@@ -25,35 +25,78 @@ internal object SunsetUtil {
         latitude: Double,
         longitude: Double
     ): SunriseSunset? {
-        val westLongitude: Double = -longitude
-        val cycle: Double = floor(day.toJulianDate() - JULIAN_DATE_2000_01_01 - LEAP_SECONDS_DAYS - westLongitude / DEGREES_IN_CIRCLE + 0.5)
-        val approximateSolarNoon: Double = JULIAN_DATE_2000_01_01 + LEAP_SECONDS_DAYS + westLongitude / DEGREES_IN_CIRCLE + cycle
-        val meanAnomaly: Double = ((357.5291 + 0.98560028 * (approximateSolarNoon - JULIAN_DATE_2000_01_01)) % DEGREES_IN_CIRCLE).toRadians()
-        val equationOfCenter: Double = 1.9148 * sin(meanAnomaly) + 0.0200 * sin(2 * meanAnomaly) + 0.0003 * sin(3 * meanAnomaly)
-        val eclipticLongitude: Double = ((meanAnomaly.toDegrees() + 102.9372 + equationOfCenter + DEGREES_IN_HALF_CIRCLE) % DEGREES_IN_CIRCLE).toRadians()
-        val solarTransit: Double = approximateSolarNoon + 0.0053 * sin(meanAnomaly) - 0.0069 * sin(2 * eclipticLongitude)
-        val declination: Double = asin(sin(eclipticLongitude) * sin(EARTH_AXIAL_TILT_DEGREES.toRadians()))
-        val latitudeRadians: Double = latitude.toRadians()
+        val solarNoon: SolarNoon = solarNoon(
+            day = day,
+            longitude = longitude
+        )
         val hourAngle: Double = acos(
-            (sin(SUN_ALTITUDE_SUNRISE_SUNSET.toRadians()) - sin(latitudeRadians) * sin(declination)) /
-                (cos(latitudeRadians) * cos(declination))
+            hourAngleCosine(
+                latitude = latitude,
+                declination = solarNoon.declination
+            )
         )
         if (hourAngle.isNaN()) {
             return null
         }
-        val sunset: Double = solarTransit + hourAngle.toDegrees() / DEGREES_IN_CIRCLE
-        val sunrise: Double = solarTransit - hourAngle.toDegrees() / DEGREES_IN_CIRCLE
+        val sunset: Double = solarNoon.transit + hourAngle.toDegrees() / DEGREES_IN_CIRCLE
+        val sunrise: Double = solarNoon.transit - hourAngle.toDegrees() / DEGREES_IN_CIRCLE
         return SunriseSunset(
             sunrise = sunrise.julianDateToInstant(),
             sunset = sunset.julianDateToInstant()
         )
     }
 
-    private fun Instant.toJulianDate(): Double =
-        toEpochMilliseconds() / MILLISECONDS_IN_DAY + JULIAN_DATE_UNIX_EPOCH
+    fun isSunUp(
+        at: Instant,
+        latitude: Double,
+        longitude: Double
+    ): Boolean {
+        val sunriseSunset: SunriseSunset? = getSunriseSunset(
+            day = at,
+            latitude = latitude,
+            longitude = longitude
+        )
+        return if (sunriseSunset != null) {
+            at >= sunriseSunset.sunrise && at < sunriseSunset.sunset
+        } else {
+            hourAngleCosine(
+                latitude = latitude,
+                declination = solarNoon(
+                    day = at,
+                    longitude = longitude
+                ).declination
+            ) < -1.0
+        }
+    }
 
-    private fun Double.julianDateToInstant(): Instant =
-        Instant.fromEpochMilliseconds(((this - JULIAN_DATE_UNIX_EPOCH) * MILLISECONDS_IN_DAY).roundToLong())
+    private fun solarNoon(
+        day: Instant,
+        longitude: Double
+    ): SolarNoon {
+        val westLongitude: Double = -longitude
+        val cycle: Double = floor(day.toJulianDate() - JULIAN_DATE_2000_01_01 - LEAP_SECONDS_DAYS - westLongitude / DEGREES_IN_CIRCLE + 0.5)
+        val approximateSolarNoon: Double = JULIAN_DATE_2000_01_01 + LEAP_SECONDS_DAYS + westLongitude / DEGREES_IN_CIRCLE + cycle
+        val meanAnomaly: Double = ((357.5291 + 0.98560028 * (approximateSolarNoon - JULIAN_DATE_2000_01_01)) % DEGREES_IN_CIRCLE).toRadians()
+        val equationOfCenter: Double = 1.9148 * sin(meanAnomaly) + 0.0200 * sin(2 * meanAnomaly) + 0.0003 * sin(3 * meanAnomaly)
+        val eclipticLongitude: Double = ((meanAnomaly.toDegrees() + 102.9372 + equationOfCenter + DEGREES_IN_HALF_CIRCLE) % DEGREES_IN_CIRCLE).toRadians()
+        return SolarNoon(
+            transit = approximateSolarNoon + 0.0053 * sin(meanAnomaly) - 0.0069 * sin(2 * eclipticLongitude),
+            declination = asin(sin(eclipticLongitude) * sin(EARTH_AXIAL_TILT_DEGREES.toRadians()))
+        )
+    }
+
+    private fun hourAngleCosine(
+        latitude: Double,
+        declination: Double
+    ): Double {
+        val latitudeRadians: Double = latitude.toRadians()
+        return (sin(SUN_ALTITUDE_SUNRISE_SUNSET.toRadians()) - sin(latitudeRadians) * sin(declination)) /
+            (cos(latitudeRadians) * cos(declination))
+    }
+
+    private fun Instant.toJulianDate(): Double = toEpochMilliseconds() / MILLISECONDS_IN_DAY + JULIAN_DATE_UNIX_EPOCH
+
+    private fun Double.julianDateToInstant(): Instant = Instant.fromEpochMilliseconds(((this - JULIAN_DATE_UNIX_EPOCH) * MILLISECONDS_IN_DAY).roundToLong())
 
     private fun Double.toRadians(): Double = this * PI / DEGREES_IN_HALF_CIRCLE
 

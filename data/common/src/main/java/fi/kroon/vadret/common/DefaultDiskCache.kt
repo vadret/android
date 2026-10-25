@@ -35,6 +35,5 @@ internal class DefaultDiskCache(
         file(key = key).delete()
     }
 
-    private fun file(key: String): File =
-        File(directory, key)
+    private fun file(key: String): File = File(directory, key)
 }

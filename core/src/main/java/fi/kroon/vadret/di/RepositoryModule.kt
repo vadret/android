@@ -4,6 +4,7 @@ import android.content.Context
 import android.location.LocationManager
 import fi.kroon.vadret.aggregatedfeed.AggregatedFeedRepository
 import fi.kroon.vadret.autocomplete.AutoCompleteRepository
+import fi.kroon.vadret.favorite.FavoriteRepository
 import fi.kroon.vadret.library.LibraryRepository
 import fi.kroon.vadret.location.LocationRepository
 import fi.kroon.vadret.nominatim.NominatimRepository
@@ -11,6 +12,7 @@ import fi.kroon.vadret.radar.RadarRepository
 import fi.kroon.vadret.theme.ThemeRepository
 import fi.kroon.vadret.warningfilter.WarningFilterRepository
 import fi.kroon.vadret.weatherforecast.WeatherForecastRepository
+import fi.kroon.vadret.wind.WindRepository
 import org.koin.core.module.Module
 import org.koin.dsl.module
 
@@ -27,6 +29,13 @@ val repositoryModule: Module = module {
         AutoCompleteRepository(
             context = get(),
             coroutineDispatcher = get()
+        )
+    }
+    single<FavoriteRepository> {
+        FavoriteRepository(
+            context = get(),
+            idGenerator = get(),
+            clock = get()
         )
     }
     single<LibraryRepository> { LibraryRepository() }
@@ -54,4 +63,10 @@ val repositoryModule: Module = module {
         )
     }
     single<WeatherForecastRepository> { WeatherForecastRepository(httpClient = inject()) }
+    single<WindRepository> {
+        WindRepository(
+            httpClient = inject(),
+            clock = get()
+        )
+    }
 }

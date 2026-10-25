@@ -47,18 +47,25 @@ class WarningViewModel internal constructor(
     fun onEvent(event: WarningEvent) {
         when (event) {
             WarningEvent.OnStart -> onStart()
+
             WarningEvent.OnRefresh -> onRefresh()
+
             WarningEvent.OnErrorShown -> state.update { state: WarningState ->
                 state.copy(errorMessageResourceId = null)
             }
+
             WarningEvent.OnFilterButtonClicked -> onFilterButtonClicked()
+
             WarningEvent.OnFilterDismissed -> state.update { state: WarningState ->
                 state.copy(filter = null)
             }
+
             WarningEvent.OnFilterApplied -> onFilterApplied()
+
             is WarningEvent.OnFeedSourceToggled -> updateFilter { filter: WarningFilterState ->
                 filter.toggle(feedSource = event.feedSource)
             }
+
             is WarningEvent.OnDistrictToggled -> updateFilter { filter: WarningFilterState ->
                 filter.toggle(districtId = event.districtId)
             }

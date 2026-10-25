@@ -87,7 +87,6 @@
     <string name="empty_wind_direction" translatable="false"></string>
 
     <string name="no_url_available">No URL available</string>
-    <string name="prsort_no_precipitation">No precipitation</string>
     <string name="prsort_snow">Snow</string>
     <string name="prsort_snow_and_rain">Snow and rain</string>
     <string name="prsort_rain">Rain</string>
@@ -192,11 +191,13 @@
     <string name="alert_expires">expires</string>
     <string name="alert_class">Warning class:</string>
     <string name="alert_subject">Alert headline</string>
-    <string name="openstreetmap_copyright_notice" translatable="false">Wikimedia maps | Map data © OpenStreetMap contributors</string>
+    <string name="source_and_time" translatable="false">%1$s, %2$s</string>
+    <string name="wind_speed_minimum" translatable="false">0 m/s</string>
+    <string name="wind_speed_maximum" translatable="false">20+ m/s</string>
+    <string name="openstreetmap_copyright_notice" translatable="false">OpenFreeMap © OpenMapTiles | Data © OpenStreetMap contributors</string>
 
     <string name="county">county</string>
     <string name="close_search">Close search</string>
-    <string name="search">Search</string>
     <string name="search_failed">Search failed</string>
     <string name="search_results">Search results</string>
     <string name="no_results">No matching results</string>
@@ -234,14 +235,38 @@
 
     <string name="no_alert_available">No alerts available</string>
     <string name="alert">Alert</string>
-    <string name="wind">wind</string>
+    <string name="wind">Wind</string>
 
     <string name="filter_failure_districts_not_available">Failed to load districts</string>
     <string name="filter_feed_source">Feed source</string>
     <string name="filter_district">District</string>
     <string name="filter_must_select_one">At least one district and feed source required.</string>
     <string name="filter_apply">Apply</string>
-    <string name="filter_result_label">Filter results</string>
     <string name="warning_display_no_warnings_issued">No warnings issued at present</string>
-
+    <string name="automatic_location">Automatic</string>
+    <string name="choose_location">Choose location</string>
+    <string name="add_place">Add place…</string>
+    <string name="remove_favorite">Remove %1$s</string>
+    <string name="selected">Selected</string>
+    <string name="humidity">Humidity</string>
+    <string name="precipitation_short">Precip.</string>
+    <string name="precipitation_none">None</string>
+    <string name="filter_warnings">Filter warnings</string>
+    <string name="warning_level_message">Message</string>
+    <string name="warning_level_yellow">Yellow warning</string>
+    <string name="warning_level_orange">Orange warning</string>
+    <string name="warning_level_red">Red warning</string>
+    <string name="warning_detail_what_happens">What happens</string>
+    <string name="warning_detail_description">Description</string>
+    <string name="warning_detail_where">Where</string>
+    <string name="warning_detail_advice">Advice</string>
+    <string name="warning_detail_comment">Comment</string>
+    <string name="precipitation">Precipitation</string>
+    <string name="precipitation_light">Light</string>
+    <string name="precipitation_heavy">Heavy</string>
+    <string name="now">Now</string>
+    <string name="day_forecast">%1$s forecast</string>
+    <string name="play">Play</string>
+    <string name="pause">Pause</string>
+    <string name="no_wind_available">No wind forecast available</string>
 </resources>

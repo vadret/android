@@ -9,6 +9,5 @@ internal class DefaultSetThemeTask(
     private val themeRepository: ThemeRepository
 ) : SetThemeTask {
 
-    override suspend fun invoke(theme: Theme): Either<Failure, Unit> =
-        themeRepository.setTheme(theme = theme)
+    override suspend fun invoke(theme: Theme): Either<Failure, Unit> = themeRepository.setTheme(theme = theme)
 }

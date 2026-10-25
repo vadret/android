@@ -6,6 +6,7 @@ import fi.kroon.vadret.library.LibraryRepository
 import fi.kroon.vadret.library.model.Library
 import fi.kroon.vadret.location.LocationRepository
 import fi.kroon.vadret.location.model.Location
+import fi.kroon.vadret.location.model.LocationPreference
 import fi.kroon.vadret.location.model.StoredLocation
 import fi.kroon.vadret.theme.ThemeRepository
 import fi.kroon.vadret.theme.model.Theme
@@ -58,7 +59,8 @@ private class FakeLocationRepository(
         return Unit.asRight()
     }
     override suspend fun getStoredLocation(): Either<Failure, StoredLocation> = stockholm.asRight()
-    override suspend fun setStoredLocation(storedLocation: StoredLocation): Either<Failure, Unit> = error("Settings never store a place")
+    override fun observeLocationPreference(): Flow<Either<Failure, LocationPreference>> = error("Settings never observe the location")
+    override suspend fun selectStoredLocation(storedLocation: StoredLocation): Either<Failure, Unit> = error("Settings never store a place")
 }
 
 private class FakeLibraryRepository : LibraryRepository {
@@ -110,69 +112,74 @@ class SettingsViewModelTest {
     }
 
     @Test
-    fun `settings and libraries are loaded`() = testScope.runTest {
-        val settingsViewModel: SettingsViewModel = viewModel()
-        advanceUntilIdle()
+    fun `settings and libraries are loaded`() =
+        testScope.runTest {
+            val settingsViewModel: SettingsViewModel = viewModel()
+            advanceUntilIdle()
 
-        val state: SettingsState = settingsViewModel.state.value
-        assertEquals(
-            expected = Settings(
-                isAutomaticLocation = true,
-                theme = Theme.LIGHT,
-                storedLocation = stockholm
-            ),
-            actual = state.settings
-        )
-        assertEquals(expected = listOf("Ktor"), actual = state.libraries.map { library: Library -> library.title })
-        assertEquals(expected = 4, actual = state.aboutRows.size)
-    }
-
-    @Test
-    fun `settings that cannot be read are not shown`() = testScope.runTest {
-        themeRepository.theme = Failure(errorCode = ErrorCode.UNKNOWN).asLeft()
-
-        val settingsViewModel: SettingsViewModel = viewModel()
-        advanceUntilIdle()
-
-        assertNull(actual = settingsViewModel.state.value.settings)
-    }
+            val state: SettingsState = settingsViewModel.state.value
+            assertEquals(
+                expected = Settings(
+                    isAutomaticLocation = true,
+                    theme = Theme.LIGHT,
+                    storedLocation = stockholm
+                ),
+                actual = state.settings
+            )
+            assertEquals(expected = listOf("Ktor"), actual = state.libraries.map { library: Library -> library.title })
+            assertEquals(expected = 4, actual = state.aboutRows.size)
+        }
 
     @Test
-    fun `turning the automatic location off is stored and shown`() = testScope.runTest {
-        val settingsViewModel: SettingsViewModel = viewModel()
-        advanceUntilIdle()
+    fun `settings that cannot be read are not shown`() =
+        testScope.runTest {
+            themeRepository.theme = Failure(errorCode = ErrorCode.UNKNOWN).asLeft()
 
-        settingsViewModel.onEvent(event = SettingsEvent.OnLocationModeToggled(isAutomaticLocation = false))
-        advanceUntilIdle()
+            val settingsViewModel: SettingsViewModel = viewModel()
+            advanceUntilIdle()
 
-        assertEquals(expected = false, actual = settingsViewModel.state.value.settings?.isAutomaticLocation)
-    }
-
-    @Test
-    fun `choosing a theme closes the dialog and shows the theme`() = testScope.runTest {
-        val settingsViewModel: SettingsViewModel = viewModel()
-        advanceUntilIdle()
-
-        settingsViewModel.onEvent(event = SettingsEvent.OnThemeRowClicked)
-        val isOpened: Boolean = settingsViewModel.state.value.isThemeDialogVisible
-        settingsViewModel.onEvent(event = SettingsEvent.OnThemeSelected(theme = Theme.AMOLED))
-        advanceUntilIdle()
-
-        assertEquals(expected = true, actual = isOpened)
-        assertEquals(expected = false, actual = settingsViewModel.state.value.isThemeDialogVisible)
-        assertEquals(expected = Theme.AMOLED, actual = settingsViewModel.state.value.settings?.theme)
-    }
+            assertNull(actual = settingsViewModel.state.value.settings)
+        }
 
     @Test
-    fun `dismissing the theme dialog keeps the theme`() = testScope.runTest {
-        val settingsViewModel: SettingsViewModel = viewModel()
-        advanceUntilIdle()
+    fun `turning the automatic location off is stored and shown`() =
+        testScope.runTest {
+            val settingsViewModel: SettingsViewModel = viewModel()
+            advanceUntilIdle()
 
-        settingsViewModel.onEvent(event = SettingsEvent.OnThemeRowClicked)
-        settingsViewModel.onEvent(event = SettingsEvent.OnThemeDialogDismissed)
-        advanceUntilIdle()
+            settingsViewModel.onEvent(event = SettingsEvent.OnLocationModeToggled(isAutomaticLocation = false))
+            advanceUntilIdle()
 
-        assertEquals(expected = false, actual = settingsViewModel.state.value.isThemeDialogVisible)
-        assertEquals(expected = Theme.LIGHT, actual = settingsViewModel.state.value.settings?.theme)
-    }
+            assertEquals(expected = false, actual = settingsViewModel.state.value.settings?.isAutomaticLocation)
+        }
+
+    @Test
+    fun `choosing a theme closes the dialog and shows the theme`() =
+        testScope.runTest {
+            val settingsViewModel: SettingsViewModel = viewModel()
+            advanceUntilIdle()
+
+            settingsViewModel.onEvent(event = SettingsEvent.OnThemeRowClicked)
+            val isOpened: Boolean = settingsViewModel.state.value.isThemeDialogVisible
+            settingsViewModel.onEvent(event = SettingsEvent.OnThemeSelected(theme = Theme.AMOLED))
+            advanceUntilIdle()
+
+            assertEquals(expected = true, actual = isOpened)
+            assertEquals(expected = false, actual = settingsViewModel.state.value.isThemeDialogVisible)
+            assertEquals(expected = Theme.AMOLED, actual = settingsViewModel.state.value.settings?.theme)
+        }
+
+    @Test
+    fun `dismissing the theme dialog keeps the theme`() =
+        testScope.runTest {
+            val settingsViewModel: SettingsViewModel = viewModel()
+            advanceUntilIdle()
+
+            settingsViewModel.onEvent(event = SettingsEvent.OnThemeRowClicked)
+            settingsViewModel.onEvent(event = SettingsEvent.OnThemeDialogDismissed)
+            advanceUntilIdle()
+
+            assertEquals(expected = false, actual = settingsViewModel.state.value.isThemeDialogVisible)
+            assertEquals(expected = Theme.LIGHT, actual = settingsViewModel.state.value.settings?.theme)
+        }
 }

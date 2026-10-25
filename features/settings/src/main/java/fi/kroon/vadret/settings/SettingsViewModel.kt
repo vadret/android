@@ -30,13 +30,17 @@ class SettingsViewModel internal constructor(
     fun onEvent(event: SettingsEvent) {
         when (event) {
             SettingsEvent.OnStart -> onStart()
+
             is SettingsEvent.OnLocationModeToggled -> onLocationModeToggled(isAutomaticLocation = event.isAutomaticLocation)
+
             SettingsEvent.OnThemeRowClicked -> state.update { state: SettingsState ->
                 state.copy(isThemeDialogVisible = true)
             }
+
             SettingsEvent.OnThemeDialogDismissed -> state.update { state: SettingsState ->
                 state.copy(isThemeDialogVisible = false)
             }
+
             is SettingsEvent.OnThemeSelected -> onThemeSelected(theme = event.theme)
         }
     }

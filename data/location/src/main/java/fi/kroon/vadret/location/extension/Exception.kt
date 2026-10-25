@@ -16,21 +16,26 @@ private val logger: Logger = LoggerFactory.getLogger(tag = "fi.kroon.vadret.loca
 internal fun Exception.toFailure(): Failure =
     when (this) {
         is CancellationException -> throw this
+
         is LocationProviderDisabledException -> toKnownFailure(
             errorCode = ErrorCode.LOCATION_PROVIDER_DISABLED,
             logger = logger
         )
+
         is LocationNotAvailableException -> toKnownFailure(
             errorCode = ErrorCode.LOCATION_NOT_AVAILABLE,
             logger = logger
         )
+
         is SecurityException -> toKnownFailure(
             errorCode = ErrorCode.LOCATION_PERMISSION_MISSING,
             logger = logger
         )
+
         is IOException -> toKnownFailure(
             errorCode = ErrorCode.STORAGE_FAILED,
             logger = logger
         )
+
         else -> toUnknownFailure(logger = logger)
     }

@@ -7,6 +7,8 @@ private const val APACHE_2 = "Apache License, Version 2.0"
 private const val CREATIVE_COMMONS_4 = "CC BY 4.0"
 private const val OPEN_DATABASE_LICENSE = "Open Data Commons Open Database License"
 private const val MIT = "MIT License"
+private const val BSD_2 = "BSD 2-Clause License"
+private const val BSD_3_AND_CREATIVE_COMMONS_4 = "BSD 3-Clause License and CC BY 4.0"
 
 internal class DefaultLibraryInMemoryDataSource : LibraryInMemoryDataSource {
 
@@ -84,13 +86,31 @@ internal class DefaultLibraryInMemoryDataSource : LibraryInMemoryDataSource {
             license = GPL_V2
         ),
         Library(
-            author = "The Wikimedia Foundation",
-            title = "Wikimedia Maps",
-            description = "The Wikimedia Maps service is provided openly to the public free of charge.",
-            projectUrl = "https://maps.wikimedia.org/",
-            sourceUrl = null,
-            licenseUrl = "https://www.openstreetmap.org/copyright",
-            license = OPEN_DATABASE_LICENSE
+            author = "MapLibre",
+            title = "MapLibre Native",
+            description = "An open source library for showing interactive vector maps, used for the radar map.",
+            projectUrl = "https://maplibre.org/",
+            sourceUrl = "https://github.com/maplibre/maplibre-native",
+            licenseUrl = "https://github.com/maplibre/maplibre-native/blob/main/LICENSE.md",
+            license = BSD_2
+        ),
+        Library(
+            author = "OpenFreeMap",
+            title = "OpenFreeMap",
+            description = "Free map tiles without registration, built from OpenStreetMap data.",
+            projectUrl = "https://openfreemap.org/",
+            sourceUrl = "https://github.com/hyperknot/openfreemap",
+            licenseUrl = "https://github.com/hyperknot/openfreemap/blob/main/LICENSE.md",
+            license = MIT
+        ),
+        Library(
+            author = "OpenMapTiles",
+            title = "OpenMapTiles",
+            description = "The vector tile schema and Positron map style behind the radar map.",
+            projectUrl = "https://openmaptiles.org/",
+            sourceUrl = "https://github.com/openmaptiles/openmaptiles",
+            licenseUrl = "https://github.com/openmaptiles/openmaptiles/blob/master/LICENSE.md",
+            license = BSD_3_AND_CREATIVE_COMMONS_4
         ),
         Library(
             author = "© OpenStreetMap contributors",
@@ -104,7 +124,7 @@ internal class DefaultLibraryInMemoryDataSource : LibraryInMemoryDataSource {
         Library(
             author = "Osmdroid",
             title = "Osmdroid",
-            description = "Osmdroid is a (almost) full/free replacement for Android's MapView (v1 API) class.",
+            description = "A special thanks \u2764\uFE0F to osmdroid, the free replacement for Android's MapView that drew Vädret's radar map for many years. The project is archived now.",
             projectUrl = "http://osmdroid.github.io/osmdroid/",
             sourceUrl = "https://github.com/osmdroid/osmdroid",
             licenseUrl = "https://github.com/osmdroid/osmdroid/blob/master/LICENSE",

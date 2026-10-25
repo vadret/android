@@ -8,6 +8,5 @@ internal class DefaultGetRadarTask(
     private val radarRepository: RadarRepository
 ) : GetRadarTask {
 
-    override suspend fun invoke(): Either<Failure, Radar> =
-        radarRepository.getRadar()
+    override suspend fun invoke(): Either<Failure, Radar> = radarRepository.getRadar()
 }

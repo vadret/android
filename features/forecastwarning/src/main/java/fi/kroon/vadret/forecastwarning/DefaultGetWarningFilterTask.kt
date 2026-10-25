@@ -9,6 +9,5 @@ internal class DefaultGetWarningFilterTask(
     private val warningFilterRepository: WarningFilterRepository
 ) : GetWarningFilterTask {
 
-    override suspend fun invoke(): Either<Failure, WarningFilter> =
-        warningFilterRepository.getWarningFilter()
+    override suspend fun invoke(): Either<Failure, WarningFilter> = warningFilterRepository.getWarningFilter()
 }

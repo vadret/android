@@ -6,14 +6,24 @@ import fi.kroon.vadret.location.exception.LocationNotAvailableException
 import fi.kroon.vadret.location.exception.LocationProviderDisabledException
 import fi.kroon.vadret.location.local.DeviceLocationLocalDataSource
 import fi.kroon.vadret.location.local.LocationEntity
+import fi.kroon.vadret.location.local.LocationPreferenceEntity
 import fi.kroon.vadret.location.local.StoredLocationEntity
 import fi.kroon.vadret.location.local.StoredLocationLocalDataSource
 import fi.kroon.vadret.location.model.Location
+import fi.kroon.vadret.location.model.LocationPreference
 import fi.kroon.vadret.location.model.StoredLocation
 import fi.kroon.vadret.logging.LogLevel
 import fi.kroon.vadret.testing.LogLine
 import fi.kroon.vadret.testing.withRecordedLogs
 import io.github.sphrak.either.Either
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.take
+import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
 import java.io.IOException
 import kotlin.test.Test
@@ -25,26 +35,38 @@ private class FakeDeviceLocationLocalDataSource(
     override suspend fun getLastKnownLocation(): LocationEntity = getLocation()
 }
 
-private class FakeStoredLocationLocalDataSource(
-    var isAutomatic: Boolean = true,
-    var storedLocationEntity: StoredLocationEntity = StoredLocationEntity(
-        locality = "Stockholm",
-        municipality = "Stockholm",
-        county = "Stockholm",
-        latitude = 59.3293,
-        longitude = 18.0686
+private val stockholmEntity = StoredLocationEntity(
+    locality = "Stockholm",
+    municipality = "Stockholm",
+    county = "Stockholm",
+    latitude = 59.3293,
+    longitude = 18.0686
+)
+
+private class FakeStoredLocationLocalDataSource : StoredLocationLocalDataSource {
+
+    private val locationPreferenceEntity: MutableStateFlow<LocationPreferenceEntity> = MutableStateFlow(
+        value = LocationPreferenceEntity(
+            isAutomatic = true,
+            storedLocationEntity = stockholmEntity
+        )
     )
-) : StoredLocationLocalDataSource {
-    override suspend fun isAutomatic(): Boolean = isAutomatic
+
+    override suspend fun isAutomatic(): Boolean = locationPreferenceEntity.value.isAutomatic
 
     override suspend fun setAutomatic(isAutomatic: Boolean) {
-        this.isAutomatic = isAutomatic
+        locationPreferenceEntity.update { entity: LocationPreferenceEntity -> entity.copy(isAutomatic = isAutomatic) }
     }
 
-    override suspend fun getStoredLocation(): StoredLocationEntity = storedLocationEntity
+    override suspend fun getStoredLocation(): StoredLocationEntity = locationPreferenceEntity.value.storedLocationEntity
 
-    override suspend fun setStoredLocation(storedLocationEntity: StoredLocationEntity) {
-        this.storedLocationEntity = storedLocationEntity
+    override fun observeLocationPreference(): Flow<LocationPreferenceEntity> = locationPreferenceEntity
+
+    override suspend fun selectStoredLocation(storedLocationEntity: StoredLocationEntity) {
+        locationPreferenceEntity.value = LocationPreferenceEntity(
+            isAutomatic = false,
+            storedLocationEntity = storedLocationEntity
+        )
     }
 }
 
@@ -52,9 +74,19 @@ private class BrokenStoredLocationLocalDataSource : StoredLocationLocalDataSourc
     override suspend fun isAutomatic(): Boolean = throw IOException("corrupt")
     override suspend fun setAutomatic(isAutomatic: Boolean) = throw IOException("corrupt")
     override suspend fun getStoredLocation(): StoredLocationEntity = throw IOException("corrupt")
-    override suspend fun setStoredLocation(storedLocationEntity: StoredLocationEntity) = throw IOException("corrupt")
+    override fun observeLocationPreference(): Flow<LocationPreferenceEntity> = flow { throw IOException("corrupt") }
+    override suspend fun selectStoredLocation(storedLocationEntity: StoredLocationEntity) = throw IOException("corrupt")
 }
 
+private val kiruna = StoredLocation(
+    locality = "Kiruna",
+    municipality = "Kiruna",
+    county = "Norrbotten",
+    latitude = 67.8558,
+    longitude = 20.2253
+)
+
+@OptIn(ExperimentalCoroutinesApi::class)
 class DefaultLocationRepositoryTest {
 
     private fun repository(
@@ -72,92 +104,136 @@ class DefaultLocationRepositoryTest {
         )
 
     @Test
-    fun `the device location is returned`() = runTest {
-        assertEquals(
-            expected = Either.Right(
-                b = Location(
-                    latitude = 57.7,
-                    longitude = 11.97
+    fun `the device location is returned`() =
+        runTest {
+            assertEquals(
+                expected = Either.Right(
+                    b = Location(
+                        latitude = 57.7,
+                        longitude = 11.97
+                    )
+                ),
+                actual = repository().getDeviceLocation()
+            )
+        }
+
+    @Test
+    fun `device location failures are told apart`() =
+        runTest {
+            val cases: Map<Exception, ErrorCode> = mapOf(
+                LocationProviderDisabledException() to ErrorCode.LOCATION_PROVIDER_DISABLED,
+                LocationNotAvailableException() to ErrorCode.LOCATION_NOT_AVAILABLE,
+                SecurityException("no permission") to ErrorCode.LOCATION_PERMISSION_MISSING
+            )
+
+            withRecordedLogs { recordingLogSink ->
+                val actual: Map<Exception, Either<Failure, Location>> = cases.keys.associateWith { exception: Exception ->
+                    repository(getLocation = { throw exception }).getDeviceLocation()
+                }
+
+                assertEquals(
+                    expected = cases.mapValues { (_, errorCode: ErrorCode) -> Either.Left(a = Failure(errorCode = errorCode)) },
+                    actual = actual
                 )
-            ),
-            actual = repository().getDeviceLocation()
-        )
-    }
-
-    @Test
-    fun `device location failures are told apart`() = runTest {
-        val cases: Map<Exception, ErrorCode> = mapOf(
-            LocationProviderDisabledException() to ErrorCode.LOCATION_PROVIDER_DISABLED,
-            LocationNotAvailableException() to ErrorCode.LOCATION_NOT_AVAILABLE,
-            SecurityException("no permission") to ErrorCode.LOCATION_PERMISSION_MISSING
-        )
-
-        withRecordedLogs { recordingLogSink ->
-            val actual: Map<Exception, Either<Failure, Location>> = cases.keys.associateWith { exception: Exception ->
-                repository(getLocation = { throw exception }).getDeviceLocation()
+                assertEquals(
+                    expected = List(size = cases.size) { LogLevel.WARN },
+                    actual = recordingLogSink.lines.map { line: LogLine -> line.level }
+                )
             }
+        }
 
-            assertEquals(
-                expected = cases.mapValues { (_, errorCode: ErrorCode) -> Either.Left(a = Failure(errorCode = errorCode)) },
-                actual = actual
-            )
-            assertEquals(
-                expected = List(size = cases.size) { LogLevel.WARN },
-                actual = recordingLogSink.lines.map { line: LogLine -> line.level }
+    @Test
+    fun `an unexpected failure is unknown and logged as an error`() =
+        runTest {
+            withRecordedLogs { recordingLogSink ->
+                assertEquals(
+                    expected = Either.Left(a = Failure.unknown()),
+                    actual = repository(getLocation = { throw IllegalStateException("bug") }).getDeviceLocation()
+                )
+                assertEquals(expected = LogLevel.ERROR, actual = recordingLogSink.lines.single().level)
+            }
+        }
+
+    @Test
+    fun `the location mode is read and written`() =
+        runTest {
+            val locationRepository: LocationRepository = repository()
+
+            val before: Either<Failure, Boolean> = locationRepository.isAutomatic()
+            locationRepository.setAutomatic(isAutomatic = false)
+
+            assertEquals(expected = Either.Right(b = true), actual = before)
+            assertEquals(expected = Either.Right(b = false), actual = locationRepository.isAutomatic())
+        }
+
+    @Test
+    fun `a selected location reads back and turns automatic off`() =
+        runTest {
+            val locationRepository: LocationRepository = repository()
+
+            locationRepository.selectStoredLocation(storedLocation = kiruna)
+
+            assertEquals(expected = Either.Right(b = kiruna), actual = locationRepository.getStoredLocation())
+            assertEquals(expected = Either.Right(b = false), actual = locationRepository.isAutomatic())
+        }
+
+    @Test
+    fun `the observed preference follows each change`() =
+        runTest {
+            val locationRepository: LocationRepository = repository()
+            val emitted = mutableListOf<Either<Failure, LocationPreference>>()
+            val job = launch {
+                locationRepository.observeLocationPreference().take(count = 2).toList(destination = emitted)
+            }
+            testScheduler.runCurrent()
+
+            locationRepository.selectStoredLocation(storedLocation = kiruna)
+            job.join()
+
+            assertEquals<List<Either<Failure, LocationPreference>>>(
+                expected = listOf(
+                    Either.Right(
+                        b = LocationPreference(
+                            isAutomatic = true,
+                            storedLocation = StoredLocation(
+                                locality = "Stockholm",
+                                municipality = "Stockholm",
+                                county = "Stockholm",
+                                latitude = 59.3293,
+                                longitude = 18.0686
+                            )
+                        )
+                    ),
+                    Either.Right(
+                        b = LocationPreference(
+                            isAutomatic = false,
+                            storedLocation = kiruna
+                        )
+                    )
+                ),
+                actual = emitted
             )
         }
-    }
 
     @Test
-    fun `an unexpected failure is unknown and logged as an error`() = runTest {
-        withRecordedLogs { recordingLogSink ->
-            assertEquals(
-                expected = Either.Left(a = Failure.unknown()),
-                actual = repository(getLocation = { throw IllegalStateException("bug") }).getDeviceLocation()
+    fun `storage that cannot be read is a storage failure`() =
+        runTest {
+            val locationRepository: LocationRepository = DefaultLocationRepository(
+                deviceLocationLocalDataSource = FakeDeviceLocationLocalDataSource(getLocation = { error("unused") }),
+                storedLocationLocalDataSource = BrokenStoredLocationLocalDataSource()
             )
-            assertEquals(expected = LogLevel.ERROR, actual = recordingLogSink.lines.single().level)
+
+            withRecordedLogs {
+                val results: List<Either<Failure, Any>> = listOf(
+                    locationRepository.getStoredLocation(),
+                    locationRepository.selectStoredLocation(storedLocation = kiruna),
+                    locationRepository.observeLocationPreference().toList().single()
+                )
+
+                assertEquals(
+                    expected = List(size = 3) { Either.Left(a = Failure(errorCode = ErrorCode.STORAGE_FAILED)) },
+                    actual = results
+                )
+            }
         }
-    }
-
-    @Test
-    fun `the location mode is read and written`() = runTest {
-        val locationRepository: LocationRepository = repository()
-
-        val before: Either<Failure, Boolean> = locationRepository.isAutomatic()
-        locationRepository.setAutomatic(isAutomatic = false)
-
-        assertEquals(expected = Either.Right(b = true), actual = before)
-        assertEquals(expected = Either.Right(b = false), actual = locationRepository.isAutomatic())
-    }
-
-    @Test
-    fun `a stored location reads back with numeric coordinates`() = runTest {
-        val locationRepository: LocationRepository = repository()
-        val storedLocation = StoredLocation(
-            locality = "Kiruna",
-            municipality = "Kiruna",
-            county = "Norrbotten",
-            latitude = 67.8558,
-            longitude = 20.2253
-        )
-
-        locationRepository.setStoredLocation(storedLocation = storedLocation)
-
-        assertEquals(expected = Either.Right(b = storedLocation), actual = locationRepository.getStoredLocation())
-    }
-
-    @Test
-    fun `storage that cannot be read is a storage failure`() = runTest {
-        val locationRepository: LocationRepository = DefaultLocationRepository(
-            deviceLocationLocalDataSource = FakeDeviceLocationLocalDataSource(getLocation = { error("unused") }),
-            storedLocationLocalDataSource = BrokenStoredLocationLocalDataSource()
-        )
-
-        withRecordedLogs {
-            assertEquals(
-                expected = Either.Left(a = Failure(errorCode = ErrorCode.STORAGE_FAILED)),
-                actual = locationRepository.getStoredLocation()
-            )
-        }
-    }
 }

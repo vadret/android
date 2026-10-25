@@ -8,6 +8,5 @@ internal class DefaultGetLibrariesTask(
     private val libraryRepository: LibraryRepository
 ) : GetLibrariesTask {
 
-    override fun invoke(): Either<Nothing, List<Library>> =
-        libraryRepository.getLibraries()
+    override fun invoke(): Either<Nothing, List<Library>> = libraryRepository.getLibraries()
 }

@@ -93,7 +93,7 @@ class LoggerFactoryTest {
 
     @Test
     fun `logcat sink accepts its minimum level and up`() {
-        val sink: LogSink = LogcatSink(minimumLevel = LogLevel.WARN)
+        val sink: LogSink = logcatSink(minimumLevel = LogLevel.WARN)
 
         assertEquals(
             expected = listOf(false, false, true, true),

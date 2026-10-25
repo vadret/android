@@ -1,14 +1,15 @@
 package fi.kroon.vadret.weatherforecast.extension
 
+import fi.kroon.vadret.weatherforecast.model.CurrentWeather
 import fi.kroon.vadret.weatherforecast.model.Forecast
+import fi.kroon.vadret.weatherforecast.model.ForecastDay
+import fi.kroon.vadret.weatherforecast.model.ForecastHour
 import fi.kroon.vadret.weatherforecast.model.PlaceForecast
 import fi.kroon.vadret.weatherforecast.model.WeatherForecast
-import fi.kroon.vadret.weatherforecast.model.WeatherForecastRow
 import fi.kroon.vadret.weatherforecast.util.SunriseSunset
 import fi.kroon.vadret.weatherforecast.util.SunsetUtil
 import fi.kroon.vadret.weatherforecast.util.WeatherForecastUtil
 import fi.kroon.vadret.weatherforecast.util.WindChill
-import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
@@ -28,8 +29,8 @@ private const val WEEKDAY_PATTERN = "EEEE"
 private const val DAY_KEY_PREFIX = "day-"
 private const val HOUR_KEY_PREFIX = "hour-"
 
-private const val WIND_ARROW_ROTATION_OFFSET = 90f
-private const val NO_PRECIPITATION = 0
+private const val WIND_ARROW_ROTATION_OFFSET = 180f
+private const val DEGREES_IN_CIRCLE = 360f
 
 private val hourFormat = LocalTime.Format {
     hour()
@@ -42,10 +43,7 @@ internal fun PlaceForecast.toWeatherForecast(
     timeZone: TimeZone,
     locale: Locale
 ): WeatherForecast {
-    val first: Forecast = forecasts.firstOrNull() ?: return WeatherForecast(
-        overview = persistentListOf(),
-        days = persistentListOf()
-    )
+    val first: Forecast = forecasts.firstOrNull() ?: return WeatherForecast()
     val javaTimeZone: JavaTimeZone = JavaTimeZone.getTimeZone(timeZone.id)
     val dateFormat: DateFormat = DateFormat.getDateInstance(DateFormat.LONG, locale)
     val timeFormat: DateFormat = DateFormat.getTimeInstance(DateFormat.SHORT, locale)
@@ -54,18 +52,16 @@ internal fun PlaceForecast.toWeatherForecast(
         format.timeZone = javaTimeZone
     }
     return WeatherForecast(
-        overview = persistentListOf(
-            first.toHeadline(),
-            first.toSummary(
-                sunriseSunset = SunsetUtil.getSunriseSunset(
-                    day = now,
-                    latitude = latitude,
-                    longitude = longitude
-                ),
-                timeFormat = timeFormat
-            )
+        current = first.toCurrentWeather(
+            isDaytime = isDaytime(at = first.validAt),
+            sunriseSunset = SunsetUtil.getSunriseSunset(
+                day = now,
+                latitude = latitude,
+                longitude = longitude
+            ),
+            timeFormat = timeFormat
         ),
-        days = forecasts.toDayRows(
+        days = toForecastDays(
             timeZone = timeZone,
             locale = locale,
             dateFormat = dateFormat,
@@ -74,73 +70,85 @@ internal fun PlaceForecast.toWeatherForecast(
     )
 }
 
-private fun List<Forecast>.toDayRows(
+private fun PlaceForecast.isDaytime(at: Instant): Boolean =
+    SunsetUtil.isSunUp(
+        at = at,
+        latitude = latitude,
+        longitude = longitude
+    )
+
+private fun PlaceForecast.toForecastDays(
     timeZone: TimeZone,
     locale: Locale,
     dateFormat: DateFormat,
     weekdayFormat: DateFormat
-): List<WeatherForecastRow> =
-    groupBy { forecast: Forecast -> forecast.validAt.toLocalDateTime(timeZone = timeZone).date }
-        .flatMap { (date: LocalDate, dayForecasts: List<Forecast>) ->
+): List<ForecastDay> =
+    forecasts
+        .groupBy { forecast: Forecast -> forecast.validAt.toLocalDateTime(timeZone = timeZone).date }
+        .map { (date: LocalDate, dayForecasts: List<Forecast>) ->
             val startOfDay = Date(date.atStartOfDayIn(timeZone = timeZone).toEpochMilliseconds())
-            val day = WeatherForecastRow.Day(
+            ForecastDay(
                 key = "$DAY_KEY_PREFIX$date",
-                weekday = weekdayFormat.format(startOfDay).uppercase(locale = locale),
-                dateText = dateFormat.format(startOfDay)
+                weekday = weekdayFormat
+                    .format(startOfDay)
+                    .replaceFirstChar { character: Char -> character.titlecase(locale = locale) },
+                dateText = dateFormat.format(startOfDay),
+                hours = dayForecasts
+                    .map { forecast: Forecast ->
+                        forecast.toForecastHour(
+                            timeZone = timeZone,
+                            isDaytime = isDaytime(at = forecast.validAt)
+                        )
+                    }.toImmutableList()
             )
-            listOf(day) + dayForecasts.map { forecast: Forecast -> forecast.toHour(timeZone = timeZone) }
         }
 
-private fun Forecast.toHeadline(): WeatherForecastRow.Headline =
-    WeatherForecastRow.Headline(
+private fun Forecast.toCurrentWeather(
+    isDaytime: Boolean,
+    sunriseSunset: SunriseSunset?,
+    timeFormat: DateFormat
+): CurrentWeather =
+    CurrentWeather(
+        temperature = airTemperature,
+        feelsLikeTemperature = feelsLikeTemperature(),
+        iconResourceId = WeatherForecastUtil.getWeatherSymbolIconResourceId(
+            symbolCode = symbolCode,
+            isDaytime = isDaytime
+        ),
         descriptionResourceId = WeatherForecastUtil.getWsymb2ResourceId(index = symbolCode),
         windSpeedClassResourceId = WeatherForecastUtil.getWindSpeedClassResourceId(windSpeed = windSpeed),
         windDirectionResourceId = WeatherForecastUtil.handleWindDirection(degree = windFromDirection),
-        windArrowRotation = windFromDirection.toFloat() + WIND_ARROW_ROTATION_OFFSET
-    )
-
-private fun Forecast.toSummary(
-    sunriseSunset: SunriseSunset?,
-    timeFormat: DateFormat
-): WeatherForecastRow.Summary =
-    WeatherForecastRow.Summary(
-        sunriseText = if (sunriseSunset != null) {
-            timeFormat.format(Date(sunriseSunset.sunrise.toEpochMilliseconds()))
-        } else {
-            null
-        },
-        sunsetText = if (sunriseSunset != null) {
-            timeFormat.format(Date(sunriseSunset.sunset.toEpochMilliseconds()))
-        } else {
-            null
-        },
-        temperature = airTemperature,
-        feelsLikeTemperature = WindChill.calculate(
-            temperatureCelcius = airTemperature,
-            windSpeedMeterPerSecond = windSpeed
-        ),
-        humidityPercent = relativeHumidity,
         windSpeed = windSpeed,
-        precipitationResourceId = if (precipitationType > NO_PRECIPITATION) {
-            WeatherForecastUtil.getPrecipitationResourceId(prSort = precipitationType)
-        } else {
-            null
-        }
+        windArrowRotation = (windFromDirection.toFloat() + WIND_ARROW_ROTATION_OFFSET) % DEGREES_IN_CIRCLE,
+        humidityPercent = relativeHumidity,
+        precipitationResourceId = WeatherForecastUtil.getPrecipitationResourceId(prSort = precipitationType),
+        sunriseText = sunriseSunset?.sunrise?.format(timeFormat = timeFormat),
+        sunsetText = sunriseSunset?.sunset?.format(timeFormat = timeFormat)
     )
 
-private fun Forecast.toHour(timeZone: TimeZone): WeatherForecastRow.Hour =
-    WeatherForecastRow.Hour(
+private fun Instant.format(timeFormat: DateFormat): String = timeFormat.format(Date(toEpochMilliseconds()))
+
+private fun Forecast.feelsLikeTemperature(): String? =
+    WindChill.calculate(
+        temperatureCelcius = airTemperature,
+        windSpeedMeterPerSecond = windSpeed
+    )
+
+private fun Forecast.toForecastHour(
+    timeZone: TimeZone,
+    isDaytime: Boolean
+): ForecastHour =
+    ForecastHour(
         key = "$HOUR_KEY_PREFIX$validAt",
         timeText = validAt
             .toLocalDateTime(timeZone = timeZone)
             .time
             .format(format = hourFormat),
         temperature = airTemperature,
-        feelsLikeTemperature = WindChill.calculate(
-            temperatureCelcius = airTemperature,
-            windSpeedMeterPerSecond = windSpeed
-        ),
+        feelsLikeTemperature = feelsLikeTemperature(),
         descriptionResourceId = WeatherForecastUtil.getWsymb2ResourceId(index = symbolCode),
-        iconResourceId = WeatherForecastUtil.getWsymb2IconResourceId(index = symbolCode),
-        temperatureColorResourceId = WeatherForecastUtil.getTemperatureColorResourceId(temperature = airTemperature)
+        iconResourceId = WeatherForecastUtil.getWeatherSymbolIconResourceId(
+            symbolCode = symbolCode,
+            isDaytime = isDaytime
+        )
     )

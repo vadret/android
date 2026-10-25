@@ -31,7 +31,6 @@
     <string name="wsymb2_light_snowfall">Kevyt lumisade</string>
     <string name="wsymb2_moderate_snowfall">Kohtalainen lumisade</string>
     <string name="wsymb2_heavy_snowfall">Rankka lumisade</string>
-    <string name="prsort_no_precipitation">Ei sadetta</string>
     <string name="prsort_snow">Lunta</string>
     <string name="prsort_snow_and_rain">Lunta ja sadetta</string>
     <string name="prsort_rain">Sadetta</string>
@@ -73,4 +72,18 @@
     <string name="alert_expires">expires</string>
     <string name="alert_class">Warning class:</string>
     <string name="alert_subject">Alert headline</string>
+    <string name="automatic_location">Automaattinen</string>
+    <string name="choose_location">Valitse paikka</string>
+    <string name="add_place">Lisää paikka…</string>
+    <string name="remove_favorite">Poista %1$s</string>
+    <string name="selected">Valittu</string>
+    <string name="humidity">Kosteus</string>
+    <string name="precipitation_short">Sade</string>
+    <string name="precipitation_none">Ei</string>
+    <string name="precipitation">Sade</string>
+    <string name="now">Nyt</string>
+    <string name="warning_level_yellow">Keltainen varoitus</string>
+    <string name="warning_level_orange">Oranssi varoitus</string>
+    <string name="warning_level_red">Punainen varoitus</string>
+    <string name="warning_level_message">Tiedote</string>
 </resources>

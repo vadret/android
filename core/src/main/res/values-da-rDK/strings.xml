@@ -28,7 +28,6 @@
     <string name="wsymb2_light_snowfall">Let snefald</string>
     <string name="wsymb2_moderate_snowfall">Moderat snefald</string>
     <string name="wsymb2_heavy_snowfall">Tungt snefald</string>
-    <string name="prsort_no_precipitation">Ingen nedbør</string>
     <string name="prsort_snow">Sne</string>
     <string name="prsort_snow_and_rain">Sne og regn</string>
     <string name="prsort_rain">Regn</string>
@@ -71,4 +70,18 @@
     <string name="alert_expires">Udløber</string>
     <string name="alert_class">Advarselsklasse</string>
     <string name="alert_subject">Alert overskrift</string>
+    <string name="automatic_location">Automatisk</string>
+    <string name="choose_location">Vælg sted</string>
+    <string name="add_place">Tilføj sted…</string>
+    <string name="remove_favorite">Fjern %1$s</string>
+    <string name="selected">Valgt</string>
+    <string name="humidity">Luftfugtighed</string>
+    <string name="precipitation_short">Nedbør</string>
+    <string name="precipitation_none">Ingen</string>
+    <string name="precipitation">Nedbør</string>
+    <string name="now">Nu</string>
+    <string name="warning_level_yellow">Gul varsling</string>
+    <string name="warning_level_orange">Orange varsling</string>
+    <string name="warning_level_red">Rød varsling</string>
+    <string name="warning_level_message">Meddelelse</string>
 </resources>

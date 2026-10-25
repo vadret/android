@@ -4,14 +4,17 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import fi.kroon.vadret.autocomplete.model.AutoCompleteItem
 import fi.kroon.vadret.common.Failure
+import fi.kroon.vadret.favorite.model.Favorite
 import fi.kroon.vadret.ui.extension.launchReplacing
 import fi.kroon.vadret.ui.extension.messageResourceId
 import fi.kroon.vadret.weatherforecast.extension.toWeatherForecast
+import fi.kroon.vadret.weatherforecast.model.LocationChoices
 import fi.kroon.vadret.weatherforecast.model.PlaceForecast
 import fi.kroon.vadret.weatherforecast.model.SearchState
 import fi.kroon.vadret.weatherforecast.model.WeatherForecast
 import io.github.sphrak.either.Either
 import io.github.sphrak.either.extension.asRight
+import io.github.sphrak.either.extension.errorOrNull
 import io.github.sphrak.either.extension.onResult
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
@@ -24,6 +27,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.datetime.TimeZone
 import java.util.Locale
+import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicReference
 import kotlin.time.Clock
 import kotlin.time.Duration
@@ -35,6 +39,9 @@ class WeatherForecastViewModel internal constructor(
     private val getLocationModeTask: GetLocationModeTask,
     private val setLocationModeTask: SetLocationModeTask,
     private val getWeatherForecastTask: GetWeatherForecastTask,
+    private val observeLocationChoicesTask: ObserveLocationChoicesTask,
+    private val selectFavoriteTask: SelectFavoriteTask,
+    private val removeFavoriteTask: RemoveFavoriteTask,
     private val searchPlacesTask: SearchPlacesTask,
     private val selectPlaceTask: SelectPlaceTask,
     private val clock: Clock,
@@ -45,28 +52,48 @@ class WeatherForecastViewModel internal constructor(
         field = MutableStateFlow(value = WeatherForecastState())
 
     private val loadedLocationMode: AtomicReference<Boolean?> = AtomicReference(null)
+    private val isObservingLocationChoices: AtomicBoolean = AtomicBoolean(false)
     private val loadJob: AtomicReference<Job?> = AtomicReference(null)
     private val searchJob: AtomicReference<Job?> = AtomicReference(null)
 
     fun onEvent(event: WeatherForecastEvent) {
         when (event) {
             WeatherForecastEvent.OnShown -> onShown()
+
             WeatherForecastEvent.OnRefresh -> onRefresh()
+
             WeatherForecastEvent.OnErrorShown -> state.update { state: WeatherForecastState ->
                 state.copy(errorMessageResourceId = null)
             }
+
             is WeatherForecastEvent.OnLocationPermissionResult -> onLocationPermissionResult(isGranted = event.isGranted)
-            WeatherForecastEvent.OnSearchButtonClicked -> state.update { state: WeatherForecastState ->
+
+            WeatherForecastEvent.OnAutomaticLocationClicked -> state.update { state: WeatherForecastState ->
+                state.copy(isLocationPermissionRequested = true)
+            }
+
+            is WeatherForecastEvent.OnFavoriteClicked -> onFavoriteClicked(favorite = event.favorite)
+
+            is WeatherForecastEvent.OnFavoriteRemoveClicked -> onFavoriteRemoveClicked(favoriteId = event.favoriteId)
+
+            WeatherForecastEvent.OnAddPlaceClicked -> state.update { state: WeatherForecastState ->
                 state.copy(search = SearchState())
             }
+
             WeatherForecastEvent.OnSearchDismissed -> onSearchDismissed()
+
             WeatherForecastEvent.OnSearchSubmitted -> onSearchSubmitted()
+
             is WeatherForecastEvent.OnSearchQueryChanged -> onSearchQueryChanged(query = event.query)
+
             is WeatherForecastEvent.OnSuggestionClicked -> onSuggestionClicked(autoCompleteItem = event.autoCompleteItem)
         }
     }
 
     private fun onShown() {
+        if (isObservingLocationChoices.compareAndSet(false, true)) {
+            observeLocationChoices()
+        }
         viewModelScope.launch(context = coroutineDispatcher) {
             getLocationModeTask()
                 .onResult(
@@ -78,6 +105,50 @@ class WeatherForecastViewModel internal constructor(
                     }
                 )
         }
+    }
+
+    private fun observeLocationChoices() {
+        viewModelScope.launch(context = coroutineDispatcher) {
+            observeLocationChoicesTask().collect { result: Either<Failure, LocationChoices> ->
+                result.onResult(
+                    onError = { failure: Failure -> displayError(failure = failure) },
+                    onSuccess = { locationChoices: LocationChoices ->
+                        state.update { state: WeatherForecastState ->
+                            state.copy(locationChoices = locationChoices)
+                        }
+                    }
+                )
+            }
+        }
+    }
+
+    private fun onFavoriteClicked(favorite: Favorite) {
+        viewModelScope.launch(context = coroutineDispatcher) {
+            selectFavoriteTask(favorite = favorite)
+                .onResult(
+                    onError = { failure: Failure -> displayError(failure = failure) },
+                    onSuccess = { reloadStoredLocation() }
+                )
+        }
+    }
+
+    private fun onFavoriteRemoveClicked(favoriteId: String) {
+        viewModelScope.launch(context = coroutineDispatcher) {
+            val failure: Failure? = removeFavoriteTask(favoriteId = favoriteId).errorOrNull
+            if (failure != null) {
+                displayError(failure = failure)
+            }
+        }
+    }
+
+    private fun reloadStoredLocation() {
+        state.update { state: WeatherForecastState ->
+            state.copy(
+                search = null,
+                isRefreshing = true
+            )
+        }
+        load(isAutomatic = false)
     }
 
     private fun startLoading(isAutomatic: Boolean) {
@@ -206,15 +277,7 @@ class WeatherForecastViewModel internal constructor(
             selectPlaceTask(autoCompleteItem = autoCompleteItem)
                 .onResult(
                     onError = { failure: Failure -> displayError(failure = failure) },
-                    onSuccess = {
-                        state.update { state: WeatherForecastState ->
-                            state.copy(
-                                search = null,
-                                isRefreshing = true
-                            )
-                        }
-                        load(isAutomatic = false)
-                    }
+                    onSuccess = { reloadStoredLocation() }
                 )
         }
     }

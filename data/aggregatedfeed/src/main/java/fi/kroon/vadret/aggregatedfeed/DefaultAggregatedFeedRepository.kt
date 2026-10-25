@@ -139,14 +139,12 @@ internal class DefaultAggregatedFeedRepository(
     private fun AggregatedFeedCacheEntity.isFor(
         feedSources: Set<FeedSource>,
         districtIds: Set<Int>
-    ): Boolean =
-        this.feedSources == feedSources.toCacheKey() && this.districtIds == districtIds.sorted()
+    ): Boolean = this.feedSources == feedSources.toCacheKey() && this.districtIds == districtIds.sorted()
 
     private fun AggregatedFeedCacheEntity.isFresh(now: Instant): Boolean {
         val age: Duration = now - Instant.fromEpochMilliseconds(epochMilliseconds = fetchedAtEpochMillis)
         return age >= Duration.ZERO && age < cacheLifetime
     }
 
-    private fun Set<FeedSource>.toCacheKey(): List<String> =
-        map { feedSource: FeedSource -> feedSource.name }.sorted()
+    private fun Set<FeedSource>.toCacheKey(): List<String> = map { feedSource: FeedSource -> feedSource.name }.sorted()
 }

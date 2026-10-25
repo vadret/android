@@ -76,7 +76,9 @@ fun SettingsScreen(
                     state = state,
                     onEvent = onEvent
                 )
+
                 SettingsPage.LIBRARIES -> LibrariesPage(libraries = state.libraries)
+
                 SettingsPage.ABOUT -> AboutPage(aboutRows = state.aboutRows)
             }
         }

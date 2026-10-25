@@ -2,7 +2,10 @@ package fi.kroon.vadret.forecastwarning
 
 import fi.kroon.vadret.aggregatedfeed.AggregatedFeedRepository
 import fi.kroon.vadret.aggregatedfeed.model.AggregatedFeed
+import fi.kroon.vadret.aggregatedfeed.model.FeedDetail
+import fi.kroon.vadret.aggregatedfeed.model.FeedDetailKind
 import fi.kroon.vadret.aggregatedfeed.model.FeedSource
+import fi.kroon.vadret.aggregatedfeed.model.WarningLevel
 import fi.kroon.vadret.common.Failure
 import fi.kroon.vadret.warningfilter.WarningFilterRepository
 import fi.kroon.vadret.warningfilter.model.DistrictCategory
@@ -38,9 +41,16 @@ internal val defaultWarningFilter = WarningFilter(
 internal fun aggregatedFeed(identifier: String): AggregatedFeed =
     AggregatedFeed(
         identifier = identifier,
-        headline = "Gul varning: Vind",
-        preamble = "Gotland",
-        bodyText = "Hårda vindbyar",
+        headline = "Vind",
+        areaName = "Gotland",
+        warningLevel = WarningLevel.YELLOW,
+        details = listOf(
+            FeedDetail(
+                kind = FeedDetailKind.DESCRIPTION,
+                title = "Händelsebeskrivning",
+                text = "Hårda vindbyar"
+            )
+        ),
         source = FeedSource.SMHI,
         publishedAt = Instant.parse(input = "2026-10-24T08:00:00Z")
     )

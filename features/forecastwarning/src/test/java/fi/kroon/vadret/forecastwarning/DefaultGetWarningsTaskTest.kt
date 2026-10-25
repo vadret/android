@@ -21,22 +21,24 @@ class DefaultGetWarningsTaskTest {
     )
 
     @Test
-    fun `the feed is asked for the enabled sources and districts only`() = runTest {
-        val result: Either<Failure, List<AggregatedFeed>> = getWarningsTask(isRefresh = true)
+    fun `the feed is asked for the enabled sources and districts only`() =
+        runTest {
+            val result: Either<Failure, List<AggregatedFeed>> = getWarningsTask(isRefresh = true)
 
-        assertEquals<Either<Failure, List<AggregatedFeed>>>(expected = aggregatedFeedRepository.result, actual = result)
-        assertEquals(
-            expected = listOf(Triple(setOf(FeedSource.SMHI), setOf(1), true)),
-            actual = aggregatedFeedRepository.requests
-        )
-    }
+            assertEquals<Either<Failure, List<AggregatedFeed>>>(expected = aggregatedFeedRepository.result, actual = result)
+            assertEquals(
+                expected = listOf(Triple(setOf(FeedSource.SMHI), setOf(1), true)),
+                actual = aggregatedFeedRepository.requests
+            )
+        }
 
     @Test
-    fun `a filter that cannot be read fails without asking for the feed`() = runTest {
-        val failure = Failure(errorCode = ErrorCode.DISTRICTS_NOT_AVAILABLE)
-        warningFilterRepository.warningFilter = failure.asLeft()
+    fun `a filter that cannot be read fails without asking for the feed`() =
+        runTest {
+            val failure = Failure(errorCode = ErrorCode.DISTRICTS_NOT_AVAILABLE)
+            warningFilterRepository.warningFilter = failure.asLeft()
 
-        assertEquals(expected = Either.Left(a = failure), actual = getWarningsTask(isRefresh = false))
-        assertTrue(actual = aggregatedFeedRepository.requests.isEmpty())
-    }
+            assertEquals(expected = Either.Left(a = failure), actual = getWarningsTask(isRefresh = false))
+            assertTrue(actual = aggregatedFeedRepository.requests.isEmpty())
+        }
 }

@@ -6,7 +6,10 @@ import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.doublePreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 
 private val isAutomaticKey: Preferences.Key<Boolean> = booleanPreferencesKey(name = "is_automatic_location")
 private val localityKey: Preferences.Key<String> = stringPreferencesKey(name = "locality")
@@ -26,8 +29,7 @@ internal class DefaultStoredLocationLocalDataSource(
     private val dataStore: DataStore<Preferences>
 ) : StoredLocationLocalDataSource {
 
-    override suspend fun isAutomatic(): Boolean =
-        dataStore.data.first()[isAutomaticKey] ?: DEFAULT_IS_AUTOMATIC
+    override suspend fun isAutomatic(): Boolean = dataStore.data.first()[isAutomaticKey] ?: DEFAULT_IS_AUTOMATIC
 
     override suspend fun setAutomatic(isAutomatic: Boolean) {
         dataStore.edit { preferences ->
@@ -35,19 +37,20 @@ internal class DefaultStoredLocationLocalDataSource(
         }
     }
 
-    override suspend fun getStoredLocation(): StoredLocationEntity {
-        val preferences: Preferences = dataStore.data.first()
-        return StoredLocationEntity(
-            locality = preferences[localityKey] ?: DEFAULT_LOCALITY,
-            municipality = preferences[municipalityKey] ?: DEFAULT_MUNICIPALITY,
-            county = preferences[countyKey] ?: DEFAULT_COUNTY,
-            latitude = preferences[latitudeKey] ?: DEFAULT_LATITUDE,
-            longitude = preferences[longitudeKey] ?: DEFAULT_LONGITUDE
-        )
-    }
+    override suspend fun getStoredLocation(): StoredLocationEntity = dataStore.data.first().toStoredLocationEntity()
 
-    override suspend fun setStoredLocation(storedLocationEntity: StoredLocationEntity) {
+    override fun observeLocationPreference(): Flow<LocationPreferenceEntity> =
+        dataStore.data
+            .map { preferences: Preferences ->
+                LocationPreferenceEntity(
+                    isAutomatic = preferences[isAutomaticKey] ?: DEFAULT_IS_AUTOMATIC,
+                    storedLocationEntity = preferences.toStoredLocationEntity()
+                )
+            }.distinctUntilChanged()
+
+    override suspend fun selectStoredLocation(storedLocationEntity: StoredLocationEntity) {
         dataStore.edit { preferences ->
+            preferences[isAutomaticKey] = false
             preferences[localityKey] = storedLocationEntity.locality
             preferences[municipalityKey] = storedLocationEntity.municipality
             preferences[countyKey] = storedLocationEntity.county
@@ -56,3 +59,12 @@ internal class DefaultStoredLocationLocalDataSource(
         }
     }
 }
+
+private fun Preferences.toStoredLocationEntity(): StoredLocationEntity =
+    StoredLocationEntity(
+        locality = this[localityKey] ?: DEFAULT_LOCALITY,
+        municipality = this[municipalityKey] ?: DEFAULT_MUNICIPALITY,
+        county = this[countyKey] ?: DEFAULT_COUNTY,
+        latitude = this[latitudeKey] ?: DEFAULT_LATITUDE,
+        longitude = this[longitudeKey] ?: DEFAULT_LONGITUDE
+    )

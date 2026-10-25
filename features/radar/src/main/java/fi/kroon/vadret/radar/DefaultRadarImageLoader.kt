@@ -14,24 +14,26 @@ import fi.kroon.vadret.common.ErrorCode
 import fi.kroon.vadret.common.Failure
 import fi.kroon.vadret.logging.Logger
 import fi.kroon.vadret.logging.LoggerFactory
+import fi.kroon.vadret.radar.exception.TiffFormatException
 import fi.kroon.vadret.radar.projection.RadarReprojection
-import fi.kroon.vadret.radar.projection.ReprojectedImage
 import io.github.sphrak.either.Either
 import io.github.sphrak.either.extension.asLeft
 import io.github.sphrak.either.extension.asRight
 import io.ktor.client.HttpClient
+import kotlin.coroutines.cancellation.CancellationException
 
 private val logger: Logger = LoggerFactory.getLogger(tag = "fi.kroon.vadret.radar")
 
 internal class DefaultRadarImageLoader(
     private val context: Context,
-    private val radarReprojection: RadarReprojection,
+    radarReprojection: RadarReprojection,
     httpClient: Lazy<HttpClient>
 ) : RadarImageLoader {
 
     private val imageLoader: ImageLoader = ImageLoader.Builder(context = context)
         .components {
             add(KtorNetworkFetcherFactory(httpClient = { httpClient.value }))
+            add(TiffRadarDecoderFactory(radarReprojection = radarReprojection))
         }
         .build()
 
@@ -41,27 +43,18 @@ internal class DefaultRadarImageLoader(
             .allowHardware(enable = false)
             .build()
         return when (val result: ImageResult = imageLoader.execute(request = request)) {
-            is SuccessResult -> result.image.toBitmap().toMercator().asRight()
-            is ErrorResult -> {
-                logger.warn { "${ErrorCode.NETWORK_FAILURE}: radar image $imageUrl: ${result.throwable.message}" }
-                Failure(errorCode = ErrorCode.NETWORK_FAILURE).asLeft()
-            }
+            is SuccessResult -> result.image.toBitmap().asRight()
+            is ErrorResult -> result.throwable.toFailure(imageUrl = imageUrl).asLeft()
         }
     }
+}
 
-    private fun Bitmap.toMercator(): Bitmap {
-        val pixels = IntArray(size = width * height)
-        getPixels(pixels, 0, width, 0, 0, width, height)
-        val reprojectedImage: ReprojectedImage = radarReprojection.reproject(
-            pixels = pixels,
-            width = width,
-            height = height
-        )
-        return Bitmap.createBitmap(
-            reprojectedImage.pixels,
-            reprojectedImage.width,
-            reprojectedImage.height,
-            Bitmap.Config.ARGB_8888
-        )
+private fun Throwable.toFailure(imageUrl: String): Failure {
+    val errorCode: ErrorCode = when (this) {
+        is CancellationException -> throw this
+        is TiffFormatException -> ErrorCode.INVALID_RESPONSE
+        else -> ErrorCode.NETWORK_FAILURE
     }
+    logger.warn { "$errorCode: radar image $imageUrl: $message" }
+    return Failure(errorCode = errorCode)
 }

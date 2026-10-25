@@ -37,7 +37,6 @@
     <string name="prsort_rain">Deszcz</string>
     <string name="prsort_snow_and_rain">Śnieg z deszczem</string>
     <string name="prsort_snow">Śnieg</string>
-    <string name="prsort_no_precipitation">Brak opadów</string>
     <string name="wsymb2_heavy_snowfall">Intensywny opad śniegu</string>
     <string name="wsymb2_moderate_snowfall">Umiarkowany opad śniegu</string>
     <string name="wsymb2_light_snowfall">Lekki opad śniegu</string>
@@ -58,4 +57,18 @@
     <string name="wsymb2_light_sleet_showers">Lekki przelotny śnieg z deszczem</string>
     <string name="wsymb2_moderate_sleet_showers">Umiarkowany przelotny śnieg z deszczem</string>
     <string name="wsymb2_heavy_sleet_showers">Intensywny przelotny śnieg z deszczem</string>
+    <string name="automatic_location">Automatycznie</string>
+    <string name="choose_location">Wybierz miejsce</string>
+    <string name="add_place">Dodaj miejsce…</string>
+    <string name="remove_favorite">Usuń %1$s</string>
+    <string name="selected">Wybrane</string>
+    <string name="humidity">Wilgotność</string>
+    <string name="precipitation_short">Opady</string>
+    <string name="precipitation_none">Brak</string>
+    <string name="precipitation">Opady</string>
+    <string name="now">Teraz</string>
+    <string name="warning_level_yellow">Żółte ostrzeżenie</string>
+    <string name="warning_level_orange">Pomarańczowe ostrzeżenie</string>
+    <string name="warning_level_red">Czerwone ostrzeżenie</string>
+    <string name="warning_level_message">Komunikat</string>
 </resources>

@@ -3,8 +3,8 @@ package fi.kroon.vadret
 import android.app.Application
 import fi.kroon.vadret.di.appModules
 import fi.kroon.vadret.logging.LogLevel
-import fi.kroon.vadret.logging.LogcatSink
 import fi.kroon.vadret.logging.LoggerFactory
+import fi.kroon.vadret.logging.logcatSink
 import org.koin.core.KoinApplication
 import org.koin.dsl.koinApplication
 
@@ -23,7 +23,7 @@ abstract class BaseApplication : Application() {
         if (BuildConfig.DEBUG) {
             LoggerFactory.register(
                 name = LOGCAT_SINK_NAME,
-                sink = LogcatSink(minimumLevel = LogLevel.DEBUG)
+                sink = logcatSink(minimumLevel = LogLevel.DEBUG)
             )
         }
     }

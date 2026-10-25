@@ -1,16 +1,14 @@
 package fi.kroon.vadret.weatherforecast
 
 import androidx.annotation.StringRes
+import fi.kroon.vadret.weatherforecast.model.LocationChoices
 import fi.kroon.vadret.weatherforecast.model.SearchState
 import fi.kroon.vadret.weatherforecast.model.WeatherForecast
-import kotlinx.collections.immutable.persistentListOf
 
 data class WeatherForecastState(
-    val forecast: WeatherForecast = WeatherForecast(
-        overview = persistentListOf(),
-        days = persistentListOf()
-    ),
+    val forecast: WeatherForecast = WeatherForecast(),
     val localityName: String? = null,
+    val locationChoices: LocationChoices = LocationChoices(),
     val isLoading: Boolean = true,
     val isRefreshing: Boolean = false,
     val isLocationPermissionRequested: Boolean = false,

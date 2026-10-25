@@ -15,8 +15,7 @@ internal class DefaultThemeLocalDataSource(
     private val dataStore: DataStore<Preferences>
 ) : ThemeLocalDataSource {
 
-    override suspend fun getTheme(): String? =
-        dataStore.data.first()[themeKey]
+    override suspend fun getTheme(): String? = dataStore.data.first()[themeKey]
 
     override fun observeTheme(): Flow<String?> =
         dataStore.data

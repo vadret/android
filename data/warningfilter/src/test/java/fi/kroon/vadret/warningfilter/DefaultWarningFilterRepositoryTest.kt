@@ -65,85 +65,90 @@ class DefaultWarningFilterRepositoryTest {
     }
 
     @Test
-    fun `the first filter has Stockholm and every feed source selected`() = testScope.runTest {
-        assertEquals<Either<Failure, WarningFilter>>(
-            expected = Either.Right(
-                b = WarningFilter(
-                    districts = listOf(
-                        DistrictOption(districtId = 41, name = "Bottenviken", category = DistrictCategory.SEA_DISTRICT, isEnabled = false),
-                        DistrictOption(districtId = 99, name = "Fjällen", category = DistrictCategory.OTHER, isEnabled = false),
-                        DistrictOption(districtId = 1, name = "Stockholms län", category = DistrictCategory.COUNTY, isEnabled = true),
-                        DistrictOption(districtId = 3, name = "Uppsala län", category = DistrictCategory.COUNTY, isEnabled = false)
-                    ),
-                    feedSources = listOf(
-                        FeedSourceOption(feedSource = FeedSource.KRISINFORMATION, isEnabled = true),
-                        FeedSourceOption(feedSource = FeedSource.SMHI, isEnabled = true)
+    fun `the first filter has Stockholm and every feed source selected`() =
+        testScope.runTest {
+            assertEquals<Either<Failure, WarningFilter>>(
+                expected = Either.Right(
+                    b = WarningFilter(
+                        districts = listOf(
+                            DistrictOption(districtId = 41, name = "Bottenviken", category = DistrictCategory.SEA_DISTRICT, isEnabled = false),
+                            DistrictOption(districtId = 99, name = "Fjällen", category = DistrictCategory.OTHER, isEnabled = false),
+                            DistrictOption(districtId = 1, name = "Stockholms län", category = DistrictCategory.COUNTY, isEnabled = true),
+                            DistrictOption(districtId = 3, name = "Uppsala län", category = DistrictCategory.COUNTY, isEnabled = false)
+                        ),
+                        feedSources = listOf(
+                            FeedSourceOption(feedSource = FeedSource.KRISINFORMATION, isEnabled = true),
+                            FeedSourceOption(feedSource = FeedSource.SMHI, isEnabled = true)
+                        )
                     )
+                ),
+                actual = warningFilterRepository.getWarningFilter()
+            )
+        }
+
+    @Test
+    fun `districts are fetched once`() =
+        testScope.runTest {
+            warningFilterRepository.getWarningFilter()
+            warningFilterRepository.getWarningFilter()
+
+            assertEquals(expected = 1, actual = districtRemoteDataSource.requestCount)
+        }
+
+    @Test
+    fun `a stored filter is read back`() =
+        testScope.runTest {
+            warningFilterRepository.getWarningFilter()
+
+            warningFilterRepository.setWarningFilter(
+                enabledDistrictIds = setOf(3, 41),
+                enabledFeedSources = setOf(FeedSource.SMHI)
+            )
+            val warningFilter: WarningFilter? = (warningFilterRepository.getWarningFilter() as? Either.Right)?.b
+
+            assertEquals(
+                expected = setOf(3, 41),
+                actual = warningFilter?.districts
+                    ?.filter { districtOption: DistrictOption -> districtOption.isEnabled }
+                    ?.map { districtOption: DistrictOption -> districtOption.districtId }
+                    ?.toSet()
+            )
+            assertEquals(
+                expected = listOf(
+                    FeedSourceOption(feedSource = FeedSource.KRISINFORMATION, isEnabled = false),
+                    FeedSourceOption(feedSource = FeedSource.SMHI, isEnabled = true)
+                ),
+                actual = warningFilter?.feedSources
+            )
+        }
+
+    @Test
+    fun `no districts from SMHI is a failure and nothing is stored`() =
+        testScope.runTest {
+            districtRemoteDataSource.districtDtos = emptyList()
+
+            withRecordedLogs { recordingLogSink ->
+                assertEquals(
+                    expected = Either.Left(a = Failure(errorCode = ErrorCode.DISTRICTS_NOT_AVAILABLE)),
+                    actual = warningFilterRepository.getWarningFilter()
                 )
-            ),
-            actual = warningFilterRepository.getWarningFilter()
-        )
-    }
-
-    @Test
-    fun `districts are fetched once`() = testScope.runTest {
-        warningFilterRepository.getWarningFilter()
-        warningFilterRepository.getWarningFilter()
-
-        assertEquals(expected = 1, actual = districtRemoteDataSource.requestCount)
-    }
-
-    @Test
-    fun `a stored filter is read back`() = testScope.runTest {
-        warningFilterRepository.getWarningFilter()
-
-        warningFilterRepository.setWarningFilter(
-            enabledDistrictIds = setOf(3, 41),
-            enabledFeedSources = setOf(FeedSource.SMHI)
-        )
-        val warningFilter: WarningFilter? = (warningFilterRepository.getWarningFilter() as? Either.Right)?.b
-
-        assertEquals(
-            expected = setOf(3, 41),
-            actual = warningFilter?.districts
-                ?.filter { districtOption: DistrictOption -> districtOption.isEnabled }
-                ?.map { districtOption: DistrictOption -> districtOption.districtId }
-                ?.toSet()
-        )
-        assertEquals(
-            expected = listOf(
-                FeedSourceOption(feedSource = FeedSource.KRISINFORMATION, isEnabled = false),
-                FeedSourceOption(feedSource = FeedSource.SMHI, isEnabled = true)
-            ),
-            actual = warningFilter?.feedSources
-        )
-    }
-
-    @Test
-    fun `no districts from SMHI is a failure and nothing is stored`() = testScope.runTest {
-        districtRemoteDataSource.districtDtos = emptyList()
-
-        withRecordedLogs { recordingLogSink ->
-            assertEquals(
-                expected = Either.Left(a = Failure(errorCode = ErrorCode.DISTRICTS_NOT_AVAILABLE)),
-                actual = warningFilterRepository.getWarningFilter()
-            )
-            assertEquals(expected = LogLevel.WARN, actual = recordingLogSink.lines.single().level)
+                assertEquals(expected = LogLevel.WARN, actual = recordingLogSink.lines.single().level)
+            }
+            districtRemoteDataSource.districtDtos = smhiDistricts
+            warningFilterRepository.getWarningFilter()
+            assertEquals(expected = 2, actual = districtRemoteDataSource.requestCount)
         }
-        districtRemoteDataSource.districtDtos = smhiDistricts
-        warningFilterRepository.getWarningFilter()
-        assertEquals(expected = 2, actual = districtRemoteDataSource.requestCount)
-    }
 
     @Test
-    fun `a network failure while fetching districts is reported`() = testScope.runTest {
-        districtRemoteDataSource.exception = UnknownHostException("opendata-download-warnings.smhi.se")
+    fun `a network failure while fetching districts is reported`() =
+        testScope.runTest {
+            districtRemoteDataSource.exception = UnknownHostException("opendata-download-warnings.smhi.se")
 
-        withRecordedLogs {
-            assertEquals(
-                expected = Either.Left(a = Failure(errorCode = ErrorCode.NETWORK_UNAVAILABLE)),
-                actual = warningFilterRepository.getWarningFilter()
-            )
+            withRecordedLogs {
+                assertEquals(
+                    expected = Either.Left(a = Failure(errorCode = ErrorCode.NETWORK_UNAVAILABLE)),
+                    actual = warningFilterRepository.getWarningFilter()
+                )
+            }
         }
-    }
 }

@@ -11,9 +11,11 @@ android {
 }
 
 dependencies {
+    implementation project(':core:idgenerator')
     implementation project(':data:aggregatedfeed')
     implementation project(':data:autocomplete')
     implementation project(':data:common')
+    implementation project(':data:favorite')
     implementation project(':data:library')
     implementation project(':data:location')
     implementation project(':data:nominatim')
@@ -21,6 +23,7 @@ dependencies {
     implementation project(':data:theme')
     implementation project(':data:warningfilter')
     implementation project(':data:weatherforecast')
+    implementation project(':data:wind')
 
     implementation libs.androidx.annotation
     implementation libs.coroutines.core

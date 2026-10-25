@@ -36,57 +36,59 @@ class DefaultNominatimRepositoryTest {
             )
         )
 
-    private fun respondingWith(body: String): NominatimRepository =
-        repository { respond(content = body, headers = jsonHeaders) }
+    private fun respondingWith(body: String): NominatimRepository = repository { respond(content = body, headers = jsonHeaders) }
 
     @Test
-    fun `the reverse lookup asks for the coordinates at city zoom`() = runTest {
-        respondingWith(body = """{"address":{"city":"Göteborg"}}""").getLocality(
-            latitude = 57.7089,
-            longitude = 11.9746
-        )
+    fun `the reverse lookup asks for the coordinates at city zoom`() =
+        runTest {
+            respondingWith(body = """{"address":{"city":"Göteborg"}}""").getLocality(
+                latitude = 57.7089,
+                longitude = 11.9746
+            )
 
-        val url = requests.single().url
-        assertEquals(expected = "https://nominatim.openstreetmap.org/reverse", actual = url.toString().substringBefore('?'))
-        assertEquals(
-            expected = mapOf("format" to "json", "lat" to "57.7089", "lon" to "11.9746", "zoom" to "16"),
-            actual = url.parameters.names().associateWith { name: String -> url.parameters[name] }
-        )
-    }
-
-    @Test
-    fun `the most specific place in the address names the locality`() = runTest {
-        val bodies: Map<String, String?> = mapOf(
-            """{"address":{"city":"Göteborg","hamlet":"Lilla","village":"By"}}""" to "Göteborg",
-            """{"address":{"hamlet":"Lilla","village":"By"}}""" to "Lilla",
-            """{"address":{"village":"By","road":"Storgatan"}}""" to "By",
-            """{"address":{"road":"Storgatan"}}""" to null,
-            """{"error":"Unable to geocode"}""" to null
-        )
-
-        val actual: Map<String, Either<Failure, Locality>> = bodies.keys.associateWith { body: String ->
-            respondingWith(body = body).getLocality(
-                latitude = 57.0,
-                longitude = 12.0
+            val url = requests.single().url
+            assertEquals(expected = "https://nominatim.openstreetmap.org/reverse", actual = url.toString().substringBefore('?'))
+            assertEquals(
+                expected = mapOf("format" to "json", "lat" to "57.7089", "lon" to "11.9746", "zoom" to "16"),
+                actual = url.parameters.names().associateWith { name: String -> url.parameters[name] }
             )
         }
 
-        assertEquals(
-            expected = bodies.mapValues { (_, name: String?) -> Either.Right(b = Locality(name = name)) },
-            actual = actual
-        )
-    }
+    @Test
+    fun `the most specific place in the address names the locality`() =
+        runTest {
+            val bodies: Map<String, String?> = mapOf(
+                """{"address":{"city":"Göteborg","hamlet":"Lilla","village":"By"}}""" to "Göteborg",
+                """{"address":{"hamlet":"Lilla","village":"By"}}""" to "Lilla",
+                """{"address":{"village":"By","road":"Storgatan"}}""" to "By",
+                """{"address":{"road":"Storgatan"}}""" to null,
+                """{"error":"Unable to geocode"}""" to null
+            )
+
+            val actual: Map<String, Either<Failure, Locality>> = bodies.keys.associateWith { body: String ->
+                respondingWith(body = body).getLocality(
+                    latitude = 57.0,
+                    longitude = 12.0
+                )
+            }
+
+            assertEquals(
+                expected = bodies.mapValues { (_, name: String?) -> Either.Right(b = Locality(name = name)) },
+                actual = actual
+            )
+        }
 
     @Test
-    fun `http and network failures are told apart`() = runTest {
-        withRecordedLogs {
-            val forbidden: Either<Failure, Locality> = repository { respond(content = "", status = HttpStatusCode.Forbidden) }
-                .getLocality(latitude = 57.0, longitude = 12.0)
-            val offline: Either<Failure, Locality> = repository { throw UnknownHostException("nominatim.openstreetmap.org") }
-                .getLocality(latitude = 57.0, longitude = 12.0)
+    fun `http and network failures are told apart`() =
+        runTest {
+            withRecordedLogs {
+                val forbidden: Either<Failure, Locality> = repository { respond(content = "", status = HttpStatusCode.Forbidden) }
+                    .getLocality(latitude = 57.0, longitude = 12.0)
+                val offline: Either<Failure, Locality> = repository { throw UnknownHostException("nominatim.openstreetmap.org") }
+                    .getLocality(latitude = 57.0, longitude = 12.0)
 
-            assertEquals(expected = Either.Left(a = Failure(errorCode = ErrorCode.HTTP_FORBIDDEN)), actual = forbidden)
-            assertEquals(expected = Either.Left(a = Failure(errorCode = ErrorCode.NETWORK_UNAVAILABLE)), actual = offline)
+                assertEquals(expected = Either.Left(a = Failure(errorCode = ErrorCode.HTTP_FORBIDDEN)), actual = forbidden)
+                assertEquals(expected = Either.Left(a = Failure(errorCode = ErrorCode.NETWORK_UNAVAILABLE)), actual = offline)
+            }
         }
-    }
 }

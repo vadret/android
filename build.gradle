@@ -40,6 +40,9 @@ configurations {
     ktlint {
         attributes {
             attribute(Bundling.BUNDLING_ATTRIBUTE, objects.named(Bundling, Bundling.EXTERNAL))
+            attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage, Usage.JAVA_RUNTIME))
+            attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category, Category.LIBRARY))
+            attribute(TargetJvmEnvironment.TARGET_JVM_ENVIRONMENT_ATTRIBUTE, objects.named(TargetJvmEnvironment, TargetJvmEnvironment.STANDARD_JVM))
         }
     }
 }
@@ -49,7 +52,7 @@ dependencies {
 }
 
 def ktlintLauncher = javaToolchains.launcherFor {
-    languageVersion = JavaLanguageVersion.of(11)
+    languageVersion = JavaLanguageVersion.of(17)
 }
 
 tasks.register("ktlint", JavaExec) {

@@ -21,6 +21,9 @@ def static loadFromFile(String key, String value) {
 
 def isRunningOnCI = System.getenv("CI") == "true"
 
+def appVersionCode = 30
+def abiVersionCodes = ["armeabi-v7a": 1, "arm64-v8a": 2, "x86": 3, "x86_64": 4]
+
 def getGitSha = { ->
     return providers.exec {
         commandLine 'git', 'rev-parse', '--short', 'HEAD'
@@ -35,8 +38,8 @@ android {
         applicationId "fi.kroon.vadret"
         minSdk libs.versions.android.minSdk.get().toInteger()
         targetSdk libs.versions.android.targetSdk.get().toInteger()
-        versionCode 30
-        versionName "3.0.0alpha02"
+        versionCode appVersionCode
+        versionName "3.0.0alpha03"
         vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner "androidx.top.runner.AndroidJUnitRunner"
         multiDexEnabled true
@@ -59,6 +62,14 @@ android {
         signingConfigs.release.storePassword = loadFromFile("storePassword", "keystore.properties")
         signingConfigs.release.keyAlias = loadFromFile("keyAlias", "keystore.properties")
         signingConfigs.release.keyPassword = loadFromFile("keyPassword", "keystore.properties")
+    }
+    splits {
+        abi {
+            enable true
+            reset()
+            include(*abiVersionCodes.keySet().toList())
+            universalApk false
+        }
     }
     packaging {
         resources {
@@ -104,6 +115,17 @@ android {
     buildFeatures {
         buildConfig true
         resValues true
+    }
+}
+
+androidComponents {
+    onVariants(selector().all()) { variant ->
+        variant.outputs.each { output ->
+            def abi = output.filters.find { filter -> filter.filterType == com.android.build.api.variant.FilterConfiguration.FilterType.ABI }?.identifier
+            if (abi != null) {
+                output.versionCode.set(appVersionCode * 10 + abiVersionCodes[abi])
+            }
+        }
     }
 }
 

@@ -2,6 +2,8 @@ package fi.kroon.vadret.radar.projection
 
 import kotlin.math.PI
 import kotlin.math.abs
+import kotlin.math.atan
+import kotlin.math.exp
 import kotlin.math.floor
 import kotlin.math.ln
 import kotlin.math.tan
@@ -12,46 +14,73 @@ import kotlin.test.assertTrue
 private const val SOURCE_WIDTH = 471
 private const val SOURCE_HEIGHT = 887
 private const val TRANSPARENT = 0
+private const val NO_DATA: Byte = -1
+private const val HEAVY_ECHO: Byte = -56
+private const val COLOR_CHANNEL_MASK = 0xFF
+private const val BITS_PER_CHANNEL = 8
+private const val COLOR_CHANNELS = 4
+
+private val places: List<Pair<Double, Double>> = listOf(
+    59.3293 to 18.0686,
+    57.7089 to 11.9746,
+    67.8558 to 20.2253,
+    55.605 to 13.0038,
+    63.8258 to 20.263
+)
 
 class DefaultRadarReprojectionTest {
 
     private val radarReprojection = DefaultRadarReprojection()
-    private val sourcePixels = IntArray(size = SOURCE_WIDTH * SOURCE_HEIGHT) { index: Int -> index + 1 }
-    private val reprojectedImage: ReprojectedImage = radarReprojection.reproject(
-        pixels = sourcePixels,
-        width = SOURCE_WIDTH,
-        height = SOURCE_HEIGHT
-    )
 
     private fun mercatorY(latitude: Double): Double = ln(tan(PI / 4.0 + Math.toRadians(latitude) / 2.0))
 
-    private fun outputPixel(
+    private fun raster(value: (column: Int, row: Int) -> Byte): RadarRaster =
+        RadarRaster(
+            values = ByteArray(size = SOURCE_WIDTH * SOURCE_HEIGHT) { index: Int -> value(index % SOURCE_WIDTH, index / SOURCE_WIDTH) },
+            width = SOURCE_WIDTH,
+            height = SOURCE_HEIGHT
+        )
+
+    private fun ReprojectedImage.pixelAt(
         latitude: Double,
         longitude: Double
-    ): Int {
-        val column: Int = floor((longitude - RADAR_WEST_LONGITUDE) / (RADAR_EAST_LONGITUDE - RADAR_WEST_LONGITUDE) * reprojectedImage.width).toInt()
-        val row: Int = floor(
+    ): Int = pixels[outputRow(latitude = latitude) * width + outputColumn(longitude = longitude)]
+
+    private fun ReprojectedImage.outputColumn(longitude: Double): Int = floor((longitude - RADAR_WEST_LONGITUDE) / (RADAR_EAST_LONGITUDE - RADAR_WEST_LONGITUDE) * width).toInt()
+
+    private fun ReprojectedImage.outputRow(latitude: Double): Int =
+        floor(
             (mercatorY(latitude = RADAR_NORTH_LATITUDE) - mercatorY(latitude = latitude)) /
-                (mercatorY(latitude = RADAR_NORTH_LATITUDE) - mercatorY(latitude = RADAR_SOUTH_LATITUDE)) * reprojectedImage.height
+                (mercatorY(latitude = RADAR_NORTH_LATITUDE) - mercatorY(latitude = RADAR_SOUTH_LATITUDE)) * height
         ).toInt()
-        return reprojectedImage.pixels[row * reprojectedImage.width + column]
+
+    private fun ReprojectedImage.centerLongitude(column: Int): Double = RADAR_WEST_LONGITUDE + (column + 0.5) / width * (RADAR_EAST_LONGITUDE - RADAR_WEST_LONGITUDE)
+
+    private fun ReprojectedImage.centerLatitude(row: Int): Double {
+        val north: Double = mercatorY(latitude = RADAR_NORTH_LATITUDE)
+        val south: Double = mercatorY(latitude = RADAR_SOUTH_LATITUDE)
+        return Math.toDegrees(2.0 * atan(exp(north - (row + 0.5) / height * (north - south))) - PI / 2.0)
     }
 
-    private fun sourcePixel(
+    private fun sourceColumn(
         latitude: Double,
         longitude: Double
-    ): Pair<Int, Int> {
-        val projectedPoint: ProjectedPoint = Sweref99Tm.project(
-            latitude = latitude,
-            longitude = longitude
-        )
-        val column: Int = floor((projectedPoint.easting - RADAR_WEST_EASTING) / ((RADAR_EAST_EASTING - RADAR_WEST_EASTING) / SOURCE_WIDTH)).toInt()
-        val row: Int = floor((RADAR_NORTH_NORTHING - projectedPoint.northing) / ((RADAR_NORTH_NORTHING - RADAR_SOUTH_NORTHING) / SOURCE_HEIGHT)).toInt()
-        return column to row
-    }
+    ): Double =
+        (Sweref99Tm.project(latitude = latitude, longitude = longitude).easting - RADAR_WEST_EASTING) /
+            ((RADAR_EAST_EASTING - RADAR_WEST_EASTING) / SOURCE_WIDTH)
+
+    private fun sourceRow(
+        latitude: Double,
+        longitude: Double
+    ): Double =
+        (RADAR_NORTH_NORTHING - Sweref99Tm.project(latitude = latitude, longitude = longitude).northing) /
+            ((RADAR_NORTH_NORTHING - RADAR_SOUTH_NORTHING) / SOURCE_HEIGHT)
+
+    private fun channels(argb: Int): List<Int> = List(size = COLOR_CHANNELS) { channel: Int -> (argb shr channel * BITS_PER_CHANNEL) and COLOR_CHANNEL_MASK }
 
     @Test
     fun `the output keeps the proportions of web mercator`() {
+        val reprojectedImage: ReprojectedImage = radarReprojection.reproject(radarRaster = raster { _, _ -> 0 })
         val expectedHeight: Double = reprojectedImage.width *
             (mercatorY(latitude = RADAR_NORTH_LATITUDE) - mercatorY(latitude = RADAR_SOUTH_LATITUDE)) /
             Math.toRadians(RADAR_EAST_LONGITUDE - RADAR_WEST_LONGITUDE)
@@ -62,28 +91,70 @@ class DefaultRadarReprojectionTest {
     }
 
     @Test
-    fun `places land on the radar pixel that covers them`() {
-        val places: List<Pair<Double, Double>> = listOf(
-            59.3293 to 18.0686,
-            57.7089 to 11.9746,
-            67.8558 to 20.2253,
-            55.605 to 13.0038,
-            63.8258 to 20.263
+    fun `an echo is drawn over the place it was measured and nowhere else`() {
+        places.forEach { (latitude: Double, longitude: Double) ->
+            val column: Int = floor(sourceColumn(latitude = latitude, longitude = longitude)).toInt()
+            val row: Int = floor(sourceRow(latitude = latitude, longitude = longitude)).toInt()
+            val reprojectedImage: ReprojectedImage = radarReprojection.reproject(
+                radarRaster = raster { sourceColumnIndex: Int, sourceRowIndex: Int ->
+                    if (abs(sourceColumnIndex - column) <= 1 && abs(sourceRowIndex - row) <= 1) {
+                        HEAVY_ECHO
+                    } else {
+                        0
+                    }
+                }
+            )
+
+            assertEquals(
+                expected = PrecipitationColorScale.argb(reflectivity = 50f),
+                actual = reprojectedImage.pixelAt(latitude = latitude, longitude = longitude),
+                message = "$latitude, $longitude"
+            )
+            assertEquals(expected = TRANSPARENT, actual = reprojectedImage.pixelAt(latitude = latitude, longitude = longitude + 0.5))
+            assertEquals(expected = TRANSPARENT, actual = reprojectedImage.pixelAt(latitude = latitude - 0.3, longitude = longitude))
+        }
+    }
+
+    @Test
+    fun `between radar pixels the echo blends`() {
+        val reprojectedImage: ReprojectedImage = radarReprojection.reproject(
+            radarRaster = raster { sourceColumnIndex: Int, _ ->
+                if (sourceColumnIndex % 2 == 0) {
+                    100.toByte()
+                } else {
+                    150.toByte()
+                }
+            }
         )
 
         places.forEach { (latitude: Double, longitude: Double) ->
-            val sourceIndex: Int = outputPixel(latitude = latitude, longitude = longitude) - 1
-            val (expectedColumn: Int, expectedRow: Int) = sourcePixel(latitude = latitude, longitude = longitude)
+            val outputColumn: Int = reprojectedImage.outputColumn(longitude = longitude)
+            val outputRow: Int = reprojectedImage.outputRow(latitude = latitude)
+            val sampleColumn: Double = sourceColumn(
+                latitude = reprojectedImage.centerLatitude(row = outputRow),
+                longitude = reprojectedImage.centerLongitude(column = outputColumn)
+            ) - 0.5
+            val leftColumn: Int = floor(sampleColumn).toInt()
+            val leftValue: Double = if (leftColumn % 2 == 0) {
+                100.0
+            } else {
+                150.0
+            }
+            val rightValue: Double = 250.0 - leftValue
+            val value: Double = leftValue + (rightValue - leftValue) * (sampleColumn - leftColumn)
+            val expected: List<Int> = channels(argb = PrecipitationColorScale.argb(reflectivity = (value * 0.4 - 30.0).toFloat()))
+            val actual: List<Int> = channels(argb = reprojectedImage.pixels[outputRow * reprojectedImage.width + outputColumn])
 
             assertTrue(
-                actual = abs(sourceIndex % SOURCE_WIDTH - expectedColumn) <= 1 && abs(sourceIndex / SOURCE_WIDTH - expectedRow) <= 1,
-                message = "$latitude, $longitude came from column ${sourceIndex % SOURCE_WIDTH} row ${sourceIndex / SOURCE_WIDTH}, expected $expectedColumn, $expectedRow"
+                actual = expected.zip(actual).all { (expectedChannel: Int, actualChannel: Int) -> abs(expectedChannel - actualChannel) <= 1 },
+                message = "$latitude, $longitude expected $expected, got $actual"
             )
         }
     }
 
     @Test
-    fun `corners outside the radar area are transparent`() {
+    fun `an even echo covers the radar area but not the corners outside it`() {
+        val reprojectedImage: ReprojectedImage = radarReprojection.reproject(radarRaster = raster { _, _ -> 150.toByte() })
         val corners: List<Pair<Double, Double>> = listOf(
             RADAR_NORTH_LATITUDE - 0.01 to RADAR_EAST_LONGITUDE - 0.01,
             RADAR_SOUTH_LATITUDE + 0.01 to RADAR_WEST_LONGITUDE + 0.01,
@@ -92,13 +163,16 @@ class DefaultRadarReprojectionTest {
 
         assertEquals(
             expected = List(size = corners.size) { TRANSPARENT },
-            actual = corners.map { (latitude: Double, longitude: Double) -> outputPixel(latitude = latitude, longitude = longitude) }
+            actual = corners.map { (latitude: Double, longitude: Double) -> reprojectedImage.pixelAt(latitude = latitude, longitude = longitude) }
         )
+        assertTrue(actual = reprojectedImage.pixels.count { pixel: Int -> pixel == PrecipitationColorScale.argb(reflectivity = 30f) } > reprojectedImage.pixels.size / 2)
+        assertTrue(actual = reprojectedImage.pixels.all { pixel: Int -> pixel == TRANSPARENT || pixel == PrecipitationColorScale.argb(reflectivity = 30f) })
     }
 
     @Test
-    fun `every source pixel the output shows is from inside the image`() {
-        assertTrue(actual = reprojectedImage.pixels.all { pixel: Int -> pixel in 0..sourcePixels.size })
-        assertTrue(actual = reprojectedImage.pixels.count { pixel: Int -> pixel != TRANSPARENT } > reprojectedImage.pixels.size / 2)
+    fun `places outside radar coverage are not drawn`() {
+        val reprojectedImage: ReprojectedImage = radarReprojection.reproject(radarRaster = raster { _, _ -> NO_DATA })
+
+        assertTrue(actual = reprojectedImage.pixels.all { pixel: Int -> pixel == TRANSPARENT })
     }
 }

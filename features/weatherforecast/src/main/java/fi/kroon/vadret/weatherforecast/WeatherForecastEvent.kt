@@ -1,6 +1,7 @@
 package fi.kroon.vadret.weatherforecast
 
 import fi.kroon.vadret.autocomplete.model.AutoCompleteItem
+import fi.kroon.vadret.favorite.model.Favorite
 
 sealed interface WeatherForecastEvent {
 
@@ -8,7 +9,10 @@ sealed interface WeatherForecastEvent {
     data object OnRefresh : WeatherForecastEvent
     data object OnErrorShown : WeatherForecastEvent
     data class OnLocationPermissionResult(val isGranted: Boolean) : WeatherForecastEvent
-    data object OnSearchButtonClicked : WeatherForecastEvent
+    data object OnAutomaticLocationClicked : WeatherForecastEvent
+    data class OnFavoriteClicked(val favorite: Favorite) : WeatherForecastEvent
+    data class OnFavoriteRemoveClicked(val favoriteId: String) : WeatherForecastEvent
+    data object OnAddPlaceClicked : WeatherForecastEvent
     data object OnSearchDismissed : WeatherForecastEvent
     data object OnSearchSubmitted : WeatherForecastEvent
     data class OnSearchQueryChanged(val query: String) : WeatherForecastEvent

@@ -46,24 +46,25 @@ class ExceptionTest {
     }
 
     @Test
-    fun `http statuses map to their error codes`() = runTest {
-        val expected: Map<Int, ErrorCode> = mapOf(
-            400 to ErrorCode.HTTP_BAD_REQUEST,
-            403 to ErrorCode.HTTP_FORBIDDEN,
-            404 to ErrorCode.HTTP_NOT_FOUND,
-            418 to ErrorCode.HTTP_UNEXPECTED_STATUS,
-            500 to ErrorCode.HTTP_INTERNAL_SERVER_ERROR,
-            502 to ErrorCode.HTTP_UNEXPECTED_STATUS,
-            503 to ErrorCode.HTTP_SERVICE_UNAVAILABLE,
-            504 to ErrorCode.HTTP_GATEWAY_TIMEOUT
-        )
+    fun `http statuses map to their error codes`() =
+        runTest {
+            val expected: Map<Int, ErrorCode> = mapOf(
+                400 to ErrorCode.HTTP_BAD_REQUEST,
+                403 to ErrorCode.HTTP_FORBIDDEN,
+                404 to ErrorCode.HTTP_NOT_FOUND,
+                418 to ErrorCode.HTTP_UNEXPECTED_STATUS,
+                500 to ErrorCode.HTTP_INTERNAL_SERVER_ERROR,
+                502 to ErrorCode.HTTP_UNEXPECTED_STATUS,
+                503 to ErrorCode.HTTP_SERVICE_UNAVAILABLE,
+                504 to ErrorCode.HTTP_GATEWAY_TIMEOUT
+            )
 
-        val actual: Map<Int, ErrorCode?> = expected.keys.associateWith { statusCode: Int ->
-            responseException(statusCode = statusCode).networkErrorCode()
+            val actual: Map<Int, ErrorCode?> = expected.keys.associateWith { statusCode: Int ->
+                responseException(statusCode = statusCode).networkErrorCode()
+            }
+
+            assertEquals(expected = expected, actual = actual)
         }
-
-        assertEquals(expected = expected, actual = actual)
-    }
 
     @Test
     fun `an unknown host means the network is unavailable`() {
@@ -90,33 +91,34 @@ class ExceptionTest {
     }
 
     @Test
-    fun `a body that is not the json expected is an invalid response`() = runTest {
-        val bodies: Map<String, Map<String, String>> = mapOf(
-            """{"unexpected":true}""" to mapOf(HttpHeaders.ContentType to "application/json"),
-            "<html>Log in to the wifi</html>" to mapOf(HttpHeaders.ContentType to "text/html")
-        )
+    fun `a body that is not the json expected is an invalid response`() =
+        runTest {
+            val bodies: Map<String, Map<String, String>> = mapOf(
+                """{"unexpected":true}""" to mapOf(HttpHeaders.ContentType to "application/json"),
+                "<html>Log in to the wifi</html>" to mapOf(HttpHeaders.ContentType to "text/html")
+            )
 
-        val actual: List<ErrorCode?> = bodies.map { (body: String, headers: Map<String, String>) ->
-            val httpClient = mockHttpClient {
-                respond(
-                    content = body,
-                    headers = headersOf(HttpHeaders.ContentType, headers.getValue(HttpHeaders.ContentType))
-                )
+            val actual: List<ErrorCode?> = bodies.map { (body: String, headers: Map<String, String>) ->
+                val httpClient = mockHttpClient {
+                    respond(
+                        content = body,
+                        headers = headersOf(HttpHeaders.ContentType, headers.getValue(HttpHeaders.ContentType))
+                    )
+                }
+                val exception: Exception = try {
+                    httpClient.get(urlString = "https://example.com").body<Expected>()
+                    error("Expected $body to throw")
+                } catch (exception: Exception) {
+                    exception
+                }
+                exception.networkErrorCode()
             }
-            val exception: Exception = try {
-                httpClient.get(urlString = "https://example.com").body<Expected>()
-                error("Expected $body to throw")
-            } catch (exception: Exception) {
-                exception
-            }
-            exception.networkErrorCode()
+
+            assertEquals(
+                expected = listOf(ErrorCode.INVALID_RESPONSE, ErrorCode.INVALID_RESPONSE),
+                actual = actual
+            )
         }
-
-        assertEquals(
-            expected = listOf(ErrorCode.INVALID_RESPONSE, ErrorCode.INVALID_RESPONSE),
-            actual = actual
-        )
-    }
 
     @Test
     fun `anything else is not a network failure`() {

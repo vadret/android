@@ -1,18 +1,19 @@
 package fi.kroon.vadret.radar.ui
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -20,21 +21,30 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import fi.kroon.vadret.core.R
 import fi.kroon.vadret.di.koinViewModel
+import fi.kroon.vadret.location.model.Location
 import fi.kroon.vadret.radar.RadarEvent
 import fi.kroon.vadret.radar.RadarState
 import fi.kroon.vadret.radar.RadarViewModel
-import fi.kroon.vadret.radar.model.RadarFrame
+import fi.kroon.vadret.radar.model.RadarLayer
+import fi.kroon.vadret.radar.wind.WindAtLocation
+import fi.kroon.vadret.radar.wind.WindField
+import fi.kroon.vadret.radar.wind.windAt
 import fi.kroon.vadret.ui.VadretProgressBar
 import fi.kroon.vadret.ui.VadretTheme
-import fi.kroon.vadret.ui.VadretTopAppBar
-import kotlin.math.roundToInt
+import java.util.Locale
 
-private const val CONTROLS_ALPHA = 0.85f
+private val toolbarTopPadding = 16.dp
+private val attributionShape = RoundedCornerShape(size = 4.dp)
+private val attributionPadding = PaddingValues(
+    horizontal = 6.dp,
+    vertical = 2.dp
+)
+private const val WIND_SPEED_FORMAT = "%.1f"
 
 @Composable
 fun RadarRoute(
@@ -67,10 +77,15 @@ fun RadarScreen(
             onEvent(RadarEvent.OnErrorShown)
         }
     }
+    val windAtLocation: WindAtLocation? = windAtDeviceLocation(
+        layer = state.layer,
+        windField = state.windField,
+        deviceLocation = state.deviceLocation
+    )
 
     Scaffold(
-        topBar = { VadretTopAppBar() },
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
+        contentWindowInsets = WindowInsets(),
         modifier = modifier
     ) { innerPadding: PaddingValues ->
         Box(
@@ -79,79 +94,89 @@ fun RadarScreen(
                 .fillMaxSize()
         ) {
             RadarMap(
-                overlay = state.overlay,
+                layer = state.layer,
+                precipitationOverlay = state.precipitationOverlay,
+                windField = state.windField,
+                deviceLocation = state.deviceLocation,
+                windAtLocation = windAtLocation,
+                windSpeedText = windAtLocation?.windSpeedText(unit = stringResource(id = R.string.m_s)),
                 modifier = Modifier.fillMaxSize()
             )
             if (state.isLoading) {
-                VadretProgressBar(modifier = Modifier.align(alignment = Alignment.TopCenter))
-            }
-            if (state.frames.isNotEmpty()) {
-                PlaybackControls(
-                    state = state,
-                    onEvent = onEvent,
+                VadretProgressBar(
                     modifier = Modifier
-                        .align(alignment = Alignment.BottomCenter)
-                        .padding(all = VadretTheme.spacing.large)
+                        .align(alignment = Alignment.TopCenter)
+                        .statusBarsPadding()
                 )
             }
+            RadarLayerToolbar(
+                selectedLayer = state.layer,
+                onLayerSelected = { layer: RadarLayer -> onEvent(RadarEvent.OnLayerSelected(layer = layer)) },
+                modifier = Modifier
+                    .align(alignment = Alignment.TopCenter)
+                    .statusBarsPadding()
+                    .padding(top = toolbarTopPadding)
+            )
+            RadarBottomPanel(
+                state = state,
+                onEvent = onEvent,
+                modifier = Modifier
+                    .align(alignment = Alignment.BottomCenter)
+                    .padding(all = VadretTheme.spacing.medium)
+            )
         }
     }
 }
 
 @Composable
-private fun PlaybackControls(
+private fun RadarBottomPanel(
     state: RadarState,
     onEvent: (RadarEvent) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val frame: RadarFrame? = state.frames.getOrNull(state.index)
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
+    Column(
+        horizontalAlignment = Alignment.End,
+        verticalArrangement = Arrangement.spacedBy(space = VadretTheme.spacing.small),
         modifier = modifier.fillMaxWidth()
     ) {
-        FloatingActionButton(
-            onClick = { onEvent(RadarEvent.OnPlayButtonClicked) },
-            shape = CircleShape,
-            containerColor = VadretTheme.colorScheme.primary,
-            contentColor = VadretTheme.colorScheme.onPrimary
-        ) {
-            Icon(
-                painter = painterResource(id = playButtonIconResourceId(isPlaying = state.isPlaying)),
-                contentDescription = null
-            )
-        }
-        Surface(
-            shape = VadretTheme.shapes.large,
-            color = VadretTheme.colorScheme.surface.copy(alpha = CONTROLS_ALPHA),
+        Text(
+            text = stringResource(id = R.string.openstreetmap_copyright_notice),
+            style = VadretTheme.textStyles.attribution,
+            color = VadretTheme.colors.onMapAttribution,
             modifier = Modifier
-                .weight(weight = 1f)
-                .padding(start = VadretTheme.spacing.medium)
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(horizontal = VadretTheme.spacing.medium)
-            ) {
-                RadarSlider(
-                    value = state.index.toFloat(),
-                    onValueChange = { value: Float -> onEvent(RadarEvent.OnIndexChanged(index = value.roundToInt())) },
-                    valueRange = 0f..state.frames.lastIndex.coerceAtLeast(minimumValue = 1).toFloat(),
-                    modifier = Modifier.weight(weight = 1f)
-                )
-                if (frame != null) {
-                    Text(
-                        text = frame.timeText,
-                        style = VadretTheme.typography.labelLarge,
-                        modifier = Modifier.padding(start = VadretTheme.spacing.medium)
-                    )
-                }
-            }
+                .background(
+                    color = VadretTheme.colors.mapAttribution,
+                    shape = attributionShape
+                ).padding(paddingValues = attributionPadding)
+        )
+        val timeline: RadarTimeline? = radarTimeline(state = state)
+        if (timeline != null) {
+            RadarTimelineCard(
+                layer = state.layer,
+                timeline = timeline,
+                isPlaying = state.isPlaying,
+                onPlayClick = { onEvent(RadarEvent.OnPlayButtonClicked) },
+                onIndexChange = { index: Int -> onEvent(RadarEvent.OnIndexChanged(index = index)) }
+            )
         }
     }
 }
 
-private fun playButtonIconResourceId(isPlaying: Boolean): Int =
-    if (isPlaying) {
-        R.drawable.ic_pause_white_24dp
-    } else {
-        R.drawable.ic_play_arrow_white_24dp
+@Composable
+private fun windAtDeviceLocation(
+    layer: RadarLayer,
+    windField: WindField?,
+    deviceLocation: Location?
+): WindAtLocation? =
+    remember(layer, windField, deviceLocation) {
+        if (layer == RadarLayer.WIND && windField != null && deviceLocation != null) {
+            windField.values.windAt(
+                latitude = deviceLocation.latitude,
+                longitude = deviceLocation.longitude
+            )
+        } else {
+            null
+        }
     }
+
+private fun WindAtLocation.windSpeedText(unit: String): String = "${String.format(Locale.ROOT, WIND_SPEED_FORMAT, windSpeed)} $unit"

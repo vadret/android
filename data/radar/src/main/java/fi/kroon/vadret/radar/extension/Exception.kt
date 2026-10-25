@@ -15,9 +15,11 @@ private val logger: Logger = LoggerFactory.getLogger(tag = "fi.kroon.vadret.rada
 internal fun Exception.toFailure(): Failure =
     when {
         this is CancellationException -> throw this
+
         this is ClientRequestException && response.status == HttpStatusCode.NotFound -> toKnownFailure(
             errorCode = ErrorCode.RADAR_NOT_AVAILABLE,
             logger = logger
         )
+
         else -> toNetworkFailure(logger = logger)
     }

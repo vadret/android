@@ -16,41 +16,61 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import fi.kroon.vadret.theme.model.Theme
 
-private val LocalVadretColors = staticCompositionLocalOf { VadretColors() }
+private val LocalVadretColors = staticCompositionLocalOf { lightVadretColors }
 private val LocalVadretSpacing = staticCompositionLocalOf { VadretSpacing() }
+private val LocalVadretTextStyles = staticCompositionLocalOf { VadretTextStyles() }
 
 private val accent = Color(color = 0xFF6779CA)
+private val lightAccent = Color(color = 0xFF3F51B5)
 
-private val vadretShapes = Shapes(medium = RoundedCornerShape(size = 2.dp))
+private val vadretShapes = Shapes(
+    medium = RoundedCornerShape(size = 2.dp),
+    large = RoundedCornerShape(size = 20.dp)
+)
 
 private val baseTypography = Typography()
 
 private val vadretTypography = Typography(
-    bodyLarge = baseTypography.bodyLarge.copy(letterSpacing = 0.sp),
-    bodyMedium = baseTypography.bodyMedium.copy(letterSpacing = 0.sp),
-    bodySmall = baseTypography.bodySmall.copy(letterSpacing = 0.sp),
-    titleMedium = baseTypography.titleMedium.copy(letterSpacing = 0.sp),
-    labelLarge = baseTypography.labelLarge.copy(letterSpacing = 0.sp)
+    displayLarge = baseTypography.displayLarge.withTabularNumbers(),
+    displayMedium = baseTypography.displayMedium.withTabularNumbers(),
+    displaySmall = baseTypography.displaySmall.withTabularNumbers(),
+    headlineLarge = baseTypography.headlineLarge.withTabularNumbers(),
+    headlineMedium = baseTypography.headlineMedium.withTabularNumbers(),
+    headlineSmall = baseTypography.headlineSmall.withTabularNumbers(),
+    titleLarge = baseTypography.titleLarge.withTabularNumbers(),
+    titleMedium = baseTypography.titleMedium.copy(letterSpacing = 0.sp).withTabularNumbers(),
+    titleSmall = baseTypography.titleSmall.withTabularNumbers(),
+    bodyLarge = baseTypography.bodyLarge.copy(letterSpacing = 0.sp).withTabularNumbers(),
+    bodyMedium = baseTypography.bodyMedium.copy(letterSpacing = 0.sp).withTabularNumbers(),
+    bodySmall = baseTypography.bodySmall.copy(letterSpacing = 0.sp).withTabularNumbers(),
+    labelLarge = baseTypography.labelLarge.copy(letterSpacing = 0.sp).withTabularNumbers(),
+    labelMedium = baseTypography.labelMedium.withTabularNumbers(),
+    labelSmall = baseTypography.labelSmall.withTabularNumbers()
 )
-private val mutedText = Color(color = 0xFF727272)
-private val darkText = Color(color = 0xFF2B2B2B)
+private val mutedText = Color(color = 0xFF5A5E6B)
+private val darkText = Color(color = 0xFF1B1C21)
 private val lightText = Color(color = 0xFFE6E6E6)
 private val lightHint = Color(color = 0xFFCECECE)
 
 private val lightScheme: ColorScheme = lightColorScheme(
-    primary = accent,
+    primary = lightAccent,
     onPrimary = Color.White,
-    primaryContainer = accent,
+    primaryContainer = lightAccent,
     onPrimaryContainer = Color.White,
-    secondaryContainer = Color(color = 0xFFE3E7F7),
+    secondaryContainer = Color(color = 0xFFE3E6F8),
     onSecondaryContainer = darkText,
-    background = Color(color = 0xFFF7FBFF),
+    background = Color(color = 0xFFF3F4F8),
     onBackground = darkText,
-    surface = Color(color = 0xFFFDFDFD),
+    surface = Color.White,
     onSurface = darkText,
     onSurfaceVariant = mutedText,
+    outline = Color(color = 0xFFD9DCE6),
+    outlineVariant = Color(color = 0xFFE7E9F0),
+    surfaceContainerLowest = Color.White,
+    surfaceContainerLow = Color.White,
     surfaceContainer = Color.White,
-    surfaceContainerLow = Color.White
+    surfaceContainerHigh = Color.White,
+    surfaceContainerHighest = Color(color = 0xFFE3E6F8)
 )
 
 private val darkScheme: ColorScheme = darkColorScheme(
@@ -91,8 +111,9 @@ fun VadretTheme(
     content: @Composable () -> Unit
 ) {
     CompositionLocalProvider(
-        LocalVadretColors provides VadretColors(),
-        LocalVadretSpacing provides VadretSpacing()
+        LocalVadretColors provides theme.toVadretColors(),
+        LocalVadretSpacing provides VadretSpacing(),
+        LocalVadretTextStyles provides VadretTextStyles()
     ) {
         MaterialTheme(
             colorScheme = theme.toColorScheme(),
@@ -129,6 +150,11 @@ object VadretTheme {
         @Composable
         @ReadOnlyComposable
         get() = LocalVadretSpacing.current
+
+    val textStyles: VadretTextStyles
+        @Composable
+        @ReadOnlyComposable
+        get() = LocalVadretTextStyles.current
 }
 
 fun Theme.isDark(): Boolean =
@@ -143,4 +169,11 @@ private fun Theme.toColorScheme(): ColorScheme =
         Theme.LIGHT -> lightScheme
         Theme.DARK -> darkScheme
         Theme.AMOLED -> amoledScheme
+    }
+
+private fun Theme.toVadretColors(): VadretColors =
+    when (this) {
+        Theme.LIGHT -> lightVadretColors
+        Theme.DARK -> darkVadretColors
+        Theme.AMOLED -> amoledVadretColors
     }

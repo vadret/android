@@ -13,11 +13,15 @@ import java.net.UnknownHostException
 fun Exception.networkErrorCode(): ErrorCode? =
     when (this) {
         is ResponseException -> response.status.value.toHttpErrorCode()
+
         is UnknownHostException -> ErrorCode.NETWORK_UNAVAILABLE
+
         is IOException -> ErrorCode.NETWORK_FAILURE
+
         is ContentConvertException,
         is NoTransformationFoundException,
         is SerializationException -> ErrorCode.INVALID_RESPONSE
+
         else -> null
     }
 

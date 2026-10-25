@@ -8,7 +8,7 @@ import io.ktor.client.request.parameter
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.number
 
-private const val IMAGE_FORMAT = "png"
+private const val IMAGE_FORMAT = "tif"
 private const val TIME_ZONE = "GMT"
 
 internal class DefaultRadarRemoteDataSource(

@@ -2,15 +2,12 @@ package fi.kroon.vadret.weatherforecast.ui
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -21,11 +18,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import fi.kroon.vadret.core.R
 import fi.kroon.vadret.di.koinViewModel
 import fi.kroon.vadret.ui.VadretProgressBar
 import fi.kroon.vadret.ui.VadretTheme
@@ -33,17 +27,16 @@ import fi.kroon.vadret.ui.VadretTopAppBar
 import fi.kroon.vadret.weatherforecast.WeatherForecastEvent
 import fi.kroon.vadret.weatherforecast.WeatherForecastState
 import fi.kroon.vadret.weatherforecast.WeatherForecastViewModel
+import fi.kroon.vadret.weatherforecast.model.CurrentWeather
+import fi.kroon.vadret.weatherforecast.model.ForecastDay
 import fi.kroon.vadret.weatherforecast.model.SearchState
-import fi.kroon.vadret.weatherforecast.model.WeatherForecastRow
 import kotlinx.collections.immutable.ImmutableList
 
 private const val SEARCH_KEY = "search"
-private const val HEADLINE_CONTENT_TYPE = "headline"
-private const val SUMMARY_CONTENT_TYPE = "summary"
+private const val CURRENT_WEATHER_KEY = "current-weather"
+private const val DAY_HEADER_KEY_PREFIX = "header-"
+private const val DAY_HEADER_CONTENT_TYPE = "day-header"
 private const val DAY_CONTENT_TYPE = "day"
-private const val HOUR_CONTENT_TYPE = "hour"
-
-private val floatingActionButtonClearance = 88.dp
 
 @Composable
 fun WeatherForecastRoute(
@@ -86,24 +79,21 @@ fun WeatherForecastScreen(
     }
 
     val search: SearchState? = state.search
+    val currentWeather: CurrentWeather? = state.forecast.current
     Scaffold(
-        topBar = { VadretTopAppBar(trailingText = state.localityName) },
-        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
-        floatingActionButton = {
-            if (search == null) {
-                FloatingActionButton(
-                    onClick = { onEvent(WeatherForecastEvent.OnSearchButtonClicked) },
-                    shape = CircleShape,
-                    containerColor = VadretTheme.colorScheme.primary,
-                    contentColor = VadretTheme.colorScheme.onPrimary
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_search_white_24dp),
-                        contentDescription = stringResource(id = R.string.search)
-                    )
-                }
+        topBar = {
+            VadretTopAppBar {
+                LocationChip(
+                    localityName = state.localityName,
+                    locationChoices = state.locationChoices,
+                    onEvent = onEvent,
+                    modifier = Modifier.padding(end = VadretTheme.spacing.extraSmall)
+                )
             }
         },
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
+        containerColor = VadretTheme.colorScheme.background,
+        contentWindowInsets = WindowInsets(),
         modifier = modifier
     ) { innerPadding: PaddingValues ->
         PullToRefreshBox(
@@ -115,25 +105,33 @@ fun WeatherForecastScreen(
         ) {
             LazyColumn(
                 contentPadding = PaddingValues(
-                    start = VadretTheme.spacing.small,
-                    end = VadretTheme.spacing.small,
-                    top = VadretTheme.spacing.small,
-                    bottom = floatingActionButtonClearance
+                    start = VadretTheme.spacing.medium,
+                    end = VadretTheme.spacing.medium,
+                    top = VadretTheme.spacing.extraSmall,
+                    bottom = VadretTheme.spacing.medium
                 ),
-                verticalArrangement = Arrangement.spacedBy(space = VadretTheme.spacing.small),
+                verticalArrangement = Arrangement.spacedBy(space = VadretTheme.spacing.medium),
                 modifier = Modifier.fillMaxSize()
             ) {
                 if (search != null) {
-                    item(key = SEARCH_KEY, contentType = SEARCH_KEY) {
+                    item(
+                        key = SEARCH_KEY,
+                        contentType = SEARCH_KEY
+                    ) {
                         SearchPanel(
                             search = search,
                             onEvent = onEvent
                         )
                     }
-                } else {
-                    forecastRows(rows = state.forecast.overview)
+                } else if (currentWeather != null) {
+                    item(
+                        key = CURRENT_WEATHER_KEY,
+                        contentType = CURRENT_WEATHER_KEY
+                    ) {
+                        CurrentWeatherCard(currentWeather = currentWeather)
+                    }
                 }
-                forecastRows(rows = state.forecast.days)
+                forecastDays(forecastDays = state.forecast.days)
             }
             if (state.isLoading) {
                 VadretProgressBar(modifier = Modifier.align(alignment = Alignment.TopCenter))
@@ -142,25 +140,19 @@ fun WeatherForecastScreen(
     }
 }
 
-private fun LazyListScope.forecastRows(rows: ImmutableList<WeatherForecastRow>) {
-    items(
-        items = rows,
-        key = { row: WeatherForecastRow -> row.key },
-        contentType = { row: WeatherForecastRow -> contentType(row = row) }
-    ) { row: WeatherForecastRow ->
-        when (row) {
-            is WeatherForecastRow.Headline -> HeadlineCard(row = row)
-            is WeatherForecastRow.Summary -> SummaryCard(row = row)
-            is WeatherForecastRow.Day -> DayHeader(row = row)
-            is WeatherForecastRow.Hour -> HourCard(row = row)
+private fun LazyListScope.forecastDays(forecastDays: ImmutableList<ForecastDay>) {
+    forecastDays.forEach { forecastDay: ForecastDay ->
+        item(
+            key = "$DAY_HEADER_KEY_PREFIX${forecastDay.key}",
+            contentType = DAY_HEADER_CONTENT_TYPE
+        ) {
+            ForecastDayHeader(forecastDay = forecastDay)
+        }
+        item(
+            key = forecastDay.key,
+            contentType = DAY_CONTENT_TYPE
+        ) {
+            ForecastDayCard(forecastDay = forecastDay)
         }
     }
 }
-
-private fun contentType(row: WeatherForecastRow): String =
-    when (row) {
-        is WeatherForecastRow.Headline -> HEADLINE_CONTENT_TYPE
-        is WeatherForecastRow.Summary -> SUMMARY_CONTENT_TYPE
-        is WeatherForecastRow.Day -> DAY_CONTENT_TYPE
-        is WeatherForecastRow.Hour -> HOUR_CONTENT_TYPE
-    }

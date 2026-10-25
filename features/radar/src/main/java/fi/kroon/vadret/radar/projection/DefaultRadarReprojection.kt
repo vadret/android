@@ -1,91 +1,111 @@
 package fi.kroon.vadret.radar.projection
 
 import java.util.concurrent.ConcurrentHashMap
-import kotlin.math.PI
-import kotlin.math.atan
-import kotlin.math.exp
-import kotlin.math.floor
-import kotlin.math.ln
 import kotlin.math.roundToInt
-import kotlin.math.tan
 
 private const val OUTPUT_WIDTH = 720
 private const val TRANSPARENT = 0
-private const val OUTSIDE = -1
 private const val PIXEL_CENTER = 0.5
+private const val BYTE_MASK = 0xFF
+private const val NO_DATA = 255
+private const val NO_ECHO = 0f
+private const val REFLECTIVITY_GAIN = 0.4f
+private const val REFLECTIVITY_OFFSET = -30f
 
 internal class DefaultRadarReprojection : RadarReprojection {
 
-    private val mercatorNorth: Double = mercatorY(latitude = RADAR_NORTH_LATITUDE)
-    private val mercatorSouth: Double = mercatorY(latitude = RADAR_SOUTH_LATITUDE)
+    private val mercatorNorth: Double = WebMercator.y(latitude = RADAR_NORTH_LATITUDE)
+    private val mercatorSouth: Double = WebMercator.y(latitude = RADAR_SOUTH_LATITUDE)
     private val longitudeSpan: Double = RADAR_EAST_LONGITUDE - RADAR_WEST_LONGITUDE
 
     val outputWidth: Int = OUTPUT_WIDTH
     val outputHeight: Int = (OUTPUT_WIDTH * (mercatorNorth - mercatorSouth) / Math.toRadians(longitudeSpan)).roundToInt()
 
-    private val sourceIndicesBySize: ConcurrentHashMap<Long, IntArray> = ConcurrentHashMap()
+    private val samplePointsBySize: ConcurrentHashMap<Long, SamplePoints> = ConcurrentHashMap()
 
-    override fun reproject(
-        pixels: IntArray,
-        width: Int,
-        height: Int
-    ): ReprojectedImage {
-        val sourceIndices: IntArray = sourceIndicesBySize.computeIfAbsent(sizeKey(width = width, height = height)) {
-            sourceIndices(
-                sourceWidth = width,
-                sourceHeight = height
+    override fun reproject(radarRaster: RadarRaster): ReprojectedImage {
+        val samplePoints: SamplePoints = samplePointsBySize.computeIfAbsent(
+            sizeKey(width = radarRaster.width, height = radarRaster.height)
+        ) {
+            samplePoints(
+                sourceWidth = radarRaster.width,
+                sourceHeight = radarRaster.height,
+                latitudes = DoubleArray(size = outputHeight) { row: Int ->
+                    WebMercator.latitude(y = mercatorNorth - (row + PIXEL_CENTER) / outputHeight * (mercatorNorth - mercatorSouth))
+                },
+                longitudes = DoubleArray(size = outputWidth) { column: Int ->
+                    RADAR_WEST_LONGITUDE + (column + PIXEL_CENTER) / outputWidth * longitudeSpan
+                }
             )
         }
-        val outputPixels = IntArray(size = sourceIndices.size) { index: Int ->
-            val sourceIndex: Int = sourceIndices[index]
-            if (sourceIndex == OUTSIDE) {
-                TRANSPARENT
-            } else {
-                pixels[sourceIndex]
-            }
-        }
         return ReprojectedImage(
-            pixels = outputPixels,
+            pixels = IntArray(size = outputWidth * outputHeight) { index: Int ->
+                pixel(
+                    radarRaster = radarRaster,
+                    samplePoints = samplePoints,
+                    index = index
+                )
+            },
             width = outputWidth,
             height = outputHeight
         )
     }
 
-    private fun sourceIndices(
-        sourceWidth: Int,
-        sourceHeight: Int
-    ): IntArray {
-        val metersPerColumn: Double = (RADAR_EAST_EASTING - RADAR_WEST_EASTING) / sourceWidth
-        val metersPerRow: Double = (RADAR_NORTH_NORTHING - RADAR_SOUTH_NORTHING) / sourceHeight
-        val latitudes = DoubleArray(size = outputHeight) { row: Int ->
-            inverseMercatorY(y = mercatorNorth - (row + PIXEL_CENTER) / outputHeight * (mercatorNorth - mercatorSouth))
+    private fun pixel(
+        radarRaster: RadarRaster,
+        samplePoints: SamplePoints,
+        index: Int
+    ): Int {
+        if (samplePoints.isOutside(index = index)) {
+            return TRANSPARENT
         }
-        val longitudes = DoubleArray(size = outputWidth) { column: Int ->
-            RADAR_WEST_LONGITUDE + (column + PIXEL_CENTER) / outputWidth * longitudeSpan
+        val topLeft: Int = samplePoints.topLeftIndices[index]
+        val right: Int = if (topLeft % radarRaster.width < radarRaster.width - 1) {
+            1
+        } else {
+            0
         }
-        return IntArray(size = outputWidth * outputHeight) { index: Int ->
-            val projectedPoint: ProjectedPoint = Sweref99Tm.project(
-                latitude = latitudes[index / outputWidth],
-                longitude = longitudes[index % outputWidth]
-            )
-            val sourceColumn: Int = floor((projectedPoint.easting - RADAR_WEST_EASTING) / metersPerColumn).toInt()
-            val sourceRow: Int = floor((RADAR_NORTH_NORTHING - projectedPoint.northing) / metersPerRow).toInt()
-            if (sourceColumn in 0 until sourceWidth && sourceRow in 0 until sourceHeight) {
-                sourceRow * sourceWidth + sourceColumn
-            } else {
-                OUTSIDE
-            }
+        val below: Int = if (topLeft / radarRaster.width < radarRaster.height - 1) {
+            radarRaster.width
+        } else {
+            0
+        }
+        val columnFraction: Float = samplePoints.columnFractions[index]
+        val top: Float = interpolate(
+            from = radarRaster.echo(index = topLeft),
+            to = radarRaster.echo(index = topLeft + right),
+            fraction = columnFraction
+        )
+        val bottom: Float = interpolate(
+            from = radarRaster.echo(index = topLeft + below),
+            to = radarRaster.echo(index = topLeft + below + right),
+            fraction = columnFraction
+        )
+        val value: Float = interpolate(
+            from = top,
+            to = bottom,
+            fraction = samplePoints.rowFractions[index]
+        )
+        return PrecipitationColorScale.argb(reflectivity = value * REFLECTIVITY_GAIN + REFLECTIVITY_OFFSET)
+    }
+
+    private fun RadarRaster.echo(index: Int): Float {
+        val value: Int = values[index].toInt() and BYTE_MASK
+        return if (value == NO_DATA) {
+            NO_ECHO
+        } else {
+            value.toFloat()
         }
     }
+
+    private fun interpolate(
+        from: Float,
+        to: Float,
+        fraction: Float
+    ): Float = from + (to - from) * fraction
 
     private fun sizeKey(
         width: Int,
         height: Int
     ): Long = width.toLong() shl Int.SIZE_BITS or height.toLong()
-
-    private fun mercatorY(latitude: Double): Double =
-        ln(tan(PI / 4.0 + Math.toRadians(latitude) / 2.0))
-
-    private fun inverseMercatorY(y: Double): Double =
-        Math.toDegrees(2.0 * atan(exp(y)) - PI / 2.0)
 }

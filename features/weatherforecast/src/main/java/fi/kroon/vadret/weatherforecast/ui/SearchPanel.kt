@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -25,6 +24,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import fi.kroon.vadret.autocomplete.model.AutoCompleteItem
 import fi.kroon.vadret.core.R
+import fi.kroon.vadret.ui.VadretCard
 import fi.kroon.vadret.ui.VadretTheme
 import fi.kroon.vadret.weatherforecast.WeatherForecastEvent
 import fi.kroon.vadret.weatherforecast.model.SearchState
@@ -39,16 +39,17 @@ internal fun SearchPanel(
     LaunchedEffect(focusRequester) {
         focusRequester.requestFocus()
     }
-    ElevatedCard(modifier = modifier.fillMaxWidth()) {
+    VadretCard(modifier = modifier) {
         TextField(
             value = search.query,
             onValueChange = { query: String -> onEvent(WeatherForecastEvent.OnSearchQueryChanged(query = query)) },
-            placeholder = { Text(text = stringResource(id = R.string.search)) },
+            placeholder = { Text(text = stringResource(id = R.string.add_place)) },
+            textStyle = VadretTheme.textStyles.body,
             singleLine = true,
             trailingIcon = {
                 IconButton(onClick = { onEvent(WeatherForecastEvent.OnSearchDismissed) }) {
                     Icon(
-                        painter = painterResource(id = R.drawable.ic_close_24dp),
+                        painter = painterResource(id = R.drawable.ic_close),
                         contentDescription = stringResource(id = R.string.close_search)
                     )
                 }
@@ -65,7 +66,7 @@ internal fun SearchPanel(
         )
         search.suggestions.forEachIndexed { index: Int, autoCompleteItem: AutoCompleteItem ->
             if (index > 0) {
-                HorizontalDivider()
+                HorizontalDivider(color = VadretTheme.colors.divider)
             }
             SuggestionRow(
                 autoCompleteItem = autoCompleteItem,
@@ -92,11 +93,12 @@ private fun SuggestionRow(
     ) {
         Text(
             text = autoCompleteItem.locality,
-            style = VadretTheme.typography.titleLarge
+            style = VadretTheme.textStyles.value,
+            color = VadretTheme.colorScheme.onSurface
         )
         Text(
             text = "${autoCompleteItem.municipality}, ${autoCompleteItem.county}",
-            style = VadretTheme.typography.bodyMedium,
+            style = VadretTheme.textStyles.detail,
             color = VadretTheme.colorScheme.onSurfaceVariant
         )
     }

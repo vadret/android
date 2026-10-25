@@ -9,5 +9,4 @@ interface LibraryRepository {
     fun getLibraries(): Either<Nothing, List<Library>>
 }
 
-fun LibraryRepository(): LibraryRepository =
-    DefaultLibraryRepository(libraryInMemoryDataSource = DefaultLibraryInMemoryDataSource())
+fun LibraryRepository(): LibraryRepository = DefaultLibraryRepository(libraryInMemoryDataSource = DefaultLibraryInMemoryDataSource())

@@ -8,7 +8,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.SerializationException
 
-private const val CACHE_KEY = "radar.json"
+private const val CACHE_KEY = "radar_geotiff.json"
 
 private val logger: Logger = LoggerFactory.getLogger(tag = "fi.kroon.vadret.radar")
 

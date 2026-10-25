@@ -36,6 +36,5 @@ internal class DefaultDeviceLocationLocalDataSource(
         }
 
     @SuppressLint("MissingPermission")
-    private fun lastKnownLocation(provider: String): Location? =
-        locationManager.getLastKnownLocation(provider)
+    private fun lastKnownLocation(provider: String): Location? = locationManager.getLastKnownLocation(provider)
 }

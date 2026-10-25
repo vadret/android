@@ -31,7 +31,6 @@
     <string name="wsymb2_light_snowfall">Leichter Schneefall</string>
     <string name="wsymb2_moderate_snowfall">Mäßiger Schneefall</string>
     <string name="wsymb2_heavy_snowfall">Kräftiger Schneefall</string>
-    <string name="prsort_no_precipitation">Kein Niederschlag</string>
     <string name="prsort_snow">Schnee</string>
     <string name="prsort_snow_and_rain">Schnee und Regen</string>
     <string name="prsort_rain">Regen</string>
@@ -94,7 +93,6 @@
     <string name="setting_current_location">Gegenwärtiger Standort</string>
     <string name="setting_county">Bezirk</string>
     <string name="setting_city">Stadt</string>
-    <string name="search">Suchen</string>
     <string name="north">Nord</string>
     <string name="north_east">Nordost</string>
     <string name="north_north_east">Nord, Nordost</string>
@@ -120,4 +118,18 @@
     <string name="sun_wont_rise_today">Sun wird heute nicht steigen</string>
     <string name="sun_wont_set_today">Sun wird heute nicht gesetzt</string>
     <string name="issued">ausgegeben</string>
+    <string name="automatic_location">Automatisch</string>
+    <string name="choose_location">Ort wählen</string>
+    <string name="add_place">Ort hinzufügen…</string>
+    <string name="remove_favorite">%1$s entfernen</string>
+    <string name="selected">Ausgewählt</string>
+    <string name="humidity">Luftfeuchtigkeit</string>
+    <string name="precipitation_short">Niederschl.</string>
+    <string name="precipitation_none">Kein</string>
+    <string name="precipitation">Niederschlag</string>
+    <string name="now">Jetzt</string>
+    <string name="warning_level_yellow">Gelbe Warnung</string>
+    <string name="warning_level_orange">Orange Warnung</string>
+    <string name="warning_level_red">Rote Warnung</string>
+    <string name="warning_level_message">Mitteilung</string>
 </resources>

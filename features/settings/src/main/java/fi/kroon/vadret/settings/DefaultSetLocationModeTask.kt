@@ -8,6 +8,5 @@ internal class DefaultSetLocationModeTask(
     private val locationRepository: LocationRepository
 ) : SetLocationModeTask {
 
-    override suspend fun invoke(isAutomaticLocation: Boolean): Either<Failure, Unit> =
-        locationRepository.setAutomatic(isAutomatic = isAutomaticLocation)
+    override suspend fun invoke(isAutomaticLocation: Boolean): Either<Failure, Unit> = locationRepository.setAutomatic(isAutomatic = isAutomaticLocation)
 }

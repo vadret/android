@@ -1,6 +1,7 @@
 package fi.kroon.vadret.weatherforecast.util
 
 import kotlin.test.Test
+import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
@@ -51,7 +52,48 @@ class SunsetUtilTest {
         assertNull(sunriseSunset)
     }
 
-    private fun assertWithin(expected: Instant, actual: Instant) {
+    @Test
+    fun `the sun is up between sunrise and sunset in stockholm`() {
+        assertFalse(actual = isSunUpInStockholm(at = "2026-10-24T05:40:00Z"))
+        assertTrue(actual = isSunUpInStockholm(at = "2026-10-24T05:55:00Z"))
+        assertTrue(actual = isSunUpInStockholm(at = "2026-10-24T15:10:00Z"))
+        assertFalse(actual = isSunUpInStockholm(at = "2026-10-24T15:25:00Z"))
+    }
+
+    @Test
+    fun `the sun is down at midnight in stockholm`() {
+        assertFalse(actual = isSunUpInStockholm(at = "2026-10-24T22:00:00Z"))
+        assertFalse(actual = isSunUpInStockholm(at = "2026-10-24T23:30:00Z"))
+    }
+
+    @Test
+    fun `the sun stays down at noon during polar night in kiruna`() {
+        assertFalse(actual = isSunUpInKiruna(at = "2026-12-21T11:00:00Z"))
+    }
+
+    @Test
+    fun `the sun stays up at midnight during midnight sun in kiruna`() {
+        assertTrue(actual = isSunUpInKiruna(at = "2026-06-21T22:00:00Z"))
+    }
+
+    private fun isSunUpInStockholm(at: String): Boolean =
+        SunsetUtil.isSunUp(
+            at = Instant.parse(at),
+            latitude = stockholmLatitude,
+            longitude = stockholmLongitude
+        )
+
+    private fun isSunUpInKiruna(at: String): Boolean =
+        SunsetUtil.isSunUp(
+            at = Instant.parse(at),
+            latitude = kirunaLatitude,
+            longitude = kirunaLongitude
+        )
+
+    private fun assertWithin(
+        expected: Instant,
+        actual: Instant
+    ) {
         val difference: Duration = (actual - expected).absoluteValue
         assertTrue(
             actual = difference <= tolerance,

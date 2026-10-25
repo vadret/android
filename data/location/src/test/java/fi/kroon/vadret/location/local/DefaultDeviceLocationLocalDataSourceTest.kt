@@ -46,73 +46,78 @@ class DefaultDeviceLocationLocalDataSourceTest {
     }
 
     @Test
-    fun `no enabled provider throws`() = testScope.runTest {
-        providers(
-            isNetworkEnabled = false,
-            isGpsEnabled = false,
-            networkLocation = null,
-            gpsLocation = null
-        )
+    fun `no enabled provider throws`() =
+        testScope.runTest {
+            providers(
+                isNetworkEnabled = false,
+                isGpsEnabled = false,
+                networkLocation = null,
+                gpsLocation = null
+            )
 
-        assertFailsWith<LocationProviderDisabledException> { deviceLocationLocalDataSource.getLastKnownLocation() }
-    }
-
-    @Test
-    fun `the network location is preferred`() = testScope.runTest {
-        providers(
-            isNetworkEnabled = true,
-            isGpsEnabled = true,
-            networkLocation = location(latitude = 59.0, longitude = 18.0),
-            gpsLocation = location(latitude = 60.0, longitude = 19.0)
-        )
-
-        assertEquals(
-            expected = LocationEntity(latitude = 59.0, longitude = 18.0),
-            actual = deviceLocationLocalDataSource.getLastKnownLocation()
-        )
-        verify(exactly = 0) { locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER) }
-    }
+            assertFailsWith<LocationProviderDisabledException> { deviceLocationLocalDataSource.getLastKnownLocation() }
+        }
 
     @Test
-    fun `gps answers when the network knows no location`() = testScope.runTest {
-        providers(
-            isNetworkEnabled = true,
-            isGpsEnabled = true,
-            networkLocation = null,
-            gpsLocation = location(latitude = 60.0, longitude = 19.0)
-        )
+    fun `the network location is preferred`() =
+        testScope.runTest {
+            providers(
+                isNetworkEnabled = true,
+                isGpsEnabled = true,
+                networkLocation = location(latitude = 59.0, longitude = 18.0),
+                gpsLocation = location(latitude = 60.0, longitude = 19.0)
+            )
 
-        assertEquals(
-            expected = LocationEntity(latitude = 60.0, longitude = 19.0),
-            actual = deviceLocationLocalDataSource.getLastKnownLocation()
-        )
-    }
-
-    @Test
-    fun `a disabled provider is never asked`() = testScope.runTest {
-        providers(
-            isNetworkEnabled = false,
-            isGpsEnabled = true,
-            networkLocation = location(latitude = 59.0, longitude = 18.0),
-            gpsLocation = location(latitude = 60.0, longitude = 19.0)
-        )
-
-        assertEquals(
-            expected = LocationEntity(latitude = 60.0, longitude = 19.0),
-            actual = deviceLocationLocalDataSource.getLastKnownLocation()
-        )
-        verify(exactly = 0) { locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER) }
-    }
+            assertEquals(
+                expected = LocationEntity(latitude = 59.0, longitude = 18.0),
+                actual = deviceLocationLocalDataSource.getLastKnownLocation()
+            )
+            verify(exactly = 0) { locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER) }
+        }
 
     @Test
-    fun `no known location throws`() = testScope.runTest {
-        providers(
-            isNetworkEnabled = true,
-            isGpsEnabled = true,
-            networkLocation = null,
-            gpsLocation = null
-        )
+    fun `gps answers when the network knows no location`() =
+        testScope.runTest {
+            providers(
+                isNetworkEnabled = true,
+                isGpsEnabled = true,
+                networkLocation = null,
+                gpsLocation = location(latitude = 60.0, longitude = 19.0)
+            )
 
-        assertFailsWith<LocationNotAvailableException> { deviceLocationLocalDataSource.getLastKnownLocation() }
-    }
+            assertEquals(
+                expected = LocationEntity(latitude = 60.0, longitude = 19.0),
+                actual = deviceLocationLocalDataSource.getLastKnownLocation()
+            )
+        }
+
+    @Test
+    fun `a disabled provider is never asked`() =
+        testScope.runTest {
+            providers(
+                isNetworkEnabled = false,
+                isGpsEnabled = true,
+                networkLocation = location(latitude = 59.0, longitude = 18.0),
+                gpsLocation = location(latitude = 60.0, longitude = 19.0)
+            )
+
+            assertEquals(
+                expected = LocationEntity(latitude = 60.0, longitude = 19.0),
+                actual = deviceLocationLocalDataSource.getLastKnownLocation()
+            )
+            verify(exactly = 0) { locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER) }
+        }
+
+    @Test
+    fun `no known location throws`() =
+        testScope.runTest {
+            providers(
+                isNetworkEnabled = true,
+                isGpsEnabled = true,
+                networkLocation = null,
+                gpsLocation = null
+            )
+
+            assertFailsWith<LocationNotAvailableException> { deviceLocationLocalDataSource.getLastKnownLocation() }
+        }
 }

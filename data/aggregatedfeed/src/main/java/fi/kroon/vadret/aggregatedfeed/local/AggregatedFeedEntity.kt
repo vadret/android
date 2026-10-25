@@ -9,10 +9,12 @@ internal data class AggregatedFeedEntity(
     val identifier: String,
     @SerialName(value = "headline")
     val headline: String,
-    @SerialName(value = "preamble")
-    val preamble: String,
-    @SerialName(value = "body_text")
-    val bodyText: String,
+    @SerialName(value = "area_name")
+    val areaName: String? = null,
+    @SerialName(value = "warning_level")
+    val warningLevel: String? = null,
+    @SerialName(value = "details")
+    val details: List<FeedDetailEntity>,
     @SerialName(value = "source")
     val source: String,
     @SerialName(value = "published_at_epoch_millis")

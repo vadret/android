@@ -31,7 +31,6 @@
     <string name="wsymb2_light_snowfall">Légère chute de neige</string>
     <string name="wsymb2_moderate_snowfall">Chutes de neige modérées</string>
     <string name="wsymb2_heavy_snowfall">Forte chute de neige</string>
-    <string name="prsort_no_precipitation">Pas de précipitations</string>
     <string name="prsort_snow">Neige</string>
     <string name="prsort_snow_and_rain">Neige et pluie</string>
     <string name="prsort_rain">Pluie</string>
@@ -64,4 +63,18 @@
     <string name="alert_expires">expire</string>
     <string name="alert_class">Classe d\'alerte :</string>
     <string name="alert_subject">Titre de l\'alerte</string>
+    <string name="automatic_location">Automatique</string>
+    <string name="choose_location">Choisir un lieu</string>
+    <string name="add_place">Ajouter un lieu…</string>
+    <string name="remove_favorite">Supprimer %1$s</string>
+    <string name="selected">Sélectionné</string>
+    <string name="humidity">Humidité</string>
+    <string name="precipitation_short">Précip.</string>
+    <string name="precipitation_none">Aucune</string>
+    <string name="precipitation">Précipitations</string>
+    <string name="now">Maintenant</string>
+    <string name="warning_level_yellow">Vigilance jaune</string>
+    <string name="warning_level_orange">Vigilance orange</string>
+    <string name="warning_level_red">Vigilance rouge</string>
+    <string name="warning_level_message">Message</string>
 </resources>

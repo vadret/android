@@ -5,8 +5,9 @@ import kotlin.time.Instant
 data class AggregatedFeed(
     val identifier: String,
     val headline: String,
-    val preamble: String,
-    val bodyText: String,
+    val areaName: String?,
+    val warningLevel: WarningLevel?,
+    val details: List<FeedDetail>,
     val source: FeedSource,
     val publishedAt: Instant
 )

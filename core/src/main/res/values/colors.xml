@@ -149,24 +149,6 @@
     <color name="feed_source_unknown_color">#D0C6DF</color>
 
     <!-- Temperature Color Gradient -->
-    <color name="color_gradient_0">#4A4394</color>
-    <color name="color_gradient_1">#5A52AF</color>
-    <color name="color_gradient_2">#6A61CC</color>
-    <color name="color_gradient_3">#746bd1</color>
-    <color name="color_gradient_4">#7074da</color>
-    <color name="color_gradient_5">#6c7ee2</color>
-    <color name="color_gradient_6">#6887ea</color>
-    <color name="color_gradient_7">#6490f2</color>
-    <color name="color_gradient_8">#848ef1</color>
-    <color name="color_gradient_9">#9f8cef</color>
-    <color name="color_gradient_10">#b78aea</color>
-    <color name="color_gradient_11">#e17cce</color>
-    <color name="color_gradient_12">#fa73aa</color>
-    <color name="color_gradient_13">#ff7583</color>
-    <color name="color_gradient_14">#fb815f</color>
-    <color name="color_gradient_15">#E9704E</color>
-    <color name="color_gradient_16">#F5704B</color>
-    <color name="color_gradient_NA">#D0C6DF</color>
 
     <!-- Dark/Light Widget Background -->
     <color name="widget_background_light">#1AFFFFFF</color>
