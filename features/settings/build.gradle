@@ -3,7 +3,7 @@ plugins {
 }
 
 android {
-    namespace 'fi.kroon.vadret.settings'
+    namespace = 'fi.kroon.vadret.settings'
 }
 
 dependencies {

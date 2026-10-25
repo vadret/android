@@ -21,6 +21,11 @@ data class RadarState(
     val deviceLocation: Location? = null,
     val isPlaying: Boolean = false,
     val isLoading: Boolean = true,
+    val isMapLoaded: Boolean = false,
+    val isPrecipitationUnavailable: Boolean = false,
     @StringRes
     val errorMessageResourceId: Int? = null
-)
+) {
+
+    val isInitialLoading: Boolean = !isMapLoaded || (precipitationOverlay == null && !isPrecipitationUnavailable)
+}

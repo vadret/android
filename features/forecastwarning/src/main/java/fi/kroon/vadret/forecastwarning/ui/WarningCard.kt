@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import fi.kroon.vadret.aggregatedfeed.model.WarningLevel
 import fi.kroon.vadret.core.R
@@ -36,6 +37,7 @@ private val levelChipSpacing = 6.dp
 private val smallIconSize = 16.dp
 private val detailLabelWidth = 88.dp
 private val detailRowSpacing = 6.dp
+private val paragraphSpacing = 12.dp
 
 @Composable
 internal fun WarningCard(
@@ -63,12 +65,12 @@ internal fun WarningCard(
                     color = VadretTheme.colors.divider,
                     modifier = Modifier.padding(top = VadretTheme.spacing.medium)
                 )
-                Column(
-                    verticalArrangement = Arrangement.spacedBy(space = detailRowSpacing),
-                    modifier = Modifier.padding(top = VadretTheme.spacing.medium)
-                ) {
-                    warning.details.forEach { warningDetail: WarningDetail ->
-                        WarningDetailRow(warningDetail = warningDetail)
+                Column(modifier = Modifier.padding(top = VadretTheme.spacing.medium)) {
+                    warning.details.forEachIndexed { index: Int, warningDetail: WarningDetail ->
+                        WarningDetailRow(
+                            warningDetail = warningDetail,
+                            modifier = Modifier.padding(top = warningDetail.topSpacing(index = index))
+                        )
                     }
                 }
             }
@@ -86,10 +88,6 @@ private fun WarningCardHeader(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier.fillMaxWidth()
     ) {
-        val warningLevel: WarningLevel? = warning.warningLevel
-        if (warningLevel != null) {
-            WarningLevelChip(warningLevel = warningLevel)
-        }
         Text(
             text = stringResource(
                 id = R.string.source_and_time,
@@ -98,8 +96,18 @@ private fun WarningCardHeader(
             ),
             style = VadretTheme.textStyles.label,
             color = VadretTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.padding(start = VadretTheme.spacing.small)
+            modifier = Modifier.weight(
+                weight = 1f,
+                fill = false
+            )
         )
+        val warningLevel: WarningLevel? = warning.warningLevel
+        if (warningLevel != null) {
+            WarningLevelChip(
+                warningLevel = warningLevel,
+                modifier = Modifier.padding(start = VadretTheme.spacing.small)
+            )
+        }
     }
 }
 
@@ -198,3 +206,10 @@ private fun WarningDetailRow(
         )
     }
 }
+
+private fun WarningDetail.topSpacing(index: Int): Dp =
+    when {
+        index == 0 -> 0.dp
+        this is WarningDetail.Paragraph -> paragraphSpacing
+        else -> detailRowSpacing
+    }

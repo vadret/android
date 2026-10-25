@@ -1,5 +1,9 @@
 package fi.kroon.vadret.radar.ui
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -46,6 +50,7 @@ private val attributionPadding = PaddingValues(
     vertical = 2.dp
 )
 private const val WIND_SPEED_FORMAT = "%.1f"
+private const val COVER_FADE_MILLISECONDS = 250
 
 @Composable
 fun RadarRoute(
@@ -105,9 +110,22 @@ fun RadarScreen(
                 deviceLocation = state.deviceLocation,
                 windAtLocation = windAtLocation,
                 windSpeedText = windAtLocation?.windSpeedText(unit = stringResource(id = R.string.m_s)),
+                onMapLoaded = { onEvent(RadarEvent.OnMapLoaded) },
                 modifier = Modifier.fillMaxSize()
             )
-            if (state.isLoading) {
+            AnimatedVisibility(
+                visible = state.isInitialLoading,
+                enter = EnterTransition.None,
+                exit = fadeOut(animationSpec = tween(durationMillis = COVER_FADE_MILLISECONDS)),
+                modifier = Modifier.fillMaxSize()
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(color = VadretTheme.colorScheme.background)
+                )
+            }
+            if (state.isLoading || state.isInitialLoading) {
                 VadretProgressBar(
                     modifier = Modifier
                         .align(alignment = Alignment.TopCenter)
@@ -163,6 +181,8 @@ private fun RadarBottomPanel(
                 onPlayClick = { onEvent(RadarEvent.OnPlayButtonClicked) },
                 onIndexChange = { index: Int -> onEvent(RadarEvent.OnIndexChanged(index = index)) }
             )
+        } else if (state.isInitialLoading) {
+            RadarTimelinePlaceholder(layer = state.layer)
         }
     }
 }

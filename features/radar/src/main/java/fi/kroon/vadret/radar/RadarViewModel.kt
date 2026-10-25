@@ -33,8 +33,8 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.datetime.TimeZone
 import java.util.Locale
-import java.util.concurrent.atomic.AtomicBoolean
-import java.util.concurrent.atomic.AtomicReference
+import kotlin.concurrent.atomics.AtomicBoolean
+import kotlin.concurrent.atomics.AtomicReference
 import kotlin.time.Clock
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
@@ -55,19 +55,23 @@ class RadarViewModel internal constructor(
     val state: StateFlow<RadarState>
         field = MutableStateFlow(value = RadarState())
 
-    private val isStarted: AtomicBoolean = AtomicBoolean(false)
-    private val isWindRequested: AtomicBoolean = AtomicBoolean(false)
-    private val locale: AtomicReference<Locale> = AtomicReference(Locale.getDefault())
-    private val radar: AtomicReference<Radar?> = AtomicReference(null)
-    private val windForecast: AtomicReference<WindForecast?> = AtomicReference(null)
-    private val playJob: AtomicReference<Job?> = AtomicReference(null)
-    private val frameJob: AtomicReference<Job?> = AtomicReference(null)
+    private val isStarted: AtomicBoolean = AtomicBoolean(value = false)
+    private val isWindRequested: AtomicBoolean = AtomicBoolean(value = false)
+    private val locale: AtomicReference<Locale> = AtomicReference(value = Locale.getDefault())
+    private val radar: AtomicReference<Radar?> = AtomicReference(value = null)
+    private val windForecast: AtomicReference<WindForecast?> = AtomicReference(value = null)
+    private val playJob: AtomicReference<Job?> = AtomicReference(value = null)
+    private val frameJob: AtomicReference<Job?> = AtomicReference(value = null)
 
     fun onEvent(event: RadarEvent) {
         when (event) {
             RadarEvent.OnStart -> onStart()
 
             is RadarEvent.OnLocaleChanged -> onLocaleChanged(locale = event.locale)
+
+            RadarEvent.OnMapLoaded -> state.update { state: RadarState ->
+                state.copy(isMapLoaded = true)
+            }
 
             RadarEvent.OnPlayButtonClicked -> onPlayButtonClicked()
 
@@ -82,7 +86,7 @@ class RadarViewModel internal constructor(
     }
 
     private fun onStart() {
-        if (isStarted.compareAndSet(false, true)) {
+        if (isStarted.compareAndSet(expectedValue = false, newValue = true)) {
             loadPrecipitation()
             loadDeviceLocation()
         }
@@ -92,14 +96,15 @@ class RadarViewModel internal constructor(
         viewModelScope.launch(context = coroutineDispatcher) {
             getRadarTask()
                 .onResult(
-                    onError = { failure: Failure -> displayError(failure = failure) },
+                    onError = { failure: Failure -> displayPrecipitationError(failure = failure) },
                     onSuccess = { loadedRadar: Radar ->
-                        radar.set(loadedRadar)
+                        radar.store(newValue = loadedRadar)
                         val updatedState: RadarState = state.updateAndGet { state: RadarState ->
                             val frames: ImmutableList<RadarFrame> = loadedRadar.toFrames()
                             state.copy(
                                 precipitationFrames = frames,
                                 precipitationIndex = frames.lastIndex.coerceAtLeast(minimumValue = 0),
+                                isPrecipitationUnavailable = frames.isEmpty(),
                                 isLoading = state.layer == RadarLayer.WIND && state.windField == null
                             )
                         }
@@ -113,14 +118,14 @@ class RadarViewModel internal constructor(
     }
 
     private fun onLocaleChanged(locale: Locale) {
-        if (this.locale.getAndSet(locale) == locale) {
+        if (this.locale.exchange(newValue = locale) == locale) {
             return
         }
         viewModelScope.launch(context = coroutineDispatcher) {
             state.update { state: RadarState ->
                 state.copy(
-                    precipitationFrames = radar.get()?.toFrames() ?: state.precipitationFrames,
-                    windFrames = windForecast.get()?.toTimeFrames() ?: state.windFrames
+                    precipitationFrames = radar.load()?.toFrames() ?: state.precipitationFrames,
+                    windFrames = windForecast.load()?.toTimeFrames() ?: state.windFrames
                 )
             }
         }
@@ -130,13 +135,13 @@ class RadarViewModel internal constructor(
         toRadarFrames(
             now = clock.now(),
             timeZone = TimeZone.currentSystemDefault(),
-            locale = locale.get()
+            locale = locale.load()
         ).toImmutableList()
 
     private fun WindForecast.toTimeFrames(): ImmutableList<WindTimeFrame> =
         toWindTimeFrames(
             timeZone = TimeZone.currentSystemDefault(),
-            locale = locale.get()
+            locale = locale.load()
         ).toImmutableList()
 
     private fun loadDeviceLocation() {
@@ -155,11 +160,11 @@ class RadarViewModel internal constructor(
             return
         }
         stopPlaying()
-        frameJob.getAndSet(null)?.cancel()
+        frameJob.exchange(newValue = null)?.cancel()
         state.update { state: RadarState ->
             state.copy(layer = layer)
         }
-        if (layer == RadarLayer.WIND && isWindRequested.compareAndSet(false, true)) {
+        if (layer == RadarLayer.WIND && isWindRequested.compareAndSet(expectedValue = false, newValue = true)) {
             loadWind()
         }
     }
@@ -172,11 +177,11 @@ class RadarViewModel internal constructor(
             getWindForecastTask()
                 .onResult(
                     onError = { failure: Failure ->
-                        isWindRequested.set(false)
+                        isWindRequested.store(newValue = false)
                         displayError(failure = failure)
                     },
                     onSuccess = { forecast: WindForecast ->
-                        windForecast.set(forecast)
+                        windForecast.store(newValue = forecast)
                         state.update { state: RadarState ->
                             state.copy(
                                 windFrames = forecast.toTimeFrames(),
@@ -237,7 +242,7 @@ class RadarViewModel internal constructor(
             .load(imageUrl = frame.imageUrl)
             .onResult(
                 onError = { failure: Failure ->
-                    displayError(failure = failure)
+                    displayPrecipitationError(failure = failure)
                     false
                 },
                 onSuccess = { bitmap: Bitmap ->
@@ -253,7 +258,7 @@ class RadarViewModel internal constructor(
     }
 
     private suspend fun loadWindFrame(index: Int): Boolean {
-        val forecast: WindForecast = windForecast.get() ?: return false
+        val forecast: WindForecast = windForecast.load() ?: return false
         val windFrame: WindFrame = forecast.frames.getOrNull(index = index) ?: return false
         val windField: WindField = windFieldRenderer.render(
             windGrid = forecast.grid,
@@ -277,7 +282,7 @@ class RadarViewModel internal constructor(
         state.update { state: RadarState ->
             state.copy(isPlaying = true)
         }
-        frameJob.getAndSet(null)?.cancel()
+        frameJob.exchange(newValue = null)?.cancel()
         viewModelScope.launchReplacing(
             currentJob = playJob,
             context = coroutineDispatcher
@@ -307,10 +312,17 @@ class RadarViewModel internal constructor(
     }
 
     private fun stopPlaying() {
-        playJob.getAndSet(null)?.cancel()
+        playJob.exchange(newValue = null)?.cancel()
         state.update { state: RadarState ->
             state.copy(isPlaying = false)
         }
+    }
+
+    private fun displayPrecipitationError(failure: Failure) {
+        state.update { state: RadarState ->
+            state.copy(isPrecipitationUnavailable = true)
+        }
+        displayError(failure = failure)
     }
 
     private fun displayError(failure: Failure) {

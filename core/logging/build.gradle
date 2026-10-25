@@ -3,5 +3,5 @@ plugins {
 }
 
 android {
-    namespace 'fi.kroon.vadret.logging'
+    namespace = 'fi.kroon.vadret.logging'
 }

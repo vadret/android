@@ -1,39 +1,38 @@
 package fi.kroon.vadret.radar.ui
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.FloatingToolbarDefaults
 import androidx.compose.material3.HorizontalFloatingToolbar
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
-import androidx.compose.material3.ToggleButton
-import androidx.compose.material3.ToggleButtonDefaults
-import androidx.compose.material3.ToggleButtonShapes
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import fi.kroon.vadret.core.R
 import fi.kroon.vadret.radar.model.RadarLayer
+import fi.kroon.vadret.ui.VadretSlidingSelector
 import fi.kroon.vadret.ui.VadretTheme
 
 private val toolbarPadding = PaddingValues(all = 4.dp)
 private val toolbarHeight = 44.dp
 private val toolbarElevation = 4.dp
-private val toggleHeight = 36.dp
-private val toggleIconSize = 18.dp
-private val togglePadding = PaddingValues(
+private val layerIconSize = 18.dp
+private val layerIconGap = 8.dp
+private val layerPadding = PaddingValues(
     start = 10.dp,
     end = 14.dp
-)
-private val pillShapes = ToggleButtonShapes(
-    shape = CircleShape,
-    pressedShape = CircleShape,
-    checkedShape = CircleShape
 )
 
 @Composable
@@ -53,52 +52,44 @@ internal fun RadarLayerToolbar(
         expandedShadowElevation = toolbarElevation,
         modifier = modifier.height(height = toolbarHeight)
     ) {
-        RadarLayer.entries.forEach { layer: RadarLayer ->
-            LayerToggle(
-                layer = layer,
-                isSelected = layer == selectedLayer,
-                onClick = { onLayerSelected(layer) }
+        VadretSlidingSelector(
+            optionCount = RadarLayer.entries.size,
+            selectedIndex = selectedLayer.ordinal,
+            onOptionSelected = { index: Int -> onLayerSelected(RadarLayer.entries[index]) },
+            role = Role.RadioButton,
+            modifier = Modifier.fillMaxHeight()
+        ) { index: Int, contentColor: Color ->
+            LayerLabel(
+                layer = RadarLayer.entries[index],
+                isSelected = index == selectedLayer.ordinal,
+                contentColor = contentColor
             )
         }
     }
 }
 
 @Composable
-private fun LayerToggle(
+private fun LayerLabel(
     layer: RadarLayer,
     isSelected: Boolean,
-    onClick: () -> Unit,
+    contentColor: Color,
     modifier: Modifier = Modifier
 ) {
-    val iconTint: Color = if (isSelected) {
-        VadretTheme.colorScheme.onPrimary
-    } else {
-        VadretTheme.colorScheme.onSurfaceVariant
-    }
-    ToggleButton(
-        checked = isSelected,
-        onCheckedChange = { onClick() },
-        shapes = pillShapes,
-        colors = ToggleButtonDefaults.colors(
-            containerColor = Color.Transparent,
-            contentColor = VadretTheme.colorScheme.onSurface,
-            checkedContainerColor = VadretTheme.colorScheme.primary,
-            checkedContentColor = VadretTheme.colorScheme.onPrimary
-        ),
-        icon = {
-            Icon(
-                painter = painterResource(id = layer.iconResourceId(isSelected = isSelected)),
-                contentDescription = null,
-                tint = iconTint,
-                modifier = Modifier.size(size = toggleIconSize)
-            )
-        },
-        contentPadding = togglePadding,
-        modifier = modifier.height(height = toggleHeight)
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(space = layerIconGap),
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier.padding(paddingValues = layerPadding)
     ) {
+        Icon(
+            painter = painterResource(id = layer.iconResourceId(isSelected = isSelected)),
+            contentDescription = null,
+            tint = contentColor,
+            modifier = Modifier.size(size = layerIconSize)
+        )
         Text(
             text = stringResource(id = layer.labelResourceId()),
-            style = VadretTheme.textStyles.detailStrong
+            style = VadretTheme.textStyles.detailStrong,
+            color = contentColor
         )
     }
 }

@@ -49,7 +49,7 @@ fun SettingsScreen(
     Column(modifier = modifier.fillMaxSize()) {
         VadretTopAppBar()
         SettingsTabs(
-            selectedPage = SettingsPage.entries[pagerState.currentPage],
+            selectedPage = SettingsPage.entries[pagerState.targetPage],
             onPageClick = { page: SettingsPage ->
                 coroutineScope.launch { pagerState.animateScrollToPage(page = page.ordinal) }
             },

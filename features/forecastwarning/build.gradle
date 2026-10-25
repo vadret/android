@@ -3,7 +3,7 @@ plugins {
 }
 
 android {
-    namespace 'fi.kroon.vadret.forecastwarning'
+    namespace = 'fi.kroon.vadret.forecastwarning'
 }
 
 dependencies {

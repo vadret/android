@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace 'fi.kroon.vadret.data.radar'
+    namespace = 'fi.kroon.vadret.data.radar'
 }
 
 dependencies {

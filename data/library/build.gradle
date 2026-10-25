@@ -3,7 +3,7 @@ plugins {
 }
 
 android {
-    namespace 'fi.kroon.vadret.data.library'
+    namespace = 'fi.kroon.vadret.data.library'
 }
 
 dependencies {

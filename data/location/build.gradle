@@ -3,7 +3,7 @@ plugins {
 }
 
 android {
-    namespace 'fi.kroon.vadret.data.location'
+    namespace = 'fi.kroon.vadret.data.location'
 }
 
 dependencies {

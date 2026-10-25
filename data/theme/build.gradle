@@ -3,7 +3,7 @@ plugins {
 }
 
 android {
-    namespace 'fi.kroon.vadret.data.theme'
+    namespace = 'fi.kroon.vadret.data.theme'
 }
 
 dependencies {

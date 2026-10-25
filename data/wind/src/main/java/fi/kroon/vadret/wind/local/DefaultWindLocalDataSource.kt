@@ -1,14 +1,14 @@
 package fi.kroon.vadret.wind.local
 
-import java.util.concurrent.atomic.AtomicReference
+import kotlin.concurrent.atomics.AtomicReference
 
 internal class DefaultWindLocalDataSource : WindLocalDataSource {
 
-    private val windForecastEntity: AtomicReference<WindForecastEntity?> = AtomicReference(null)
+    private val windForecastEntity: AtomicReference<WindForecastEntity?> = AtomicReference(value = null)
 
-    override fun getWindForecast(): WindForecastEntity? = windForecastEntity.get()
+    override fun getWindForecast(): WindForecastEntity? = windForecastEntity.load()
 
     override fun setWindForecast(windForecastEntity: WindForecastEntity) {
-        this.windForecastEntity.set(windForecastEntity)
+        this.windForecastEntity.store(newValue = windForecastEntity)
     }
 }

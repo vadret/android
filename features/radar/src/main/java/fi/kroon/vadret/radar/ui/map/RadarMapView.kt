@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.widget.FrameLayout
+import androidx.lifecycle.Lifecycle
 import fi.kroon.vadret.core.R
 import fi.kroon.vadret.location.model.Location
 import fi.kroon.vadret.radar.model.RadarLayer
@@ -14,8 +15,6 @@ import fi.kroon.vadret.radar.projection.RADAR_WEST_LONGITUDE
 import fi.kroon.vadret.radar.wind.WindAtLocation
 import fi.kroon.vadret.radar.wind.WindField
 import org.maplibre.android.MapLibre
-import org.maplibre.android.camera.CameraPosition
-import org.maplibre.android.geometry.LatLng
 import org.maplibre.android.geometry.LatLngBounds
 import org.maplibre.android.maps.MapLibreMap
 import org.maplibre.android.maps.MapView
@@ -23,9 +22,6 @@ import org.maplibre.android.maps.Style
 import org.maplibre.android.style.layers.Layer
 import org.maplibre.android.style.layers.SymbolLayer
 
-private const val CENTER_LATITUDE = 58.62
-private const val CENTER_LONGITUDE = 15.57
-private const val INITIAL_ZOOM_LEVEL = 5.0
 private const val MINIMUM_ZOOM_LEVEL = 4.0
 private const val MAXIMUM_ZOOM_LEVEL = 12.0
 private const val PRECIPITATION_LAYER_ID = "vadret-precipitation"
@@ -35,8 +31,8 @@ private const val WIND_OPACITY = 0.8f
 
 internal class RadarMapView(
     context: Context,
-    markerColor: Int,
-    labelTextColor: Int
+    private val initialCamera: RadarCamera,
+    private val onCameraIdle: (RadarCamera) -> Unit
 ) : FrameLayout(context) {
 
     private val density: Float = resources.displayMetrics.density
@@ -44,9 +40,7 @@ internal class RadarMapView(
     private val locationMarker = LocationMarkerDrawer(
         density = density,
         scaledDensity = density * resources.configuration.fontScale,
-        markerColor = markerColor,
-        labelTextColor = labelTextColor,
-        arrow = tintedArrow(context = context, color = markerColor)
+        arrow = mutableArrow(context = context)
     )
     private val overlayView = RadarOverlayView(
         context = context,
@@ -59,11 +53,34 @@ internal class RadarMapView(
     private var layer: RadarLayer = RadarLayer.PRECIPITATION
     private var precipitationOverlay: Bitmap? = null
     private var windField: WindField? = null
+    private var lifecycleState: Lifecycle.State = Lifecycle.State.CREATED
+    private var isMapLoaded: Boolean = false
+    private var onMapLoaded: (() -> Unit)? = null
 
     init {
         addView(mapView)
         addView(overlayView)
+        mapView.addOnDidFinishLoadingMapListener { markMapLoaded() }
+        mapView.addOnDidFailLoadingMapListener { _: String? -> markMapLoaded() }
         mapView.getMapAsync { map: MapLibreMap -> onMapReady(map = map) }
+    }
+
+    fun setOnMapLoadedListener(onMapLoaded: (() -> Unit)?) {
+        this.onMapLoaded = onMapLoaded
+        if (isMapLoaded && onMapLoaded != null) {
+            onMapLoaded()
+        }
+    }
+
+    fun setColors(
+        markerColor: Int,
+        labelTextColor: Int
+    ) {
+        locationMarker.setColors(
+            markerColor = markerColor,
+            labelTextColor = labelTextColor
+        )
+        overlayView.invalidate()
     }
 
     fun show(
@@ -90,30 +107,40 @@ internal class RadarMapView(
         overlayView.advanceWind()
     }
 
-    fun start() {
-        mapView.onStart()
-    }
-
-    fun resume() {
-        mapView.onResume()
-    }
-
-    fun pause() {
-        mapView.onPause()
-    }
-
-    fun stop() {
-        mapView.onStop()
+    fun moveTo(state: Lifecycle.State) {
+        if (lifecycleState < Lifecycle.State.STARTED && state >= Lifecycle.State.STARTED) {
+            mapView.onStart()
+            lifecycleState = Lifecycle.State.STARTED
+        }
+        if (lifecycleState < Lifecycle.State.RESUMED && state >= Lifecycle.State.RESUMED) {
+            mapView.onResume()
+            lifecycleState = Lifecycle.State.RESUMED
+        }
+        if (lifecycleState == Lifecycle.State.RESUMED && state < Lifecycle.State.RESUMED) {
+            mapView.onPause()
+            lifecycleState = Lifecycle.State.STARTED
+        }
+        if (lifecycleState == Lifecycle.State.STARTED && state < Lifecycle.State.STARTED) {
+            mapView.onStop()
+            lifecycleState = Lifecycle.State.CREATED
+        }
     }
 
     fun destroy() {
+        moveTo(state = Lifecycle.State.CREATED)
         mapView.onDestroy()
+    }
+
+    private fun markMapLoaded() {
+        isMapLoaded = true
+        onMapLoaded?.invoke()
     }
 
     private fun onMapReady(map: MapLibreMap) {
         configure(map = map)
         overlayView.map = map
         map.addOnCameraMoveListener { overlayView.invalidate() }
+        map.addOnCameraIdleListener { reportCameraIdle(map = map) }
         map.setStyle(Style.Builder().fromUri("https://tiles.openfreemap.org/styles/positron")) { style: Style ->
             style.localizeLabels(language = resources.configuration.locales[0].language)
             val labelLayerId: String? = style.layers.firstOrNull { styleLayer: Layer -> styleLayer is SymbolLayer }?.id
@@ -157,10 +184,12 @@ internal class RadarMapView(
         map.setLatLngBoundsForCameraTarget(
             LatLngBounds.from(RADAR_NORTH_LATITUDE, RADAR_EAST_LONGITUDE, RADAR_SOUTH_LATITUDE, RADAR_WEST_LONGITUDE)
         )
-        map.cameraPosition = CameraPosition.Builder()
-            .target(LatLng(CENTER_LATITUDE, CENTER_LONGITUDE))
-            .zoom(INITIAL_ZOOM_LEVEL)
-            .build()
+        map.cameraPosition = initialCamera.toCameraPosition()
+    }
+
+    private fun reportCameraIdle(map: MapLibreMap) {
+        val radarCamera: RadarCamera = map.cameraPosition.toRadarCamera() ?: return
+        onCameraIdle(radarCamera)
     }
 }
 
@@ -171,11 +200,4 @@ private fun createMapView(context: Context): MapView {
     return mapView
 }
 
-private fun tintedArrow(
-    context: Context,
-    color: Int
-): Drawable {
-    val arrow: Drawable = requireNotNull(context.getDrawable(R.drawable.ic_north)).mutate()
-    arrow.setTint(color)
-    return arrow
-}
+private fun mutableArrow(context: Context): Drawable = requireNotNull(context.getDrawable(R.drawable.ic_north)).mutate()

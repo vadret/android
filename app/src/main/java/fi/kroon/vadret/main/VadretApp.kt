@@ -26,6 +26,7 @@ import fi.kroon.vadret.main.navigation.TopLevelDestination
 import fi.kroon.vadret.main.navigation.VadretNavigationBar
 import fi.kroon.vadret.main.navigation.WarningKey
 import fi.kroon.vadret.main.navigation.WeatherKey
+import fi.kroon.vadret.radar.ui.KeepRadarMapAlive
 import fi.kroon.vadret.radar.ui.RadarRoute
 import fi.kroon.vadret.settings.ui.SettingsRoute
 import fi.kroon.vadret.ui.VadretTheme
@@ -52,26 +53,28 @@ internal fun VadretApp(modifier: Modifier = Modifier) {
         contentWindowInsets = WindowInsets(0.dp),
         modifier = modifier
     ) { innerPadding: PaddingValues ->
-        NavDisplay(
-            backStack = backStack,
-            onBack = { backStack.removeLastOrNull() },
-            entryDecorators = listOf(
-                rememberSaveableStateHolderNavEntryDecorator(),
-                rememberViewModelStoreNavEntryDecorator()
-            ),
-            transitionSpec = { instantTransition() },
-            popTransitionSpec = { instantTransition() },
-            predictivePopTransitionSpec = { instantTransition() },
-            entryProvider = entryProvider {
-                entry<WeatherKey> { WeatherForecastRoute() }
-                entry<WarningKey> { WarningRoute() }
-                entry<RadarKey> { RadarRoute() }
-                entry<SettingsKey> { SettingsRoute() }
-            },
-            modifier = Modifier
-                .padding(paddingValues = innerPadding)
-                .consumeWindowInsets(paddingValues = innerPadding)
-        )
+        KeepRadarMapAlive {
+            NavDisplay(
+                backStack = backStack,
+                onBack = { backStack.removeLastOrNull() },
+                entryDecorators = listOf(
+                    rememberSaveableStateHolderNavEntryDecorator(),
+                    rememberViewModelStoreNavEntryDecorator()
+                ),
+                transitionSpec = { instantTransition() },
+                popTransitionSpec = { instantTransition() },
+                predictivePopTransitionSpec = { instantTransition() },
+                entryProvider = entryProvider {
+                    entry<WeatherKey> { WeatherForecastRoute() }
+                    entry<WarningKey> { WarningRoute() }
+                    entry<RadarKey> { RadarRoute() }
+                    entry<SettingsKey> { SettingsRoute() }
+                },
+                modifier = Modifier
+                    .padding(paddingValues = innerPadding)
+                    .consumeWindowInsets(paddingValues = innerPadding)
+            )
+        }
     }
 }
 

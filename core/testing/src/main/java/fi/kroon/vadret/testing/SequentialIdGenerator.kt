@@ -1,13 +1,14 @@
 package fi.kroon.vadret.testing
 
 import fi.kroon.vadret.idgenerator.IdGenerator
-import java.util.concurrent.atomic.AtomicInteger
+import kotlin.concurrent.atomics.AtomicInt
+import kotlin.concurrent.atomics.fetchAndIncrement
 
 class SequentialIdGenerator(
     private val ids: List<String>
 ) : IdGenerator {
 
-    private val nextIndex: AtomicInteger = AtomicInteger(0)
+    private val nextIndex: AtomicInt = AtomicInt(value = 0)
 
-    override fun generate(): String = ids[nextIndex.getAndIncrement()]
+    override fun generate(): String = ids[nextIndex.fetchAndIncrement()]
 }

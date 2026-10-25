@@ -4,9 +4,9 @@ plugins {
 }
 
 android {
-    namespace 'fi.kroon.vadret.core'
+    namespace = 'fi.kroon.vadret.core'
     buildFeatures {
-        buildConfig true
+        buildConfig = true
     }
 }
 

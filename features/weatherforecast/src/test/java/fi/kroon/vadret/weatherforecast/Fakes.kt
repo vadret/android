@@ -20,7 +20,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
-import java.util.concurrent.atomic.AtomicInteger
+import kotlin.concurrent.atomics.AtomicInt
+import kotlin.concurrent.atomics.fetchAndIncrement
 import kotlin.time.Instant
 
 internal val stockholm = StoredLocation(
@@ -115,7 +116,7 @@ internal class FakeFavoriteRepository(
 
     val favorites: MutableStateFlow<List<Favorite>> = MutableStateFlow(value = emptyList())
 
-    private val nextFavoriteNumber: AtomicInteger = AtomicInteger(1)
+    private val nextFavoriteNumber: AtomicInt = AtomicInt(value = 1)
 
     override fun observeFavorites(): Flow<Either<Failure, List<Favorite>>> =
         favorites.map { favoriteList: List<Favorite> ->
@@ -145,7 +146,7 @@ internal class FakeFavoriteRepository(
             return storedFavorite.asRight()
         }
         val favorite = Favorite(
-            favoriteId = "favorite-${nextFavoriteNumber.getAndIncrement()}",
+            favoriteId = "favorite-${nextFavoriteNumber.fetchAndIncrement()}",
             locality = locality,
             municipality = municipality,
             county = county,

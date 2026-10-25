@@ -4,7 +4,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import java.util.concurrent.atomic.AtomicReference
+import kotlin.concurrent.atomics.AtomicReference
 import kotlin.coroutines.CoroutineContext
 
 fun CoroutineScope.launchReplacing(
@@ -17,7 +17,7 @@ fun CoroutineScope.launchReplacing(
         start = CoroutineStart.LAZY,
         block = block
     )
-    currentJob.getAndSet(job)?.cancel()
+    currentJob.exchange(newValue = job)?.cancel()
     job.start()
     return job
 }

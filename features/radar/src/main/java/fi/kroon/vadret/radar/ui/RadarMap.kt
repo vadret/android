@@ -1,21 +1,20 @@
 package fi.kroon.vadret.radar.ui
 
-import android.content.Context
 import android.graphics.Bitmap
+import android.view.ViewGroup
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
-import androidx.lifecycle.compose.LocalLifecycleOwner
 import fi.kroon.vadret.location.model.Location
 import fi.kroon.vadret.radar.model.RadarLayer
+import fi.kroon.vadret.radar.ui.map.RadarMapStore
 import fi.kroon.vadret.radar.ui.map.RadarMapView
 import fi.kroon.vadret.radar.wind.WindAtLocation
 import fi.kroon.vadret.radar.wind.WindField
@@ -31,19 +30,19 @@ internal fun RadarMap(
     deviceLocation: Location?,
     windAtLocation: WindAtLocation?,
     windSpeedText: String?,
+    onMapLoaded: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val context: Context = LocalContext.current
+    val radarMapStore: RadarMapStore = LocalRadarMapStore.current
     val markerColor: Int = VadretTheme.colorScheme.primary.toArgb()
     val labelTextColor: Int = VadretTheme.colors.onMapLabel.toArgb()
-    val radarMapView: RadarMapView = remember(context, markerColor, labelTextColor) {
-        RadarMapView(
-            context = context,
-            markerColor = markerColor,
-            labelTextColor = labelTextColor
-        )
-    }
-    MapLifecycleEffect(radarMapView = radarMapView)
+    val currentOnMapLoaded: () -> Unit by rememberUpdatedState(newValue = onMapLoaded)
+    val radarMapView: RadarMapView = remember(radarMapStore) { radarMapStore.radarMapView() }
+    MapShownEffect(
+        radarMapStore = radarMapStore,
+        radarMapView = radarMapView,
+        onMapLoaded = { currentOnMapLoaded() }
+    )
     WindAnimationEffect(
         isAnimating = layer == RadarLayer.WIND && windField != null,
         radarMapView = radarMapView
@@ -52,6 +51,10 @@ internal fun RadarMap(
     AndroidView(
         factory = { radarMapView },
         update = { view: RadarMapView ->
+            view.setColors(
+                markerColor = markerColor,
+                labelTextColor = labelTextColor
+            )
             view.show(
                 layer = layer,
                 precipitationOverlay = precipitationOverlay,
@@ -61,33 +64,26 @@ internal fun RadarMap(
                 windSpeedText = windSpeedText
             )
         },
+        onRelease = { view: RadarMapView ->
+            val parent: ViewGroup? = view.parent as? ViewGroup
+            parent?.removeView(view)
+        },
         modifier = modifier
     )
 }
 
 @Composable
-private fun MapLifecycleEffect(radarMapView: RadarMapView) {
-    val lifecycle: Lifecycle = LocalLifecycleOwner.current.lifecycle
-    DisposableEffect(lifecycle, radarMapView) {
-        val observer = LifecycleEventObserver { _, event: Lifecycle.Event ->
-            when (event) {
-                Lifecycle.Event.ON_START -> radarMapView.start()
-                Lifecycle.Event.ON_RESUME -> radarMapView.resume()
-                Lifecycle.Event.ON_PAUSE -> radarMapView.pause()
-                Lifecycle.Event.ON_STOP -> radarMapView.stop()
-                else -> Unit
-            }
-        }
-        lifecycle.addObserver(observer)
+private fun MapShownEffect(
+    radarMapStore: RadarMapStore,
+    radarMapView: RadarMapView,
+    onMapLoaded: () -> Unit
+) {
+    DisposableEffect(radarMapStore, radarMapView) {
+        radarMapView.setOnMapLoadedListener(onMapLoaded = onMapLoaded)
+        radarMapStore.onShownChanged(isShown = true)
         onDispose {
-            lifecycle.removeObserver(observer)
-            if (lifecycle.currentState.isAtLeast(state = Lifecycle.State.RESUMED)) {
-                radarMapView.pause()
-            }
-            if (lifecycle.currentState.isAtLeast(state = Lifecycle.State.STARTED)) {
-                radarMapView.stop()
-            }
-            radarMapView.destroy()
+            radarMapView.setOnMapLoadedListener(onMapLoaded = null)
+            radarMapStore.onShownChanged(isShown = false)
         }
     }
 }

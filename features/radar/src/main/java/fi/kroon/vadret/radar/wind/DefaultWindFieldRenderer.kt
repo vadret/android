@@ -5,7 +5,7 @@ import fi.kroon.vadret.wind.model.WindFrame
 import fi.kroon.vadret.wind.model.WindGrid
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
-import java.util.concurrent.atomic.AtomicReference
+import kotlin.concurrent.atomics.AtomicReference
 
 private const val RASTER_WIDTH = 240
 
@@ -18,7 +18,7 @@ internal class DefaultWindFieldRenderer(
     private val coroutineDispatcher: CoroutineDispatcher
 ) : WindFieldRenderer {
 
-    private val preparedRaster: AtomicReference<PreparedRaster?> = AtomicReference(null)
+    private val preparedRaster: AtomicReference<PreparedRaster?> = AtomicReference(value = null)
 
     override suspend fun render(
         windGrid: WindGrid,
@@ -38,13 +38,13 @@ internal class DefaultWindFieldRenderer(
         }
 
     private fun windRaster(windGrid: WindGrid): WindRaster {
-        val current: PreparedRaster? = preparedRaster.get()
+        val current: PreparedRaster? = preparedRaster.load()
         return if (current != null && current.windGrid == windGrid) {
             current.windRaster
         } else {
             val windRaster: WindRaster = windGrid.toWindRaster(width = RASTER_WIDTH)
-            preparedRaster.set(
-                PreparedRaster(
+            preparedRaster.store(
+                newValue = PreparedRaster(
                     windGrid = windGrid,
                     windRaster = windRaster
                 )

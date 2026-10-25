@@ -4,16 +4,22 @@ def libs = extensions.getByType(VersionCatalogsExtension).named('libs')
 def sdk = { String name -> libs.findVersion(name).get().requiredVersion.toInteger() }
 
 android {
-    compileSdk sdk('android-compileSdk')
+    compileSdk = sdk('android-compileSdk')
     defaultConfig {
-        minSdk sdk('android-minSdk')
+        minSdk = sdk('android-minSdk')
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_17
-        targetCompatibility JavaVersion.VERSION_17
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     lint {
-        abortOnError false
+        abortOnError = false
+    }
+}
+
+kotlin {
+    compilerOptions {
+        optIn.add('kotlin.concurrent.atomics.ExperimentalAtomicApi')
     }
 }
 

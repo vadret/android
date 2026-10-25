@@ -3,7 +3,7 @@ plugins {
 }
 
 android {
-    namespace 'fi.kroon.vadret.data.autocomplete'
+    namespace = 'fi.kroon.vadret.data.autocomplete'
 }
 
 dependencies {

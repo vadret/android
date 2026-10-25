@@ -1,6 +1,7 @@
 package fi.kroon.vadret.settings.ui
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -16,6 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import fi.kroon.vadret.core.R
 import fi.kroon.vadret.settings.Settings
 import fi.kroon.vadret.settings.SettingsEvent
@@ -27,6 +29,7 @@ import fi.kroon.vadret.ui.VadretTheme
 import kotlinx.collections.immutable.ImmutableList
 
 private const val DISABLED_ALPHA = 0.38f
+private const val HIDDEN_ALPHA = 0f
 
 private enum class PreferenceContentType {
     HEADER,
@@ -56,7 +59,8 @@ internal fun PreferencesPage(
             VadretCard {
                 SwitchRow(
                     title = stringResource(id = R.string.use_gps_by_default),
-                    summary = stringResource(id = automaticLocationSummaryResourceId(isAutomaticLocation = settings.isAutomaticLocation)),
+                    checkedSummary = stringResource(id = R.string.gps_is_being_used),
+                    uncheckedSummary = stringResource(id = R.string.gps_is_not_being_used),
                     isChecked = settings.isAutomaticLocation,
                     onCheckedChange = { isChecked: Boolean -> onEvent(SettingsEvent.OnLocationModeToggled(isAutomaticLocation = isChecked)) }
                 )
@@ -109,7 +113,8 @@ private fun LocationCard(
 @Composable
 private fun SwitchRow(
     title: String,
-    summary: String,
+    checkedSummary: String,
+    uncheckedSummary: String,
     isChecked: Boolean,
     onCheckedChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier
@@ -131,11 +136,16 @@ private fun SwitchRow(
                 style = VadretTheme.textStyles.listItem,
                 color = VadretTheme.colorScheme.onSurface
             )
-            Text(
-                text = summary,
-                style = VadretTheme.textStyles.detail,
-                color = VadretTheme.colorScheme.onSurfaceVariant
-            )
+            Box {
+                SwitchSummary(
+                    text = checkedSummary,
+                    isShown = isChecked
+                )
+                SwitchSummary(
+                    text = uncheckedSummary,
+                    isShown = !isChecked
+                )
+            }
         }
         Switch(
             checked = isChecked,
@@ -149,12 +159,26 @@ private fun SwitchRow(
     }
 }
 
-private fun automaticLocationSummaryResourceId(isAutomaticLocation: Boolean): Int =
-    if (isAutomaticLocation) {
-        R.string.gps_is_being_used
+@Composable
+private fun SwitchSummary(
+    text: String,
+    isShown: Boolean,
+    modifier: Modifier = Modifier
+) {
+    val visibilityModifier: Modifier = if (isShown) {
+        Modifier
     } else {
-        R.string.gps_is_not_being_used
+        Modifier
+            .alpha(alpha = HIDDEN_ALPHA)
+            .clearAndSetSemantics { }
     }
+    Text(
+        text = text,
+        style = VadretTheme.textStyles.detail,
+        color = VadretTheme.colorScheme.onSurfaceVariant,
+        modifier = modifier.then(other = visibilityModifier)
+    )
+}
 
 private fun locationAlpha(isAutomaticLocation: Boolean): Float =
     if (isAutomaticLocation) {

@@ -1,5 +1,6 @@
 [versions]
-agp = "9.1.1"
+agp = "9.4.1"
+r8 = "9.5.28"
 kotlin = "2.4.21"
 ksp = "2.3.12"
 
@@ -34,6 +35,7 @@ room = "3.0.3"
 sqlite = "2.7.1"
 
 [libraries]
+r8 = { module = "com.android.tools:r8", version.ref = "r8" }
 android-gradlePlugin = { module = "com.android.tools.build:gradle", version.ref = "agp" }
 android-gradleKotlinPlugin = { module = "com.android.tools.build:gradle-kotlin", version.ref = "agp" }
 kotlin-gradlePlugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }

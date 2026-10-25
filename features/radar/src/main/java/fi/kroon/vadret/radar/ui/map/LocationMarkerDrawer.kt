@@ -30,8 +30,6 @@ private const val HALF = 2f
 internal class LocationMarkerDrawer(
     private val density: Float,
     private val scaledDensity: Float,
-    private val markerColor: Int,
-    private val labelTextColor: Int,
     private val arrow: Drawable
 ) {
 
@@ -44,14 +42,20 @@ internal class LocationMarkerDrawer(
         color = Color.WHITE
         setShadowLayer(SHADOW_RADIUS_DP * density, 0f, SHADOW_OFFSET_DP * density, SHADOW_COLOR)
     }
-    private val dotPaint: Paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = markerColor
-    }
+    private val dotPaint: Paint = Paint(Paint.ANTI_ALIAS_FLAG)
     private val textPaint: Paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = labelTextColor
         textSize = LABEL_TEXT_SP * scaledDensity
         typeface = Typeface.create(MEDIUM_FONT_FAMILY, Typeface.NORMAL)
         fontFeatureSettings = TABULAR_NUMBERS
+    }
+
+    fun setColors(
+        markerColor: Int,
+        labelTextColor: Int
+    ) {
+        dotPaint.color = markerColor
+        textPaint.color = labelTextColor
+        arrow.setTint(markerColor)
     }
 
     fun draw(

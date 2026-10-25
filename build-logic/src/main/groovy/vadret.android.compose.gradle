@@ -4,7 +4,7 @@ def libs = extensions.getByType(VersionCatalogsExtension).named('libs')
 
 android {
     buildFeatures {
-        compose true
+        compose = true
     }
 }
 

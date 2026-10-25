@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.util.concurrent.atomic.AtomicBoolean
+import kotlin.concurrent.atomics.AtomicBoolean
 
 class SettingsViewModel internal constructor(
     private val getSettingsTask: GetSettingsTask,
@@ -26,7 +26,7 @@ class SettingsViewModel internal constructor(
     val state: StateFlow<SettingsState>
         field = MutableStateFlow(value = SettingsState())
 
-    private val isStarted: AtomicBoolean = AtomicBoolean(false)
+    private val isStarted: AtomicBoolean = AtomicBoolean(value = false)
 
     fun onEvent(event: SettingsEvent) {
         when (event) {
@@ -55,7 +55,7 @@ class SettingsViewModel internal constructor(
     }
 
     private fun onStart() {
-        if (isStarted.compareAndSet(false, true)) {
+        if (isStarted.compareAndSet(expectedValue = false, newValue = true)) {
             viewModelScope.launch(context = coroutineDispatcher) {
                 loadSettings()
                 loadLibraries()

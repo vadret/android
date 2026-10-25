@@ -4,6 +4,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
+        classpath libs.r8
         classpath libs.android.gradlePlugin
         classpath libs.android.gradleKotlinPlugin
         classpath libs.kotlin.gradlePlugin

@@ -32,17 +32,17 @@ def getGitSha = { ->
 
 android {
 
-    namespace "fi.kroon.vadret"
-    compileSdk libs.versions.android.compileSdk.get().toInteger()
+    namespace = "fi.kroon.vadret"
+    compileSdk = libs.versions.android.compileSdk.get().toInteger()
     defaultConfig {
-        applicationId "fi.kroon.vadret"
-        minSdk libs.versions.android.minSdk.get().toInteger()
-        targetSdk libs.versions.android.targetSdk.get().toInteger()
-        versionCode appVersionCode
-        versionName "3.0.0alpha04"
+        applicationId = "fi.kroon.vadret"
+        minSdk = libs.versions.android.minSdk.get().toInteger()
+        targetSdk = libs.versions.android.targetSdk.get().toInteger()
+        versionCode = appVersionCode
+        versionName = "3.0.0alpha05"
         vectorDrawables.useSupportLibrary = true
-        testInstrumentationRunner "androidx.top.runner.AndroidJUnitRunner"
-        multiDexEnabled true
+        testInstrumentationRunner = "androidx.top.runner.AndroidJUnitRunner"
+        multiDexEnabled = true
     }
     signingConfigs {
         release {
@@ -65,10 +65,10 @@ android {
     }
     splits {
         abi {
-            enable true
+            enable = true
             reset()
             include(*abiVersionCodes.keySet().toList())
-            universalApk false
+            universalApk = false
         }
     }
     packaging {
@@ -85,14 +85,19 @@ android {
     }
     buildTypes {
         release {
-            minifyEnabled true
-            shrinkResources true
+            minifyEnabled = true
+            shrinkResources = true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt')
             resValue "string", "app_version", "${defaultConfig.versionName}"
         }
+        localRelease {
+            initWith release
+            signingConfig = signingConfigs.debug
+            matchingFallbacks = ['release']
+        }
         debug {
-            enableAndroidTestCoverage true
-            versionNameSuffix "debug"
+            enableAndroidTestCoverage = true
+            versionNameSuffix = "debug"
             resValue "string", "app_version", "${defaultConfig.versionName}-${versionNameSuffix}-${getGitSha}"
         }
     }
@@ -100,21 +105,21 @@ android {
     productFlavors {
         fdroid {}
         github {
-            signingConfig signingConfigs.release
-            versionNameSuffix "signed"
+            signingConfig = signingConfigs.release
+            versionNameSuffix = "signed"
             resValue "string", "app_version", "${defaultConfig.versionName}-${getGitSha}-${versionNameSuffix}"
         }
     }
     lint {
-        abortOnError false
+        abortOnError = false
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_17
-        targetCompatibility JavaVersion.VERSION_17
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     buildFeatures {
-        buildConfig true
-        resValues true
+        buildConfig = true
+        resValues = true
     }
 }
 

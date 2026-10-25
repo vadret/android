@@ -24,8 +24,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.util.concurrent.atomic.AtomicBoolean
-import java.util.concurrent.atomic.AtomicReference
+import kotlin.concurrent.atomics.AtomicBoolean
+import kotlin.concurrent.atomics.AtomicReference
 import kotlin.time.Clock
 import kotlin.time.Instant
 
@@ -41,8 +41,8 @@ class WarningViewModel internal constructor(
         field = MutableStateFlow(value = WarningState())
 
     private val filterDispatcher: CoroutineDispatcher = coroutineDispatcher.limitedParallelism(parallelism = 1)
-    private val isStarted: AtomicBoolean = AtomicBoolean(false)
-    private val loadJob: AtomicReference<Job?> = AtomicReference(null)
+    private val isStarted: AtomicBoolean = AtomicBoolean(value = false)
+    private val loadJob: AtomicReference<Job?> = AtomicReference(value = null)
 
     fun onEvent(event: WarningEvent) {
         when (event) {
@@ -73,7 +73,7 @@ class WarningViewModel internal constructor(
     }
 
     private fun onStart() {
-        if (isStarted.compareAndSet(false, true)) {
+        if (isStarted.compareAndSet(expectedValue = false, newValue = true)) {
             load(isRefresh = false)
         }
     }

@@ -426,4 +426,56 @@ class RadarViewModelTest {
 
             assertEquals(expected = listOf("lördag"), actual = radarViewModel.state.value.precipitationFrames.map { frame: RadarFrame -> frame.weekday }.distinct())
         }
+
+    @Test
+    fun `the map stays covered until both the map and the newest image are ready`() =
+        testScope.runTest {
+            val radarViewModel: RadarViewModel = viewModel()
+            val beforeAnything: Boolean = radarViewModel.state.value.isInitialLoading
+            advanceUntilIdle()
+            val imageWithoutMap: Boolean = radarViewModel.state.value.isInitialLoading
+
+            radarViewModel.onEvent(event = RadarEvent.OnMapLoaded)
+
+            assertEquals(expected = true, actual = beforeAnything)
+            assertEquals(expected = true, actual = imageWithoutMap)
+            assertEquals(expected = false, actual = radarViewModel.state.value.isInitialLoading)
+        }
+
+    @Test
+    fun `a map that loads first waits for the newest image`() =
+        testScope.runTest {
+            val radarViewModel: RadarViewModel = viewModel(isStarted = false)
+            radarViewModel.onEvent(event = RadarEvent.OnMapLoaded)
+            val mapWithoutImage: Boolean = radarViewModel.state.value.isInitialLoading
+
+            radarViewModel.onEvent(event = RadarEvent.OnStart)
+            advanceUntilIdle()
+
+            assertEquals(expected = true, actual = mapWithoutImage)
+            assertEquals(expected = false, actual = radarViewModel.state.value.isInitialLoading)
+        }
+
+    @Test
+    fun `a radar or image that cannot be loaded uncovers the map`() =
+        testScope.runTest {
+            val failures: List<() -> Unit> = listOf(
+                { getRadarTask.result = Failure(errorCode = ErrorCode.RADAR_NOT_AVAILABLE).asLeft() },
+                {
+                    getRadarTask.result = radar.asRight()
+                    radarImageLoader.failingUrls = setOf("https://smhi.se/2.png")
+                },
+                { getRadarTask.result = Radar(images = emptyList()).asRight() }
+            )
+
+            val covered: List<Boolean> = failures.map { fail: () -> Unit ->
+                fail()
+                val radarViewModel: RadarViewModel = viewModel()
+                radarViewModel.onEvent(event = RadarEvent.OnMapLoaded)
+                advanceUntilIdle()
+                radarViewModel.state.value.isInitialLoading
+            }
+
+            assertEquals(expected = List(size = failures.size) { false }, actual = covered)
+        }
 }

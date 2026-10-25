@@ -27,8 +27,8 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.datetime.TimeZone
 import java.util.Locale
-import java.util.concurrent.atomic.AtomicBoolean
-import java.util.concurrent.atomic.AtomicReference
+import kotlin.concurrent.atomics.AtomicBoolean
+import kotlin.concurrent.atomics.AtomicReference
 import kotlin.time.Clock
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
@@ -51,12 +51,12 @@ class WeatherForecastViewModel internal constructor(
     val state: StateFlow<WeatherForecastState>
         field = MutableStateFlow(value = WeatherForecastState())
 
-    private val loadedLocationMode: AtomicReference<Boolean?> = AtomicReference(null)
-    private val locale: AtomicReference<Locale> = AtomicReference(Locale.getDefault())
-    private val placeForecast: AtomicReference<PlaceForecast?> = AtomicReference(null)
-    private val isObservingLocationChoices: AtomicBoolean = AtomicBoolean(false)
-    private val loadJob: AtomicReference<Job?> = AtomicReference(null)
-    private val searchJob: AtomicReference<Job?> = AtomicReference(null)
+    private val loadedLocationMode: AtomicReference<Boolean?> = AtomicReference(value = null)
+    private val locale: AtomicReference<Locale> = AtomicReference(value = Locale.getDefault())
+    private val placeForecast: AtomicReference<PlaceForecast?> = AtomicReference(value = null)
+    private val isObservingLocationChoices: AtomicBoolean = AtomicBoolean(value = false)
+    private val loadJob: AtomicReference<Job?> = AtomicReference(value = null)
+    private val searchJob: AtomicReference<Job?> = AtomicReference(value = null)
 
     fun onEvent(event: WeatherForecastEvent) {
         when (event) {
@@ -95,7 +95,7 @@ class WeatherForecastViewModel internal constructor(
     }
 
     private fun onShown() {
-        if (isObservingLocationChoices.compareAndSet(false, true)) {
+        if (isObservingLocationChoices.compareAndSet(expectedValue = false, newValue = true)) {
             observeLocationChoices()
         }
         viewModelScope.launch(context = coroutineDispatcher) {
@@ -103,7 +103,7 @@ class WeatherForecastViewModel internal constructor(
                 .onResult(
                     onError = { failure: Failure -> displayError(failure = failure) },
                     onSuccess = { isAutomatic: Boolean ->
-                        if (isAutomatic != loadedLocationMode.get()) {
+                        if (isAutomatic != loadedLocationMode.load()) {
                             startLoading(isAutomatic = isAutomatic)
                         }
                     }
@@ -179,7 +179,7 @@ class WeatherForecastViewModel internal constructor(
     }
 
     private fun onRefresh() {
-        val isAutomatic: Boolean = loadedLocationMode.get() ?: return
+        val isAutomatic: Boolean = loadedLocationMode.load() ?: return
         state.update { state: WeatherForecastState ->
             state.copy(isRefreshing = true)
         }
@@ -187,7 +187,7 @@ class WeatherForecastViewModel internal constructor(
     }
 
     private fun load(isAutomatic: Boolean) {
-        loadedLocationMode.set(isAutomatic)
+        loadedLocationMode.store(newValue = isAutomatic)
         viewModelScope.launchReplacing(
             currentJob = loadJob,
             context = coroutineDispatcher
@@ -201,7 +201,7 @@ class WeatherForecastViewModel internal constructor(
     }
 
     private fun displayForecast(placeForecast: PlaceForecast) {
-        this.placeForecast.set(placeForecast)
+        this.placeForecast.store(newValue = placeForecast)
         state.update { state: WeatherForecastState ->
             state.copy(
                 forecast = placeForecast.toForecast(),
@@ -213,12 +213,12 @@ class WeatherForecastViewModel internal constructor(
     }
 
     private fun onLocaleChanged(locale: Locale) {
-        if (this.locale.getAndSet(locale) == locale) {
+        if (this.locale.exchange(newValue = locale) == locale) {
             return
         }
         viewModelScope.launch(context = coroutineDispatcher) {
             state.update { state: WeatherForecastState ->
-                state.copy(forecast = placeForecast.get()?.toForecast() ?: state.forecast)
+                state.copy(forecast = placeForecast.load()?.toForecast() ?: state.forecast)
             }
         }
     }
@@ -227,11 +227,11 @@ class WeatherForecastViewModel internal constructor(
         toWeatherForecast(
             now = clock.now(),
             timeZone = TimeZone.currentSystemDefault(),
-            locale = locale.get()
+            locale = locale.load()
         )
 
     private fun onSearchDismissed() {
-        searchJob.getAndSet(null)?.cancel()
+        searchJob.exchange(newValue = null)?.cancel()
         state.update { state: WeatherForecastState ->
             state.copy(search = null)
         }
@@ -290,7 +290,7 @@ class WeatherForecastViewModel internal constructor(
     }
 
     private fun onSuggestionClicked(autoCompleteItem: AutoCompleteItem) {
-        searchJob.getAndSet(null)?.cancel()
+        searchJob.exchange(newValue = null)?.cancel()
         viewModelScope.launch(context = coroutineDispatcher) {
             selectPlaceTask(autoCompleteItem = autoCompleteItem)
                 .onResult(

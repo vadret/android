@@ -3,5 +3,5 @@ plugins {
 }
 
 android {
-    namespace 'fi.kroon.vadret.idgenerator'
+    namespace = 'fi.kroon.vadret.idgenerator'
 }
