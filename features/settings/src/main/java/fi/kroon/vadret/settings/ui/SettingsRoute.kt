@@ -1,5 +1,6 @@
 package fi.kroon.vadret.settings.ui
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -11,12 +12,17 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Devices
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import fi.kroon.vadret.di.koinViewModel
 import fi.kroon.vadret.library.model.Library
 import fi.kroon.vadret.settings.SettingsEvent
 import fi.kroon.vadret.settings.SettingsState
 import fi.kroon.vadret.settings.SettingsViewModel
+import fi.kroon.vadret.theme.model.Theme
+import fi.kroon.vadret.ui.ThemePreviewParameterProvider
 import fi.kroon.vadret.ui.VadretTheme
 import fi.kroon.vadret.ui.VadretTopAppBar
 import kotlinx.coroutines.launch
@@ -91,6 +97,20 @@ internal fun SettingsScreen(
             selectedTheme = settings.theme,
             onThemeSelected = { theme -> onEvent(SettingsEvent.OnThemeSelected(theme = theme)) },
             onDismiss = { onEvent(SettingsEvent.OnThemeDialogDismissed) }
+        )
+    }
+}
+
+@Preview(device = Devices.PHONE)
+@Composable
+private fun SettingsScreenPreview(
+    @PreviewParameter(provider = ThemePreviewParameterProvider::class) theme: Theme
+) {
+    VadretTheme(theme = theme) {
+        SettingsScreen(
+            state = settingsPreviewState(theme = theme),
+            onEvent = {},
+            modifier = Modifier.background(color = VadretTheme.colorScheme.background)
         )
     }
 }

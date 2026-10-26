@@ -2,7 +2,9 @@ package fi.kroon.vadret.weatherforecast.ui
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -27,9 +29,13 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import fi.kroon.vadret.core.R
+import fi.kroon.vadret.theme.model.Theme
+import fi.kroon.vadret.ui.ThemePreviewParameterProvider
 import fi.kroon.vadret.ui.VadretCard
 import fi.kroon.vadret.ui.VadretTheme
 import fi.kroon.vadret.weatherforecast.model.ComingDay
@@ -72,8 +78,7 @@ internal fun ComingDaysHeader(
         modifier = modifier
             .fillMaxWidth()
             .padding(
-                start = headerInset,
-                top = headerInset
+                start = headerInset
             )
     )
 }
@@ -94,7 +99,9 @@ internal fun ComingDaysCard(
             }
             ComingDayItem(
                 comingDay = comingDay,
-                onDayToggled = onDayToggled
+                onDayToggled = onDayToggled,
+                isFirst = index == 0,
+                isLast = index == comingDays.lastIndex
             )
         }
     }
@@ -104,11 +111,15 @@ internal fun ComingDaysCard(
 private fun ComingDayItem(
     comingDay: ComingDay,
     onDayToggled: (String) -> Unit,
+    isFirst: Boolean,
+    isLast: Boolean,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier.fillMaxWidth()) {
         ComingDayRow(
             comingDay = comingDay,
+            isFirst = isFirst,
+            isLast = isLast,
             onClick = { onDayToggled(comingDay.key) }
         )
         AnimatedVisibility(visible = comingDay.isExpanded) {
@@ -125,6 +136,8 @@ private fun ComingDayItem(
 private fun ComingDayRow(
     comingDay: ComingDay,
     onClick: () -> Unit,
+    isFirst: Boolean,
+    isLast: Boolean,
     modifier: Modifier = Modifier
 ) {
     val degree: String = stringResource(id = R.string.degree)
@@ -140,23 +153,30 @@ private fun ComingDayRow(
             COLLAPSED_DEGREES
         }
     )
+
     Row(
-        horizontalArrangement = Arrangement.spacedBy(space = dayRowSpacing),
-        verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
             .fillMaxWidth()
-            .heightIn(min = dayRowMinHeight)
+            .heightIn(min = 60.dp)
             .clickable(
+                interactionSource = null,
+                indication = null,
                 role = Role.Button,
                 onClick = onClick
             )
             .semantics { stateDescription = expansionDescription }
             .padding(
-                start = dayRowStartPadding,
-                end = dayRowEndPadding
-            )
+                top = if (isFirst) 16.dp else 16.dp,
+                start = 16.dp,
+                end = 16.dp,
+                bottom = if (isLast) 16.dp else 16.dp
+            ),
+        horizontalArrangement = Arrangement.spacedBy(space = 8.dp),
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        Column(modifier = Modifier.width(width = dayNameWidth)) {
+        Column(
+            modifier = Modifier.width(width = dayNameWidth)
+        ) {
             Text(
                 text = if (comingDay.isToday) {
                     stringResource(id = R.string.today)
@@ -224,4 +244,20 @@ private fun ComingDayRow(
 private fun String?.withMillimeters(): String {
     val precipitationText: String = this ?: return ""
     return "$precipitationText ${stringResource(id = R.string.millimeter)}"
+}
+
+@Preview
+@Composable
+private fun ComingDaysCardPreview(
+    @PreviewParameter(provider = ThemePreviewParameterProvider::class) theme: Theme
+) {
+    VadretTheme(theme = theme) {
+        ComingDaysCard(
+            comingDays = comingDaysPreview(),
+            onDayToggled = {},
+            modifier = Modifier
+                .background(color = VadretTheme.colorScheme.background)
+                .padding(all = VadretTheme.spacing.medium)
+        )
+    }
 }

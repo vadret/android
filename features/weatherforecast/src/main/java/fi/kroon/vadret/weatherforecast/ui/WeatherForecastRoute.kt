@@ -20,8 +20,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Devices
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import fi.kroon.vadret.di.koinViewModel
+import fi.kroon.vadret.theme.model.Theme
+import fi.kroon.vadret.ui.ThemePreviewParameterProvider
 import fi.kroon.vadret.ui.VadretProgressBar
 import fi.kroon.vadret.ui.VadretTheme
 import fi.kroon.vadret.ui.VadretTopAppBar
@@ -108,10 +113,7 @@ internal fun WeatherForecastScreen(
         ) {
             LazyColumn(
                 contentPadding = PaddingValues(
-                    start = VadretTheme.spacing.medium,
-                    end = VadretTheme.spacing.medium,
-                    top = VadretTheme.spacing.extraSmall,
-                    bottom = VadretTheme.spacing.medium
+                    all = VadretTheme.spacing.medium
                 ),
                 verticalArrangement = Arrangement.spacedBy(space = VadretTheme.spacing.medium),
                 modifier = Modifier.fillMaxSize()
@@ -172,6 +174,19 @@ private fun LazyListScope.forecast(
             forecastView = state.forecastView,
             forecast = state.forecast,
             onEvent = onEvent
+        )
+    }
+}
+
+@Preview(device = Devices.PHONE)
+@Composable
+private fun WeatherForecastScreenPreview(
+    @PreviewParameter(provider = ThemePreviewParameterProvider::class) theme: Theme
+) {
+    VadretTheme(theme = theme) {
+        WeatherForecastScreen(
+            state = weatherForecastPreviewState(),
+            onEvent = {}
         )
     }
 }

@@ -10,6 +10,7 @@ dependencies {
     implementation project(':core:logging')
     implementation project(':data:aggregatedfeed')
     implementation project(':data:common')
+    implementation project(':data:theme')
     implementation project(':data:warningfilter')
 
     implementation libs.androidx.annotation

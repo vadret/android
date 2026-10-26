@@ -1,5 +1,6 @@
 package fi.kroon.vadret.weatherforecast.ui
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -13,46 +14,44 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import fi.kroon.vadret.core.R
+import fi.kroon.vadret.theme.model.Theme
+import fi.kroon.vadret.ui.ThemePreviewParameterProvider
 import fi.kroon.vadret.ui.VadretCard
 import fi.kroon.vadret.ui.VadretTheme
 import fi.kroon.vadret.weatherforecast.model.CurrentWeather
 
-private val weatherIconSize = 52.dp
+private val weatherIconSize = 64.dp
 private val windArrowSize = 15.dp
-private val cardTopPadding = 16.dp
-private val cardBottomPadding = 14.dp
-private val contentInset = 4.dp
 private val descriptionTopPadding = 6.dp
-private val dividerTopPadding = 14.dp
-private val dividerBottomPadding = 12.dp
-private val statLabelSpacing = 2.dp
 
 @Composable
 internal fun CurrentWeatherCard(
     currentWeather: CurrentWeather,
     modifier: Modifier = Modifier
 ) {
+    val verticalPadding = 24.dp
     val degree: String = stringResource(id = R.string.degree)
     VadretCard(modifier = modifier) {
         Column(
-            modifier = Modifier.padding(
-                start = VadretTheme.spacing.large,
-                end = VadretTheme.spacing.large,
-                top = cardTopPadding,
-                bottom = cardBottomPadding
-            )
+            modifier = Modifier.padding(horizontal = 16.dp)
         ) {
             Row(
-                verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = contentInset)
+                    .padding(horizontal = 16.dp, vertical = verticalPadding),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Column(modifier = Modifier.weight(weight = 1f)) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
                     Text(
                         text = "${currentWeather.temperature}$degree",
                         style = VadretTheme.textStyles.temperature,
@@ -72,16 +71,12 @@ internal fun CurrentWeatherCard(
                     modifier = Modifier.size(size = weatherIconSize)
                 )
             }
-            HorizontalDivider(
-                color = VadretTheme.colors.divider,
-                modifier = Modifier.padding(
-                    top = dividerTopPadding,
-                    bottom = dividerBottomPadding
-                )
-            )
+            HorizontalDivider(color = VadretTheme.colors.divider)
             Row(
-                horizontalArrangement = Arrangement.SpaceEvenly,
-                modifier = Modifier.fillMaxWidth().padding(vertical = 20.dp)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = verticalPadding),
+                horizontalArrangement = Arrangement.SpaceEvenly
             ) {
                 Stat(
                     label = stringResource(id = R.string.feels_like),
@@ -119,7 +114,7 @@ private fun Stat(
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(space = statLabelSpacing),
+        verticalArrangement = Arrangement.spacedBy(space = 2.dp),
         modifier = modifier
     ) {
         Text(
@@ -138,5 +133,20 @@ private fun Stat(
             )
             trailing()
         }
+    }
+}
+
+@Preview
+@Composable
+private fun CurrentWeatherCardPreview(
+    @PreviewParameter(provider = ThemePreviewParameterProvider::class) theme: Theme
+) {
+    VadretTheme(theme = theme) {
+        CurrentWeatherCard(
+            currentWeather = currentWeatherPreview(),
+            modifier = Modifier
+                .background(color = Color.DarkGray)
+                .padding(all = VadretTheme.spacing.medium)
+        )
     }
 }

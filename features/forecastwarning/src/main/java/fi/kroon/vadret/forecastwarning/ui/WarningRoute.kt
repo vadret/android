@@ -24,6 +24,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Devices
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import fi.kroon.vadret.core.R
 import fi.kroon.vadret.di.koinViewModel
@@ -32,6 +35,8 @@ import fi.kroon.vadret.forecastwarning.WarningState
 import fi.kroon.vadret.forecastwarning.WarningViewModel
 import fi.kroon.vadret.forecastwarning.model.WarningFilterState
 import fi.kroon.vadret.forecastwarning.model.WarningItem
+import fi.kroon.vadret.theme.model.Theme
+import fi.kroon.vadret.ui.ThemePreviewParameterProvider
 import fi.kroon.vadret.ui.VadretProgressBar
 import fi.kroon.vadret.ui.VadretTheme
 import fi.kroon.vadret.ui.VadretTopAppBar
@@ -135,6 +140,19 @@ internal fun WarningScreen(
         WarningFilterSheet(
             filter = filter,
             onEvent = onEvent
+        )
+    }
+}
+
+@Preview(device = Devices.PHONE)
+@Composable
+private fun WarningScreenPreview(
+    @PreviewParameter(provider = ThemePreviewParameterProvider::class) theme: Theme
+) {
+    VadretTheme(theme = theme) {
+        WarningScreen(
+            state = warningPreviewState(),
+            onEvent = {}
         )
     }
 }

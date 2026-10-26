@@ -40,10 +40,10 @@ private const val SINGLE_LINE = 1
 private val stripStartPadding = 10.dp
 private val stripBottomPadding = 8.dp
 private val stripPadding = PaddingValues(
-    start = stripStartPadding,
+    start = 10.dp,
     end = 10.dp,
-    top = 2.dp,
-    bottom = stripBottomPadding
+    top = 10.dp,
+    bottom = 10.dp
 )
 private val hourColumnWidth = 46.dp
 private val hourCellTopPadding = 8.dp
@@ -171,7 +171,6 @@ private fun ComingHourCell(
         verticalArrangement = Arrangement.spacedBy(space = hourCellContentSpacing),
         modifier = modifier
             .fillMaxWidth()
-            .padding(top = hourCellTopPadding)
     ) {
         Text(
             text = if (comingHour.isNow) {

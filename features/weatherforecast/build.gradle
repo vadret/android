@@ -13,6 +13,7 @@ dependencies {
     implementation project(':data:favorite')
     implementation project(':data:location')
     implementation project(':data:nominatim')
+    implementation project(':data:theme')
     implementation project(':data:weatherforecast')
 
     implementation libs.androidx.activity.compose
