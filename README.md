@@ -6,7 +6,7 @@
 <img src="https://raw.githubusercontent.com/vadret/android/master/assets/logo.png" alt="Vädret" width="128">
 
 # Vädret
-A simple weather app that uses the Swedish weather service [SMHI](https://opendata-download-metfcst.smhi.se/) to fetch weather data, and [Krisinformation](https://www.krisinformation.se/en) for emergency information from Swedish authorities. MVI written entirely in Kotlin. Icons used in this project can be found [here](https://github.com/vadret/assets). The data is licensed under [Creative commons Erkännande 4.0 SE](https://www.smhi.se/klimatdata/oppna-data/information-om-oppna-data/villkor-for-anvandning-1.30622).
+A simple weather app that uses the Swedish weather service [SMHI](https://opendata.smhi.se/) to fetch weather data, and [Krisinformation](https://www.krisinformation.se/en) for emergency information from Swedish authorities. MVI written entirely in Kotlin. Icons used in this project can be found [here](https://github.com/vadret/assets). The data is licensed under [Creative commons Erkännande 4.0 SE](https://www.smhi.se/data/om-smhis-data/villkor-for-anvandning).
 
 [<img src="https://f-droid.org/badge/get-it-on.png"
       alt="Get it on F-Droid"
@@ -47,9 +47,10 @@ The project also uses a modified `Either` type originally written by [Fernando C
 
 ## SMHI Open Data API Docs
 
-* [Metrological Forecast](https://opendata-download-metfcst.smhi.se/)
-* [Warnings](https://opendata-download-warnings.smhi.se/)
-* [Radar](https://opendata-download-radar.smhi.se/)
+* [Meteorological Forecast](https://opendata.smhi.se/metfcst/snow1gv1/introduction)
+* [Meteorological Analysis](https://opendata.smhi.se/metanalys/mesan2gv3/introduction)
+* [Warnings](https://opendata.smhi.se/warnings/introduction)
+* [Radar](https://opendata.smhi.se/radar/introduction)
 
 ## Code Style
 This project uses [ktlint](https://github.com/pinterest/ktlint) for linting.
