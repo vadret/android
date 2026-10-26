@@ -4,8 +4,8 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 
 data class CurrentWeather(
-    val temperature: Double,
-    val feelsLikeTemperature: String?,
+    val temperatureText: String,
+    val feelsLikeTemperatureText: String,
     @DrawableRes
     val iconResourceId: Int,
     @StringRes

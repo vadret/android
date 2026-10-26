@@ -53,7 +53,7 @@ internal fun CurrentWeatherCard(
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     Text(
-                        text = "${currentWeather.temperature}$degree",
+                        text = "${currentWeather.temperatureText}$degree",
                         style = VadretTheme.textStyles.temperature,
                         color = VadretTheme.colorScheme.onSurface
                     )
@@ -80,7 +80,7 @@ internal fun CurrentWeatherCard(
             ) {
                 Stat(
                     label = stringResource(id = R.string.feels_like),
-                    value = "${currentWeather.feelsLikeTemperature ?: currentWeather.temperature}$degree"
+                    value = "${currentWeather.feelsLikeTemperatureText}$degree"
                 )
                 Stat(
                     label = stringResource(id = R.string.wind),

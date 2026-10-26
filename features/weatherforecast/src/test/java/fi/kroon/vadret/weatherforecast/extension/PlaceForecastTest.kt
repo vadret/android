@@ -141,7 +141,7 @@ class PlaceForecastTest {
     fun `the current weather describes the first forecast`() {
         val currentWeather: CurrentWeather = currentWeather(forecast = forecast(validAt = Instant.parse(input = "2026-10-24T12:00:00Z")))
 
-        assertEquals(expected = 10.9, actual = currentWeather.temperature)
+        assertEquals(expected = "10.9", actual = currentWeather.temperatureText)
         assertEquals(expected = R.string.wsymb2_overcast, actual = currentWeather.descriptionResourceId)
         assertEquals(expected = R.drawable.ic_cloud, actual = currentWeather.iconResourceId)
         assertEquals(expected = 86, actual = currentWeather.humidityPercent)
@@ -159,15 +159,38 @@ class PlaceForecastTest {
             airTemperature = 11.0
         )
 
-        val temperatures: List<Double?> = listOf("2026-10-24T12:29:00Z", "2026-10-24T12:31:00Z").map { now: String ->
+        val temperatures: List<String?> = listOf("2026-10-24T12:29:00Z", "2026-10-24T12:31:00Z").map { now: String ->
             weatherForecast(
                 forecasts = listOf(forecastHour),
                 analyses = listOf(analysedHour),
                 now = Instant.parse(input = now)
-            ).current?.temperature
+            ).current?.temperatureText
         }
 
-        assertEquals(expected = listOf(9.0, 11.0), actual = temperatures)
+        assertEquals(expected = listOf("9", "11"), actual = temperatures)
+    }
+
+    @Test
+    fun `the current temperatures drop a trailing zero`() {
+        val mild: CurrentWeather = currentWeather(
+            forecast = forecast(
+                validAt = Instant.parse(input = "2026-10-24T12:00:00Z"),
+                airTemperature = 11.0
+            )
+        )
+        val cold: CurrentWeather = currentWeather(
+            forecast = forecast(
+                validAt = Instant.parse(input = "2026-10-24T12:00:00Z"),
+                airTemperature = -10.0
+            )
+        )
+
+        assertEquals(
+            expected = listOf("11" to "11", "-10" to "-17.7"),
+            actual = listOf(mild, cold).map { currentWeather: CurrentWeather ->
+                currentWeather.temperatureText to currentWeather.feelsLikeTemperatureText
+            }
+        )
     }
 
     @Test

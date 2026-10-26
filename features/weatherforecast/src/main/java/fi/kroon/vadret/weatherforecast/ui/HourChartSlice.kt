@@ -49,10 +49,10 @@ private class SlicePoints(
     private val lineRange: Float
 ) {
 
-    val firstIndex: Int = (index - 1).coerceAtLeast(minimumValue = FIRST_INDEX)
-    val lastIndex: Int = (index + 1).coerceAtMost(maximumValue = hours.lastIndex)
+    val firstIndex: Int = index - 1
+    val lastIndex: Int = index + 1
 
-    fun x(pointIndex: Int): Float = (pointIndex.shown() - index) * columnWidth + columnWidth / HALF_DIVISOR
+    fun x(pointIndex: Int): Float = (pointIndex - index) * columnWidth + columnWidth / HALF_DIVISOR
 
     fun y(pointIndex: Int): Float = lineTop + (FULL_LEVEL - level(hours[pointIndex.shown()])) * lineRange
 

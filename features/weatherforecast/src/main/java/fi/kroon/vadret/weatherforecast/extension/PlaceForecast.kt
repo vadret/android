@@ -30,6 +30,7 @@ import java.util.TimeZone as JavaTimeZone
 private const val WEEKDAY_PATTERN = "EEEE"
 private const val DAY_KEY_PREFIX = "day-"
 private const val HOUR_KEY_PREFIX = "hour-"
+private const val ONE_DECIMAL = "%.1f"
 
 private val nowHourTolerance: Duration = 1.hours
 
@@ -131,8 +132,8 @@ private fun PlaceForecast.toForecastDays(
 
 private fun Forecast.toCurrentWeather(isDaytime: Boolean): CurrentWeather =
     CurrentWeather(
-        temperature = airTemperature,
-        feelsLikeTemperature = feelsLikeTemperature(),
+        temperatureText = airTemperature.toTemperatureText(),
+        feelsLikeTemperatureText = (windChill() ?: airTemperature).toTemperatureText(),
         iconResourceId = WeatherForecastUtil.getWeatherSymbolIconResourceId(
             symbolCode = symbolCode,
             isDaytime = isDaytime
@@ -144,11 +145,16 @@ private fun Forecast.toCurrentWeather(isDaytime: Boolean): CurrentWeather =
         humidityPercent = relativeHumidity
     )
 
-private fun Forecast.feelsLikeTemperature(): String? =
+private fun Forecast.windChill(): Double? =
     WindChill.calculate(
         temperatureCelcius = airTemperature,
         windSpeedMeterPerSecond = windSpeed
     )
+
+private fun Forecast.feelsLikeTemperature(): String? {
+    val windChill: Double = windChill() ?: return null
+    return ONE_DECIMAL.format(Locale.ROOT, windChill)
+}
 
 private fun Forecast.toForecastHour(
     timeZone: TimeZone,

@@ -55,6 +55,12 @@ The project also uses a modified `Either` type originally written by [Fernando C
 ## Code Style
 This project uses [ktlint](https://github.com/pinterest/ktlint) for linting.
 
+#### Run
+
+```
+./gradlew :app:installFdroidLocalRelease && adb shell am start -n fi.kroon.vadret/.main.MainActivity
+```
+
 #### Linting
 ```sh
 ./gradlew ktlint
