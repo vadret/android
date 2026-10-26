@@ -35,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.graphics.drawable.toBitmap
 import fi.kroon.vadret.core.R
 import fi.kroon.vadret.settings.model.AboutRow
+import fi.kroon.vadret.settings.model.AboutRowAction
 import fi.kroon.vadret.ui.VadretCard
 import fi.kroon.vadret.ui.VadretTheme
 import kotlinx.collections.immutable.ImmutableList
@@ -53,6 +54,7 @@ private val rowMinimumHeight = 56.dp
 @Composable
 internal fun AboutPage(
     aboutRows: ImmutableList<AboutRow>,
+    onChangelogClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     LazyColumn(
@@ -69,7 +71,10 @@ internal fun AboutPage(
                     if (index > 0) {
                         SettingsRowDivider()
                     }
-                    AboutRowItem(aboutRow = aboutRow)
+                    AboutRowItem(
+                        aboutRow = aboutRow,
+                        onClick = aboutRow.action.onClick(onChangelogClick = onChangelogClick)
+                    )
                 }
             }
         }
@@ -122,12 +127,25 @@ private fun AboutHeader(modifier: Modifier = Modifier) {
 }
 
 @Composable
+private fun AboutRowAction.onClick(onChangelogClick: () -> Unit): () -> Unit {
+    val uriHandler: UriHandler = LocalUriHandler.current
+    return when (this) {
+        is AboutRowAction.OpenUrl -> {
+            val url: String = stringResource(id = urlResourceId)
+            val openUrl: () -> Unit = { uriHandler.openUri(uri = url) }
+            openUrl
+        }
+
+        AboutRowAction.ShowChangelog -> onChangelogClick
+    }
+}
+
+@Composable
 private fun AboutRowItem(
     aboutRow: AboutRow,
+    onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val uriHandler: UriHandler = LocalUriHandler.current
-    val url: String = stringResource(id = aboutRow.urlResourceId)
     val hintResourceId: Int? = aboutRow.hintResourceId
     val trailingIconResourceId: Int? = aboutRow.trailingIconResourceId
     Row(
@@ -136,7 +154,7 @@ private fun AboutRowItem(
         modifier = modifier
             .fillMaxWidth()
             .heightIn(min = rowMinimumHeight)
-            .clickable { uriHandler.openUri(uri = url) }
+            .clickable(onClick = onClick)
             .padding(
                 horizontal = VadretTheme.spacing.large,
                 vertical = VadretTheme.spacing.medium

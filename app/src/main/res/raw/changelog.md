@@ -10,11 +10,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - New 'Coming days' view
+- Render changelog in app
 
 ### Changed
 
-- interpolate between wind/percipitation frames
-- design tweaks for weather forecast ui
+- Interpolate between wind/percipitation frames
+- Design tweaks for weather forecast ui
 
 ## [3.0.0] Boelo -- 2026-10-25 🍁
 

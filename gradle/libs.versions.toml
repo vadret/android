@@ -27,6 +27,7 @@ ktlint = "1.8.0"
 leakcanary = "2.14"
 lifecycle = "2.11.0"
 maplibre = "13.7.1"
+markdownRenderer = "0.46.0"
 mockk = "1.14.11"
 navigation3 = "1.2.0"
 okhttp = "5.5.1"
@@ -100,6 +101,7 @@ coil-network-ktor = { module = "io.coil-kt.coil3:coil-network-ktor3", version.re
 commons-csv = { module = "org.apache.commons:commons-csv", version.ref = "commonsCsv" }
 either = { module = "io.github.sphrak:either", version.ref = "either" }
 maplibre-android = { module = "org.maplibre.gl:android-sdk", version.ref = "maplibre" }
+markdown-renderer-m3 = { module = "com.mikepenz:multiplatform-markdown-renderer-m3", version.ref = "markdownRenderer" }
 
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }

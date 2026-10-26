@@ -1,5 +1,6 @@
 package fi.kroon.vadret.settings.ui
 
+import fi.kroon.vadret.changelog.model.Changelog
 import fi.kroon.vadret.library.model.Library
 import fi.kroon.vadret.location.model.StoredLocation
 import fi.kroon.vadret.settings.Settings
@@ -36,6 +37,23 @@ private val previewLibraries: List<Library> = listOf(
         license = "Apache 2.0"
     )
 )
+
+private const val PREVIEW_CHANGELOG = """# Changelog
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
+
+## [3.1.0] -- 2026-10-26
+
+### Added
+
+- New 'Coming days' view
+
+### Changed
+
+- Interpolate between wind and precipitation frames
+"""
+
+internal fun changelogPreview(): Changelog = Changelog(markdown = PREVIEW_CHANGELOG)
 
 internal fun settingsPreviewState(theme: Theme): SettingsState {
     val settings = Settings(

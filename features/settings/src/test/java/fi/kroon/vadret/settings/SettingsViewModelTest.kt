@@ -1,5 +1,7 @@
 package fi.kroon.vadret.settings
 
+import fi.kroon.vadret.changelog.ChangelogRepository
+import fi.kroon.vadret.changelog.model.Changelog
 import fi.kroon.vadret.common.ErrorCode
 import fi.kroon.vadret.common.Failure
 import fi.kroon.vadret.core.R
@@ -71,6 +73,12 @@ private class FakeLibraryRepository : LibraryRepository {
     override fun getLibraries(): Either<Nothing, List<Library>> = listOf(ktor, coil, kotlinxDatetime).asRight()
 }
 
+private class FakeChangelogRepository(
+    var changelog: Either<Failure, Changelog> = Changelog(markdown = "# Changelog").asRight()
+) : ChangelogRepository {
+    override suspend fun getChangelog(): Either<Failure, Changelog> = changelog
+}
+
 private fun library(
     author: String,
     title: String
@@ -96,6 +104,7 @@ class SettingsViewModelTest {
     private val testScope = TestScope(testDispatcher)
     private val themeRepository = FakeThemeRepository()
     private val locationRepository = FakeLocationRepository()
+    private val changelogRepository = FakeChangelogRepository()
 
     @BeforeTest
     fun setUp() {
@@ -116,6 +125,7 @@ class SettingsViewModelTest {
             setLocationModeTask = DefaultSetLocationModeTask(locationRepository = locationRepository),
             setThemeTask = DefaultSetThemeTask(themeRepository = themeRepository),
             getLibrariesTask = DefaultGetLibrariesTask(libraryRepository = FakeLibraryRepository()),
+            getChangelogTask = DefaultGetChangelogTask(changelogRepository = changelogRepository),
             coroutineDispatcher = testDispatcher
         )
         settingsViewModel.onEvent(event = SettingsEvent.OnStart)
@@ -222,5 +232,33 @@ class SettingsViewModelTest {
 
             assertEquals(expected = coil, actual = shown)
             assertNull(actual = settingsViewModel.state.value.selectedLibrary)
+        }
+
+    @Test
+    fun `the changelog is shown until it is dismissed`() =
+        testScope.runTest {
+            val settingsViewModel: SettingsViewModel = viewModel()
+            advanceUntilIdle()
+
+            settingsViewModel.onEvent(event = SettingsEvent.OnChangelogClicked)
+            val isShown: Boolean = settingsViewModel.state.value.isChangelogVisible
+            settingsViewModel.onEvent(event = SettingsEvent.OnChangelogDismissed)
+
+            assertEquals(expected = Changelog(markdown = "# Changelog"), actual = settingsViewModel.state.value.changelog)
+            assertEquals(expected = true, actual = isShown)
+            assertEquals(expected = false, actual = settingsViewModel.state.value.isChangelogVisible)
+        }
+
+    @Test
+    fun `a changelog that cannot be read is never shown`() =
+        testScope.runTest {
+            changelogRepository.changelog = Failure(errorCode = ErrorCode.FILE_READ_FAILED).asLeft()
+            val settingsViewModel: SettingsViewModel = viewModel()
+            advanceUntilIdle()
+
+            settingsViewModel.onEvent(event = SettingsEvent.OnChangelogClicked)
+
+            assertNull(actual = settingsViewModel.state.value.changelog)
+            assertEquals(expected = false, actual = settingsViewModel.state.value.isChangelogVisible)
         }
 }

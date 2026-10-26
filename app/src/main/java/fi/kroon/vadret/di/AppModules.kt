@@ -12,6 +12,7 @@ internal fun appModules(context: Context): List<Module> =
     listOf(
         module { single<Context> { context } },
         coreModule,
+        changelogModule,
         networkModule,
         repositoryModule,
         mainModule,

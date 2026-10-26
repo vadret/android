@@ -11,4 +11,6 @@ internal sealed interface SettingsEvent {
     data class OnThemeSelected(val theme: Theme) : SettingsEvent
     data class OnLibraryClicked(val library: Library) : SettingsEvent
     data object OnLibraryDismissed : SettingsEvent
+    data object OnChangelogClicked : SettingsEvent
+    data object OnChangelogDismissed : SettingsEvent
 }

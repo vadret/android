@@ -2,6 +2,7 @@ package fi.kroon.vadret.settings
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import fi.kroon.vadret.changelog.model.Changelog
 import fi.kroon.vadret.common.Failure
 import fi.kroon.vadret.library.model.Library
 import fi.kroon.vadret.settings.extension.toLibraryGroups
@@ -20,6 +21,7 @@ class SettingsViewModel internal constructor(
     private val setLocationModeTask: SetLocationModeTask,
     private val setThemeTask: SetThemeTask,
     private val getLibrariesTask: GetLibrariesTask,
+    private val getChangelogTask: GetChangelogTask,
     private val coroutineDispatcher: CoroutineDispatcher
 ) : ViewModel() {
 
@@ -53,6 +55,14 @@ class SettingsViewModel internal constructor(
             SettingsEvent.OnLibraryDismissed -> state.update { state: SettingsState ->
                 state.copy(selectedLibrary = null)
             }
+
+            SettingsEvent.OnChangelogClicked -> state.update { state: SettingsState ->
+                state.copy(isChangelogVisible = state.changelog != null)
+            }
+
+            SettingsEvent.OnChangelogDismissed -> state.update { state: SettingsState ->
+                state.copy(isChangelogVisible = false)
+            }
         }
     }
 
@@ -61,6 +71,7 @@ class SettingsViewModel internal constructor(
             viewModelScope.launch(context = coroutineDispatcher) {
                 loadSettings()
                 loadLibraries()
+                loadChangelog()
             }
         }
     }
@@ -85,6 +96,17 @@ class SettingsViewModel internal constructor(
             onSuccess = { libraries: List<Library> ->
                 state.update { state: SettingsState ->
                     state.copy(libraryGroups = libraries.toLibraryGroups())
+                }
+            }
+        )
+    }
+
+    private suspend fun loadChangelog() {
+        getChangelogTask().onResult(
+            onError = { _: Failure -> },
+            onSuccess = { changelog: Changelog ->
+                state.update { state: SettingsState ->
+                    state.copy(changelog = changelog)
                 }
             }
         )

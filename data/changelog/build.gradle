@@ -1,0 +1,17 @@
+plugins {
+    id 'vadret.android.library'
+}
+
+android {
+    namespace = 'fi.kroon.vadret.data.changelog'
+}
+
+dependencies {
+    implementation project(':core:logging')
+    implementation project(':data:common')
+
+    implementation libs.coroutines.core
+    implementation libs.either
+
+    testImplementation project(':core:testing')
+}

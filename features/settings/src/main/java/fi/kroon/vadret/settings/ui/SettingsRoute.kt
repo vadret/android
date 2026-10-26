@@ -16,6 +16,7 @@ import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import fi.kroon.vadret.changelog.model.Changelog
 import fi.kroon.vadret.di.koinViewModel
 import fi.kroon.vadret.library.model.Library
 import fi.kroon.vadret.settings.SettingsEvent
@@ -78,7 +79,10 @@ internal fun SettingsScreen(
                     }
                 )
 
-                SettingsPage.ABOUT -> AboutPage(aboutRows = state.aboutRows)
+                SettingsPage.ABOUT -> AboutPage(
+                    aboutRows = state.aboutRows,
+                    onChangelogClick = { onEvent(SettingsEvent.OnChangelogClicked) }
+                )
             }
         }
     }
@@ -88,6 +92,14 @@ internal fun SettingsScreen(
         LibrarySheet(
             library = selectedLibrary,
             onDismiss = { onEvent(SettingsEvent.OnLibraryDismissed) }
+        )
+    }
+
+    val changelog: Changelog? = state.changelog
+    if (state.isChangelogVisible && changelog != null) {
+        ChangelogSheet(
+            changelog = changelog,
+            onDismiss = { onEvent(SettingsEvent.OnChangelogDismissed) }
         )
     }
 

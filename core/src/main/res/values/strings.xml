@@ -125,7 +125,6 @@
     <string name="app_github_url" translatable="false">https://vadret.github.io/android</string>
     <string name="app_github_source_url" translatable="false">https://github.com/vadret/android</string>
     <string name="app_license_url" translatable="false">https://github.com/vadret/android/blob/master/LICENSE</string>
-    <string name="app_github_changelog_url" translatable="false">https://github.com/vadret/android/blob/master/app/src/main/res/raw/changelog.md</string>
     <string name="changelog_dialog_title">Changelog</string>
     <string name="ok" translatable="false">OK</string>
     <string name="select">Select</string>

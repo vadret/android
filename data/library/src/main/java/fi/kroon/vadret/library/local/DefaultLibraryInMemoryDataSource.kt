@@ -212,6 +212,24 @@ internal class DefaultLibraryInMemoryDataSource : LibraryInMemoryDataSource {
             license = APACHE_2
         ),
         Library(
+            author = "Mike Penz",
+            title = "Multiplatform Markdown Renderer",
+            description = "Renders Markdown with Compose, used here for the changelog.",
+            projectUrl = "https://github.com/mikepenz/multiplatform-markdown-renderer",
+            sourceUrl = "https://github.com/mikepenz/multiplatform-markdown-renderer",
+            licenseUrl = "https://github.com/mikepenz/multiplatform-markdown-renderer/blob/develop/LICENSE",
+            license = APACHE_2
+        ),
+        Library(
+            author = "JetBrains",
+            title = "Markdown",
+            description = "A Markdown parser written in Kotlin.",
+            projectUrl = "https://github.com/JetBrains/markdown",
+            sourceUrl = "https://github.com/JetBrains/markdown",
+            licenseUrl = "https://github.com/JetBrains/markdown/blob/master/LICENSE",
+            license = APACHE_2
+        ),
+        Library(
             author = "Google Inc.",
             title = "Room",
             description = "An abstraction layer over SQLite for storing data on the device.",

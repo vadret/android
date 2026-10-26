@@ -8,6 +8,7 @@ android {
 
 dependencies {
     implementation project(':core:logging')
+    implementation project(':data:changelog')
     implementation project(':data:common')
     implementation project(':data:library')
     implementation project(':data:location')
@@ -16,6 +17,7 @@ dependencies {
     implementation libs.either
     implementation libs.koin.core
     implementation libs.kotlinx.collections.immutable
+    implementation libs.markdown.renderer.m3
 
     testImplementation project(':core:testing')
 }

@@ -10,8 +10,7 @@ internal data class AboutRow(
     val titleResourceId: Int,
     @StringRes
     val hintResourceId: Int?,
-    @StringRes
-    val urlResourceId: Int,
+    val action: AboutRowAction,
     @DrawableRes
     val trailingIconResourceId: Int?
 )
