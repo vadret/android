@@ -233,6 +233,7 @@
     <string name="precipitation_light">Light</string>
     <string name="precipitation_heavy">Heavy</string>
     <string name="now">Now</string>
+    <string name="almost_there">Almost there..</string>
     <string name="day_forecast">%1$s forecast</string>
     <string name="play">Play</string>
     <string name="pause">Pause</string>

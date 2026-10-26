@@ -45,7 +45,7 @@ internal fun CurrentWeatherCard(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = verticalPadding),
+                    .padding(horizontal = 24.dp, vertical = verticalPadding),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {

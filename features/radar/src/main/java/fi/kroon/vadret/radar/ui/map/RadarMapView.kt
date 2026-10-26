@@ -49,6 +49,7 @@ internal class RadarMapView(
 
     private val density: Float = resources.displayMetrics.density
     private val windParticleDrawer = WindParticleDrawer(density = density)
+    private val radarStationBeamDrawer = RadarStationBeamDrawer(density = density)
     private val locationMarkerDrawer = LocationMarkerDrawer(
         density = density,
         scaledDensity = density * resources.configuration.fontScale,
@@ -57,6 +58,7 @@ internal class RadarMapView(
     private val overlayView = RadarOverlayView(
         context = context,
         windParticleDrawer = windParticleDrawer,
+        radarStationBeamDrawer = radarStationBeamDrawer,
         locationMarkerDrawer = locationMarkerDrawer
     )
     private val mapView: MapView = createMapView(context = context)
@@ -137,7 +139,8 @@ internal class RadarMapView(
         windField: WindField?,
         deviceLocation: Location?,
         windAtLocation: WindAtLocation?,
-        windSpeedText: String?
+        windSpeedText: String?,
+        areRadarStationsShown: Boolean
     ) {
         this.layer = layer
         if (precipitationOverlay !== this.precipitationOverlay) {
@@ -151,6 +154,7 @@ internal class RadarMapView(
         locationMarkerDrawer.windAtLocation = windAtLocation
         locationMarkerDrawer.windSpeedText = windSpeedText
         overlayView.isWindShown = layer == RadarLayer.WIND
+        overlayView.areRadarStationsShown = areRadarStationsShown
         if (layer == RadarLayer.WIND && windField != null && !hasWindFadedIn) {
             hasWindFadedIn = true
             fadeInWind()
@@ -220,6 +224,7 @@ internal class RadarMapView(
         windOpacity = opacity
         windLayer?.setOpacityFraction(opacityFraction = opacity)
         windParticleDrawer.opacity = opacity
+        radarStationBeamDrawer.opacity = opacity
         overlayView.invalidate()
     }
 

@@ -170,6 +170,7 @@
     <string name="precipitation_light">Lätt</string>
     <string name="precipitation_heavy">Kraftig</string>
     <string name="now">Nu</string>
+    <string name="almost_there">Nästan där..</string>
     <string name="day_forecast">Prognos för %1$s</string>
     <string name="play">Spela</string>
     <string name="pause">Pausa</string>

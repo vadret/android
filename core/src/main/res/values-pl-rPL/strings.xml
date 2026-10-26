@@ -59,6 +59,7 @@
     <string name="humidity">Wilgotność</string>
     <string name="precipitation">Opady</string>
     <string name="now">Teraz</string>
+    <string name="almost_there">Prawie..</string>
     <string name="warning_level_yellow">Żółte ostrzeżenie</string>
     <string name="warning_level_orange">Pomarańczowe ostrzeżenie</string>
     <string name="warning_level_red">Czerwone ostrzeżenie</string>

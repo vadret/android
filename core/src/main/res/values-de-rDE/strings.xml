@@ -116,6 +116,7 @@
     <string name="humidity">Luftfeuchtigkeit</string>
     <string name="precipitation">Niederschlag</string>
     <string name="now">Jetzt</string>
+    <string name="almost_there">Fast geschafft..</string>
     <string name="warning_level_yellow">Gelbe Warnung</string>
     <string name="warning_level_orange">Orange Warnung</string>
     <string name="warning_level_red">Rote Warnung</string>

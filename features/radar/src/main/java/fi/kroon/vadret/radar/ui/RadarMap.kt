@@ -36,6 +36,7 @@ internal fun RadarMap(
     deviceLocation: Location?,
     windAtLocation: WindAtLocation?,
     windSpeedText: String?,
+    areRadarStationsShown: Boolean,
     obscuredBottom: Int,
     onMapLoaded: () -> Unit,
     modifier: Modifier = Modifier
@@ -80,7 +81,8 @@ internal fun RadarMap(
                 windField = windField,
                 deviceLocation = deviceLocation,
                 windAtLocation = windAtLocation,
-                windSpeedText = windSpeedText
+                windSpeedText = windSpeedText,
+                areRadarStationsShown = areRadarStationsShown
             )
         },
         onRelease = { view: RadarMapView ->

@@ -1,6 +1,7 @@
 package fi.kroon.vadret.radar
 
 import android.graphics.Bitmap
+import androidx.compose.runtime.Immutable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import fi.kroon.vadret.common.Failure
@@ -58,6 +59,7 @@ private class PreparedWindField(
     val windField: Deferred<WindField>
 )
 
+@Immutable
 class RadarViewModel internal constructor(
     private val getRadarTask: GetRadarTask,
     private val getWindForecastTask: GetWindForecastTask,
@@ -103,6 +105,10 @@ class RadarViewModel internal constructor(
             is RadarEvent.OnIndexChanged -> onIndexChanged(index = event.index)
 
             is RadarEvent.OnLayerSelected -> onLayerSelected(layer = event.layer)
+
+            RadarEvent.OnRadarStationsToggled -> state.update { state: RadarState ->
+                state.copy(areRadarStationsShown = !state.areRadarStationsShown)
+            }
         }
     }
 

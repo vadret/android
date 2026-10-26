@@ -70,6 +70,7 @@
     <string name="humidity">Luftfuktighet</string>
     <string name="precipitation">Nedbør</string>
     <string name="now">Nå</string>
+    <string name="almost_there">Nesten der..</string>
     <string name="warning_level_yellow">Gult farevarsel</string>
     <string name="warning_level_orange">Oransje farevarsel</string>
     <string name="warning_level_red">Rødt farevarsel</string>

@@ -12,4 +12,5 @@ internal sealed interface RadarEvent {
     data object OnErrorShown : RadarEvent
     data class OnIndexChanged(val index: Int) : RadarEvent
     data class OnLayerSelected(val layer: RadarLayer) : RadarEvent
+    data object OnRadarStationsToggled : RadarEvent
 }

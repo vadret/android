@@ -12,11 +12,13 @@ private const val NO_PROGRESS = 0f
 internal class RadarOverlayView(
     context: Context,
     private val windParticleDrawer: WindParticleDrawer,
+    private val radarStationBeamDrawer: RadarStationBeamDrawer,
     private val locationMarkerDrawer: LocationMarkerDrawer
 ) : View(context) {
 
     var map: MapLibreMap? = null
     var isWindShown: Boolean = false
+    var areRadarStationsShown: Boolean = false
     var precipitationEchoes: PrecipitationOverlay.Echoes? = null
     var precipitationProgress: Float = NO_PROGRESS
 
@@ -38,6 +40,13 @@ internal class RadarOverlayView(
 
     override fun onDraw(canvas: Canvas) {
         val currentMap: MapLibreMap = map ?: return
+        if (isWindShown && areRadarStationsShown) {
+            radarStationBeamDrawer.draw(
+                canvas = canvas,
+                projection = currentMap.projection,
+                timeMilliseconds = drawingTime
+            )
+        }
         if (isWindShown) {
             windParticleDrawer.draw(
                 canvas = canvas,

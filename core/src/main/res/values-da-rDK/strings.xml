@@ -72,6 +72,7 @@
     <string name="humidity">Luftfugtighed</string>
     <string name="precipitation">Nedbør</string>
     <string name="now">Nu</string>
+    <string name="almost_there">Næsten der..</string>
     <string name="warning_level_yellow">Gul varsling</string>
     <string name="warning_level_orange">Orange varsling</string>
     <string name="warning_level_red">Rød varsling</string>

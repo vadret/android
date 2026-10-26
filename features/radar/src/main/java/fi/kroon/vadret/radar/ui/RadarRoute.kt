@@ -47,10 +47,14 @@ import fi.kroon.vadret.radar.wind.WindField
 import fi.kroon.vadret.radar.wind.windAt
 import fi.kroon.vadret.ui.VadretProgressBar
 import fi.kroon.vadret.ui.VadretTheme
+import fi.kroon.vadret.ui.VadretToast
+import fi.kroon.vadret.ui.VadretToastState
+import fi.kroon.vadret.ui.rememberVadretToastState
 import java.util.Locale
 import kotlin.math.roundToInt
 
 private val toolbarTopPadding = 16.dp
+private val toastDockSpacing = 64.dp
 private val attributionShape = RoundedCornerShape(size = 4.dp)
 private val attributionPadding = PaddingValues(
     horizontal = 6.dp,
@@ -107,6 +111,8 @@ internal fun RadarScreen(
     )
 
     var dockHeight: Int by remember { mutableIntStateOf(value = NO_DOCK_HEIGHT) }
+    val toastState: VadretToastState = rememberVadretToastState()
+    val almostThere: String = stringResource(id = R.string.almost_there)
     Box(modifier = modifier.fillMaxSize()) {
         RadarMap(
             layer = state.layer,
@@ -115,6 +121,7 @@ internal fun RadarScreen(
             deviceLocation = state.deviceLocation,
             windAtLocation = windAtLocation,
             windSpeedText = windAtLocation?.windSpeedText(unit = stringResource(id = R.string.m_s)),
+            areRadarStationsShown = state.areRadarStationsShown,
             obscuredBottom = dockHeight,
             onMapLoaded = { onEvent(RadarEvent.OnMapLoaded) },
             modifier = Modifier.fillMaxSize()
@@ -138,6 +145,13 @@ internal fun RadarScreen(
                     .statusBarsPadding()
             )
         }
+        HiddenToggle(
+            onAlmostThere = { toastState.show(message = almostThere) },
+            onToggle = { onEvent(RadarEvent.OnRadarStationsToggled) },
+            modifier = Modifier
+                .align(alignment = Alignment.TopStart)
+                .statusBarsPadding()
+        )
         RadarLayerToolbar(
             selectedLayer = state.layer,
             onLayerSelected = { layer: RadarLayer -> onEvent(RadarEvent.OnLayerSelected(layer = layer)) },
@@ -151,6 +165,12 @@ internal fun RadarScreen(
             onEvent = onEvent,
             onDockHeightChanged = { height: Int -> dockHeight = height },
             modifier = Modifier.align(alignment = Alignment.BottomCenter)
+        )
+        VadretToast(
+            state = toastState,
+            modifier = Modifier
+                .align(alignment = Alignment.BottomCenter)
+                .padding(bottom = with(receiver = LocalDensity.current) { dockHeight.toDp() } + toastDockSpacing)
         )
         SnackbarHost(
             hostState = snackbarHostState,

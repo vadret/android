@@ -692,4 +692,19 @@ class RadarViewModelTest {
 
             assertEquals(expected = List(size = failures.size) { false }, actual = covered)
         }
+
+    @Test
+    fun `the radar stations start hidden and toggle on and off`() =
+        testScope.runTest {
+            val radarViewModel: RadarViewModel = viewModel()
+            advanceUntilIdle()
+
+            val shown: List<Boolean> = listOf(radarViewModel.state.value.areRadarStationsShown) +
+                List(size = 2) {
+                    radarViewModel.onEvent(event = RadarEvent.OnRadarStationsToggled)
+                    radarViewModel.state.value.areRadarStationsShown
+                }
+
+            assertEquals(expected = listOf(false, true, false), actual = shown)
+        }
 }

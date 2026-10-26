@@ -74,6 +74,7 @@
     <string name="humidity">Kosteus</string>
     <string name="precipitation">Sade</string>
     <string name="now">Nyt</string>
+    <string name="almost_there">Melkein perillä..</string>
     <string name="warning_level_yellow">Keltainen varoitus</string>
     <string name="warning_level_orange">Oranssi varoitus</string>
     <string name="warning_level_red">Punainen varoitus</string>

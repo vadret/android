@@ -65,6 +65,7 @@
     <string name="humidity">Humidité</string>
     <string name="precipitation">Précipitations</string>
     <string name="now">Maintenant</string>
+    <string name="almost_there">Presque..</string>
     <string name="warning_level_yellow">Vigilance jaune</string>
     <string name="warning_level_orange">Vigilance orange</string>
     <string name="warning_level_red">Vigilance rouge</string>

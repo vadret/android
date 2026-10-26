@@ -24,6 +24,7 @@ internal data class RadarState(
     val isLoading: Boolean = true,
     val isMapLoaded: Boolean = false,
     val isPrecipitationUnavailable: Boolean = false,
+    val areRadarStationsShown: Boolean = false,
     @StringRes
     val errorMessageResourceId: Int? = null
 ) {

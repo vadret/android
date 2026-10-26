@@ -1,6 +1,7 @@
 package fi.kroon.vadret.forecastwarning
 
 import androidx.annotation.StringRes
+import androidx.compose.runtime.Immutable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import fi.kroon.vadret.aggregatedfeed.model.AggregatedFeed
@@ -30,6 +31,7 @@ import kotlin.concurrent.atomics.AtomicReference
 import kotlin.time.Clock
 import kotlin.time.Instant
 
+@Immutable
 class WarningViewModel internal constructor(
     private val getWarningsTask: GetWarningsTask,
     private val getWarningFilterTask: GetWarningFilterTask,
