@@ -8,7 +8,9 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -46,10 +48,6 @@ private const val EXPANDED_DEGREES = 180f
 private const val SINGLE_LINE = 1
 
 private val headerInset = 4.dp
-private val dayRowMinHeight = 58.dp
-private val dayRowStartPadding = 16.dp
-private val dayRowEndPadding = 10.dp
-private val dayRowSpacing = 8.dp
 private val dayNameWidth = 60.dp
 private val dayIconSize = 26.dp
 private val dayPrecipitationWidth = 42.dp
@@ -188,6 +186,7 @@ private fun ComingDayRow(
                 autoSize = dayNameAutoSize,
                 maxLines = SINGLE_LINE
             )
+            Spacer(Modifier.height(2.dp))
             Text(
                 text = comingDay.dateText,
                 style = VadretTheme.textStyles.label,

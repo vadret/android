@@ -22,6 +22,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import fi.kroon.vadret.di.koinViewModel
 import fi.kroon.vadret.theme.model.Theme
@@ -89,34 +90,36 @@ internal fun WeatherForecastScreen(
     val search: SearchState? = state.search
     val currentWeather: CurrentWeather? = state.forecast.current
     Scaffold(
+        modifier = modifier,
         topBar = {
-            VadretTopAppBar {
-                LocationChip(
-                    localityName = state.localityName,
-                    locationChoices = state.locationChoices,
-                    onEvent = onEvent,
-                    modifier = Modifier.padding(end = VadretTheme.spacing.extraSmall)
-                )
-            }
+            VadretTopAppBar(
+                actions = {
+                    LocationChip(
+                        modifier = Modifier.padding(end = VadretTheme.spacing.extraSmall),
+                        localityName = state.localityName,
+                        locationChoices = state.locationChoices,
+                        onEvent = onEvent
+                    )
+                }
+            )
         },
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         containerColor = VadretTheme.colorScheme.background,
-        contentWindowInsets = WindowInsets(),
-        modifier = modifier
+        contentWindowInsets = WindowInsets()
     ) { innerPadding: PaddingValues ->
         VadretPullToRefreshBox(
-            isRefreshing = state.isRefreshing,
-            onRefresh = { onEvent(WeatherForecastEvent.OnRefresh) },
             modifier = Modifier
                 .padding(paddingValues = innerPadding)
-                .fillMaxSize()
+                .fillMaxSize(),
+            isRefreshing = state.isRefreshing,
+            onRefresh = { onEvent(WeatherForecastEvent.OnRefresh) }
         ) {
             LazyColumn(
+                modifier = Modifier.fillMaxSize(),
                 contentPadding = PaddingValues(
                     all = VadretTheme.spacing.medium
                 ),
-                verticalArrangement = Arrangement.spacedBy(space = VadretTheme.spacing.medium),
-                modifier = Modifier.fillMaxSize()
+                verticalArrangement = Arrangement.spacedBy(space = 16.dp)
             ) {
                 if (search != null) {
                     item(

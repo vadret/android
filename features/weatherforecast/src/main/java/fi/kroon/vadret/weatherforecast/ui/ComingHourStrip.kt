@@ -28,23 +28,18 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextMeasurer
 import androidx.compose.ui.text.rememberTextMeasurer
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import fi.kroon.vadret.core.R
+import fi.kroon.vadret.theme.model.Theme
+import fi.kroon.vadret.ui.ThemePreviewParameterProvider
 import fi.kroon.vadret.ui.VadretTheme
 import fi.kroon.vadret.weatherforecast.model.ComingHour
 import kotlinx.collections.immutable.ImmutableList
 
 private const val HOUR_CONTENT_TYPE = "coming-hour"
 private const val SINGLE_LINE = 1
-
-private val stripStartPadding = 10.dp
-private val stripBottomPadding = 8.dp
-private val stripPadding = PaddingValues(
-    start = 10.dp,
-    end = 10.dp,
-    top = 10.dp,
-    bottom = 10.dp
-)
 private val hourColumnWidth = 46.dp
 private val hourCellContentSpacing = 5.dp
 private val hourCellVerticalPadding = 4.dp
@@ -77,7 +72,7 @@ internal fun ComingHourStrip(
     Box(modifier = modifier.fillMaxWidth()) {
         LazyRow(
             state = rememberLazyListState(initialFirstVisibleItemIndex = firstShownHourIndex),
-            contentPadding = stripPadding,
+            contentPadding = PaddingValues(horizontal = 16.dp),
             modifier = Modifier.fillMaxWidth()
         ) {
             itemsIndexed(
@@ -100,8 +95,8 @@ internal fun ComingHourStrip(
             modifier = Modifier
                 .align(alignment = Alignment.BottomStart)
                 .padding(
-                    start = stripStartPadding,
-                    bottom = stripBottomPadding
+                   start = 16.dp,
+                   // bottom = stripBottomPadding
                 )
         )
     }
@@ -240,11 +235,10 @@ private fun ChartLegend(
     modifier: Modifier = Modifier
 ) {
     Row(
-        horizontalArrangement = Arrangement.spacedBy(space = legendSpacing),
-        verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
-            .height(height = legendHeight)
-            .padding(horizontal = legendHorizontalPadding)
+            .height(height = legendHeight),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(space = legendSpacing)
     ) {
         Box(
             modifier = Modifier
@@ -262,6 +256,25 @@ private fun ChartLegend(
             style = VadretTheme.textStyles.label,
             color = VadretTheme.colorScheme.onSurfaceVariant,
             maxLines = SINGLE_LINE
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun ComingHourColumnPreview(
+    @PreviewParameter(provider = ThemePreviewParameterProvider::class) theme: Theme
+) {
+    VadretTheme(theme = theme) {
+        ComingHourColumn(
+            hours = comingHoursPreview(),
+            index = nowHourIndexPreview(),
+            textMeasurer = rememberTextMeasurer(),
+            temperatureColor = VadretTheme.colors.temperatureWarm,
+            windColor = VadretTheme.colorScheme.primary,
+            modifier = Modifier
+                .background(color = VadretTheme.colorScheme.surface)
+                .padding(all = VadretTheme.spacing.medium)
         )
     }
 }

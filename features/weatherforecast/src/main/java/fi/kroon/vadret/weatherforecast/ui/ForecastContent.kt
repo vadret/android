@@ -90,7 +90,7 @@ private fun ComingDaysContent(
         verticalArrangement = Arrangement.spacedBy(space = VadretTheme.spacing.medium),
         modifier = modifier
     ) {
-        ComingDaysHeader(dayCount = comingDays.size)
+        // ComingDaysHeader(dayCount = comingDays.size)
         ComingDaysCard(
             comingDays = comingDays,
             onDayToggled = { dayKey: String ->

@@ -5,6 +5,7 @@ import fi.kroon.vadret.weatherforecast.extension.toWeatherForecast
 import fi.kroon.vadret.weatherforecast.extension.withDayToggled
 import fi.kroon.vadret.weatherforecast.model.Analysis
 import fi.kroon.vadret.weatherforecast.model.ComingDay
+import fi.kroon.vadret.weatherforecast.model.ComingHour
 import fi.kroon.vadret.weatherforecast.model.CurrentWeather
 import fi.kroon.vadret.weatherforecast.model.Forecast
 import fi.kroon.vadret.weatherforecast.model.PlaceForecast
@@ -63,6 +64,10 @@ internal fun weatherForecastPreviewState(): WeatherForecastState {
 internal fun currentWeatherPreview(): CurrentWeather = checkNotNull(value = previewWeatherForecast().current)
 
 internal fun comingDaysPreview(): ImmutableList<ComingDay> = weatherForecastPreviewState().forecast.comingDays
+
+internal fun comingHoursPreview(): ImmutableList<ComingHour> = comingDaysPreview().first().hours
+
+internal fun nowHourIndexPreview(): Int = comingHoursPreview().indexOfFirst { comingHour: ComingHour -> comingHour.isNow }
 
 private fun previewWeatherForecast(): WeatherForecast =
     PlaceForecast(
