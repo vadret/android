@@ -36,6 +36,7 @@ internal fun RadarMap(
     deviceLocation: Location?,
     windAtLocation: WindAtLocation?,
     windSpeedText: String?,
+    obscuredBottom: Int,
     onMapLoaded: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -43,7 +44,7 @@ internal fun RadarMap(
     val isDark: Boolean = VadretTheme.isDark
     val radarMapAppearance = RadarMapAppearance(
         isDark = isDark,
-        markerColor = VadretTheme.colorScheme.primary.toArgb(),
+        markerColor = VadretTheme.colors.accent.toArgb(),
         surfaceColor = VadretTheme.colorScheme.surface.toArgb(),
         labelTextColor = VadretTheme.colorScheme.onSurface.toArgb(),
         particleColor = if (isDark) {
@@ -71,6 +72,7 @@ internal fun RadarMap(
     AndroidView(
         factory = { radarMapView },
         update = { view: RadarMapView ->
+            view.setObscuredBottom(obscuredBottom = obscuredBottom)
             view.setAppearance(radarMapAppearance = radarMapAppearance)
             view.show(
                 layer = layer,

@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -20,12 +21,19 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.Density
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.toSize
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import fi.kroon.vadret.core.R
 import fi.kroon.vadret.di.koinViewModel
@@ -40,6 +48,7 @@ import fi.kroon.vadret.radar.wind.windAt
 import fi.kroon.vadret.ui.VadretProgressBar
 import fi.kroon.vadret.ui.VadretTheme
 import java.util.Locale
+import kotlin.math.roundToInt
 
 private val toolbarTopPadding = 16.dp
 private val attributionShape = RoundedCornerShape(size = 4.dp)
@@ -47,6 +56,7 @@ private val attributionPadding = PaddingValues(
     horizontal = 6.dp,
     vertical = 2.dp
 )
+private const val NO_DOCK_HEIGHT = 0
 private const val WIND_SPEED_FORMAT = "%.1f"
 private const val COVER_FADE_MILLISECONDS = 250
 private const val ATTRIBUTION_BACKGROUND_ALPHA = 0.85f
@@ -96,6 +106,7 @@ internal fun RadarScreen(
         deviceLocation = state.deviceLocation
     )
 
+    var dockHeight: Int by remember { mutableIntStateOf(value = NO_DOCK_HEIGHT) }
     Box(modifier = modifier.fillMaxSize()) {
         RadarMap(
             layer = state.layer,
@@ -104,6 +115,7 @@ internal fun RadarScreen(
             deviceLocation = state.deviceLocation,
             windAtLocation = windAtLocation,
             windSpeedText = windAtLocation?.windSpeedText(unit = stringResource(id = R.string.m_s)),
+            obscuredBottom = dockHeight,
             onMapLoaded = { onEvent(RadarEvent.OnMapLoaded) },
             modifier = Modifier.fillMaxSize()
         )
@@ -137,9 +149,8 @@ internal fun RadarScreen(
         RadarBottomPanel(
             state = state,
             onEvent = onEvent,
-            modifier = Modifier
-                .align(alignment = Alignment.BottomCenter)
-                .padding(all = VadretTheme.spacing.medium)
+            onDockHeightChanged = { height: Int -> dockHeight = height },
+            modifier = Modifier.align(alignment = Alignment.BottomCenter)
         )
         SnackbarHost(
             hostState = snackbarHostState,
@@ -152,8 +163,18 @@ internal fun RadarScreen(
 private fun RadarBottomPanel(
     state: RadarState,
     onEvent: (RadarEvent) -> Unit,
+    onDockHeightChanged: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val density: Density = LocalDensity.current
+    val dockCorner: CornerSize = VadretTheme.shapes.large.topStart
+    val dockModifier: Modifier = Modifier.onSizeChanged { size: IntSize ->
+        val cornerHeight: Float = dockCorner.toPx(
+            shapeSize = size.toSize(),
+            density = density
+        )
+        onDockHeightChanged((size.height - cornerHeight).roundToInt())
+    }
     Column(
         horizontalAlignment = Alignment.End,
         verticalArrangement = Arrangement.spacedBy(space = VadretTheme.spacing.small),
@@ -164,6 +185,7 @@ private fun RadarBottomPanel(
             style = VadretTheme.textStyles.attribution,
             color = VadretTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier
+                .padding(horizontal = VadretTheme.spacing.medium)
                 .background(
                     color = VadretTheme.colorScheme.surface.copy(alpha = ATTRIBUTION_BACKGROUND_ALPHA),
                     shape = attributionShape
@@ -176,10 +198,14 @@ private fun RadarBottomPanel(
                 timeline = timeline,
                 isPlaying = state.isPlaying,
                 onPlayClick = { onEvent(RadarEvent.OnPlayButtonClicked) },
-                onIndexChange = { index: Int -> onEvent(RadarEvent.OnIndexChanged(index = index)) }
+                onIndexChange = { index: Int -> onEvent(RadarEvent.OnIndexChanged(index = index)) },
+                modifier = dockModifier
             )
         } else if (state.isInitialLoading) {
-            RadarTimelinePlaceholder(layer = state.layer)
+            RadarTimelinePlaceholder(
+                layer = state.layer,
+                modifier = dockModifier
+            )
         }
     }
 }

@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.ZeroCornerSize
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -195,7 +196,10 @@ private fun TimelineCardSurface(
     content: @Composable ColumnScope.() -> Unit
 ) {
     Surface(
-        shape = VadretTheme.shapes.large,
+        shape = VadretTheme.shapes.large.copy(
+            bottomStart = ZeroCornerSize,
+            bottomEnd = ZeroCornerSize
+        ),
         color = VadretTheme.colorScheme.surface,
         shadowElevation = cardElevation,
         modifier = modifier.fillMaxWidth()

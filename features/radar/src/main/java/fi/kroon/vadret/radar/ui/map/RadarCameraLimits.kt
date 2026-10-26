@@ -18,9 +18,7 @@ private const val HALF = 2.0
 
 private val mercatorNorth: Double = WebMercator.y(latitude = RADAR_NORTH_LATITUDE)
 private val mercatorSouth: Double = WebMercator.y(latitude = RADAR_SOUTH_LATITUDE)
-private val mercatorCenter: Double = (mercatorNorth + mercatorSouth) / HALF
 private const val LONGITUDE_SPAN: Double = RADAR_EAST_LONGITUDE - RADAR_WEST_LONGITUDE
-private const val LONGITUDE_CENTER: Double = (RADAR_EAST_LONGITUDE + RADAR_WEST_LONGITUDE) / HALF
 
 internal class RadarCameraLimits(
     val minimumZoom: Double,
@@ -30,23 +28,54 @@ internal class RadarCameraLimits(
     val westLongitude: Double
 )
 
+private class CenterRange(
+    val lowest: Double,
+    val highest: Double
+)
+
 internal fun radarCameraLimits(
     viewportWidth: Double,
     viewportHeight: Double,
+    obscuredBottom: Double,
     zoom: Double
 ): RadarCameraLimits {
+    val visibleHeight: Double = (viewportHeight - obscuredBottom).coerceAtLeast(minimumValue = viewportHeight / HALF)
     val minimumZoom: Double = max(
         a = log2(x = viewportWidth / (TILE_SIZE * LONGITUDE_SPAN / DEGREES_IN_CIRCLE)),
-        b = log2(x = viewportHeight / (TILE_SIZE * (mercatorNorth - mercatorSouth) / MERCATOR_WORLD_HEIGHT))
+        b = log2(x = visibleHeight / (TILE_SIZE * (mercatorNorth - mercatorSouth) / MERCATOR_WORLD_HEIGHT))
     )
     val worldSize: Double = TILE_SIZE * ZOOM_BASE.pow(x = max(a = zoom, b = minimumZoom))
     val halfLongitudeSpan: Double = viewportWidth / HALF / worldSize * DEGREES_IN_CIRCLE
-    val halfMercatorSpan: Double = viewportHeight / HALF / worldSize * MERCATOR_WORLD_HEIGHT
+    val longitudes: CenterRange = centerRange(
+        lowest = RADAR_WEST_LONGITUDE + halfLongitudeSpan,
+        highest = RADAR_EAST_LONGITUDE - halfLongitudeSpan
+    )
+    val mercatorYs: CenterRange = centerRange(
+        lowest = mercatorSouth + (visibleHeight - viewportHeight / HALF) / worldSize * MERCATOR_WORLD_HEIGHT,
+        highest = mercatorNorth - viewportHeight / HALF / worldSize * MERCATOR_WORLD_HEIGHT
+    )
     return RadarCameraLimits(
         minimumZoom = minimumZoom,
-        northLatitude = WebMercator.latitude(y = (mercatorNorth - halfMercatorSpan).coerceAtLeast(minimumValue = mercatorCenter)),
-        eastLongitude = (RADAR_EAST_LONGITUDE - halfLongitudeSpan).coerceAtLeast(minimumValue = LONGITUDE_CENTER),
-        southLatitude = WebMercator.latitude(y = (mercatorSouth + halfMercatorSpan).coerceAtMost(maximumValue = mercatorCenter)),
-        westLongitude = (RADAR_WEST_LONGITUDE + halfLongitudeSpan).coerceAtMost(maximumValue = LONGITUDE_CENTER)
+        northLatitude = WebMercator.latitude(y = mercatorYs.highest),
+        eastLongitude = longitudes.highest,
+        southLatitude = WebMercator.latitude(y = mercatorYs.lowest),
+        westLongitude = longitudes.lowest
+    )
+}
+
+private fun centerRange(
+    lowest: Double,
+    highest: Double
+): CenterRange {
+    if (lowest <= highest) {
+        return CenterRange(
+            lowest = lowest,
+            highest = highest
+        )
+    }
+    val middle: Double = (lowest + highest) / HALF
+    return CenterRange(
+        lowest = middle,
+        highest = middle
     )
 }

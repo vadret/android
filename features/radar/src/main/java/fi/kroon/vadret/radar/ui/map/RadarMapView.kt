@@ -24,6 +24,7 @@ import org.maplibre.android.style.layers.SymbolLayer
 import kotlin.math.abs
 
 private const val ZOOM_TOLERANCE = 0.01
+private const val NO_OBSCURED_HEIGHT = 0
 private const val MAXIMUM_ZOOM_LEVEL = 12.0
 private const val PRECIPITATION_LAYER_ID = "vadret-precipitation"
 private const val PRECIPITATION_OPACITY = 1f
@@ -67,6 +68,7 @@ internal class RadarMapView(
     private var isDark: Boolean = false
     private var appearance: RadarMapAppearance? = null
     private var limitedZoom: Double = Double.NaN
+    private var obscuredBottom: Int = NO_OBSCURED_HEIGHT
     private val imageLayersUpdate = Runnable { showImageLayers() }
 
     init {
@@ -145,6 +147,16 @@ internal class RadarMapView(
         removeCallbacks(imageLayersUpdate)
         post(imageLayersUpdate)
         overlayView.invalidate()
+    }
+
+    fun setObscuredBottom(obscuredBottom: Int) {
+        if (obscuredBottom == this.obscuredBottom) {
+            return
+        }
+        this.obscuredBottom = obscuredBottom
+        limitedZoom = Double.NaN
+        val readyMap: MapLibreMap = map ?: return
+        limitCamera(map = readyMap)
     }
 
     fun setPrecipitationProgress(progress: Float) {
@@ -265,6 +277,7 @@ internal class RadarMapView(
         val radarCameraLimits: RadarCameraLimits = radarCameraLimits(
             viewportWidth = width / density.toDouble(),
             viewportHeight = height / density.toDouble(),
+            obscuredBottom = obscuredBottom / density.toDouble(),
             zoom = zoom
         )
         map.setMinZoomPreference(radarCameraLimits.minimumZoom)

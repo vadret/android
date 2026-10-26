@@ -7,6 +7,7 @@ import androidx.compose.ui.graphics.Color
 data class VadretColors(
     val divider: Color,
     val icon: Color,
+    val accent: Color = lightAccent,
     val warningMessage: Color = Color(color = 0xFFDFE3F3),
     val onWarningMessage: Color = Color(color = 0xFF263056),
     val warningYellow: Color = Color(color = 0xFFFFE27A),
