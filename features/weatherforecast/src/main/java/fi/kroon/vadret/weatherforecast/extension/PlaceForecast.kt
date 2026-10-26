@@ -1,5 +1,6 @@
 package fi.kroon.vadret.weatherforecast.extension
 
+import fi.kroon.vadret.weatherforecast.model.Analysis
 import fi.kroon.vadret.weatherforecast.model.CurrentWeather
 import fi.kroon.vadret.weatherforecast.model.Forecast
 import fi.kroon.vadret.weatherforecast.model.ForecastDay
@@ -21,12 +22,16 @@ import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.hours
 import kotlin.time.Instant
 import java.util.TimeZone as JavaTimeZone
 
 private const val WEEKDAY_PATTERN = "EEEE"
 private const val DAY_KEY_PREFIX = "day-"
 private const val HOUR_KEY_PREFIX = "hour-"
+
+private val nowHourTolerance: Duration = 1.hours
 
 private val hourFormat = LocalTime.Format {
     hour()
@@ -40,6 +45,17 @@ internal fun PlaceForecast.toWeatherForecast(
     locale: Locale
 ): WeatherForecast {
     val first: Forecast = forecasts.firstOrNull() ?: return WeatherForecast()
+    val hours: List<Forecast> = analysesOfToday(
+        firstForecast = first,
+        now = now,
+        timeZone = timeZone
+    ) + forecasts
+    val current: Forecast = hours.minBy { forecast: Forecast -> (forecast.validAt - now).absoluteValue }
+    val nowHourAt: Instant? = if ((current.validAt - now).absoluteValue <= nowHourTolerance) {
+        current.validAt
+    } else {
+        null
+    }
     val javaTimeZone: JavaTimeZone = JavaTimeZone.getTimeZone(timeZone.id)
     val dateFormat: DateFormat = DateFormat.getDateInstance(DateFormat.LONG, locale)
     val weekdayFormat: DateFormat = SimpleDateFormat(WEEKDAY_PATTERN, locale)
@@ -47,9 +63,10 @@ internal fun PlaceForecast.toWeatherForecast(
         format.timeZone = javaTimeZone
     }
     return WeatherForecast(
-        current = first.toCurrentWeather(isDaytime = isDaytime(at = first.validAt)),
-        comingDays = forecasts.toComingDays(
+        current = current.toCurrentWeather(isDaytime = isDaytime(at = current.validAt)),
+        comingDays = hours.toComingDays(
             now = now,
+            nowHourAt = nowHourAt,
             timeZone = timeZone,
             locale = locale,
             latitude = latitude,
@@ -62,6 +79,21 @@ internal fun PlaceForecast.toWeatherForecast(
             weekdayFormat = weekdayFormat
         ).toImmutableList()
     )
+}
+
+private fun PlaceForecast.analysesOfToday(
+    firstForecast: Forecast,
+    now: Instant,
+    timeZone: TimeZone
+): List<Forecast> {
+    val startOfToday: Instant = now
+        .toLocalDateTime(timeZone = timeZone)
+        .date
+        .atStartOfDayIn(timeZone = timeZone)
+    return analyses
+        .filter { analysis: Analysis ->
+            analysis.analysedAt >= startOfToday && analysis.analysedAt < firstForecast.validAt
+        }.map { analysis: Analysis -> analysis.toForecast() }
 }
 
 private fun PlaceForecast.isDaytime(at: Instant): Boolean =

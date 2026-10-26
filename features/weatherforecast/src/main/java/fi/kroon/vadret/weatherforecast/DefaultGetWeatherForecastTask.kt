@@ -6,6 +6,7 @@ import fi.kroon.vadret.location.model.Location
 import fi.kroon.vadret.location.model.StoredLocation
 import fi.kroon.vadret.nominatim.NominatimRepository
 import fi.kroon.vadret.nominatim.model.Locality
+import fi.kroon.vadret.weatherforecast.model.Analysis
 import fi.kroon.vadret.weatherforecast.model.Forecast
 import fi.kroon.vadret.weatherforecast.model.PlaceForecast
 import io.github.sphrak.either.Either
@@ -13,6 +14,9 @@ import io.github.sphrak.either.extension.asRight
 import io.github.sphrak.either.extension.onResult
 import io.github.sphrak.either.flatMap
 import io.github.sphrak.either.map
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 
 internal class DefaultGetWeatherForecastTask(
     private val locationRepository: LocationRepository,
@@ -35,16 +39,11 @@ internal class DefaultGetWeatherForecastTask(
         locationRepository
             .getDeviceLocation()
             .flatMap { location: Location ->
-                getForecasts(
+                getPlaceForecast(
                     latitude = location.latitude,
                     longitude = location.longitude
-                ).flatMap { forecasts: List<Forecast> ->
-                    PlaceForecast(
-                        placeName = getPlaceName(location = location),
-                        latitude = location.latitude,
-                        longitude = location.longitude,
-                        forecasts = forecasts
-                    ).asRight()
+                ).flatMap { placeForecast: PlaceForecast ->
+                    placeForecast.copy(placeName = getPlaceName(location = location)).asRight()
                 }
             }
 
@@ -52,27 +51,55 @@ internal class DefaultGetWeatherForecastTask(
         locationRepository
             .getStoredLocation()
             .flatMap { storedLocation: StoredLocation ->
-                getForecasts(
+                getPlaceForecast(
                     latitude = storedLocation.latitude,
                     longitude = storedLocation.longitude
-                ).map { forecasts: List<Forecast> ->
-                    PlaceForecast(
-                        placeName = storedLocation.locality,
-                        latitude = storedLocation.latitude,
-                        longitude = storedLocation.longitude,
-                        forecasts = forecasts
-                    )
+                ).map { placeForecast: PlaceForecast ->
+                    placeForecast.copy(placeName = storedLocation.locality)
                 }
             }
 
-    private suspend fun getForecasts(
+    private suspend fun getPlaceForecast(
         latitude: Double,
         longitude: Double
-    ): Either<Failure, List<Forecast>> =
-        weatherForecastRepository.getForecasts(
-            latitude = latitude,
-            longitude = longitude
-        )
+    ): Either<Failure, PlaceForecast> =
+        coroutineScope {
+            val analyses: Deferred<List<Analysis>> = async {
+                getAnalyses(
+                    latitude = latitude,
+                    longitude = longitude
+                )
+            }
+            val forecasts: Either<Failure, List<Forecast>> = weatherForecastRepository.getForecasts(
+                latitude = latitude,
+                longitude = longitude
+            )
+            if (forecasts.isLeft) {
+                analyses.cancel()
+            }
+            forecasts.flatMap { forecastList: List<Forecast> ->
+                PlaceForecast(
+                    placeName = null,
+                    latitude = latitude,
+                    longitude = longitude,
+                    forecasts = forecastList,
+                    analyses = analyses.await()
+                ).asRight()
+            }
+        }
+
+    private suspend fun getAnalyses(
+        latitude: Double,
+        longitude: Double
+    ): List<Analysis> =
+        weatherForecastRepository
+            .getAnalyses(
+                latitude = latitude,
+                longitude = longitude
+            ).onResult(
+                onError = { _: Failure -> emptyList() },
+                onSuccess = { analyses: List<Analysis> -> analyses }
+            )
 
     private suspend fun getPlaceName(location: Location): String? =
         nominatimRepository

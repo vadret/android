@@ -3,7 +3,6 @@ package fi.kroon.vadret.weatherforecast.extension
 import fi.kroon.vadret.weatherforecast.model.ComingDay
 import fi.kroon.vadret.weatherforecast.model.ComingHour
 import fi.kroon.vadret.weatherforecast.model.Forecast
-import fi.kroon.vadret.weatherforecast.util.SunriseSunset
 import fi.kroon.vadret.weatherforecast.util.SunsetUtil
 import fi.kroon.vadret.weatherforecast.util.WeatherForecastUtil
 import kotlinx.collections.immutable.toImmutableList
@@ -30,6 +29,7 @@ private const val DAYTIME_END_HOUR = 18
 private const val MIDDAY_HOUR = 12
 private const val MIDDAY_MINUTE = 0
 private const val FIRST_HOUR_INDEX = 0
+private const val NO_HOUR_INDEX = -1
 private const val MIDPOINT_DIVISOR = 2
 private const val ONE_DECIMAL = "%.1f"
 private const val SHOWN_PRECIPITATION = 0.1
@@ -65,6 +65,7 @@ private class DayFormats(
 
 internal fun List<Forecast>.toComingDays(
     now: Instant,
+    nowHourAt: Instant?,
     timeZone: TimeZone,
     locale: Locale,
     latitude: Double,
@@ -92,6 +93,8 @@ internal fun List<Forecast>.toComingDays(
     return summaries.map { daySummary: DaySummary ->
         daySummary.toComingDay(
             isToday = daySummary.date == today,
+            now = now,
+            nowHourAt = nowHourAt,
             timeZone = timeZone,
             locale = locale,
             latitude = latitude,
@@ -146,6 +149,8 @@ private fun Forecast.isDaytimeHour(timeZone: TimeZone): Boolean =
 
 private fun DaySummary.toComingDay(
     isToday: Boolean,
+    now: Instant,
+    nowHourAt: Instant?,
     timeZone: TimeZone,
     locale: Locale,
     latitude: Double,
@@ -161,6 +166,16 @@ private fun DaySummary.toComingDay(
     val middayDate = Date(midday.toEpochMilliseconds())
     val symbolCode: Int = representativeSymbolCode(timeZone = timeZone)
     val hourTemperatureScale: TemperatureScale = hourTemperatureScale()
+    val nowHourIndex: Int = forecasts.indexOfFirst { forecast: Forecast -> forecast.validAt == nowHourAt }
+    val shownFrom: Instant? = if (isToday) {
+        now
+    } else {
+        SunsetUtil.getSunriseSunset(
+            day = midday,
+            latitude = latitude,
+            longitude = longitude
+        )?.sunrise
+    }
     return ComingDay(
         key = "$COMING_DAY_KEY_PREFIX$date",
         isToday = isToday,
@@ -186,7 +201,7 @@ private fun DaySummary.toComingDay(
         ),
         hours = forecasts.mapIndexed { index: Int, forecast: Forecast ->
             forecast.toComingHour(
-                isNow = isToday && index == FIRST_HOUR_INDEX,
+                isNow = index == nowHourIndex,
                 timeZone = timeZone,
                 isDaytime = SunsetUtil.isSunUp(
                     at = forecast.validAt,
@@ -197,12 +212,8 @@ private fun DaySummary.toComingDay(
             )
         }.toImmutableList(),
         firstShownHourIndex = firstShownHourIndex(
-            isToday = isToday,
-            sunriseSunset = SunsetUtil.getSunriseSunset(
-                day = midday,
-                latitude = latitude,
-                longitude = longitude
-            )
+            nowHourIndex = nowHourIndex,
+            shownFrom = shownFrom
         ),
         isExpanded = false
     )
@@ -250,14 +261,17 @@ private fun DaySummary.hourTemperatureScale(): TemperatureScale {
 }
 
 private fun DaySummary.firstShownHourIndex(
-    isToday: Boolean,
-    sunriseSunset: SunriseSunset?
+    nowHourIndex: Int,
+    shownFrom: Instant?
 ): Int {
-    if (isToday || sunriseSunset == null) {
+    if (nowHourIndex != NO_HOUR_INDEX) {
+        return nowHourIndex
+    }
+    if (shownFrom == null) {
         return FIRST_HOUR_INDEX
     }
     return forecasts
-        .indexOfLast { forecast: Forecast -> forecast.validAt <= sunriseSunset.sunrise }
+        .indexOfLast { forecast: Forecast -> forecast.validAt <= shownFrom }
         .coerceAtLeast(minimumValue = FIRST_HOUR_INDEX)
 }
 

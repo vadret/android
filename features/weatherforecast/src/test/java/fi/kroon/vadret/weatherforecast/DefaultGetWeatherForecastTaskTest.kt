@@ -7,6 +7,8 @@ import fi.kroon.vadret.weatherforecast.model.PlaceForecast
 import io.github.sphrak.either.Either
 import io.github.sphrak.either.extension.asLeft
 import io.github.sphrak.either.extension.asRight
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -15,7 +17,7 @@ import kotlin.test.assertTrue
 class DefaultGetWeatherForecastTaskTest {
 
     private val locationRepository = FakeLocationRepository()
-    private val weatherForecastRepository = FakeWeatherForecastRepository()
+    private val weatherForecastRepository = FakeWeatherForecastRepository(analyses = listOf(morning).asRight())
     private val nominatimRepository = FakeNominatimRepository()
     private val getWeatherForecastTask: GetWeatherForecastTask = DefaultGetWeatherForecastTask(
         locationRepository = locationRepository,
@@ -31,7 +33,8 @@ class DefaultGetWeatherForecastTaskTest {
                     placeName = "Stockholm",
                     latitude = 59.3293,
                     longitude = 18.0686,
-                    forecasts = listOf(noon)
+                    forecasts = listOf(noon),
+                    analyses = listOf(morning)
                 ).asRight(),
                 actual = getWeatherForecastTask()
             )
@@ -47,11 +50,43 @@ class DefaultGetWeatherForecastTaskTest {
                     placeName = "Göteborg",
                     latitude = 57.7,
                     longitude = 11.97,
-                    forecasts = listOf(noon)
+                    forecasts = listOf(noon),
+                    analyses = listOf(morning)
                 ).asRight(),
                 actual = getWeatherForecastTask()
             )
             assertEquals(expected = listOf(57.7 to 11.97), actual = weatherForecastRepository.requestedCoordinates)
+            assertEquals(expected = listOf(57.7 to 11.97), actual = weatherForecastRepository.requestedAnalysisCoordinates)
+        }
+
+    @Test
+    fun `a failed forecast stops asking for the past hours`() =
+        runTest(context = UnconfinedTestDispatcher()) {
+            val forecastFailure = Failure(errorCode = ErrorCode.HTTP_SERVICE_UNAVAILABLE)
+            weatherForecastRepository.analysisGate = CompletableDeferred()
+            weatherForecastRepository.forecasts = forecastFailure.asLeft()
+
+            val result: Either<Failure, PlaceForecast> = getWeatherForecastTask()
+
+            assertEquals(expected = forecastFailure.asLeft(), actual = result)
+            assertTrue(actual = weatherForecastRepository.isAnalysisCancelled)
+        }
+
+    @Test
+    fun `a place without its past hours still gets its forecast`() =
+        runTest {
+            weatherForecastRepository.analyses = Failure(errorCode = ErrorCode.HTTP_SERVICE_UNAVAILABLE).asLeft()
+
+            assertEquals<Either<Failure, PlaceForecast>>(
+                expected = PlaceForecast(
+                    placeName = "Stockholm",
+                    latitude = 59.3293,
+                    longitude = 18.0686,
+                    forecasts = listOf(noon),
+                    analyses = emptyList()
+                ).asRight(),
+                actual = getWeatherForecastTask()
+            )
         }
 
     @Test

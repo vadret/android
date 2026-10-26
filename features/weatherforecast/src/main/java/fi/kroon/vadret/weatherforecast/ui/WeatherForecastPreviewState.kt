@@ -3,6 +3,7 @@ package fi.kroon.vadret.weatherforecast.ui
 import fi.kroon.vadret.weatherforecast.WeatherForecastState
 import fi.kroon.vadret.weatherforecast.extension.toWeatherForecast
 import fi.kroon.vadret.weatherforecast.extension.withDayToggled
+import fi.kroon.vadret.weatherforecast.model.Analysis
 import fi.kroon.vadret.weatherforecast.model.ComingDay
 import fi.kroon.vadret.weatherforecast.model.CurrentWeather
 import fi.kroon.vadret.weatherforecast.model.Forecast
@@ -22,6 +23,8 @@ private const val PREVIEW_LOCALITY = "Stockholm"
 private const val PREVIEW_LATITUDE = 59.3293
 private const val PREVIEW_LONGITUDE = 18.0686
 private const val FORECAST_HOURS = 168
+private const val ANALYSIS_HOURS = 24
+private const val FIRST_FORECAST_HOUR = 0
 private const val INTERVAL_HOURS = 1
 private const val FULL_TURN = 2 * PI
 private const val HOURS_PER_DAY = 24.0
@@ -66,17 +69,34 @@ private fun previewWeatherForecast(): WeatherForecast =
         placeName = PREVIEW_LOCALITY,
         latitude = PREVIEW_LATITUDE,
         longitude = PREVIEW_LONGITUDE,
-        forecasts = previewForecasts()
+        forecasts = previewHours(hourOffsets = FIRST_FORECAST_HOUR until FORECAST_HOURS),
+        analyses = previewAnalyses()
     ).toWeatherForecast(
         now = previewNow,
         timeZone = previewTimeZone,
         locale = Locale.ENGLISH
     )
 
-private fun previewForecasts(): List<Forecast> =
-    List(size = FORECAST_HOURS) { hourOffset: Int ->
+private fun previewAnalyses(): List<Analysis> =
+    previewHours(hourOffsets = -ANALYSIS_HOURS until FIRST_FORECAST_HOUR)
+        .map { forecast: Forecast -> forecast.toPreviewAnalysis() }
+
+private fun Forecast.toPreviewAnalysis(): Analysis =
+    Analysis(
+        analysedAt = validAt,
+        airTemperature = airTemperature,
+        windFromDirection = windFromDirection,
+        windSpeed = windSpeed,
+        relativeHumidity = relativeHumidity,
+        precipitationType = precipitationType,
+        symbolCode = symbolCode,
+        precipitationAmountLastHour = precipitationAmount
+    )
+
+private fun previewHours(hourOffsets: IntRange): List<Forecast> =
+    hourOffsets.map { hourOffset: Int ->
         val validAt: Instant = previewNow + hourOffset.hours
-        val symbolCode: Int = previewSymbolCodes[hourOffset / SYMBOL_PERIOD_HOURS % previewSymbolCodes.size]
+        val symbolCode: Int = previewSymbolCodes[hourOffset.floorDiv(other = SYMBOL_PERIOD_HOURS).mod(other = previewSymbolCodes.size)]
         val isRaining: Boolean = symbolCode >= FIRST_PRECIPITATION_SYMBOL_CODE
         Forecast(
             validAt = validAt,

@@ -1,6 +1,7 @@
 package fi.kroon.vadret.weatherforecast.extension
 
 import fi.kroon.vadret.core.R
+import fi.kroon.vadret.weatherforecast.model.Analysis
 import fi.kroon.vadret.weatherforecast.model.ComingDay
 import fi.kroon.vadret.weatherforecast.model.ComingHour
 import fi.kroon.vadret.weatherforecast.model.Forecast
@@ -25,7 +26,8 @@ private const val KIRUNA_LONGITUDE = 20.23
 private fun localTime(
     month: Int = NOVEMBER,
     day: Int,
-    hour: Int
+    hour: Int,
+    minute: Int = 0
 ): Instant =
     LocalDate(
         year = 2026,
@@ -33,7 +35,7 @@ private fun localTime(
         day = day
     ).atTime(
         hour = hour,
-        minute = 0
+        minute = minute
     ).toInstant(timeZone = stockholm)
 
 private fun forecast(
@@ -57,10 +59,28 @@ private fun forecast(
         precipitationAmount = precipitationAmount
     )
 
+private fun analysis(
+    analysedAt: Instant,
+    airTemperature: Double = 5.0,
+    symbolCode: Int = 6,
+    precipitationAmountLastHour: Double? = 0.0
+): Analysis =
+    Analysis(
+        analysedAt = analysedAt,
+        airTemperature = airTemperature,
+        windFromDirection = 180.0,
+        windSpeed = 3.0,
+        relativeHumidity = 80,
+        precipitationType = 0,
+        symbolCode = symbolCode,
+        precipitationAmountLastHour = precipitationAmountLastHour
+    )
+
 class ForecastTest {
 
     private fun comingDays(
         forecasts: List<Forecast>,
+        analyses: List<Analysis> = emptyList(),
         now: Instant = localTime(
             day = 10,
             hour = 10
@@ -73,7 +93,8 @@ class ForecastTest {
             placeName = "Stockholm",
             latitude = latitude,
             longitude = longitude,
-            forecasts = forecasts
+            forecasts = forecasts,
+            analyses = analyses
         ).toWeatherForecast(
             now = now,
             timeZone = stockholm,
@@ -318,7 +339,7 @@ class ForecastTest {
     }
 
     @Test
-    fun `a late evening today takes its icon from the hours that are left`() {
+    fun `a late evening today without analysed hours takes its icon from the hours that are left`() {
         val today: ComingDay = comingDays(
             forecasts = listOf(
                 forecast(validAt = localTime(day = 10, hour = 20), symbolCode = 3),
@@ -424,6 +445,183 @@ class ForecastTest {
         ).single()
 
         assertEquals(expected = 0, actual = today.firstShownHourIndex)
+    }
+
+    @Test
+    fun `today starts at midnight with the hours already analysed`() {
+        val today: ComingDay = comingDays(
+            forecasts = (11..23).map { hour: Int -> forecast(validAt = localTime(day = 10, hour = hour)) },
+            analyses = listOf(
+                analysis(analysedAt = localTime(day = 9, hour = 22)),
+                analysis(analysedAt = localTime(day = 9, hour = 23))
+            ) + (0..10).map { hour: Int -> analysis(analysedAt = localTime(day = 10, hour = hour)) }
+        ).single()
+
+        assertEquals(
+            expected = (0..23).map { hour: Int -> hour.toString().padStart(length = 2, padChar = '0') },
+            actual = today.hours.map { comingHour: ComingHour -> comingHour.timeText }
+        )
+    }
+
+    @Test
+    fun `a forecast hour wins over an analysis of the same hour`() {
+        val today: ComingDay = comingDays(
+            forecasts = listOf(
+                forecast(
+                    validAt = localTime(day = 10, hour = 11),
+                    airTemperature = 6.0
+                )
+            ),
+            analyses = listOf(
+                analysis(
+                    analysedAt = localTime(day = 10, hour = 10),
+                    airTemperature = 4.0
+                ),
+                analysis(
+                    analysedAt = localTime(day = 10, hour = 11),
+                    airTemperature = 9.0
+                )
+            )
+        ).single()
+
+        assertEquals(
+            expected = listOf("4", "6"),
+            actual = today.hours.map { comingHour: ComingHour -> comingHour.temperatureText }
+        )
+    }
+
+    @Test
+    fun `the hour closest to now is now and shown first with a tie going to the earlier hour`() {
+        val nowHours: List<Pair<Int, List<Boolean>>> = listOf(29, 30, 31).map { minute: Int ->
+            val today: ComingDay = comingDays(
+                forecasts = (11..13).map { hour: Int -> forecast(validAt = localTime(day = 10, hour = hour)) },
+                analyses = (8..10).map { hour: Int -> analysis(analysedAt = localTime(day = 10, hour = hour)) },
+                now = localTime(
+                    day = 10,
+                    hour = 10,
+                    minute = minute
+                )
+            ).single()
+            today.firstShownHourIndex to today.hours.map { comingHour: ComingHour -> comingHour.isNow }
+        }
+
+        assertEquals(
+            expected = listOf(
+                2 to listOf(false, false, true, false, false, false),
+                2 to listOf(false, false, true, false, false, false),
+                3 to listOf(false, false, false, true, false, false)
+            ),
+            actual = nowHours
+        )
+    }
+
+    @Test
+    fun `just before midnight the now hour is the first hour of tomorrow`() {
+        val days: List<ComingDay> = comingDays(
+            forecasts = (0..23).map { hour: Int -> forecast(validAt = localTime(day = 11, hour = hour)) },
+            analyses = (0..23).map { hour: Int -> analysis(analysedAt = localTime(day = 10, hour = hour)) },
+            now = localTime(
+                day = 10,
+                hour = 23,
+                minute = 45
+            )
+        )
+
+        assertEquals(
+            expected = listOf(23, 0),
+            actual = days.map { comingDay: ComingDay -> comingDay.firstShownHourIndex }
+        )
+        assertEquals(
+            expected = listOf(emptyList(), listOf("00")),
+            actual = days.map { comingDay: ComingDay ->
+                comingDay.hours
+                    .filter { comingHour: ComingHour -> comingHour.isNow }
+                    .map { comingHour: ComingHour -> comingHour.timeText }
+            }
+        )
+    }
+
+    @Test
+    fun `an hour more than an hour away is not now`() {
+        val days: List<ComingDay> = comingDays(
+            forecasts = listOf(
+                forecast(validAt = localTime(day = 10, hour = 12)),
+                forecast(validAt = localTime(day = 10, hour = 13))
+            ),
+            now = localTime(
+                day = 10,
+                hour = 10
+            )
+        )
+
+        assertEquals(
+            expected = listOf(0 to listOf(false, false)),
+            actual = days.map { comingDay: ComingDay ->
+                comingDay.firstShownHourIndex to comingDay.hours.map { comingHour: ComingHour -> comingHour.isNow }
+            }
+        )
+    }
+
+    @Test
+    fun `today takes its icon from the analysed daytime hours too`() {
+        val today: ComingDay = comingDays(
+            forecasts = (20..23).map { hour: Int ->
+                forecast(
+                    validAt = localTime(day = 10, hour = hour),
+                    symbolCode = 6
+                )
+            },
+            analyses = (8..18).map { hour: Int ->
+                analysis(
+                    analysedAt = localTime(day = 10, hour = hour),
+                    symbolCode = 1
+                )
+            },
+            now = localTime(
+                day = 10,
+                hour = 19
+            )
+        ).single()
+
+        assertEquals(expected = R.drawable.ic_clear_day, actual = today.iconResourceId)
+    }
+
+    @Test
+    fun `the analysed hours count towards the whole of today`() {
+        val today: ComingDay = comingDays(
+            forecasts = listOf(
+                forecast(
+                    validAt = localTime(day = 10, hour = 11),
+                    airTemperature = 6.0,
+                    precipitationAmount = 0.5
+                )
+            ),
+            analyses = listOf(
+                analysis(
+                    analysedAt = localTime(day = 10, hour = 5),
+                    airTemperature = -2.0,
+                    precipitationAmountLastHour = 1.0
+                ),
+                analysis(
+                    analysedAt = localTime(day = 10, hour = 10),
+                    airTemperature = 3.0,
+                    precipitationAmountLastHour = 0.0
+                )
+            )
+        ).single()
+
+        assertEquals(
+            expected = Triple(
+                first = "-2",
+                second = "6",
+                third = "1.5"
+            ),
+            actual = Triple(
+                first = today.lowTemperatureText,
+                second = today.highTemperatureText,
+                third = today.precipitationText
+            )
+        )
     }
 
     @Test

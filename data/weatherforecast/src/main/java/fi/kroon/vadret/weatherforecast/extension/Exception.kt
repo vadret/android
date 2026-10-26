@@ -12,12 +12,12 @@ import kotlin.coroutines.cancellation.CancellationException
 
 private val logger: Logger = LoggerFactory.getLogger(tag = "fi.kroon.vadret.weatherforecast")
 
-internal fun Exception.toFailure(): Failure =
+internal fun Exception.toFailure(notFoundErrorCode: ErrorCode): Failure =
     when {
         this is CancellationException -> throw this
 
         this is ClientRequestException && response.status == HttpStatusCode.NotFound -> toKnownFailure(
-            errorCode = ErrorCode.WEATHER_FORECAST_NOT_AVAILABLE_FOR_LOCATION,
+            errorCode = notFoundErrorCode,
             logger = logger
         )
 

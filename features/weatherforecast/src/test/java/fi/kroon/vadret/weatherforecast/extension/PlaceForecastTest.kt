@@ -1,6 +1,7 @@
 package fi.kroon.vadret.weatherforecast.extension
 
 import fi.kroon.vadret.core.R
+import fi.kroon.vadret.weatherforecast.model.Analysis
 import fi.kroon.vadret.weatherforecast.model.CurrentWeather
 import fi.kroon.vadret.weatherforecast.model.Forecast
 import fi.kroon.vadret.weatherforecast.model.ForecastDay
@@ -27,12 +28,13 @@ private val stockholm: TimeZone = TimeZone.of(zoneId = "Europe/Stockholm")
 private fun forecast(
     validAt: Instant,
     symbolCode: Int = 6,
-    windFromDirection: Double = 160.0
+    windFromDirection: Double = 160.0,
+    airTemperature: Double = 10.9
 ): Forecast =
     Forecast(
         validAt = validAt,
         intervalStartedAt = validAt - 1.hours,
-        airTemperature = 10.9,
+        airTemperature = airTemperature,
         windFromDirection = windFromDirection,
         windSpeed = 5.4,
         relativeHumidity = 86,
@@ -41,10 +43,26 @@ private fun forecast(
         precipitationAmount = 0.0
     )
 
+private fun analysis(
+    analysedAt: Instant,
+    airTemperature: Double = 10.9
+): Analysis =
+    Analysis(
+        analysedAt = analysedAt,
+        airTemperature = airTemperature,
+        windFromDirection = 160.0,
+        windSpeed = 5.4,
+        relativeHumidity = 86,
+        precipitationType = 0,
+        symbolCode = 6,
+        precipitationAmountLastHour = 0.0
+    )
+
 class PlaceForecastTest {
 
     private fun weatherForecast(
         forecasts: List<Forecast>,
+        analyses: List<Analysis> = emptyList(),
         locale: Locale = Locale.ENGLISH,
         now: Instant = Instant.parse(input = "2026-10-24T12:00:00Z")
     ): WeatherForecast =
@@ -52,7 +70,8 @@ class PlaceForecastTest {
             placeName = "Stockholm",
             latitude = 59.33,
             longitude = 18.07,
-            forecasts = forecasts
+            forecasts = forecasts,
+            analyses = analyses
         ).toWeatherForecast(
             now = now,
             timeZone = stockholm,
@@ -127,6 +146,41 @@ class PlaceForecastTest {
         assertEquals(expected = R.drawable.ic_cloud, actual = currentWeather.iconResourceId)
         assertEquals(expected = 86, actual = currentWeather.humidityPercent)
         assertEquals(expected = 5.4, actual = currentWeather.windSpeed)
+    }
+
+    @Test
+    fun `the current weather describes the hour closest to now`() {
+        val analysedHour: Analysis = analysis(
+            analysedAt = Instant.parse(input = "2026-10-24T12:00:00Z"),
+            airTemperature = 9.0
+        )
+        val forecastHour: Forecast = forecast(
+            validAt = Instant.parse(input = "2026-10-24T13:00:00Z"),
+            airTemperature = 11.0
+        )
+
+        val temperatures: List<Double?> = listOf("2026-10-24T12:29:00Z", "2026-10-24T12:31:00Z").map { now: String ->
+            weatherForecast(
+                forecasts = listOf(forecastHour),
+                analyses = listOf(analysedHour),
+                now = Instant.parse(input = now)
+            ).current?.temperature
+        }
+
+        assertEquals(expected = listOf(9.0, 11.0), actual = temperatures)
+    }
+
+    @Test
+    fun `the hour list only holds forecast hours`() {
+        val hours: List<ForecastHour> = weatherForecast(
+            forecasts = listOf(forecast(validAt = Instant.parse(input = "2026-10-24T13:00:00Z"))),
+            analyses = listOf(analysis(analysedAt = Instant.parse(input = "2026-10-24T11:00:00Z")))
+        ).days.flatMap { day: ForecastDay -> day.hours }
+
+        assertEquals(
+            expected = listOf("hour-2026-10-24T13:00:00Z"),
+            actual = hours.map { hour: ForecastHour -> hour.key }
+        )
     }
 
     @Test

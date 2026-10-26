@@ -46,8 +46,9 @@ private val stripPadding = PaddingValues(
     bottom = 10.dp
 )
 private val hourColumnWidth = 46.dp
-private val hourCellTopPadding = 8.dp
 private val hourCellContentSpacing = 5.dp
+private val hourCellVerticalPadding = 4.dp
+private val nowHourShape = RoundedCornerShape(size = 12.dp)
 private val hourIconSize = 22.dp
 private val temperatureLegendSpacing = 6.dp
 private val temperatureChartHeight = 64.dp
@@ -166,22 +167,37 @@ private fun ComingHourCell(
     comingHour: ComingHour,
     modifier: Modifier = Modifier
 ) {
+    val backgroundColor: Color = if (comingHour.isNow) {
+        VadretTheme.colorScheme.secondaryContainer
+    } else {
+        Color.Transparent
+    }
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(space = hourCellContentSpacing),
         modifier = modifier
             .fillMaxWidth()
+            .background(
+                color = backgroundColor,
+                shape = nowHourShape
+            )
+            .padding(vertical = hourCellVerticalPadding)
     ) {
-        Text(
-            text = if (comingHour.isNow) {
-                stringResource(id = R.string.now)
-            } else {
-                comingHour.timeText
-            },
-            style = VadretTheme.textStyles.label,
-            color = VadretTheme.colorScheme.onSurfaceVariant,
-            maxLines = SINGLE_LINE
-        )
+        if (comingHour.isNow) {
+            Text(
+                text = stringResource(id = R.string.now),
+                style = VadretTheme.textStyles.labelStrong,
+                color = VadretTheme.colorScheme.onSurface,
+                maxLines = SINGLE_LINE
+            )
+        } else {
+            Text(
+                text = comingHour.timeText,
+                style = VadretTheme.textStyles.label,
+                color = VadretTheme.colorScheme.onSurfaceVariant,
+                maxLines = SINGLE_LINE
+            )
+        }
         Icon(
             painter = painterResource(id = comingHour.iconResourceId),
             contentDescription = stringResource(id = comingHour.descriptionResourceId),

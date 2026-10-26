@@ -12,6 +12,7 @@ import fi.kroon.vadret.location.model.LocationPreference
 import fi.kroon.vadret.location.model.StoredLocation
 import fi.kroon.vadret.nominatim.NominatimRepository
 import fi.kroon.vadret.nominatim.model.Locality
+import fi.kroon.vadret.weatherforecast.model.Analysis
 import fi.kroon.vadret.weatherforecast.model.ComingDay
 import fi.kroon.vadret.weatherforecast.model.Forecast
 import io.github.sphrak.either.Either
@@ -19,12 +20,14 @@ import io.github.sphrak.either.extension.asLeft
 import io.github.sphrak.either.extension.asRight
 import io.github.sphrak.either.extension.successOrNull
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlin.concurrent.atomics.AtomicInt
 import kotlin.concurrent.atomics.fetchAndIncrement
+import kotlin.coroutines.cancellation.CancellationException
 import kotlin.time.Instant
 
 internal val stockholm = StoredLocation(
@@ -62,6 +65,17 @@ internal val noon = Forecast(
     precipitationType = 0,
     symbolCode = 1,
     precipitationAmount = 0.0
+)
+
+internal val morning = Analysis(
+    analysedAt = Instant.parse(input = "2026-10-24T06:00:00Z"),
+    airTemperature = 1.0,
+    windFromDirection = 180.0,
+    windSpeed = 2.0,
+    relativeHumidity = 90,
+    precipitationType = 0,
+    symbolCode = 6,
+    precipitationAmountLastHour = 0.0
 )
 
 internal fun comingDay(
@@ -194,10 +208,14 @@ internal class FakeFavoriteRepository(
 }
 
 internal class FakeWeatherForecastRepository(
-    var forecasts: Either<Failure, List<Forecast>> = listOf(noon).asRight()
+    var forecasts: Either<Failure, List<Forecast>> = listOf(noon).asRight(),
+    var analyses: Either<Failure, List<Analysis>> = emptyList<Analysis>().asRight()
 ) : WeatherForecastRepository {
 
     val requestedCoordinates = mutableListOf<Pair<Double, Double>>()
+    val requestedAnalysisCoordinates = mutableListOf<Pair<Double, Double>>()
+    var analysisGate: CompletableDeferred<Unit>? = null
+    var isAnalysisCancelled: Boolean = false
 
     override suspend fun getForecasts(
         latitude: Double,
@@ -205,6 +223,20 @@ internal class FakeWeatherForecastRepository(
     ): Either<Failure, List<Forecast>> {
         requestedCoordinates.add(latitude to longitude)
         return forecasts
+    }
+
+    override suspend fun getAnalyses(
+        latitude: Double,
+        longitude: Double
+    ): Either<Failure, List<Analysis>> {
+        requestedAnalysisCoordinates.add(latitude to longitude)
+        try {
+            analysisGate?.await()
+        } catch (cancellationException: CancellationException) {
+            isAnalysisCancelled = true
+            throw cancellationException
+        }
+        return analyses
     }
 }
 

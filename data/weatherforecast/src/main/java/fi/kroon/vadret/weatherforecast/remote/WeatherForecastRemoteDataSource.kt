@@ -5,4 +5,9 @@ internal interface WeatherForecastRemoteDataSource {
         latitude: Double,
         longitude: Double
     ): WeatherForecastDto
+
+    suspend fun getAnalysis(
+        latitude: Double,
+        longitude: Double
+    ): AnalysisDto
 }

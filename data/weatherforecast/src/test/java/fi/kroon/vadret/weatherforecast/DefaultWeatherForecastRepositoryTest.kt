@@ -6,6 +6,7 @@ import fi.kroon.vadret.logging.LogLevel
 import fi.kroon.vadret.testing.LogLine
 import fi.kroon.vadret.testing.mockHttpClient
 import fi.kroon.vadret.testing.withRecordedLogs
+import fi.kroon.vadret.weatherforecast.model.Analysis
 import fi.kroon.vadret.weatherforecast.model.Forecast
 import fi.kroon.vadret.weatherforecast.remote.DefaultWeatherForecastRemoteDataSource
 import io.github.sphrak.either.Either
@@ -66,6 +67,34 @@ private fun timeSeriesWithAmount(
       }
     }
     """.trimIndent()
+
+private fun analysisTimeSeries(
+    time: String,
+    airTemperature: Double,
+    precipitationAmountLastHour: String? = "0.04"
+): String {
+    val precipitationAmountField: String = if (precipitationAmountLastHour == null) {
+        ""
+    } else {
+        "\"precipitation_amount_last_1_hours\": $precipitationAmountLastHour,"
+    }
+    return """
+    {
+      "time": "$time",
+      "data": {
+        "air_temperature": $airTemperature,
+        "wind_from_direction": 203,
+        "wind_speed": 4.4,
+        "wind_speed_of_gust": 7.8,
+        "relative_humidity": 82,
+        "cloud_area_fraction": 8,
+        $precipitationAmountField
+        "predominant_precipitation_type_at_surface": 0,
+        "symbol_code": 6
+      }
+    }
+    """.trimIndent()
+}
 
 class DefaultWeatherForecastRepositoryTest {
 
@@ -260,6 +289,175 @@ class DefaultWeatherForecastRepositoryTest {
                         ErrorCode.WEATHER_FORECAST_NOT_AVAILABLE_FOR_LOCATION,
                         ErrorCode.HTTP_SERVICE_UNAVAILABLE,
                         ErrorCode.INVALID_RESPONSE,
+                        ErrorCode.INVALID_RESPONSE
+                    ).map { errorCode: ErrorCode -> Failure(errorCode = errorCode).asLeft() },
+                    actual = results
+                )
+                assertEquals(
+                    expected = List(size = results.size) { LogLevel.WARN },
+                    actual = recordingLogSink.lines.map { line: LogLine -> line.level }
+                )
+            }
+        }
+
+    @Test
+    fun `the analysis is asked for at six decimals at most`() =
+        runTest {
+            repository {
+                respond(
+                    content = """{"timeSeries":[]}""",
+                    headers = jsonHeaders
+                )
+            }.getAnalyses(
+                latitude = 59.32938123,
+                longitude = 18.0686
+            )
+
+            assertEquals(
+                expected = "https://opendata-download-metanalys.smhi.se/api/category/mesan2g/version/3/geotype/point/lon/18.0686/lat/59.329381/data.json",
+                actual = requests.single().url.toString()
+            )
+        }
+
+    @Test
+    fun `only the analysis refuses a cached answer older than ten minutes`() =
+        runTest {
+            val weatherForecastRepository: WeatherForecastRepository = repository {
+                respond(
+                    content = """{"timeSeries":[]}""",
+                    headers = jsonHeaders
+                )
+            }
+
+            weatherForecastRepository.getAnalyses(
+                latitude = 59.3293,
+                longitude = 18.0686
+            )
+            weatherForecastRepository.getForecasts(
+                latitude = 59.3293,
+                longitude = 18.0686
+            )
+
+            assertEquals(
+                expected = listOf("max-age=600", null),
+                actual = requests.map { request: HttpRequestData -> request.headers[HttpHeaders.CacheControl] }
+            )
+        }
+
+    @Test
+    fun `the analysed hours come in time order`() =
+        runTest {
+            val body = """
+            {
+              "referenceTime": "2026-10-26T17:00:00Z",
+              "timeSeries": [
+                ${analysisTimeSeries(time = "2026-10-26T17:00:00Z", airTemperature = 11.1)},
+                ${analysisTimeSeries(time = "2026-10-26T16:00:00Z", airTemperature = 11.3)}
+              ]
+            }
+            """.trimIndent()
+
+            val result: Either<Failure, List<Analysis>> = repository {
+                respond(
+                    content = body,
+                    headers = jsonHeaders
+                )
+            }.getAnalyses(
+                latitude = 59.3293,
+                longitude = 18.0686
+            )
+
+            assertEquals<Either<Failure, List<Analysis>>>(
+                expected = listOf(
+                    Analysis(
+                        analysedAt = Instant.parse(input = "2026-10-26T16:00:00Z"),
+                        airTemperature = 11.3,
+                        windFromDirection = 203.0,
+                        windSpeed = 4.4,
+                        relativeHumidity = 82,
+                        precipitationType = 0,
+                        symbolCode = 6,
+                        precipitationAmountLastHour = 0.04
+                    ),
+                    Analysis(
+                        analysedAt = Instant.parse(input = "2026-10-26T17:00:00Z"),
+                        airTemperature = 11.1,
+                        windFromDirection = 203.0,
+                        windSpeed = 4.4,
+                        relativeHumidity = 82,
+                        precipitationType = 0,
+                        symbolCode = 6,
+                        precipitationAmountLastHour = 0.04
+                    )
+                ).asRight(),
+                actual = result
+            )
+        }
+
+    @Test
+    fun `a missing or impossible analysed precipitation amount is unknown`() =
+        runTest {
+            val body = """
+            {
+              "timeSeries": [
+                ${analysisTimeSeries(time = "2026-10-26T11:00:00Z", airTemperature = 7.0, precipitationAmountLastHour = "9999")},
+                ${analysisTimeSeries(time = "2026-10-26T12:00:00Z", airTemperature = 7.0, precipitationAmountLastHour = null)},
+                ${analysisTimeSeries(time = "2026-10-26T13:00:00Z", airTemperature = 7.0, precipitationAmountLastHour = "-0.1")},
+                ${analysisTimeSeries(time = "2026-10-26T14:00:00Z", airTemperature = 7.0, precipitationAmountLastHour = "0.22")}
+              ]
+            }
+            """.trimIndent()
+
+            val result: Either<Failure, List<Analysis>> = repository {
+                respond(
+                    content = body,
+                    headers = jsonHeaders
+                )
+            }.getAnalyses(
+                latitude = 59.3293,
+                longitude = 18.0686
+            )
+
+            assertEquals(
+                expected = listOf(null, null, null, 0.22),
+                actual = (result as Either.Right).b.map { analysis: Analysis -> analysis.precipitationAmountLastHour }
+            )
+        }
+
+    @Test
+    fun `a place outside the analysis area is told apart from other failures`() =
+        runTest {
+            withRecordedLogs { recordingLogSink ->
+                val results: List<Either<Failure, List<Analysis>>> = listOf(
+                    repository {
+                        respond(
+                            content = "",
+                            status = HttpStatusCode.NotFound
+                        )
+                    },
+                    repository {
+                        respond(
+                            content = "",
+                            status = HttpStatusCode.ServiceUnavailable
+                        )
+                    },
+                    repository {
+                        respond(
+                            content = """{"timeSeries":[{"time":"2026-10-26T12:00:00Z","data":{}}]}""",
+                            headers = jsonHeaders
+                        )
+                    }
+                ).map { weatherForecastRepository: WeatherForecastRepository ->
+                    weatherForecastRepository.getAnalyses(
+                        latitude = 70.0,
+                        longitude = 40.0
+                    )
+                }
+
+                assertEquals(
+                    expected = listOf(
+                        ErrorCode.WEATHER_ANALYSIS_NOT_AVAILABLE_FOR_LOCATION,
+                        ErrorCode.HTTP_SERVICE_UNAVAILABLE,
                         ErrorCode.INVALID_RESPONSE
                     ).map { errorCode: ErrorCode -> Failure(errorCode = errorCode).asLeft() },
                     actual = results

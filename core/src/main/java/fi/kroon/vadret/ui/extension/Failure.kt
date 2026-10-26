@@ -33,7 +33,8 @@ fun Failure.messageResourceId(): Int =
 
         ErrorCode.FILE_READ_FAILED -> R.string.failed_loading_file
 
-        ErrorCode.WEATHER_FORECAST_NOT_AVAILABLE_FOR_LOCATION -> R.string.data_not_available_at_this_location
+        ErrorCode.WEATHER_FORECAST_NOT_AVAILABLE_FOR_LOCATION,
+        ErrorCode.WEATHER_ANALYSIS_NOT_AVAILABLE_FOR_LOCATION -> R.string.data_not_available_at_this_location
 
         ErrorCode.RADAR_NOT_AVAILABLE -> R.string.no_radar_available
 
