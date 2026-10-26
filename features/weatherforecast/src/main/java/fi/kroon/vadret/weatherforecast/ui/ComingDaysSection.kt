@@ -1,27 +1,20 @@
 package fi.kroon.vadret.weatherforecast.ui
 
-import androidx.annotation.DrawableRes
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -40,11 +33,8 @@ import fi.kroon.vadret.core.R
 import fi.kroon.vadret.ui.VadretCard
 import fi.kroon.vadret.ui.VadretTheme
 import fi.kroon.vadret.weatherforecast.model.ComingDay
-import fi.kroon.vadret.weatherforecast.model.ComingHour
-import fi.kroon.vadret.weatherforecast.model.SunTimes
 import kotlinx.collections.immutable.ImmutableList
 
-private const val HOUR_CONTENT_TYPE = "coming-hour"
 private const val COLLAPSED_DEGREES = 0f
 private const val EXPANDED_DEGREES = 180f
 private const val SINGLE_LINE = 1
@@ -61,22 +51,6 @@ private val dayTemperatureWidth = 28.dp
 private val chevronSize = 20.dp
 private val dividerStartPadding = 16.dp
 private val hoursBottomPadding = 14.dp
-private val hourStripPadding = PaddingValues(
-    start = 10.dp,
-    end = 10.dp,
-    top = 2.dp,
-    bottom = 8.dp
-)
-private val hourCellSpacing = 2.dp
-private val hourCellWidth = 46.dp
-private val hourCellVerticalPadding = 8.dp
-private val hourCellContentSpacing = 6.dp
-private val hourIconSize = 22.dp
-private val detailsHorizontalPadding = 16.dp
-private val detailsHorizontalSpacing = 16.dp
-private val detailsVerticalSpacing = 6.dp
-private val detailIconSize = 16.dp
-private val detailIconSpacing = 4.dp
 private val dayNameAutoSize = TextAutoSize.StepBased(
     minFontSize = 11.sp,
     maxFontSize = 15.sp
@@ -85,37 +59,23 @@ private val dayNameAutoSize = TextAutoSize.StepBased(
 @Composable
 internal fun ComingDaysHeader(
     dayCount: Int,
-    isEveryDayExpanded: Boolean,
-    onAllDaysToggled: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
+    Text(
+        text = pluralStringResource(
+            id = R.plurals.coming_days_title,
+            count = dayCount,
+            dayCount
+        ),
+        style = VadretTheme.textStyles.heading,
+        color = VadretTheme.colorScheme.onBackground,
         modifier = modifier
             .fillMaxWidth()
-            .padding(start = headerInset)
-    ) {
-        Text(
-            text = pluralStringResource(
-                id = R.plurals.coming_days_title,
-                count = dayCount,
-                dayCount
-            ),
-            style = VadretTheme.textStyles.heading,
-            color = VadretTheme.colorScheme.onBackground,
-            modifier = Modifier.weight(weight = 1f)
-        )
-        TextButton(onClick = onAllDaysToggled) {
-            Text(
-                text = if (isEveryDayExpanded) {
-                    stringResource(id = R.string.collapse_all)
-                } else {
-                    stringResource(id = R.string.expand_all)
-                },
-                style = VadretTheme.textStyles.detailStrong
+            .padding(
+                start = headerInset,
+                top = headerInset
             )
-        }
-    }
+    )
 }
 
 @Composable
@@ -152,10 +112,11 @@ private fun ComingDayItem(
             onClick = { onDayToggled(comingDay.key) }
         )
         AnimatedVisibility(visible = comingDay.isExpanded) {
-            Column(modifier = Modifier.padding(bottom = hoursBottomPadding)) {
-                ComingHourStrip(hours = comingDay.hours)
-                ComingDayDetails(comingDay = comingDay)
-            }
+            ComingHourStrip(
+                hours = comingDay.hours,
+                firstShownHourIndex = comingDay.firstShownHourIndex,
+                modifier = Modifier.padding(bottom = hoursBottomPadding)
+            )
         }
     }
 }
@@ -255,142 +216,6 @@ private fun ComingDayRow(
             modifier = Modifier
                 .size(size = chevronSize)
                 .rotate(degrees = chevronRotation)
-        )
-    }
-}
-
-@Composable
-private fun ComingHourStrip(
-    hours: ImmutableList<ComingHour>,
-    modifier: Modifier = Modifier
-) {
-    LazyRow(
-        contentPadding = hourStripPadding,
-        horizontalArrangement = Arrangement.spacedBy(space = hourCellSpacing),
-        modifier = modifier.fillMaxWidth()
-    ) {
-        items(
-            items = hours,
-            key = { comingHour: ComingHour -> comingHour.key },
-            contentType = { HOUR_CONTENT_TYPE }
-        ) { comingHour: ComingHour ->
-            ComingHourCell(comingHour = comingHour)
-        }
-    }
-}
-
-@Composable
-private fun ComingHourCell(
-    comingHour: ComingHour,
-    modifier: Modifier = Modifier
-) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(space = hourCellContentSpacing),
-        modifier = modifier
-            .width(width = hourCellWidth)
-            .padding(vertical = hourCellVerticalPadding)
-    ) {
-        Text(
-            text = if (comingHour.isNow) {
-                stringResource(id = R.string.now)
-            } else {
-                comingHour.timeText
-            },
-            style = VadretTheme.textStyles.label,
-            color = VadretTheme.colorScheme.onSurfaceVariant,
-            maxLines = SINGLE_LINE
-        )
-        Icon(
-            painter = painterResource(id = comingHour.iconResourceId),
-            contentDescription = stringResource(id = comingHour.descriptionResourceId),
-            tint = VadretTheme.colors.icon,
-            modifier = Modifier.size(size = hourIconSize)
-        )
-        Text(
-            text = "${comingHour.temperatureText}${stringResource(id = R.string.degree)}",
-            style = VadretTheme.textStyles.detailStrong,
-            color = VadretTheme.colorScheme.onSurface,
-            maxLines = SINGLE_LINE
-        )
-        Text(
-            text = comingHour.precipitationText.orEmpty(),
-            style = VadretTheme.textStyles.label,
-            color = VadretTheme.colors.precipitation,
-            maxLines = SINGLE_LINE
-        )
-    }
-}
-
-@OptIn(ExperimentalLayoutApi::class)
-@Composable
-private fun ComingDayDetails(
-    comingDay: ComingDay,
-    modifier: Modifier = Modifier
-) {
-    FlowRow(
-        horizontalArrangement = Arrangement.spacedBy(space = detailsHorizontalSpacing),
-        verticalArrangement = Arrangement.spacedBy(space = detailsVerticalSpacing),
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(horizontal = detailsHorizontalPadding)
-    ) {
-        DayDetail(
-            iconResourceId = R.drawable.ic_air,
-            iconDescription = stringResource(id = R.string.wind),
-            text = "${comingDay.windSpeedText} ${stringResource(id = R.string.m_s)}"
-        )
-        when (val sunTimes: SunTimes = comingDay.sunTimes) {
-            is SunTimes.RiseAndSet -> {
-                DayDetail(
-                    iconResourceId = R.drawable.ic_wb_twilight,
-                    iconDescription = stringResource(id = R.string.sunrise),
-                    text = sunTimes.sunriseText
-                )
-                DayDetail(
-                    iconResourceId = R.drawable.ic_nights_stay,
-                    iconDescription = stringResource(id = R.string.sunset),
-                    text = sunTimes.sunsetText
-                )
-            }
-
-            SunTimes.PolarNight -> DayDetail(
-                iconResourceId = R.drawable.ic_nights_stay,
-                iconDescription = null,
-                text = stringResource(id = R.string.polar_night)
-            )
-
-            SunTimes.MidnightSun -> DayDetail(
-                iconResourceId = R.drawable.ic_clear_day,
-                iconDescription = null,
-                text = stringResource(id = R.string.midnight_sun)
-            )
-        }
-    }
-}
-
-@Composable
-private fun DayDetail(
-    @DrawableRes iconResourceId: Int,
-    iconDescription: String?,
-    text: String,
-    modifier: Modifier = Modifier
-) {
-    Row(
-        horizontalArrangement = Arrangement.spacedBy(space = detailIconSpacing),
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier
-    ) {
-        Icon(
-            painter = painterResource(id = iconResourceId),
-            contentDescription = iconDescription,
-            tint = VadretTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.size(size = detailIconSize)
-        )
-        Text(
-            text = text,
-            style = VadretTheme.textStyles.detailLabel,
-            color = VadretTheme.colorScheme.onSurfaceVariant
         )
     }
 }

@@ -18,8 +18,7 @@ data class ComingDay(
     val highTemperatureText: String,
     val temperatureRangeStart: Float,
     val temperatureRangeEnd: Float,
-    val windSpeedText: String,
-    val sunTimes: SunTimes,
     val hours: ImmutableList<ComingHour>,
+    val firstShownHourIndex: Int,
     val isExpanded: Boolean
 )

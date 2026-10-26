@@ -12,5 +12,11 @@ data class ComingHour(
     @StringRes
     val descriptionResourceId: Int,
     val temperatureText: String,
-    val precipitationText: String?
+    val temperatureLevel: Float,
+    val precipitationText: String?,
+    val windSpeedText: String,
+    val windLevel: Float,
+    val windArrowRotation: Float,
+    @StringRes
+    val windDirectionResourceId: Int
 )

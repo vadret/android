@@ -13,7 +13,6 @@ sealed interface WeatherForecastEvent {
     data object OnErrorShown : WeatherForecastEvent
     data class OnForecastViewSelected(val forecastView: ForecastView) : WeatherForecastEvent
     data class OnDayToggled(val dayKey: String) : WeatherForecastEvent
-    data object OnAllDaysToggled : WeatherForecastEvent
     data class OnLocationPermissionResult(val isGranted: Boolean) : WeatherForecastEvent
     data object OnAutomaticLocationClicked : WeatherForecastEvent
     data class OnFavoriteClicked(val favorite: Favorite) : WeatherForecastEvent

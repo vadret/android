@@ -69,6 +69,11 @@ data class VadretTextStyles(
         fontSize = 13,
         lineHeight = 20
     ),
+    val detailLabelStrong: TextStyle = textStyle(
+        fontSize = 13,
+        lineHeight = 20,
+        fontWeight = FontWeight.Medium
+    ),
     val label: TextStyle = textStyle(
         fontSize = 12,
         lineHeight = 16

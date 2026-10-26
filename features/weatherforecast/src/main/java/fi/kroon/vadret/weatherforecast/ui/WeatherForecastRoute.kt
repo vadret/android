@@ -28,22 +28,15 @@ import fi.kroon.vadret.ui.VadretTopAppBar
 import fi.kroon.vadret.weatherforecast.WeatherForecastEvent
 import fi.kroon.vadret.weatherforecast.WeatherForecastState
 import fi.kroon.vadret.weatherforecast.WeatherForecastViewModel
-import fi.kroon.vadret.weatherforecast.model.ComingDay
 import fi.kroon.vadret.weatherforecast.model.CurrentWeather
-import fi.kroon.vadret.weatherforecast.model.ForecastDay
 import fi.kroon.vadret.weatherforecast.model.ForecastView
 import fi.kroon.vadret.weatherforecast.model.SearchState
-import kotlinx.collections.immutable.ImmutableList
 import java.util.Locale
 
 private const val SEARCH_KEY = "search"
 private const val CURRENT_WEATHER_KEY = "current-weather"
-private const val DAY_HEADER_KEY_PREFIX = "header-"
-private const val DAY_HEADER_CONTENT_TYPE = "day-header"
-private const val DAY_CONTENT_TYPE = "day"
 private const val FORECAST_VIEW_KEY = "forecast-view"
-private const val COMING_DAYS_HEADER_KEY = "coming-days-header"
-private const val COMING_DAYS_KEY = "coming-days"
+private const val FORECAST_CONTENT_KEY = "forecast-content"
 
 @Composable
 fun WeatherForecastRoute(
@@ -171,60 +164,14 @@ private fun LazyListScope.forecast(
             }
         )
     }
-    when (state.forecastView) {
-        ForecastView.DAYS -> comingDays(
-            state = state,
+    item(
+        key = FORECAST_CONTENT_KEY,
+        contentType = FORECAST_CONTENT_KEY
+    ) {
+        ForecastContent(
+            forecastView = state.forecastView,
+            forecast = state.forecast,
             onEvent = onEvent
         )
-
-        ForecastView.HOURS -> forecastDays(forecastDays = state.forecast.days)
-    }
-}
-
-private fun LazyListScope.comingDays(
-    state: WeatherForecastState,
-    onEvent: (WeatherForecastEvent) -> Unit
-) {
-    val comingDays: ImmutableList<ComingDay> = state.forecast.comingDays
-    if (comingDays.isEmpty()) {
-        return
-    }
-    item(
-        key = COMING_DAYS_HEADER_KEY,
-        contentType = COMING_DAYS_HEADER_KEY
-    ) {
-        ComingDaysHeader(
-            dayCount = comingDays.size,
-            isEveryDayExpanded = state.isEveryDayExpanded,
-            onAllDaysToggled = { onEvent(WeatherForecastEvent.OnAllDaysToggled) }
-        )
-    }
-    item(
-        key = COMING_DAYS_KEY,
-        contentType = COMING_DAYS_KEY
-    ) {
-        ComingDaysCard(
-            comingDays = comingDays,
-            onDayToggled = { dayKey: String ->
-                onEvent(WeatherForecastEvent.OnDayToggled(dayKey = dayKey))
-            }
-        )
-    }
-}
-
-private fun LazyListScope.forecastDays(forecastDays: ImmutableList<ForecastDay>) {
-    forecastDays.forEach { forecastDay: ForecastDay ->
-        item(
-            key = "$DAY_HEADER_KEY_PREFIX${forecastDay.key}",
-            contentType = DAY_HEADER_CONTENT_TYPE
-        ) {
-            ForecastDayHeader(forecastDay = forecastDay)
-        }
-        item(
-            key = forecastDay.key,
-            contentType = DAY_CONTENT_TYPE
-        ) {
-            ForecastDayCard(forecastDay = forecastDay)
-        }
     }
 }

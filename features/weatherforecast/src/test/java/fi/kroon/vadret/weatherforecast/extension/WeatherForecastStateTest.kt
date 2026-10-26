@@ -4,11 +4,10 @@ import fi.kroon.vadret.weatherforecast.WeatherForecastState
 import fi.kroon.vadret.weatherforecast.comingDay
 import fi.kroon.vadret.weatherforecast.model.ComingDay
 import fi.kroon.vadret.weatherforecast.model.WeatherForecast
+import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertFalse
-import kotlin.test.assertTrue
 
 class WeatherForecastStateTest {
 
@@ -33,12 +32,12 @@ class WeatherForecastStateTest {
         }
 
     @Test
-    fun `new coming days also decide whether every day is expanded`() {
-        assertTrue(actual = openState.isEveryDayExpanded)
-        assertFalse(
-            actual = openState
-                .withComingDays(comingDays = persistentListOf(comingDay(dayKey = "coming-day-2026-11-16")))
-                .isEveryDayExpanded
+    fun `new coming days replace the shown ones`() {
+        val comingDays: ImmutableList<ComingDay> = persistentListOf(comingDay(dayKey = "coming-day-2026-11-17"))
+
+        assertEquals(
+            expected = comingDays,
+            actual = openState.withComingDays(comingDays = comingDays).forecast.comingDays
         )
     }
 
@@ -50,7 +49,6 @@ class WeatherForecastStateTest {
         )
 
         assertEquals(expected = listOf(true, false), actual = state.expansion())
-        assertFalse(actual = state.isEveryDayExpanded)
     }
 
     @Test
@@ -61,6 +59,5 @@ class WeatherForecastStateTest {
         )
 
         assertEquals(expected = listOf(false, false), actual = state.expansion())
-        assertFalse(actual = state.isEveryDayExpanded)
     }
 }

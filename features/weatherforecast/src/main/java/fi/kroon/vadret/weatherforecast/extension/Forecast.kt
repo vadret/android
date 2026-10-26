@@ -3,7 +3,6 @@ package fi.kroon.vadret.weatherforecast.extension
 import fi.kroon.vadret.weatherforecast.model.ComingDay
 import fi.kroon.vadret.weatherforecast.model.ComingHour
 import fi.kroon.vadret.weatherforecast.model.Forecast
-import fi.kroon.vadret.weatherforecast.model.SunTimes
 import fi.kroon.vadret.weatherforecast.util.SunriseSunset
 import fi.kroon.vadret.weatherforecast.util.SunsetUtil
 import fi.kroon.vadret.weatherforecast.util.WeatherForecastUtil
@@ -39,6 +38,12 @@ private const val HOUR_PADDING = '0'
 private const val RANGE_START = 0f
 private const val RANGE_END = 1f
 private const val NO_SPAN = 0.0
+private const val MINIMUM_HOUR_TEMPERATURE_SPAN = 4.0
+private const val FULL_WIND_LEVEL_SPEED = 12.0
+private const val NO_LEVEL = 0.0
+private const val FULL_LEVEL = 1.0
+private const val WIND_ARROW_ROTATION_OFFSET = 180f
+private const val DEGREES_IN_CIRCLE = 360f
 
 private class DaySummary(
     val date: LocalDate,
@@ -55,8 +60,7 @@ private class TemperatureScale(
 
 private class DayFormats(
     val weekdayFormat: DateFormat,
-    val dateFormat: DateFormat,
-    val timeFormat: DateFormat
+    val dateFormat: DateFormat
 )
 
 internal fun List<Forecast>.toComingDays(
@@ -64,8 +68,7 @@ internal fun List<Forecast>.toComingDays(
     timeZone: TimeZone,
     locale: Locale,
     latitude: Double,
-    longitude: Double,
-    timeFormat: DateFormat
+    longitude: Double
 ): List<ComingDay> {
     val today: LocalDate = now.toLocalDateTime(timeZone = timeZone).date
     val summaries: List<DaySummary> = toDaySummaries(timeZone = timeZone)
@@ -84,8 +87,7 @@ internal fun List<Forecast>.toComingDays(
         weekdayFormat = SimpleDateFormat(SHORT_WEEKDAY_PATTERN, locale)
             .withTimeZone(javaTimeZone = javaTimeZone),
         dateFormat = SimpleDateFormat(SHORT_DATE_PATTERN, locale)
-            .withTimeZone(javaTimeZone = javaTimeZone),
-        timeFormat = timeFormat
+            .withTimeZone(javaTimeZone = javaTimeZone)
     )
     return summaries.map { daySummary: DaySummary ->
         daySummary.toComingDay(
@@ -158,6 +160,7 @@ private fun DaySummary.toComingDay(
         ).toInstant(timeZone = timeZone)
     val middayDate = Date(midday.toEpochMilliseconds())
     val symbolCode: Int = representativeSymbolCode(timeZone = timeZone)
+    val hourTemperatureScale: TemperatureScale = hourTemperatureScale()
     return ComingDay(
         key = "$COMING_DAY_KEY_PREFIX$date",
         isToday = isToday,
@@ -181,23 +184,6 @@ private fun DaySummary.toComingDay(
             temperature = highTemperature,
             fallback = RANGE_END
         ),
-        windSpeedText = ONE_DECIMAL.format(
-            Locale.ROOT,
-            forecasts.maxOf { forecast: Forecast -> forecast.windSpeed }
-        ),
-        sunTimes = SunsetUtil
-            .getSunriseSunset(
-                day = midday,
-                latitude = latitude,
-                longitude = longitude
-            ).toSunTimes(
-                isSunUpAtMidday = SunsetUtil.isSunUp(
-                    at = midday,
-                    latitude = latitude,
-                    longitude = longitude
-                ),
-                timeFormat = dayFormats.timeFormat
-            ),
         hours = forecasts.mapIndexed { index: Int, forecast: Forecast ->
             forecast.toComingHour(
                 isNow = isToday && index == FIRST_HOUR_INDEX,
@@ -206,9 +192,18 @@ private fun DaySummary.toComingDay(
                     at = forecast.validAt,
                     latitude = latitude,
                     longitude = longitude
-                )
+                ),
+                temperatureScale = hourTemperatureScale
             )
         }.toImmutableList(),
+        firstShownHourIndex = firstShownHourIndex(
+            isToday = isToday,
+            sunriseSunset = SunsetUtil.getSunriseSunset(
+                day = midday,
+                latitude = latitude,
+                longitude = longitude
+            )
+        ),
         isExpanded = false
     )
 }
@@ -240,27 +235,37 @@ private fun TemperatureScale.fractionOf(
     }
 }
 
-private fun SunriseSunset?.toSunTimes(
-    isSunUpAtMidday: Boolean,
-    timeFormat: DateFormat
-): SunTimes {
-    if (this == null) {
-        return if (isSunUpAtMidday) {
-            SunTimes.MidnightSun
-        } else {
-            SunTimes.PolarNight
-        }
+private fun DaySummary.hourTemperatureScale(): TemperatureScale {
+    if (highTemperature - lowTemperature >= MINIMUM_HOUR_TEMPERATURE_SPAN) {
+        return TemperatureScale(
+            low = lowTemperature,
+            high = highTemperature
+        )
     }
-    return SunTimes.RiseAndSet(
-        sunriseText = sunrise.toTimeText(timeFormat = timeFormat),
-        sunsetText = sunset.toTimeText(timeFormat = timeFormat)
+    val middle: Double = (lowTemperature + highTemperature) / MIDPOINT_DIVISOR
+    return TemperatureScale(
+        low = middle - MINIMUM_HOUR_TEMPERATURE_SPAN / MIDPOINT_DIVISOR,
+        high = middle + MINIMUM_HOUR_TEMPERATURE_SPAN / MIDPOINT_DIVISOR
     )
+}
+
+private fun DaySummary.firstShownHourIndex(
+    isToday: Boolean,
+    sunriseSunset: SunriseSunset?
+): Int {
+    if (isToday || sunriseSunset == null) {
+        return FIRST_HOUR_INDEX
+    }
+    return forecasts
+        .indexOfLast { forecast: Forecast -> forecast.validAt <= sunriseSunset.sunrise }
+        .coerceAtLeast(minimumValue = FIRST_HOUR_INDEX)
 }
 
 private fun Forecast.toComingHour(
     isNow: Boolean,
     timeZone: TimeZone,
-    isDaytime: Boolean
+    isDaytime: Boolean,
+    temperatureScale: TemperatureScale
 ): ComingHour =
     ComingHour(
         key = "$COMING_HOUR_KEY_PREFIX$validAt",
@@ -279,8 +284,22 @@ private fun Forecast.toComingHour(
         ),
         descriptionResourceId = WeatherForecastUtil.getWsymb2ResourceId(symbolCode = symbolCode),
         temperatureText = airTemperature.roundToInt().toString(),
-        precipitationText = precipitationAmount.toPrecipitationText()
+        temperatureLevel = temperatureScale.fractionOf(
+            temperature = airTemperature,
+            fallback = RANGE_START
+        ),
+        precipitationText = precipitationAmount.toPrecipitationText(),
+        windSpeedText = ONE_DECIMAL.format(Locale.ROOT, windSpeed),
+        windLevel = (windSpeed / FULL_WIND_LEVEL_SPEED)
+            .coerceIn(
+                minimumValue = NO_LEVEL,
+                maximumValue = FULL_LEVEL
+            ).toFloat(),
+        windArrowRotation = windArrowRotation(),
+        windDirectionResourceId = WeatherForecastUtil.handleWindDirection(degree = windFromDirection)
     )
+
+internal fun Forecast.windArrowRotation(): Float = (windFromDirection.toFloat() + WIND_ARROW_ROTATION_OFFSET) % DEGREES_IN_CIRCLE
 
 private fun Double?.toPrecipitationText(): String? =
     if (this != null && this >= SHOWN_PRECIPITATION) {
@@ -288,11 +307,6 @@ private fun Double?.toPrecipitationText(): String? =
     } else {
         null
     }
-
-private fun Instant.toTimeText(timeFormat: DateFormat): String =
-    timeFormat.format(
-        Date(toEpochMilliseconds())
-    )
 
 private fun DateFormat.withTimeZone(javaTimeZone: JavaTimeZone): DateFormat {
     timeZone = javaTimeZone

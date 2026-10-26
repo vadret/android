@@ -365,43 +365,19 @@ class WeatherForecastViewModelTest {
             weatherForecastViewModel.onEvent(event = WeatherForecastEvent.OnDayToggled(dayKey = "coming-day-2026-10-24"))
             advanceUntilIdle()
             assertEquals(expected = listOf(true), actual = expansion())
-            assertTrue(actual = weatherForecastViewModel.state.value.isEveryDayExpanded)
 
             weatherForecastViewModel.onEvent(event = WeatherForecastEvent.OnDayToggled(dayKey = "coming-day-2026-10-24"))
             advanceUntilIdle()
             assertEquals(expected = listOf(false), actual = expansion())
-            assertFalse(actual = weatherForecastViewModel.state.value.isEveryDayExpanded)
         }
 
     @Test
-    fun `expand all opens every day and then closes them all`() =
+    fun `toggling a day without a forecast opens nothing`() =
         testScope.runTest {
-            weatherForecastRepository.forecasts = threeDays.asRight()
-            weatherForecastViewModel.onEvent(event = WeatherForecastEvent.OnShown)
-            advanceUntilIdle()
-            weatherForecastViewModel.onEvent(event = WeatherForecastEvent.OnDayToggled(dayKey = "coming-day-2026-10-25"))
-            advanceUntilIdle()
-            assertFalse(actual = weatherForecastViewModel.state.value.isEveryDayExpanded)
-
-            weatherForecastViewModel.onEvent(event = WeatherForecastEvent.OnAllDaysToggled)
-            advanceUntilIdle()
-            assertEquals(expected = listOf(true, true, true), actual = expansion())
-            assertTrue(actual = weatherForecastViewModel.state.value.isEveryDayExpanded)
-
-            weatherForecastViewModel.onEvent(event = WeatherForecastEvent.OnAllDaysToggled)
-            advanceUntilIdle()
-            assertEquals(expected = listOf(false, false, false), actual = expansion())
-            assertFalse(actual = weatherForecastViewModel.state.value.isEveryDayExpanded)
-        }
-
-    @Test
-    fun `expand all without a forecast opens nothing`() =
-        testScope.runTest {
-            weatherForecastViewModel.onEvent(event = WeatherForecastEvent.OnAllDaysToggled)
+            weatherForecastViewModel.onEvent(event = WeatherForecastEvent.OnDayToggled(dayKey = "coming-day-2026-10-24"))
             advanceUntilIdle()
 
             assertEquals(expected = emptyList(), actual = expansion())
-            assertFalse(actual = weatherForecastViewModel.state.value.isEveryDayExpanded)
         }
 
     @Test
@@ -426,7 +402,7 @@ class WeatherForecastViewModelTest {
             favoriteRepository.favorites.value = listOf(kirunaFavorite)
             weatherForecastViewModel.onEvent(event = WeatherForecastEvent.OnShown)
             advanceUntilIdle()
-            weatherForecastViewModel.onEvent(event = WeatherForecastEvent.OnAllDaysToggled)
+            weatherForecastViewModel.onEvent(event = WeatherForecastEvent.OnDayToggled(dayKey = "coming-day-2026-10-24"))
             advanceUntilIdle()
 
             weatherForecastViewModel.onEvent(event = WeatherForecastEvent.OnFavoriteClicked(favorite = kirunaFavorite))
@@ -434,7 +410,6 @@ class WeatherForecastViewModelTest {
 
             assertEquals(expected = "Kiruna", actual = weatherForecastViewModel.state.value.localityName)
             assertEquals(expected = listOf(false), actual = expansion())
-            assertFalse(actual = weatherForecastViewModel.state.value.isEveryDayExpanded)
         }
 
     @Test
@@ -443,7 +418,7 @@ class WeatherForecastViewModelTest {
             weatherForecastViewModel.onEvent(event = WeatherForecastEvent.OnLocaleChanged(locale = Locale.ENGLISH))
             weatherForecastViewModel.onEvent(event = WeatherForecastEvent.OnShown)
             advanceUntilIdle()
-            weatherForecastViewModel.onEvent(event = WeatherForecastEvent.OnAllDaysToggled)
+            weatherForecastViewModel.onEvent(event = WeatherForecastEvent.OnDayToggled(dayKey = "coming-day-2026-10-24"))
             advanceUntilIdle()
 
             weatherForecastViewModel.onEvent(event = WeatherForecastEvent.OnLocaleChanged(locale = Locale.forLanguageTag("sv-SE")))
@@ -454,7 +429,6 @@ class WeatherForecastViewModelTest {
                 actual = weatherForecastViewModel.state.value.forecast.comingDays.single().weekdayText
             )
             assertEquals(expected = listOf(true), actual = expansion())
-            assertTrue(actual = weatherForecastViewModel.state.value.isEveryDayExpanded)
         }
 
     private fun expansion(): List<Boolean> =

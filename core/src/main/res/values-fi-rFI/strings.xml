@@ -82,12 +82,10 @@
     <string name="forecast_days">Päivät</string>
     <string name="forecast_hours">Tunnit</string>
     <string name="today">Tänään</string>
-    <string name="expand_all">Laajenna kaikki</string>
-    <string name="collapse_all">Pienennä kaikki</string>
     <string name="expanded">Laajennettu</string>
     <string name="collapsed">Pienennetty</string>
-    <string name="polar_night">Kaamos</string>
-    <string name="midnight_sun">Keskiyön aurinko</string>
+    <string name="temperature">Lämpötila</string>
+    <string name="wind_in_meters_per_second">Tuuli (m/s)</string>
     <plurals name="coming_days_title">
         <item quantity="one">Seuraava %d päivä</item>
         <item quantity="other">Seuraavat %d päivää</item>

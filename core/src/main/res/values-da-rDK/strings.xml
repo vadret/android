@@ -80,12 +80,10 @@
     <string name="forecast_days">Dage</string>
     <string name="forecast_hours">Timer</string>
     <string name="today">I dag</string>
-    <string name="expand_all">Udvid alle</string>
-    <string name="collapse_all">Skjul alle</string>
     <string name="expanded">Udvidet</string>
     <string name="collapsed">Skjult</string>
-    <string name="polar_night">Polarnat</string>
-    <string name="midnight_sun">Midnatssol</string>
+    <string name="temperature">Temperatur</string>
+    <string name="wind_in_meters_per_second">Vind (m/s)</string>
     <plurals name="coming_days_title">
         <item quantity="one">Næste %d dag</item>
         <item quantity="other">Næste %d dage</item>

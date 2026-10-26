@@ -14,7 +14,6 @@ import fi.kroon.vadret.nominatim.NominatimRepository
 import fi.kroon.vadret.nominatim.model.Locality
 import fi.kroon.vadret.weatherforecast.model.ComingDay
 import fi.kroon.vadret.weatherforecast.model.Forecast
-import fi.kroon.vadret.weatherforecast.model.SunTimes
 import io.github.sphrak.either.Either
 import io.github.sphrak.either.extension.asLeft
 import io.github.sphrak.either.extension.asRight
@@ -81,9 +80,8 @@ internal fun comingDay(
         highTemperatureText = "5",
         temperatureRangeStart = 0f,
         temperatureRangeEnd = 1f,
-        windSpeedText = "3.0",
-        sunTimes = SunTimes.PolarNight,
         hours = persistentListOf(),
+        firstShownHourIndex = 0,
         isExpanded = isExpanded
     )
 

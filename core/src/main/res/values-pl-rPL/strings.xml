@@ -67,12 +67,10 @@
     <string name="forecast_days">Dni</string>
     <string name="forecast_hours">Godziny</string>
     <string name="today">Dzisiaj</string>
-    <string name="expand_all">Rozwiń wszystkie</string>
-    <string name="collapse_all">Zwiń wszystkie</string>
     <string name="expanded">Rozwinięte</string>
     <string name="collapsed">Zwinięte</string>
-    <string name="polar_night">Noc polarna</string>
-    <string name="midnight_sun">Dzień polarny</string>
+    <string name="temperature">Temperatura</string>
+    <string name="wind_in_meters_per_second">Wiatr (m/s)</string>
     <plurals name="coming_days_title">
         <item quantity="one">Następny %d dzień</item>
         <item quantity="few">Następne %d dni</item>

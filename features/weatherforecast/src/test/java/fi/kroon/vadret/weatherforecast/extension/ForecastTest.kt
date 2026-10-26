@@ -5,7 +5,6 @@ import fi.kroon.vadret.weatherforecast.model.ComingDay
 import fi.kroon.vadret.weatherforecast.model.ComingHour
 import fi.kroon.vadret.weatherforecast.model.Forecast
 import fi.kroon.vadret.weatherforecast.model.PlaceForecast
-import fi.kroon.vadret.weatherforecast.model.SunTimes
 import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
@@ -14,8 +13,6 @@ import kotlinx.datetime.toInstant
 import java.util.Locale
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertIs
-import kotlin.test.assertTrue
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Instant
 
@@ -43,6 +40,7 @@ private fun forecast(
     validAt: Instant,
     intervalStartedAt: Instant = validAt - 1.hours,
     airTemperature: Double = 5.0,
+    windFromDirection: Double = 180.0,
     windSpeed: Double = 3.0,
     symbolCode: Int = 6,
     precipitationAmount: Double? = 0.0
@@ -51,7 +49,7 @@ private fun forecast(
         validAt = validAt,
         intervalStartedAt = intervalStartedAt,
         airTemperature = airTemperature,
-        windFromDirection = 180.0,
+        windFromDirection = windFromDirection,
         windSpeed = windSpeed,
         relativeHumidity = 80,
         precipitationType = 0,
@@ -352,24 +350,109 @@ class ForecastTest {
     }
 
     @Test
-    fun `wind is the strongest of the day and the sun rises and sets`() {
+    fun `hour temperatures sit between the coldest and warmest hour of the day`() {
         val day: ComingDay = comingDays(
             forecasts = listOf(
-                forecast(validAt = localTime(day = 10, hour = 9), windSpeed = 4.2),
-                forecast(validAt = localTime(day = 10, hour = 12), windSpeed = 7.8)
+                forecast(validAt = localTime(day = 10, hour = 10), airTemperature = 2.0),
+                forecast(validAt = localTime(day = 10, hour = 11), airTemperature = 6.0),
+                forecast(validAt = localTime(day = 10, hour = 12), airTemperature = 10.0)
             )
         ).single()
 
-        assertEquals(expected = "7.8", actual = day.windSpeedText)
-        val sunTimes: SunTimes.RiseAndSet = assertIs<SunTimes.RiseAndSet>(value = day.sunTimes)
-        assertTrue(actual = sunTimes.sunriseText.isNotBlank())
-        assertTrue(actual = sunTimes.sunsetText.isNotBlank())
+        assertEquals(
+            expected = listOf(0f, 0.5f, 1f),
+            actual = day.hours.map { comingHour: ComingHour -> comingHour.temperatureLevel }
+        )
     }
 
     @Test
-    fun `the sun stays down during polar night in kiruna`() {
+    fun `a day with little temperature change is centred on four degrees`() {
         val day: ComingDay = comingDays(
-            forecasts = listOf(forecast(validAt = localTime(month = 12, day = 21, hour = 12))),
+            forecasts = listOf(
+                forecast(validAt = localTime(day = 10, hour = 10), airTemperature = 5.0),
+                forecast(validAt = localTime(day = 10, hour = 11), airTemperature = 6.0)
+            )
+        ).single()
+
+        assertEquals(
+            expected = listOf(0.375f, 0.625f),
+            actual = day.hours.map { comingHour: ComingHour -> comingHour.temperatureLevel }
+        )
+    }
+
+    @Test
+    fun `wind reaches the top of its chart at twelve metres per second`() {
+        val day: ComingDay = comingDays(
+            forecasts = listOf(0.0, 6.0, 12.0, 15.0).mapIndexed { index: Int, windSpeed: Double ->
+                forecast(
+                    validAt = localTime(day = 10, hour = 10 + index),
+                    windSpeed = windSpeed
+                )
+            }
+        ).single()
+
+        assertEquals(
+            expected = listOf(0f, 0.5f, 1f, 1f),
+            actual = day.hours.map { comingHour: ComingHour -> comingHour.windLevel }
+        )
+        assertEquals(
+            expected = listOf("0.0", "6.0", "12.0", "15.0"),
+            actual = day.hours.map { comingHour: ComingHour -> comingHour.windSpeedText }
+        )
+    }
+
+    @Test
+    fun `the wind arrow points where a west wind blows`() {
+        val hour: ComingHour = comingDays(
+            forecasts = listOf(
+                forecast(
+                    validAt = localTime(day = 10, hour = 12),
+                    windFromDirection = 270.0
+                )
+            )
+        ).single().hours.single()
+
+        assertEquals(expected = 90f, actual = hour.windArrowRotation)
+        assertEquals(expected = R.string.west, actual = hour.windDirectionResourceId)
+    }
+
+    @Test
+    fun `today starts at the current hour`() {
+        val today: ComingDay = comingDays(
+            forecasts = (3..23).map { hour: Int -> forecast(validAt = localTime(day = 10, hour = hour)) },
+            now = localTime(day = 10, hour = 3)
+        ).single()
+
+        assertEquals(expected = 0, actual = today.firstShownHourIndex)
+    }
+
+    @Test
+    fun `a later day starts at the hour the sun rises`() {
+        val tomorrow: ComingDay = comingDays(
+            forecasts = (0..23).map { hour: Int -> forecast(validAt = localTime(day = 11, hour = hour)) }
+        ).single()
+
+        assertEquals(expected = 7, actual = tomorrow.firstShownHourIndex)
+    }
+
+    @Test
+    fun `a day with six hour steps starts at the step before sunrise`() {
+        val tomorrow: ComingDay = comingDays(
+            forecasts = listOf(0, 6, 12, 18).map { hour: Int ->
+                forecast(
+                    validAt = localTime(day = 11, hour = hour),
+                    intervalStartedAt = localTime(day = 11, hour = hour) - 6.hours
+                )
+            }
+        ).single()
+
+        assertEquals(expected = 1, actual = tomorrow.firstShownHourIndex)
+    }
+
+    @Test
+    fun `a day of polar night in kiruna starts at its first hour`() {
+        val day: ComingDay = comingDays(
+            forecasts = (0..23).map { hour: Int -> forecast(validAt = localTime(month = 12, day = 22, hour = hour)) },
             now = localTime(
                 month = 12,
                 day = 21,
@@ -379,13 +462,13 @@ class ForecastTest {
             longitude = KIRUNA_LONGITUDE
         ).single()
 
-        assertEquals(expected = SunTimes.PolarNight, actual = day.sunTimes)
+        assertEquals(expected = 0, actual = day.firstShownHourIndex)
     }
 
     @Test
-    fun `the sun stays up during midnight sun in kiruna`() {
+    fun `a day of midnight sun in kiruna starts at its first hour`() {
         val day: ComingDay = comingDays(
-            forecasts = listOf(forecast(validAt = localTime(month = 6, day = 21, hour = 12))),
+            forecasts = (0..23).map { hour: Int -> forecast(validAt = localTime(month = 6, day = 22, hour = hour)) },
             now = localTime(
                 month = 6,
                 day = 21,
@@ -395,7 +478,7 @@ class ForecastTest {
             longitude = KIRUNA_LONGITUDE
         ).single()
 
-        assertEquals(expected = SunTimes.MidnightSun, actual = day.sunTimes)
+        assertEquals(expected = 0, actual = day.firstShownHourIndex)
     }
 
     @Test

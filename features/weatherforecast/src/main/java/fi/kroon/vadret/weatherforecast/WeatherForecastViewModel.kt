@@ -11,7 +11,6 @@ import fi.kroon.vadret.ui.extension.messageResourceId
 import fi.kroon.vadret.weatherforecast.extension.toWeatherForecast
 import fi.kroon.vadret.weatherforecast.extension.withComingDays
 import fi.kroon.vadret.weatherforecast.extension.withDayToggled
-import fi.kroon.vadret.weatherforecast.extension.withEveryDayExpanded
 import fi.kroon.vadret.weatherforecast.extension.withForecast
 import fi.kroon.vadret.weatherforecast.model.LocationChoices
 import fi.kroon.vadret.weatherforecast.model.PlaceForecast
@@ -82,8 +81,6 @@ class WeatherForecastViewModel internal constructor(
 
             is WeatherForecastEvent.OnDayToggled -> onDayToggled(dayKey = event.dayKey)
 
-            WeatherForecastEvent.OnAllDaysToggled -> onAllDaysToggled()
-
             is WeatherForecastEvent.OnLocationPermissionResult -> onLocationPermissionResult(isGranted = event.isGranted)
 
             WeatherForecastEvent.OnAutomaticLocationClicked -> state.update { state: WeatherForecastState ->
@@ -112,18 +109,6 @@ class WeatherForecastViewModel internal constructor(
         viewModelScope.launch(context = coroutineDispatcher) {
             state.update { state: WeatherForecastState ->
                 state.withComingDays(comingDays = state.forecast.comingDays.withDayToggled(dayKey = dayKey))
-            }
-        }
-    }
-
-    private fun onAllDaysToggled() {
-        viewModelScope.launch(context = coroutineDispatcher) {
-            state.update { state: WeatherForecastState ->
-                state.withComingDays(
-                    comingDays = state.forecast.comingDays.withEveryDayExpanded(
-                        isExpanded = !state.isEveryDayExpanded
-                    )
-                )
             }
         }
     }

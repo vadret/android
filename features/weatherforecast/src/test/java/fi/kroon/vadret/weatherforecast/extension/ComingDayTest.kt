@@ -4,8 +4,6 @@ import fi.kroon.vadret.weatherforecast.comingDay
 import fi.kroon.vadret.weatherforecast.model.ComingDay
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertFalse
-import kotlin.test.assertTrue
 
 class ComingDayTest {
 
@@ -34,17 +32,6 @@ class ComingDayTest {
     }
 
     @Test
-    fun `every day opens and closes at once`() {
-        val opened: List<ComingDay> = listOf(monday, tuesday).withEveryDayExpanded(isExpanded = true)
-
-        assertEquals(expected = listOf(true, true), actual = opened.expansion())
-        assertEquals(
-            expected = listOf(false, false),
-            actual = opened.withEveryDayExpanded(isExpanded = false).expansion()
-        )
-    }
-
-    @Test
     fun `open days stay open in a new forecast and new days start closed`() {
         val previousComingDays: List<ComingDay> = listOf(
             comingDay(
@@ -62,12 +49,5 @@ class ComingDayTest {
         ).withExpansionOf(previousComingDays = previousComingDays)
 
         assertEquals(expected = listOf(true, false, false), actual = comingDays.expansion())
-    }
-
-    @Test
-    fun `every day is expanded only when there are days and all are open`() {
-        assertFalse(actual = emptyList<ComingDay>().isEveryDayExpanded())
-        assertFalse(actual = listOf(monday.copy(isExpanded = true), tuesday).isEveryDayExpanded())
-        assertTrue(actual = listOf(monday, tuesday).withEveryDayExpanded(isExpanded = true).isEveryDayExpanded())
     }
 }

@@ -78,12 +78,10 @@
     <string name="forecast_days">Dager</string>
     <string name="forecast_hours">Timer</string>
     <string name="today">I dag</string>
-    <string name="expand_all">Vis alle</string>
-    <string name="collapse_all">Skjul alle</string>
     <string name="expanded">Utvidet</string>
     <string name="collapsed">Skjult</string>
-    <string name="polar_night">Mørketid</string>
-    <string name="midnight_sun">Midnattssol</string>
+    <string name="temperature">Temperatur</string>
+    <string name="wind_in_meters_per_second">Vind (m/s)</string>
     <plurals name="coming_days_title">
         <item quantity="one">Neste %d dag</item>
         <item quantity="other">Neste %d dager</item>

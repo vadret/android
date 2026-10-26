@@ -5,11 +5,7 @@ import fi.kroon.vadret.weatherforecast.model.ComingDay
 import fi.kroon.vadret.weatherforecast.model.WeatherForecast
 import kotlinx.collections.immutable.ImmutableList
 
-internal fun WeatherForecastState.withComingDays(comingDays: ImmutableList<ComingDay>): WeatherForecastState =
-    copy(
-        forecast = forecast.copy(comingDays = comingDays),
-        isEveryDayExpanded = comingDays.isEveryDayExpanded()
-    )
+internal fun WeatherForecastState.withComingDays(comingDays: ImmutableList<ComingDay>): WeatherForecastState = copy(forecast = forecast.copy(comingDays = comingDays))
 
 internal fun WeatherForecastState.withForecast(
     forecast: WeatherForecast,

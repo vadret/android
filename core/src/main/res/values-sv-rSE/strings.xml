@@ -116,8 +116,6 @@
     <string name="east">östlig</string>
     <string name="east_north_east">öst, nordöstlig</string>
     <string name="east_south_east">öst, sydöstlig</string>
-    <string name="sunrise">Gryning</string>
-    <string name="sunset">Skymning</string>
     <string name="unknown_area">Okänd plats</string>
     <string name="location_provider_disabled">Platstjänst är inaktiverad</string>
     <string name="failed_loading_file">Kunde ej läsa in filen</string>
@@ -180,12 +178,10 @@
     <string name="forecast_days">Dagar</string>
     <string name="forecast_hours">Timmar</string>
     <string name="today">Idag</string>
-    <string name="expand_all">Visa alla</string>
-    <string name="collapse_all">Dölj alla</string>
     <string name="expanded">Utfälld</string>
     <string name="collapsed">Infälld</string>
-    <string name="polar_night">Polarnatt</string>
-    <string name="midnight_sun">Midnattssol</string>
+    <string name="temperature">Temperatur</string>
+    <string name="wind_in_meters_per_second">Vind (m/s)</string>
     <plurals name="coming_days_title">
         <item quantity="one">Kommande %d dag</item>
         <item quantity="other">Kommande %d dagar</item>

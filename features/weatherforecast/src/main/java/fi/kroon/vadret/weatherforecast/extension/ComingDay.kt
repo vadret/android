@@ -13,11 +13,6 @@ internal fun List<ComingDay>.withDayToggled(dayKey: String): ImmutableList<Comin
         }
     }.toImmutableList()
 
-internal fun List<ComingDay>.withEveryDayExpanded(isExpanded: Boolean): ImmutableList<ComingDay> =
-    map { comingDay: ComingDay ->
-        comingDay.copy(isExpanded = isExpanded)
-    }.toImmutableList()
-
 internal fun List<ComingDay>.withExpansionOf(previousComingDays: List<ComingDay>): ImmutableList<ComingDay> {
     val expandedDayKeys: Set<String> = previousComingDays
         .filter { comingDay: ComingDay -> comingDay.isExpanded }
@@ -26,7 +21,3 @@ internal fun List<ComingDay>.withExpansionOf(previousComingDays: List<ComingDay>
         comingDay.copy(isExpanded = comingDay.key in expandedDayKeys)
     }.toImmutableList()
 }
-
-internal fun List<ComingDay>.isEveryDayExpanded(): Boolean =
-    isNotEmpty() &&
-        all { comingDay: ComingDay -> comingDay.isExpanded }

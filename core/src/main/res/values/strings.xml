@@ -107,9 +107,6 @@
     <string name="amoled_key" translatable="false">AMOLED</string>
     <string name="light_no_background_key" translatable="false">Light (No background)</string>
 
-    <string name="sunset">Sunset</string>
-    <string name="sunrise">Sunrise</string>
-
     <string name="percent" translatable="false">%</string>
     <string name="m_s" translatable="false">m/s</string>
     <string name="degree" translatable="false">°</string>
@@ -245,12 +242,10 @@
     <string name="forecast_days">Days</string>
     <string name="forecast_hours">Hours</string>
     <string name="today">Today</string>
-    <string name="expand_all">Expand all</string>
-    <string name="collapse_all">Collapse all</string>
     <string name="expanded">Expanded</string>
     <string name="collapsed">Collapsed</string>
-    <string name="polar_night">Polar night</string>
-    <string name="midnight_sun">Midnight sun</string>
+    <string name="temperature">Temperature</string>
+    <string name="wind_in_meters_per_second">Wind (m/s)</string>
     <string name="millimeter" translatable="false">mm</string>
     <plurals name="coming_days_title">
         <item quantity="one">Next %d day</item>

@@ -28,9 +28,6 @@ private const val WEEKDAY_PATTERN = "EEEE"
 private const val DAY_KEY_PREFIX = "day-"
 private const val HOUR_KEY_PREFIX = "hour-"
 
-private const val WIND_ARROW_ROTATION_OFFSET = 180f
-private const val DEGREES_IN_CIRCLE = 360f
-
 private val hourFormat = LocalTime.Format {
     hour()
     char(value = ':')
@@ -45,9 +42,8 @@ internal fun PlaceForecast.toWeatherForecast(
     val first: Forecast = forecasts.firstOrNull() ?: return WeatherForecast()
     val javaTimeZone: JavaTimeZone = JavaTimeZone.getTimeZone(timeZone.id)
     val dateFormat: DateFormat = DateFormat.getDateInstance(DateFormat.LONG, locale)
-    val timeFormat: DateFormat = DateFormat.getTimeInstance(DateFormat.SHORT, locale)
     val weekdayFormat: DateFormat = SimpleDateFormat(WEEKDAY_PATTERN, locale)
-    listOf(dateFormat, timeFormat, weekdayFormat).forEach { format: DateFormat ->
+    listOf(dateFormat, weekdayFormat).forEach { format: DateFormat ->
         format.timeZone = javaTimeZone
     }
     return WeatherForecast(
@@ -57,8 +53,7 @@ internal fun PlaceForecast.toWeatherForecast(
             timeZone = timeZone,
             locale = locale,
             latitude = latitude,
-            longitude = longitude,
-            timeFormat = timeFormat
+            longitude = longitude
         ).toImmutableList(),
         days = toForecastDays(
             timeZone = timeZone,
@@ -113,7 +108,7 @@ private fun Forecast.toCurrentWeather(isDaytime: Boolean): CurrentWeather =
         descriptionResourceId = WeatherForecastUtil.getWsymb2ResourceId(symbolCode = symbolCode),
         windDirectionResourceId = WeatherForecastUtil.handleWindDirection(degree = windFromDirection),
         windSpeed = windSpeed,
-        windArrowRotation = (windFromDirection.toFloat() + WIND_ARROW_ROTATION_OFFSET) % DEGREES_IN_CIRCLE,
+        windArrowRotation = windArrowRotation(),
         humidityPercent = relativeHumidity
     )
 
