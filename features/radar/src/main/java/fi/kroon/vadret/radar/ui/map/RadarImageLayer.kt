@@ -14,6 +14,7 @@ import org.maplibre.android.style.layers.RasterLayer
 import org.maplibre.android.style.sources.ImageSource
 
 private const val NO_FADE_MILLISECONDS = 0f
+private const val FULL_OPACITY_FRACTION = 1f
 
 private val radarArea = LatLngQuad(
     LatLng(RADAR_NORTH_LATITUDE, RADAR_WEST_LONGITUDE),
@@ -31,6 +32,12 @@ internal class RadarImageLayer(
 
     private var shownBitmap: Bitmap? = null
     private var shownVisibility: String? = null
+    private var opacityFraction: Float = FULL_OPACITY_FRACTION
+
+    fun setOpacityFraction(opacityFraction: Float) {
+        this.opacityFraction = opacityFraction
+        style.getLayer(layerId)?.setProperties(PropertyFactory.rasterOpacity(opacity * opacityFraction))
+    }
 
     fun show(
         bitmap: Bitmap?,
@@ -60,7 +67,7 @@ internal class RadarImageLayer(
     private fun add(bitmap: Bitmap) {
         style.addSource(ImageSource(layerId, radarArea, bitmap))
         val rasterLayer: RasterLayer = RasterLayer(layerId, layerId).withProperties(
-            PropertyFactory.rasterOpacity(opacity),
+            PropertyFactory.rasterOpacity(opacity * opacityFraction),
             PropertyFactory.rasterFadeDuration(NO_FADE_MILLISECONDS)
         )
         if (belowLayerId != null) {

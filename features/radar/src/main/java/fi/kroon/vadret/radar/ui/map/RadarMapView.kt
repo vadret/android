@@ -1,5 +1,6 @@
 package fi.kroon.vadret.radar.ui.map
 
+import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
@@ -25,6 +26,9 @@ import kotlin.math.abs
 
 private const val ZOOM_TOLERANCE = 0.01
 private const val NO_OBSCURED_HEIGHT = 0
+private const val WIND_FADE_IN_MILLISECONDS = 400L
+private const val NO_OPACITY = 0f
+private const val FULL_OPACITY = 1f
 private const val MAXIMUM_ZOOM_LEVEL = 12.0
 private const val PRECIPITATION_LAYER_ID = "vadret-precipitation"
 private const val PRECIPITATION_OPACITY = 1f
@@ -69,6 +73,9 @@ internal class RadarMapView(
     private var appearance: RadarMapAppearance? = null
     private var limitedZoom: Double = Double.NaN
     private var obscuredBottom: Int = NO_OBSCURED_HEIGHT
+    private var windOpacity: Float = FULL_OPACITY
+    private var windFadeIn: ValueAnimator? = null
+    private var hasWindFadedIn: Boolean = false
     private val imageLayersUpdate = Runnable { showImageLayers() }
 
     init {
@@ -144,6 +151,10 @@ internal class RadarMapView(
         locationMarkerDrawer.windAtLocation = windAtLocation
         locationMarkerDrawer.windSpeedText = windSpeedText
         overlayView.isWindShown = layer == RadarLayer.WIND
+        if (layer == RadarLayer.WIND && windField != null && !hasWindFadedIn) {
+            hasWindFadedIn = true
+            fadeInWind()
+        }
         removeCallbacks(imageLayersUpdate)
         post(imageLayersUpdate)
         overlayView.invalidate()
@@ -188,9 +199,28 @@ internal class RadarMapView(
     }
 
     fun destroy() {
+        windFadeIn?.cancel()
         removeCallbacks(imageLayersUpdate)
         moveTo(state = Lifecycle.State.CREATED)
         mapView.onDestroy()
+    }
+
+    private fun fadeInWind() {
+        val animator: ValueAnimator = ValueAnimator.ofFloat(NO_OPACITY, FULL_OPACITY)
+        animator.duration = WIND_FADE_IN_MILLISECONDS
+        animator.addUpdateListener { updatedAnimator: ValueAnimator ->
+            showWindOpacity(opacity = updatedAnimator.animatedValue as Float)
+        }
+        showWindOpacity(opacity = NO_OPACITY)
+        windFadeIn = animator
+        animator.start()
+    }
+
+    private fun showWindOpacity(opacity: Float) {
+        windOpacity = opacity
+        windLayer?.setOpacityFraction(opacityFraction = opacity)
+        windParticleDrawer.opacity = opacity
+        overlayView.invalidate()
     }
 
     private fun markMapLoaded() {
@@ -236,6 +266,7 @@ internal class RadarMapView(
                 opacity = WIND_OPACITY,
                 belowLayerId = labelLayerId
             )
+            windLayer?.setOpacityFraction(opacityFraction = windOpacity)
             showImageLayers()
             overlayView.invalidate()
         }

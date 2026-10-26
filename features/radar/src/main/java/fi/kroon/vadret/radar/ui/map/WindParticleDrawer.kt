@@ -24,6 +24,7 @@ private const val FLOATS_PER_VERTEX = 2
 private const val ALPHA_SHIFT = 24
 private const val RGB_MASK = 0x00FFFFFF
 private const val HALF = 2f
+private const val FULL_OPACITY = 1f
 
 internal class WindParticleDrawer(
     private val density: Float
@@ -31,6 +32,7 @@ internal class WindParticleDrawer(
 
     var windField: WindField? = null
     var particleColor: Int = DAY_PARTICLE_COLOR
+    var opacity: Float = FULL_OPACITY
 
     private var windParticles: WindParticles? = null
     private var segments: FloatArray = FloatArray(size = 0)
@@ -188,7 +190,7 @@ internal class WindParticleDrawer(
 
     private fun trailColor(age: Int): Int = (trailAlpha(age = age) shl ALPHA_SHIFT) or (particleColor and RGB_MASK)
 
-    private fun trailAlpha(age: Int): Int = ((particleColor ushr ALPHA_SHIFT) * TRAIL_FADE.pow(age)).toInt()
+    private fun trailAlpha(age: Int): Int = ((particleColor ushr ALPHA_SHIFT) * TRAIL_FADE.pow(age) * opacity).toInt()
 
     private fun drawLines(
         canvas: Canvas,
