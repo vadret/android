@@ -41,7 +41,7 @@
     <string name="permission_missing">Der App fehlt die erforderliche Berechtigung zum Arbeiten</string>
     <string name="permission_granted">Berechtigung gewährt!</string>
     <string name="permission_denied">Berechtigung verweigert!</string>
-    <string name="about_app_about_title">About app</string>
+    <string name="about_app_about_title">About</string>
     <string name="about_app_libraries_tab_title">Libraries</string>
     <string name="about_app_description">Weather app for Sweden</string>
     <string name="version_row_title">Version</string>
