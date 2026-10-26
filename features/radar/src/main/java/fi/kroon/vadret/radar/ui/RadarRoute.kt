@@ -92,7 +92,7 @@ internal fun RadarScreen(
     }
     val windAtLocation: WindAtLocation? = windAtDeviceLocation(
         layer = state.layer,
-        windField = state.windField,
+        windField = state.shownWindField,
         deviceLocation = state.deviceLocation
     )
 
@@ -100,7 +100,7 @@ internal fun RadarScreen(
         RadarMap(
             layer = state.layer,
             precipitationOverlay = state.precipitationOverlay,
-            windField = state.windField,
+            windField = state.shownWindField,
             deviceLocation = state.deviceLocation,
             windAtLocation = windAtLocation,
             windSpeedText = windAtLocation?.windSpeedText(unit = stringResource(id = R.string.m_s)),

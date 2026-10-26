@@ -2,8 +2,12 @@ package fi.kroon.vadret.radar.ui.map
 
 import android.content.Context
 import android.graphics.Canvas
+import android.os.Build
 import android.view.View
+import fi.kroon.vadret.radar.precipitation.PrecipitationOverlay
 import org.maplibre.android.maps.MapLibreMap
+
+private const val NO_PROGRESS = 0f
 
 internal class RadarOverlayView(
     context: Context,
@@ -13,6 +17,14 @@ internal class RadarOverlayView(
 
     var map: MapLibreMap? = null
     var isWindShown: Boolean = false
+    var precipitationEchoes: PrecipitationOverlay.Echoes? = null
+    var precipitationProgress: Float = NO_PROGRESS
+
+    private val precipitationShaderDrawer: PrecipitationShaderDrawer? = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        PrecipitationShaderDrawer()
+    } else {
+        null
+    }
 
     fun advanceWind() {
         val currentMap: MapLibreMap = map ?: return
@@ -31,10 +43,31 @@ internal class RadarOverlayView(
                 canvas = canvas,
                 projection = currentMap.projection
             )
+        } else {
+            drawPrecipitation(
+                canvas = canvas,
+                currentMap = currentMap
+            )
         }
         locationMarkerDrawer.draw(
             canvas = canvas,
             projection = currentMap.projection
         )
+    }
+
+    private fun drawPrecipitation(
+        canvas: Canvas,
+        currentMap: MapLibreMap
+    ) {
+        val echoesOverlay: PrecipitationOverlay.Echoes = precipitationEchoes ?: return
+        val shaderDrawer: PrecipitationShaderDrawer = precipitationShaderDrawer ?: return
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            shaderDrawer.draw(
+                canvas = canvas,
+                projection = currentMap.projection,
+                echoesOverlay = echoesOverlay,
+                progress = precipitationProgress
+            )
+        }
     }
 }

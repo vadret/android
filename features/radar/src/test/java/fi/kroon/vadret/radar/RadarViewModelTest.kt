@@ -10,6 +10,9 @@ import fi.kroon.vadret.radar.model.RadarFrame
 import fi.kroon.vadret.radar.model.RadarImage
 import fi.kroon.vadret.radar.model.RadarLayer
 import fi.kroon.vadret.radar.model.WindTimeFrame
+import fi.kroon.vadret.radar.precipitation.PrecipitationMotion
+import fi.kroon.vadret.radar.precipitation.PrecipitationOverlay
+import fi.kroon.vadret.radar.precipitation.PrecipitationRenderer
 import fi.kroon.vadret.radar.wind.WindField
 import fi.kroon.vadret.radar.wind.WindFieldRenderer
 import fi.kroon.vadret.radar.wind.WindFieldValues
@@ -40,6 +43,8 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 import kotlin.test.assertSame
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Instant
 
 private class FakeGetRadarTask(
@@ -64,6 +69,35 @@ private class FakeRadarImageLoader : RadarImageLoader {
     }
 }
 
+private class FakePrecipitationRenderer : PrecipitationRenderer {
+
+    override suspend fun render(echoes: Bitmap): PrecipitationOverlay =
+        PrecipitationOverlay.Echoes(
+            echoes = echoes,
+            motion = null
+        )
+
+    override suspend fun renderMotion(
+        echoes: Bitmap,
+        nextEchoes: Bitmap,
+        duration: Duration
+    ): PrecipitationOverlay =
+        PrecipitationOverlay.Echoes(
+            echoes = echoes,
+            motion = PrecipitationMotion(
+                nextEchoes = nextEchoes,
+                field = mockk(),
+                duration = duration
+            )
+        )
+}
+
+private val RadarState.shownEchoes: Bitmap?
+    get() = (precipitationOverlay as? PrecipitationOverlay.Echoes)?.echoes
+
+private val RadarState.shownMotion: PrecipitationMotion?
+    get() = (precipitationOverlay as? PrecipitationOverlay.Echoes)?.motion
+
 private class FakeGetWindForecastTask(
     var result: Either<Failure, WindForecast>
 ) : GetWindForecastTask {
@@ -86,6 +120,7 @@ private class FakeWindFieldRenderer : WindFieldRenderer {
 
     val renderedFrames = mutableListOf<WindFrame>()
     val renderedPalettes = mutableListOf<WindPalette>()
+    val blendedFields = mutableMapOf<Float, WindField>()
 
     override suspend fun render(
         windGrid: WindGrid,
@@ -106,6 +141,18 @@ private class FakeWindFieldRenderer : WindFieldRenderer {
             bitmap = mockk()
         )
     }
+
+    override suspend fun blend(
+        windField: WindField,
+        nextWindField: WindField,
+        progress: Float
+    ): WindField =
+        blendedFields.getOrPut(progress) {
+            WindField(
+                values = windField.values,
+                bitmap = mockk()
+            )
+        }
 }
 
 private val windForecast = WindForecast(
@@ -161,6 +208,7 @@ class RadarViewModelTest {
             getWindForecastTask = getWindForecastTask,
             getDeviceLocationTask = getDeviceLocationTask,
             radarImageLoader = radarImageLoader,
+            precipitationRenderer = FakePrecipitationRenderer(),
             windFieldRenderer = windFieldRenderer,
             clock = FixedClock(now = Instant.parse(input = "2026-10-24T12:45:00Z")),
             coroutineDispatcher = testDispatcher
@@ -180,7 +228,8 @@ class RadarViewModelTest {
             val state: RadarState = radarViewModel.state.value
             assertEquals(expected = 3, actual = state.precipitationFrames.size)
             assertEquals(expected = 2, actual = state.precipitationIndex)
-            assertSame(expected = radarImageLoader.bitmaps["https://smhi.se/2.png"], actual = state.precipitationOverlay)
+            assertSame(expected = radarImageLoader.bitmaps["https://smhi.se/2.png"], actual = state.shownEchoes)
+            assertNull(actual = state.shownMotion)
             assertEquals(expected = false, actual = state.isLoading)
         }
 
@@ -205,10 +254,10 @@ class RadarViewModelTest {
             advanceUntilIdle()
 
             radarViewModel.onEvent(event = RadarEvent.OnPlayButtonClicked)
-            advanceTimeBy(delayTimeMillis = 256)
+            advanceTimeBy(delayTimeMillis = 128)
             runCurrent()
             val firstIndex: Int = radarViewModel.state.value.precipitationIndex
-            advanceTimeBy(delayTimeMillis = 256)
+            advanceTimeBy(delayTimeMillis = 128)
             runCurrent()
             val secondIndex: Int = radarViewModel.state.value.precipitationIndex
             radarViewModel.onEvent(event = RadarEvent.OnPlayButtonClicked)
@@ -245,7 +294,98 @@ class RadarViewModelTest {
             val state: RadarState = radarViewModel.state.value
             assertEquals(expected = false, actual = state.isPlaying)
             assertEquals(expected = 1, actual = state.precipitationIndex)
-            assertSame(expected = radarImageLoader.bitmaps["https://smhi.se/1.png"], actual = state.precipitationOverlay)
+            assertSame(expected = radarImageLoader.bitmaps["https://smhi.se/1.png"], actual = state.shownEchoes)
+            assertNull(actual = state.shownMotion)
+        }
+
+    @Test
+    fun `playing moves each frame towards the one after it`() =
+        testScope.runTest {
+            val radarViewModel: RadarViewModel = viewModel()
+            advanceUntilIdle()
+
+            radarViewModel.onEvent(event = RadarEvent.OnPlayButtonClicked)
+            advanceTimeBy(delayTimeMillis = 128)
+            runCurrent()
+            val motion: PrecipitationMotion? = radarViewModel.state.value.shownMotion
+            radarViewModel.onEvent(event = RadarEvent.OnPlayButtonClicked)
+
+            assertSame(expected = radarImageLoader.bitmaps["https://smhi.se/1.png"], actual = motion?.nextEchoes)
+            assertEquals(expected = 128.milliseconds, actual = motion?.duration)
+        }
+
+    @Test
+    fun `playing loads the frames a few steps ahead`() =
+        testScope.runTest {
+            getRadarTask.result = Radar(
+                images = (0..5).map { minute: Int ->
+                    RadarImage(
+                        imageUrl = "https://smhi.se/$minute.png",
+                        validAt = Instant.parse(input = "2026-10-24T12:0$minute:00Z")
+                    )
+                }
+            ).asRight()
+            val radarViewModel: RadarViewModel = viewModel()
+            advanceUntilIdle()
+
+            radarViewModel.onEvent(event = RadarEvent.OnPlayButtonClicked)
+            runCurrent()
+            val loadedUrls: List<String> = radarImageLoader.loadedUrls.toList()
+            radarViewModel.onEvent(event = RadarEvent.OnPlayButtonClicked)
+
+            assertEquals(expected = true, actual = "https://smhi.se/3.png" in loadedUrls)
+            assertEquals(expected = false, actual = "https://smhi.se/4.png" in loadedUrls)
+        }
+
+    @Test
+    fun `the newest frame does not move on to the oldest`() =
+        testScope.runTest {
+            val radarViewModel: RadarViewModel = viewModel()
+            advanceUntilIdle()
+
+            radarViewModel.onEvent(event = RadarEvent.OnPlayButtonClicked)
+            advanceTimeBy(delayTimeMillis = 128 * 3)
+            runCurrent()
+            val state: RadarState = radarViewModel.state.value
+            radarViewModel.onEvent(event = RadarEvent.OnPlayButtonClicked)
+
+            assertEquals(expected = 2, actual = state.precipitationIndex)
+            assertNull(actual = state.shownMotion)
+        }
+
+    @Test
+    fun `pausing keeps the frame still`() =
+        testScope.runTest {
+            val radarViewModel: RadarViewModel = viewModel()
+            advanceUntilIdle()
+            radarViewModel.onEvent(event = RadarEvent.OnPlayButtonClicked)
+            advanceTimeBy(delayTimeMillis = 128)
+            runCurrent()
+
+            radarViewModel.onEvent(event = RadarEvent.OnPlayButtonClicked)
+
+            val state: RadarState = radarViewModel.state.value
+            assertEquals(expected = 0, actual = state.precipitationIndex)
+            assertSame(expected = radarImageLoader.bitmaps["https://smhi.se/0.png"], actual = state.shownEchoes)
+            assertNull(actual = state.shownMotion)
+        }
+
+    @Test
+    fun `a next frame that cannot be loaded keeps the frame still while playing`() =
+        testScope.runTest {
+            radarImageLoader.failingUrls = setOf("https://smhi.se/1.png")
+            val radarViewModel: RadarViewModel = viewModel()
+            advanceUntilIdle()
+
+            radarViewModel.onEvent(event = RadarEvent.OnPlayButtonClicked)
+            advanceTimeBy(delayTimeMillis = 128)
+            runCurrent()
+            val state: RadarState = radarViewModel.state.value
+            radarViewModel.onEvent(event = RadarEvent.OnPlayButtonClicked)
+
+            assertEquals(expected = true, actual = state.isPlaying)
+            assertSame(expected = radarImageLoader.bitmaps["https://smhi.se/0.png"], actual = state.shownEchoes)
+            assertNull(actual = state.shownMotion)
         }
 
     @Test
@@ -367,6 +507,44 @@ class RadarViewModelTest {
         }
 
     @Test
+    fun `playing the wind blends towards the next hour`() =
+        testScope.runTest {
+            val radarViewModel: RadarViewModel = viewModel()
+            advanceUntilIdle()
+            radarViewModel.onEvent(event = RadarEvent.OnLayerSelected(layer = RadarLayer.WIND))
+            advanceUntilIdle()
+
+            radarViewModel.onEvent(event = RadarEvent.OnPlayButtonClicked)
+            advanceTimeBy(delayTimeMillis = 64)
+            runCurrent()
+            val state: RadarState = radarViewModel.state.value
+            val renderedFrames: List<WindFrame> = windFieldRenderer.renderedFrames.toList()
+            radarViewModel.onEvent(event = RadarEvent.OnPlayButtonClicked)
+
+            assertEquals(expected = 0, actual = state.windIndex)
+            assertSame(expected = windFieldRenderer.blendedFields[0.5f], actual = state.shownWindField)
+            assertEquals(expected = listOf(windForecast.frames[1], windForecast.frames[2]), actual = renderedFrames.takeLast(n = 2))
+        }
+
+    @Test
+    fun `pausing the wind shows the hour on the slider`() =
+        testScope.runTest {
+            val radarViewModel: RadarViewModel = viewModel()
+            advanceUntilIdle()
+            radarViewModel.onEvent(event = RadarEvent.OnLayerSelected(layer = RadarLayer.WIND))
+            advanceUntilIdle()
+            radarViewModel.onEvent(event = RadarEvent.OnPlayButtonClicked)
+            advanceTimeBy(delayTimeMillis = 64)
+            runCurrent()
+
+            radarViewModel.onEvent(event = RadarEvent.OnPlayButtonClicked)
+
+            val state: RadarState = radarViewModel.state.value
+            assertNull(actual = state.windTransitionField)
+            assertSame(expected = state.windField, actual = state.shownWindField)
+        }
+
+    @Test
     fun `playing the wind steps hour by hour`() =
         testScope.runTest {
             val radarViewModel: RadarViewModel = viewModel()
@@ -375,7 +553,7 @@ class RadarViewModelTest {
             advanceUntilIdle()
 
             radarViewModel.onEvent(event = RadarEvent.OnPlayButtonClicked)
-            advanceTimeBy(delayTimeMillis = 600)
+            advanceTimeBy(delayTimeMillis = 128)
             runCurrent()
             val windIndex: Int = radarViewModel.state.value.windIndex
             radarViewModel.onEvent(event = RadarEvent.OnPlayButtonClicked)

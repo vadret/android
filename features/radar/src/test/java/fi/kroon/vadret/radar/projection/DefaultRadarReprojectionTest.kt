@@ -13,12 +13,12 @@ import kotlin.test.assertTrue
 
 private const val SOURCE_WIDTH = 471
 private const val SOURCE_HEIGHT = 887
-private const val TRANSPARENT = 0
+private const val NO_ECHO = 0
 private const val NO_DATA: Byte = -1
 private const val HEAVY_ECHO: Byte = -56
-private const val COLOR_CHANNEL_MASK = 0xFF
-private const val BITS_PER_CHANNEL = 8
-private const val COLOR_CHANNELS = 4
+private const val HEAVY_ECHO_LEVEL = 200
+private const val EVEN_ECHO_LEVEL = 150
+private const val BYTE_MASK = 0xFF
 
 private val places: List<Pair<Double, Double>> = listOf(
     59.3293 to 18.0686,
@@ -41,10 +41,12 @@ class DefaultRadarReprojectionTest {
             height = SOURCE_HEIGHT
         )
 
-    private fun ReprojectedImage.pixelAt(
+    private fun ReprojectedImage.echoAt(
         latitude: Double,
         longitude: Double
-    ): Int = pixels[outputRow(latitude = latitude) * width + outputColumn(longitude = longitude)]
+    ): Int = echoes[outputRow(latitude = latitude) * width + outputColumn(longitude = longitude)].toInt() and BYTE_MASK
+
+    private fun ReprojectedImage.echoLevels(): List<Int> = echoes.map { echo: Byte -> echo.toInt() and BYTE_MASK }
 
     private fun ReprojectedImage.outputColumn(longitude: Double): Int = floor((longitude - RADAR_WEST_LONGITUDE) / (RADAR_EAST_LONGITUDE - RADAR_WEST_LONGITUDE) * width).toInt()
 
@@ -76,8 +78,6 @@ class DefaultRadarReprojectionTest {
         (RADAR_NORTH_NORTHING - Sweref99Tm.project(latitude = latitude, longitude = longitude).northing) /
             ((RADAR_NORTH_NORTHING - RADAR_SOUTH_NORTHING) / SOURCE_HEIGHT)
 
-    private fun channels(argb: Int): List<Int> = List(size = COLOR_CHANNELS) { channel: Int -> (argb shr channel * BITS_PER_CHANNEL) and COLOR_CHANNEL_MASK }
-
     @Test
     fun `the output keeps the proportions of web mercator`() {
         val reprojectedImage: ReprojectedImage = radarReprojection.reproject(radarRaster = raster { _, _ -> 0 })
@@ -87,7 +87,7 @@ class DefaultRadarReprojectionTest {
 
         assertEquals(expected = 720, actual = reprojectedImage.width)
         assertTrue(actual = abs(reprojectedImage.height - expectedHeight) < 1.0)
-        assertEquals(expected = reprojectedImage.width * reprojectedImage.height, actual = reprojectedImage.pixels.size)
+        assertEquals(expected = reprojectedImage.width * reprojectedImage.height, actual = reprojectedImage.echoes.size)
     }
 
     @Test
@@ -106,12 +106,12 @@ class DefaultRadarReprojectionTest {
             )
 
             assertEquals(
-                expected = PrecipitationColorScale.argb(reflectivity = 50f),
-                actual = reprojectedImage.pixelAt(latitude = latitude, longitude = longitude),
+                expected = HEAVY_ECHO_LEVEL,
+                actual = reprojectedImage.echoAt(latitude = latitude, longitude = longitude),
                 message = "$latitude, $longitude"
             )
-            assertEquals(expected = TRANSPARENT, actual = reprojectedImage.pixelAt(latitude = latitude, longitude = longitude + 0.5))
-            assertEquals(expected = TRANSPARENT, actual = reprojectedImage.pixelAt(latitude = latitude - 0.3, longitude = longitude))
+            assertEquals(expected = NO_ECHO, actual = reprojectedImage.echoAt(latitude = latitude, longitude = longitude + 0.5))
+            assertEquals(expected = NO_ECHO, actual = reprojectedImage.echoAt(latitude = latitude - 0.3, longitude = longitude))
         }
     }
 
@@ -142,19 +142,18 @@ class DefaultRadarReprojectionTest {
             }
             val rightValue: Double = 250.0 - leftValue
             val value: Double = leftValue + (rightValue - leftValue) * (sampleColumn - leftColumn)
-            val expected: List<Int> = channels(argb = PrecipitationColorScale.argb(reflectivity = (value * 0.4 - 30.0).toFloat()))
-            val actual: List<Int> = channels(argb = reprojectedImage.pixels[outputRow * reprojectedImage.width + outputColumn])
+            val actual: Int = reprojectedImage.echoes[outputRow * reprojectedImage.width + outputColumn].toInt() and BYTE_MASK
 
             assertTrue(
-                actual = expected.zip(actual).all { (expectedChannel: Int, actualChannel: Int) -> abs(expectedChannel - actualChannel) <= 1 },
-                message = "$latitude, $longitude expected $expected, got $actual"
+                actual = abs(value - actual) <= 1.0,
+                message = "$latitude, $longitude expected $value, got $actual"
             )
         }
     }
 
     @Test
     fun `an even echo covers the radar area but not the corners outside it`() {
-        val reprojectedImage: ReprojectedImage = radarReprojection.reproject(radarRaster = raster { _, _ -> 150.toByte() })
+        val reprojectedImage: ReprojectedImage = radarReprojection.reproject(radarRaster = raster { _, _ -> EVEN_ECHO_LEVEL.toByte() })
         val corners: List<Pair<Double, Double>> = listOf(
             RADAR_NORTH_LATITUDE - 0.01 to RADAR_EAST_LONGITUDE - 0.01,
             RADAR_SOUTH_LATITUDE + 0.01 to RADAR_WEST_LONGITUDE + 0.01,
@@ -162,17 +161,17 @@ class DefaultRadarReprojectionTest {
         )
 
         assertEquals(
-            expected = List(size = corners.size) { TRANSPARENT },
-            actual = corners.map { (latitude: Double, longitude: Double) -> reprojectedImage.pixelAt(latitude = latitude, longitude = longitude) }
+            expected = List(size = corners.size) { NO_ECHO },
+            actual = corners.map { (latitude: Double, longitude: Double) -> reprojectedImage.echoAt(latitude = latitude, longitude = longitude) }
         )
-        assertTrue(actual = reprojectedImage.pixels.count { pixel: Int -> pixel == PrecipitationColorScale.argb(reflectivity = 30f) } > reprojectedImage.pixels.size / 2)
-        assertTrue(actual = reprojectedImage.pixels.all { pixel: Int -> pixel == TRANSPARENT || pixel == PrecipitationColorScale.argb(reflectivity = 30f) })
+        assertTrue(actual = reprojectedImage.echoLevels().count { echoLevel: Int -> echoLevel == EVEN_ECHO_LEVEL } > reprojectedImage.echoes.size / 2)
+        assertTrue(actual = reprojectedImage.echoLevels().all { echoLevel: Int -> echoLevel == NO_ECHO || echoLevel == EVEN_ECHO_LEVEL })
     }
 
     @Test
     fun `places outside radar coverage are not drawn`() {
         val reprojectedImage: ReprojectedImage = radarReprojection.reproject(radarRaster = raster { _, _ -> NO_DATA })
 
-        assertTrue(actual = reprojectedImage.pixels.all { pixel: Int -> pixel == TRANSPARENT })
+        assertTrue(actual = reprojectedImage.echoLevels().all { echoLevel: Int -> echoLevel == NO_ECHO })
     }
 }

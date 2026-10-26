@@ -8,10 +8,7 @@ import androidx.lifecycle.Lifecycle
 import fi.kroon.vadret.core.R
 import fi.kroon.vadret.location.model.Location
 import fi.kroon.vadret.radar.model.RadarLayer
-import fi.kroon.vadret.radar.projection.RADAR_EAST_LONGITUDE
-import fi.kroon.vadret.radar.projection.RADAR_NORTH_LATITUDE
-import fi.kroon.vadret.radar.projection.RADAR_SOUTH_LATITUDE
-import fi.kroon.vadret.radar.projection.RADAR_WEST_LONGITUDE
+import fi.kroon.vadret.radar.precipitation.PrecipitationOverlay
 import fi.kroon.vadret.radar.ui.map.extension.toCameraPosition
 import fi.kroon.vadret.radar.ui.map.extension.toRadarCamera
 import fi.kroon.vadret.radar.wind.WindAtLocation
@@ -24,8 +21,9 @@ import org.maplibre.android.maps.Style
 import org.maplibre.android.style.layers.Layer
 import org.maplibre.android.style.layers.PropertyFactory
 import org.maplibre.android.style.layers.SymbolLayer
+import kotlin.math.abs
 
-private const val MINIMUM_ZOOM_LEVEL = 4.0
+private const val ZOOM_TOLERANCE = 0.01
 private const val MAXIMUM_ZOOM_LEVEL = 12.0
 private const val PRECIPITATION_LAYER_ID = "vadret-precipitation"
 private const val PRECIPITATION_OPACITY = 1f
@@ -36,6 +34,7 @@ private const val WATER_LAYER_ID = "water"
 private const val DARK_LAND_COLOR = "#181512"
 private const val DARK_WATER_COLOR = "#21364B"
 private const val DARK_LABEL_COLOR = "#FFFFFF"
+private const val NO_PROGRESS = 0f
 
 internal class RadarMapView(
     context: Context,
@@ -59,7 +58,7 @@ internal class RadarMapView(
     private var precipitationLayer: RadarImageLayer? = null
     private var windLayer: RadarImageLayer? = null
     private var layer: RadarLayer = RadarLayer.PRECIPITATION
-    private var precipitationOverlay: Bitmap? = null
+    private var precipitationOverlay: PrecipitationOverlay? = null
     private var windField: WindField? = null
     private var lifecycleState: Lifecycle.State = Lifecycle.State.CREATED
     private var isMapLoaded: Boolean = false
@@ -67,6 +66,7 @@ internal class RadarMapView(
     private var map: MapLibreMap? = null
     private var isDark: Boolean = false
     private var appearance: RadarMapAppearance? = null
+    private var limitedZoom: Double = Double.NaN
     private val imageLayersUpdate = Runnable { showImageLayers() }
 
     init {
@@ -80,6 +80,18 @@ internal class RadarMapView(
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
         post { map?.triggerRepaint() }
+    }
+
+    override fun onSizeChanged(
+        width: Int,
+        height: Int,
+        oldWidth: Int,
+        oldHeight: Int
+    ) {
+        super.onSizeChanged(width, height, oldWidth, oldHeight)
+        limitedZoom = Double.NaN
+        val readyMap: MapLibreMap = map ?: return
+        limitCamera(map = readyMap)
     }
 
     fun setOnMapLoadedListener(onMapLoaded: (() -> Unit)?) {
@@ -112,14 +124,18 @@ internal class RadarMapView(
 
     fun show(
         layer: RadarLayer,
-        precipitationOverlay: Bitmap?,
+        precipitationOverlay: PrecipitationOverlay?,
         windField: WindField?,
         deviceLocation: Location?,
         windAtLocation: WindAtLocation?,
         windSpeedText: String?
     ) {
         this.layer = layer
+        if (precipitationOverlay !== this.precipitationOverlay) {
+            overlayView.precipitationProgress = NO_PROGRESS
+        }
         this.precipitationOverlay = precipitationOverlay
+        overlayView.precipitationEchoes = precipitationOverlay as? PrecipitationOverlay.Echoes
         this.windField = windField
         windParticleDrawer.windField = windField
         locationMarkerDrawer.location = deviceLocation
@@ -128,6 +144,11 @@ internal class RadarMapView(
         overlayView.isWindShown = layer == RadarLayer.WIND
         removeCallbacks(imageLayersUpdate)
         post(imageLayersUpdate)
+        overlayView.invalidate()
+    }
+
+    fun setPrecipitationProgress(progress: Float) {
+        overlayView.precipitationProgress = progress
         overlayView.invalidate()
     }
 
@@ -169,7 +190,10 @@ internal class RadarMapView(
         configure(map = map)
         this.map = map
         overlayView.map = map
-        map.addOnCameraMoveListener { overlayView.invalidate() }
+        map.addOnCameraMoveListener {
+            limitCamera(map = map)
+            overlayView.invalidate()
+        }
         map.addOnCameraIdleListener { reportCameraIdle(map = map) }
         loadStyle(map = map)
     }
@@ -207,9 +231,10 @@ internal class RadarMapView(
 
     private fun showImageLayers() {
         val isWind: Boolean = layer == RadarLayer.WIND
+        val coloredPrecipitation: Bitmap? = (precipitationOverlay as? PrecipitationOverlay.Colored)?.bitmap
         precipitationLayer?.show(
-            bitmap = precipitationOverlay,
-            isVisible = !isWind
+            bitmap = coloredPrecipitation,
+            isVisible = !isWind && coloredPrecipitation != null
         )
         windLayer?.show(
             bitmap = windField?.bitmap,
@@ -223,12 +248,34 @@ internal class RadarMapView(
         map.uiSettings.isCompassEnabled = false
         map.uiSettings.isLogoEnabled = false
         map.uiSettings.isAttributionEnabled = false
-        map.setMinZoomPreference(MINIMUM_ZOOM_LEVEL)
         map.setMaxZoomPreference(MAXIMUM_ZOOM_LEVEL)
-        map.setLatLngBoundsForCameraTarget(
-            LatLngBounds.from(RADAR_NORTH_LATITUDE, RADAR_EAST_LONGITUDE, RADAR_SOUTH_LATITUDE, RADAR_WEST_LONGITUDE)
-        )
         map.cameraPosition = initialCamera.toCameraPosition()
+        limitCamera(map = map)
+    }
+
+    private fun limitCamera(map: MapLibreMap) {
+        if (width == 0 || height == 0) {
+            return
+        }
+        val zoom: Double = map.cameraPosition.zoom
+        if (abs(x = zoom - limitedZoom) < ZOOM_TOLERANCE) {
+            return
+        }
+        limitedZoom = zoom
+        val radarCameraLimits: RadarCameraLimits = radarCameraLimits(
+            viewportWidth = width / density.toDouble(),
+            viewportHeight = height / density.toDouble(),
+            zoom = zoom
+        )
+        map.setMinZoomPreference(radarCameraLimits.minimumZoom)
+        map.setLatLngBoundsForCameraTarget(
+            LatLngBounds.from(
+                radarCameraLimits.northLatitude,
+                radarCameraLimits.eastLongitude,
+                radarCameraLimits.southLatitude,
+                radarCameraLimits.westLongitude
+            )
+        )
     }
 
     private fun reportCameraIdle(map: MapLibreMap) {

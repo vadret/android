@@ -1,5 +1,11 @@
 package fi.kroon.vadret.radar.projection
 
+import kotlin.math.ceil
+
+internal const val ECHO_LEVEL_COUNT = 256
+
+private const val REFLECTIVITY_GAIN = 0.4f
+private const val REFLECTIVITY_OFFSET = -30f
 private const val TRANSPARENT = 0
 private const val OPAQUE = 0xFF
 private const val ALPHA_SHIFT = 24
@@ -22,6 +28,10 @@ private val colorStops: List<ColorStop> = listOf(
 )
 
 internal object PrecipitationColorScale {
+
+    val firstVisibleEchoLevel: Int = ceil((colorStops.first().reflectivity - REFLECTIVITY_OFFSET) / REFLECTIVITY_GAIN).toInt()
+
+    fun palette(): IntArray = IntArray(size = ECHO_LEVEL_COUNT) { echoLevel: Int -> argb(reflectivity = echoLevel * REFLECTIVITY_GAIN + REFLECTIVITY_OFFSET) }
 
     fun argb(reflectivity: Float): Int {
         if (reflectivity.isNaN() || reflectivity < colorStops.first().reflectivity) {

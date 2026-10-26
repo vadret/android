@@ -4,13 +4,11 @@ import java.util.concurrent.ConcurrentHashMap
 import kotlin.math.roundToInt
 
 private const val OUTPUT_WIDTH = 720
-private const val TRANSPARENT = 0
+private const val NO_ECHO: Byte = 0
 private const val PIXEL_CENTER = 0.5
 private const val BYTE_MASK = 0xFF
 private const val NO_DATA = 255
-private const val NO_ECHO = 0f
-private const val REFLECTIVITY_GAIN = 0.4f
-private const val REFLECTIVITY_OFFSET = -30f
+private const val NO_ECHO_LEVEL = 0f
 
 internal class DefaultRadarReprojection : RadarReprojection {
 
@@ -39,8 +37,8 @@ internal class DefaultRadarReprojection : RadarReprojection {
             )
         }
         return ReprojectedImage(
-            pixels = IntArray(size = outputWidth * outputHeight) { index: Int ->
-                pixel(
+            echoes = ByteArray(size = outputWidth * outputHeight) { index: Int ->
+                reprojectedEcho(
                     radarRaster = radarRaster,
                     samplePoints = samplePoints,
                     index = index
@@ -51,13 +49,13 @@ internal class DefaultRadarReprojection : RadarReprojection {
         )
     }
 
-    private fun pixel(
+    private fun reprojectedEcho(
         radarRaster: RadarRaster,
         samplePoints: SamplePoints,
         index: Int
-    ): Int {
+    ): Byte {
         if (samplePoints.isOutside(index = index)) {
-            return TRANSPARENT
+            return NO_ECHO
         }
         val topLeft: Int = samplePoints.topLeftIndices[index]
         val right: Int = if (topLeft % radarRaster.width < radarRaster.width - 1) {
@@ -86,13 +84,13 @@ internal class DefaultRadarReprojection : RadarReprojection {
             to = bottom,
             fraction = samplePoints.rowFractions[index]
         )
-        return PrecipitationColorScale.argb(reflectivity = value * REFLECTIVITY_GAIN + REFLECTIVITY_OFFSET)
+        return value.roundToInt().toByte()
     }
 
     private fun RadarRaster.echo(index: Int): Float {
         val value: Int = values[index].toInt() and BYTE_MASK
         return if (value == NO_DATA) {
-            NO_ECHO
+            NO_ECHO_LEVEL
         } else {
             value.toFloat()
         }

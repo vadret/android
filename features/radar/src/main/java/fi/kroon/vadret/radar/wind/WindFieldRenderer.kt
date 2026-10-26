@@ -10,4 +10,10 @@ internal interface WindFieldRenderer {
         windFrame: WindFrame,
         windPalette: WindPalette
     ): WindField
+
+    suspend fun blend(
+        windField: WindField,
+        nextWindField: WindField,
+        progress: Float
+    ): WindField
 }

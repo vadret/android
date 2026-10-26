@@ -1,6 +1,7 @@
 package fi.kroon.vadret.radar.wind
 
 import android.graphics.Bitmap
+import fi.kroon.vadret.radar.extension.towards
 import fi.kroon.vadret.wind.model.WindFrame
 import fi.kroon.vadret.wind.model.WindGrid
 import kotlinx.coroutines.CoroutineDispatcher
@@ -26,20 +27,36 @@ internal class DefaultWindFieldRenderer(
         windPalette: WindPalette
     ): WindField =
         withContext(context = coroutineDispatcher) {
-            val windFieldValues: WindFieldValues = windRaster(windGrid = windGrid).render(
-                windFrame = windFrame,
-                windPalette = windPalette
-            )
-            WindField(
-                values = windFieldValues,
-                bitmap = Bitmap.createBitmap(
-                    windFieldValues.colors,
-                    windFieldValues.width,
-                    windFieldValues.height,
-                    Bitmap.Config.ARGB_8888
-                )
-            )
+            windRaster(windGrid = windGrid)
+                .render(
+                    windFrame = windFrame,
+                    windPalette = windPalette
+                ).toWindField()
         }
+
+    override suspend fun blend(
+        windField: WindField,
+        nextWindField: WindField,
+        progress: Float
+    ): WindField =
+        withContext(context = coroutineDispatcher) {
+            windField.values
+                .towards(
+                    nextWindFieldValues = nextWindField.values,
+                    progress = progress
+                ).toWindField()
+        }
+
+    private fun WindFieldValues.toWindField(): WindField =
+        WindField(
+            values = this,
+            bitmap = Bitmap.createBitmap(
+                colors,
+                width,
+                height,
+                Bitmap.Config.ARGB_8888
+            )
+        )
 
     private fun windRaster(windGrid: WindGrid): WindRaster {
         val current: PreparedRaster? = preparedRaster.load()

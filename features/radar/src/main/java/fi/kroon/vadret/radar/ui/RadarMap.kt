@@ -1,6 +1,5 @@
 package fi.kroon.vadret.radar.ui
 
-import android.graphics.Bitmap
 import android.view.ViewGroup
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -14,6 +13,8 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.viewinterop.AndroidView
 import fi.kroon.vadret.location.model.Location
 import fi.kroon.vadret.radar.model.RadarLayer
+import fi.kroon.vadret.radar.precipitation.PrecipitationMotion
+import fi.kroon.vadret.radar.precipitation.PrecipitationOverlay
 import fi.kroon.vadret.radar.ui.map.RadarMapAppearance
 import fi.kroon.vadret.radar.ui.map.RadarMapStore
 import fi.kroon.vadret.radar.ui.map.RadarMapView
@@ -24,11 +25,13 @@ import fi.kroon.vadret.ui.VadretTheme
 private const val PARTICLE_FRAME_NANOS = 33_000_000L
 private const val DAY_PARTICLE_COLOR = 0xD9FFFFFF.toInt()
 private const val NIGHT_PARTICLE_COLOR = 0xB3D2DCFF.toInt()
+private const val NO_PROGRESS = 0f
+private const val FULL_PROGRESS = 1f
 
 @Composable
 internal fun RadarMap(
     layer: RadarLayer,
-    precipitationOverlay: Bitmap?,
+    precipitationOverlay: PrecipitationOverlay?,
     windField: WindField?,
     deviceLocation: Location?,
     windAtLocation: WindAtLocation?,
@@ -58,6 +61,10 @@ internal fun RadarMap(
     )
     WindAnimationEffect(
         isAnimating = layer == RadarLayer.WIND && windField != null,
+        radarMapView = radarMapView
+    )
+    PrecipitationMotionEffect(
+        precipitationMotion = (precipitationOverlay as? PrecipitationOverlay.Echoes)?.motion,
         radarMapView = radarMapView
     )
 
@@ -112,6 +119,28 @@ private fun WindAnimationEffect(
                     radarMapView.advanceWind()
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun PrecipitationMotionEffect(
+    precipitationMotion: PrecipitationMotion?,
+    radarMapView: RadarMapView
+) {
+    LaunchedEffect(precipitationMotion, radarMapView) {
+        if (precipitationMotion == null) {
+            return@LaunchedEffect
+        }
+        val durationNanos: Float = precipitationMotion.duration.inWholeNanoseconds.toFloat()
+        val firstFrameNanos: Long = withFrameNanos { frameNanos: Long -> frameNanos }
+        var frameNanos: Long = withFrameNanos { secondFrameNanos: Long -> secondFrameNanos }
+        val shownNanos: Long = firstFrameNanos - (frameNanos - firstFrameNanos)
+        var progress: Float = NO_PROGRESS
+        while (progress < FULL_PROGRESS) {
+            progress = ((frameNanos - shownNanos) / durationNanos).coerceAtMost(maximumValue = FULL_PROGRESS)
+            radarMapView.setPrecipitationProgress(progress = progress)
+            frameNanos = withFrameNanos { nextFrameNanos: Long -> nextFrameNanos }
         }
     }
 }

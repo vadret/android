@@ -7,10 +7,13 @@ import fi.kroon.vadret.common.Failure
 import fi.kroon.vadret.location.model.Location
 import fi.kroon.vadret.radar.extension.toRadarFrames
 import fi.kroon.vadret.radar.extension.toWindTimeFrames
+import fi.kroon.vadret.radar.extension.withoutMotion
 import fi.kroon.vadret.radar.model.Radar
 import fi.kroon.vadret.radar.model.RadarFrame
 import fi.kroon.vadret.radar.model.RadarLayer
 import fi.kroon.vadret.radar.model.WindTimeFrame
+import fi.kroon.vadret.radar.precipitation.PrecipitationOverlay
+import fi.kroon.vadret.radar.precipitation.PrecipitationRenderer
 import fi.kroon.vadret.radar.wind.WindField
 import fi.kroon.vadret.radar.wind.WindFieldRenderer
 import fi.kroon.vadret.radar.wind.WindPalette
@@ -18,13 +21,18 @@ import fi.kroon.vadret.ui.extension.launchReplacing
 import fi.kroon.vadret.ui.extension.messageResourceId
 import fi.kroon.vadret.wind.model.WindForecast
 import fi.kroon.vadret.wind.model.WindFrame
+import io.github.sphrak.either.Either
+import io.github.sphrak.either.extension.asLeft
+import io.github.sphrak.either.extension.asRight
 import io.github.sphrak.either.extension.onResult
 import io.github.sphrak.either.extension.successOrNull
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -40,14 +48,22 @@ import kotlin.time.Clock
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 
-private val precipitationFrameDuration: Duration = 256.milliseconds
-private val windFrameDuration: Duration = 600.milliseconds
+private const val PRELOADED_FRAME_DISTANCE = 3
+
+private val frameDuration: Duration = 128.milliseconds
+private const val WIND_STEPS_PER_FRAME = 4
+
+private class PreparedWindField(
+    val index: Int,
+    val windField: Deferred<WindField>
+)
 
 class RadarViewModel internal constructor(
     private val getRadarTask: GetRadarTask,
     private val getWindForecastTask: GetWindForecastTask,
     private val getDeviceLocationTask: GetDeviceLocationTask,
     private val radarImageLoader: RadarImageLoader,
+    private val precipitationRenderer: PrecipitationRenderer,
     private val windFieldRenderer: WindFieldRenderer,
     private val clock: Clock,
     private val coroutineDispatcher: CoroutineDispatcher
@@ -64,6 +80,7 @@ class RadarViewModel internal constructor(
     private val windForecast: AtomicReference<WindForecast?> = AtomicReference(value = null)
     private val playJob: AtomicReference<Job?> = AtomicReference(value = null)
     private val frameJob: AtomicReference<Job?> = AtomicReference(value = null)
+    private val preparedWindField: AtomicReference<PreparedWindField?> = AtomicReference(value = null)
 
     internal fun onEvent(event: RadarEvent) {
         when (event) {
@@ -250,47 +267,116 @@ class RadarViewModel internal constructor(
         index: Int
     ): Boolean =
         when (layer) {
-            RadarLayer.PRECIPITATION -> loadPrecipitationFrame(index = index)
+            RadarLayer.PRECIPITATION -> showPrecipitationFrame(
+                index = index,
+                precipitationOverlay = precipitationOverlay(
+                    index = index,
+                    isMoving = false
+                )
+            )
+
             RadarLayer.WIND -> loadWindFrame(index = index)
         }
 
-    private suspend fun loadPrecipitationFrame(index: Int): Boolean {
-        val frame: RadarFrame = state.value.precipitationFrames.getOrNull(index = index) ?: return false
+    private suspend fun precipitationOverlay(
+        index: Int,
+        isMoving: Boolean
+    ): Either<Failure, PrecipitationOverlay>? {
+        val frames: ImmutableList<RadarFrame> = state.value.precipitationFrames
+        val frame: RadarFrame = frames.getOrNull(index = index) ?: return null
         return radarImageLoader
             .load(imageUrl = frame.imageUrl)
             .onResult(
-                onError = { failure: Failure ->
-                    displayPrecipitationError(failure = failure)
-                    false
-                },
-                onSuccess = { bitmap: Bitmap ->
-                    state.update { state: RadarState ->
-                        state.copy(
-                            precipitationIndex = index,
-                            precipitationOverlay = bitmap
-                        )
+                onError = { failure: Failure -> failure.asLeft() },
+                onSuccess = { echoes: Bitmap ->
+                    val nextFrame: RadarFrame? = if (isMoving) {
+                        frames.getOrNull(index = index + 1)
+                    } else {
+                        null
                     }
-                    true
+                    renderPrecipitation(
+                        echoes = echoes,
+                        nextFrame = nextFrame
+                    ).asRight()
                 }
             )
+    }
+
+    private fun showPrecipitationFrame(
+        index: Int,
+        precipitationOverlay: Either<Failure, PrecipitationOverlay>?
+    ): Boolean {
+        if (precipitationOverlay == null) {
+            return false
+        }
+        return precipitationOverlay.onResult(
+            onError = { failure: Failure ->
+                displayPrecipitationError(failure = failure)
+                false
+            },
+            onSuccess = { shownOverlay: PrecipitationOverlay ->
+                state.update { state: RadarState ->
+                    state.copy(
+                        precipitationIndex = index,
+                        precipitationOverlay = shownOverlay
+                    )
+                }
+                true
+            }
+        )
+    }
+
+    private suspend fun renderPrecipitation(
+        echoes: Bitmap,
+        nextFrame: RadarFrame?
+    ): PrecipitationOverlay {
+        if (nextFrame == null) {
+            return precipitationRenderer.render(echoes = echoes)
+        }
+        val nextEchoes: Bitmap = radarImageLoader.load(imageUrl = nextFrame.imageUrl).successOrNull
+            ?: return precipitationRenderer.render(echoes = echoes)
+        return precipitationRenderer.renderMotion(
+            echoes = echoes,
+            nextEchoes = nextEchoes,
+            duration = frameDuration
+        )
     }
 
     private suspend fun loadWindFrame(index: Int): Boolean {
         val forecast: WindForecast = windForecast.load() ?: return false
         val windFrame: WindFrame = forecast.frames.getOrNull(index = index) ?: return false
-        val windField: WindField = windFieldRenderer.render(
+        showWindField(
+            index = index,
+            windField = renderWindField(
+                forecast = forecast,
+                windFrame = windFrame
+            )
+        )
+        return true
+    }
+
+    private suspend fun renderWindField(
+        forecast: WindForecast,
+        windFrame: WindFrame
+    ): WindField =
+        windFieldRenderer.render(
             windGrid = forecast.grid,
             windFrame = windFrame,
             windPalette = windPalette.load()
         )
+
+    private fun showWindField(
+        index: Int,
+        windField: WindField
+    ) {
         state.update { state: RadarState ->
             state.copy(
                 windIndex = index,
                 windField = windField,
+                windTransitionField = null,
                 isLoading = false
             )
         }
-        return true
     }
 
     private fun onPlayButtonClicked() {
@@ -312,17 +398,17 @@ class RadarViewModel internal constructor(
 
     private suspend fun CoroutineScope.play(layer: RadarLayer) {
         while (isActive) {
-            delay(duration = layer.frameDuration())
             val radarState: RadarState = state.value
             val frameCount: Int = radarState.frameCount(layer = layer)
             if (frameCount == 0) {
                 stopPlaying()
                 return
             }
-            val isShown: Boolean = loadFrame(
-                layer = layer,
-                index = (radarState.index(layer = layer) + 1) % frameCount
-            )
+            val index: Int = (radarState.index(layer = layer) + 1) % frameCount
+            val isShown: Boolean = when (layer) {
+                RadarLayer.PRECIPITATION -> playPrecipitationFrame(index = index)
+                RadarLayer.WIND -> playWindFrame(index = index)
+            }
             if (!isShown) {
                 stopPlaying()
                 return
@@ -330,10 +416,127 @@ class RadarViewModel internal constructor(
         }
     }
 
+    private suspend fun CoroutineScope.playPrecipitationFrame(index: Int): Boolean {
+        preloadPrecipitationFrame(index = index + PRELOADED_FRAME_DISTANCE)
+        val upcomingOverlay: Deferred<Either<Failure, PrecipitationOverlay>?> = async {
+            precipitationOverlay(
+                index = index,
+                isMoving = true
+            )
+        }
+        delay(duration = frameDuration)
+        return showPrecipitationFrame(
+            index = index,
+            precipitationOverlay = upcomingOverlay.await()
+        )
+    }
+
+    private suspend fun CoroutineScope.playWindFrame(index: Int): Boolean {
+        val forecast: WindForecast = windForecast.load() ?: return false
+        val radarState: RadarState = state.value
+        val nextFrame: WindFrame = forecast.frames.getOrNull(index = index) ?: return false
+        val upcomingField: Deferred<WindField> = takePreparedWindField(index = index) ?: async {
+            renderWindField(
+                forecast = forecast,
+                windFrame = nextFrame
+            )
+        }
+        prepareWindField(
+            forecast = forecast,
+            index = (index + 1) % forecast.frames.size
+        )
+        val shownField: WindField? = radarState.windField
+        if (shownField == null || index < radarState.windIndex) {
+            delay(duration = frameDuration)
+            showWindField(
+                index = index,
+                windField = upcomingField.await()
+            )
+            return true
+        }
+        val nextField: WindField = upcomingField.await()
+        val stepDuration: Duration = frameDuration / WIND_STEPS_PER_FRAME
+        var upcomingBlend: Deferred<WindField> = blendAsync(
+            windField = shownField,
+            nextWindField = nextField,
+            step = 1
+        )
+        for (step in 1 until WIND_STEPS_PER_FRAME) {
+            delay(duration = stepDuration)
+            val windTransitionField: WindField = upcomingBlend.await()
+            state.update { state: RadarState ->
+                state.copy(windTransitionField = windTransitionField)
+            }
+            upcomingBlend = blendAsync(
+                windField = shownField,
+                nextWindField = nextField,
+                step = step + 1
+            )
+        }
+        upcomingBlend.cancel()
+        delay(duration = stepDuration)
+        showWindField(
+            index = index,
+            windField = nextField
+        )
+        return true
+    }
+
+    private fun CoroutineScope.blendAsync(
+        windField: WindField,
+        nextWindField: WindField,
+        step: Int
+    ): Deferred<WindField> =
+        async {
+            windFieldRenderer.blend(
+                windField = windField,
+                nextWindField = nextWindField,
+                progress = step.toFloat() / WIND_STEPS_PER_FRAME
+            )
+        }
+
+    private fun CoroutineScope.prepareWindField(
+        forecast: WindForecast,
+        index: Int
+    ) {
+        val windFrame: WindFrame = forecast.frames.getOrNull(index = index) ?: return
+        val preparedField = PreparedWindField(
+            index = index,
+            windField = async {
+                renderWindField(
+                    forecast = forecast,
+                    windFrame = windFrame
+                )
+            }
+        )
+        preparedWindField.exchange(newValue = preparedField)?.windField?.cancel()
+    }
+
+    private fun takePreparedWindField(index: Int): Deferred<WindField>? {
+        val preparedField: PreparedWindField = preparedWindField.exchange(newValue = null) ?: return null
+        if (preparedField.index == index) {
+            return preparedField.windField
+        }
+        preparedField.windField.cancel()
+        return null
+    }
+
+    private fun CoroutineScope.preloadPrecipitationFrame(index: Int) {
+        val frame: RadarFrame = state.value.precipitationFrames.getOrNull(index = index) ?: return
+        launch {
+            radarImageLoader.load(imageUrl = frame.imageUrl)
+        }
+    }
+
     private fun stopPlaying() {
         playJob.exchange(newValue = null)?.cancel()
+        preparedWindField.exchange(newValue = null)?.windField?.cancel()
         state.update { state: RadarState ->
-            state.copy(isPlaying = false)
+            state.copy(
+                isPlaying = false,
+                precipitationOverlay = state.precipitationOverlay?.withoutMotion(),
+                windTransitionField = null
+            )
         }
     }
 
@@ -352,12 +555,6 @@ class RadarViewModel internal constructor(
             )
         }
     }
-
-    private fun RadarLayer.frameDuration(): Duration =
-        when (this) {
-            RadarLayer.PRECIPITATION -> precipitationFrameDuration
-            RadarLayer.WIND -> windFrameDuration
-        }
 
     private fun RadarState.frameCount(layer: RadarLayer): Int =
         when (layer) {

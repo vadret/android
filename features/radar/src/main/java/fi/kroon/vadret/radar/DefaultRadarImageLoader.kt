@@ -29,6 +29,7 @@ internal class DefaultRadarImageLoader(
             add(KtorNetworkFetcherFactory(httpClient = { httpClient.value }))
             add(TiffRadarDecoderFactory(radarReprojection = radarReprojection))
         }
+        .diskCache(diskCache = null)
         .build()
 
     override suspend fun load(imageUrl: String): Either<Failure, Bitmap> {
