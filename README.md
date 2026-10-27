@@ -3,10 +3,10 @@
 [![ktlint](https://img.shields.io/badge/code%20style-%E2%9D%A4-FF4081.svg)](https://ktlint.github.io/)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/vadret/android/blob/master/LICENSE)
 
-<img src="https://raw.githubusercontent.com/vadret/android/master/assets/logo.png" alt="Vädret" width="128">
+<img src="https://raw.githubusercontent.com/vadret/android/master/assets/logo.png" alt="Vädret" width="64">
 
 # Vädret
-A simple weather app that uses the Swedish weather service [SMHI](https://opendata.smhi.se/) to fetch weather data, and [Krisinformation](https://www.krisinformation.se/en) for emergency information from Swedish authorities. MVI written entirely in Kotlin. Icons used in this project can be found [here](icons/). The data is licensed under [Creative commons Erkännande 4.0 SE](https://www.smhi.se/data/om-smhis-data/villkor-for-anvandning).
+A simple weather app that uses the Swedish weather service [SMHI](https://opendata.smhi.se/) to fetch weather data, and [Krisinformation](https://www.krisinformation.se/en) for emergency information from Swedish authorities. MVI written in Kotlin Multiplatform supporting Android and iOS targets. The data is licensed under [Creative commons Erkännande 4.0 SE](https://www.smhi.se/data/om-smhis-data/villkor-for-anvandning).
 
 [<img src="https://f-droid.org/badge/get-it-on.png"
       alt="Get it on F-Droid"
@@ -15,25 +15,18 @@ A simple weather app that uses the Swedish weather service [SMHI](https://openda
       alt="Get it on Github"
       height="80">](https://github.com/vadret/android/releases)
 
-_**Note**: While both distribution channels track the same branch, each release are signed with different keys.
-Thus you cannot install the F-droid version and upgrade via Github Releases unless you first uninstall the F-droid version._
-
-**Light mode**
+<p>
+  <img src="assets/screenshots/weather-dark.webp" width="24%" alt="Weather in dark mode">
+  <img src="assets/screenshots/warnings-dark.webp" width="24%" alt="Warnings in dark mode">
+  <img src="assets/screenshots/radar-precipitation-dark.webp" width="24%" alt="Radar with precipitation in dark mode">
+  <img src="assets/screenshots/radar-wind-dark.webp" width="24%" alt="Radar with wind in dark mode">
+</p>
 
 <p>
   <img src="assets/screenshots/weather-light.webp" width="24%" alt="Weather in light mode">
   <img src="assets/screenshots/warnings-light.webp" width="24%" alt="Warnings in light mode">
   <img src="assets/screenshots/radar-precipitation-light.webp" width="24%" alt="Radar with precipitation in light mode">
   <img src="assets/screenshots/radar-wind-light.webp" width="24%" alt="Radar with wind in light mode">
-</p>
-
-**Dark mode**
-
-<p>
-  <img src="assets/screenshots/weather-dark.webp" width="24%" alt="Weather in dark mode">
-  <img src="assets/screenshots/warnings-dark.webp" width="24%" alt="Warnings in dark mode">
-  <img src="assets/screenshots/radar-precipitation-dark.webp" width="24%" alt="Radar with precipitation in dark mode">
-  <img src="assets/screenshots/radar-wind-dark.webp" width="24%" alt="Radar with wind in dark mode">
 </p>
 
 ## Changelog
@@ -52,13 +45,19 @@ The project also uses a modified `Either` type originally written by [Fernando C
 * [Warnings](https://opendata.smhi.se/warnings/introduction)
 * [Radar](https://opendata.smhi.se/radar/introduction)
 
-## Code Style
+## Building
 This project uses [ktlint](https://github.com/pinterest/ktlint) for linting.
 
-#### Run
+#### Running
 
-```
+```sh
 ./gradlew :app:installFdroidLocalRelease && adb shell am start -n fi.kroon.vadret/.main.MainActivity
+```
+
+#### Testing
+
+```sh
+./gradlew test
 ```
 
 #### Linting
