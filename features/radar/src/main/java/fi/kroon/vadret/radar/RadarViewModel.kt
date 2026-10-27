@@ -19,7 +19,7 @@ import fi.kroon.vadret.radar.wind.WindField
 import fi.kroon.vadret.radar.wind.WindFieldRenderer
 import fi.kroon.vadret.radar.wind.WindPalette
 import fi.kroon.vadret.ui.extension.launchReplacing
-import fi.kroon.vadret.ui.extension.messageResourceId
+import fi.kroon.vadret.ui.extension.messageResource
 import fi.kroon.vadret.wind.model.WindForecast
 import fi.kroon.vadret.wind.model.WindFrame
 import io.github.sphrak.either.Either
@@ -99,7 +99,7 @@ class RadarViewModel internal constructor(
             RadarEvent.OnPlayButtonClicked -> onPlayButtonClicked()
 
             RadarEvent.OnErrorShown -> state.update { state: RadarState ->
-                state.copy(errorMessageResourceId = null)
+                state.copy(errorMessageResource = null)
             }
 
             is RadarEvent.OnIndexChanged -> onIndexChanged(index = event.index)
@@ -557,7 +557,7 @@ class RadarViewModel internal constructor(
         state.update { state: RadarState ->
             state.copy(
                 isLoading = false,
-                errorMessageResourceId = failure.messageResourceId()
+                errorMessageResource = failure.messageResource()
             )
         }
     }

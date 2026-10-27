@@ -29,13 +29,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toSize
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import fi.kroon.vadret.core.R
+import fi.kroon.vadret.core.resources.Res
+import fi.kroon.vadret.core.resources.almost_there
+import fi.kroon.vadret.core.resources.m_s
+import fi.kroon.vadret.core.resources.openstreetmap_copyright_notice
 import fi.kroon.vadret.di.koinViewModel
 import fi.kroon.vadret.location.model.Location
 import fi.kroon.vadret.radar.RadarEvent
@@ -50,6 +52,8 @@ import fi.kroon.vadret.ui.VadretTheme
 import fi.kroon.vadret.ui.VadretToast
 import fi.kroon.vadret.ui.VadretToastState
 import fi.kroon.vadret.ui.rememberVadretToastState
+import org.jetbrains.compose.resources.StringResource
+import org.jetbrains.compose.resources.stringResource
 import java.util.Locale
 import kotlin.math.roundToInt
 
@@ -96,10 +100,10 @@ internal fun RadarScreen(
     LaunchedEffect(Unit) {
         onEvent(RadarEvent.OnStart)
     }
-    val errorMessageResourceId: Int? = state.errorMessageResourceId
-    if (errorMessageResourceId != null) {
-        val message: String = stringResource(id = errorMessageResourceId)
-        LaunchedEffect(errorMessageResourceId) {
+    val errorMessageResource: StringResource? = state.errorMessageResource
+    if (errorMessageResource != null) {
+        val message: String = stringResource(resource = errorMessageResource)
+        LaunchedEffect(errorMessageResource) {
             snackbarHostState.showSnackbar(message = message)
             onEvent(RadarEvent.OnErrorShown)
         }
@@ -112,7 +116,7 @@ internal fun RadarScreen(
 
     var dockHeight: Int by remember { mutableIntStateOf(value = NO_DOCK_HEIGHT) }
     val toastState: VadretToastState = rememberVadretToastState()
-    val almostThere: String = stringResource(id = R.string.almost_there)
+    val almostThere: String = stringResource(resource = Res.string.almost_there)
     Box(modifier = modifier.fillMaxSize()) {
         RadarMap(
             layer = state.layer,
@@ -120,7 +124,7 @@ internal fun RadarScreen(
             windField = state.shownWindField,
             deviceLocation = state.deviceLocation,
             windAtLocation = windAtLocation,
-            windSpeedText = windAtLocation?.windSpeedText(unit = stringResource(id = R.string.m_s)),
+            windSpeedText = windAtLocation?.windSpeedText(unit = stringResource(resource = Res.string.m_s)),
             areRadarStationsShown = state.areRadarStationsShown,
             obscuredBottom = dockHeight,
             onMapLoaded = { onEvent(RadarEvent.OnMapLoaded) },
@@ -201,7 +205,7 @@ private fun RadarBottomPanel(
         modifier = modifier.fillMaxWidth()
     ) {
         Text(
-            text = stringResource(id = R.string.openstreetmap_copyright_notice),
+            text = stringResource(resource = Res.string.openstreetmap_copyright_notice),
             style = VadretTheme.textStyles.attribution,
             color = VadretTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier

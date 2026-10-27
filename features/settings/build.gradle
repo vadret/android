@@ -1,23 +1,36 @@
 plugins {
-    id 'vadret.android.feature'
+    id 'vadret.kmp.feature'
 }
 
-android {
-    namespace = 'fi.kroon.vadret.settings'
-}
+kotlin {
+    android {
+        namespace = 'fi.kroon.vadret.settings'
+    }
+    sourceSets {
+        commonMain {
+            dependencies {
+                implementation project(':core:logging')
+                implementation project(':data:changelog')
+                implementation project(':data:common')
+                implementation project(':data:library')
+                implementation project(':data:location')
+                implementation project(':data:theme')
 
-dependencies {
-    implementation project(':core:logging')
-    implementation project(':data:changelog')
-    implementation project(':data:common')
-    implementation project(':data:library')
-    implementation project(':data:location')
-    implementation project(':data:theme')
-
-    implementation libs.either
-    implementation libs.koin.core
-    implementation libs.kotlinx.collections.immutable
-    implementation libs.markdown.renderer.m3
-
-    testImplementation project(':core:testing')
+                implementation libs.either
+                implementation libs.koin.core
+                implementation libs.kotlinx.collections.immutable
+                implementation libs.markdown.renderer.m3
+            }
+        }
+        androidMain {
+            dependencies {
+                implementation libs.androidx.core.ktx
+            }
+        }
+        commonTest {
+            dependencies {
+                implementation project(':core:testing')
+            }
+        }
+    }
 }

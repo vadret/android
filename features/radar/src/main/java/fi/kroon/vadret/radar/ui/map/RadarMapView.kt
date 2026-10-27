@@ -6,8 +6,8 @@ import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.widget.FrameLayout
 import androidx.lifecycle.Lifecycle
-import fi.kroon.vadret.core.R
 import fi.kroon.vadret.location.model.Location
+import fi.kroon.vadret.radar.R
 import fi.kroon.vadret.radar.model.RadarLayer
 import fi.kroon.vadret.radar.precipitation.PrecipitationOverlay
 import fi.kroon.vadret.radar.ui.map.extension.toCameraPosition

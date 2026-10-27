@@ -1,23 +1,44 @@
 plugins {
-    id 'vadret.android.library'
+    id 'vadret.kmp.library'
     id 'com.google.devtools.ksp'
 }
 
-android {
-    namespace = 'fi.kroon.vadret.data.favorite'
+kotlin {
+    android {
+        namespace = 'fi.kroon.vadret.data.favorite'
+    }
+    sourceSets {
+        commonMain {
+            dependencies {
+                implementation project(':core:idgenerator')
+                implementation project(':core:logging')
+                implementation project(':data:common')
+
+                implementation libs.coroutines.core
+                implementation libs.either
+                implementation libs.room.runtime
+            }
+        }
+        iosMain {
+            dependencies {
+                implementation libs.sqlite.bundled
+            }
+        }
+        commonTest {
+            dependencies {
+                implementation project(':core:testing')
+            }
+        }
+        androidHostTest {
+            dependencies {
+                implementation libs.sqlite.bundled.jvm
+            }
+        }
+    }
 }
 
 dependencies {
-    implementation project(':core:idgenerator')
-    implementation project(':core:logging')
-    implementation project(':data:common')
-
-    implementation libs.coroutines.core
-    implementation libs.either
-    implementation libs.room.runtime
-
-    ksp libs.room.compiler
-
-    testImplementation project(':core:testing')
-    testImplementation libs.sqlite.bundled.jvm
+    kspAndroid libs.room.compiler
+    kspIosArm64 libs.room.compiler
+    kspIosSimulatorArm64 libs.room.compiler
 }

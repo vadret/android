@@ -68,7 +68,7 @@ class EchoMotionEstimatorTest {
         )
 
     @Test
-    fun `the field has one cell for every 32 pixels, rounded up`() {
+    fun `the field has one cell for every 32 pixels rounded up`() {
         val motionField: MotionField = EchoMotionEstimator.estimate(
             previous = ByteArray(size = 100 * 70),
             next = ByteArray(size = 100 * 70),

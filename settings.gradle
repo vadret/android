@@ -6,7 +6,8 @@ plugins {
     id 'org.gradle.toolchains.foojay-resolver-convention' version '1.0.0'
 }
 
-include ':app'
+include ':androidApp'
+include ':shared'
 include ':core'
 include ':core:idgenerator'
 include ':core:logging'

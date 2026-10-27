@@ -1,21 +1,31 @@
 plugins {
-    id 'vadret.android.library'
+    id 'vadret.kmp.library'
 }
 
-android {
-    namespace = 'fi.kroon.vadret.testing'
-}
+kotlin {
+    android {
+        namespace = 'fi.kroon.vadret.testing'
+    }
+    sourceSets {
+        commonMain {
+            dependencies {
+                implementation project(':core:idgenerator')
+                implementation project(':core:logging')
+                implementation project(':data:common')
 
-dependencies {
-    implementation project(':core:idgenerator')
-    implementation project(':core:logging')
-    implementation project(':data:common')
-
-    implementation libs.coroutines.core
-    implementation libs.datastore.preferences.core
-    implementation libs.ktor.client.content.negotiation
-    implementation libs.ktor.client.core
-    implementation libs.ktor.client.mock
-    implementation libs.ktor.serialization.kotlinx.json
-    implementation libs.okio
+                implementation libs.coroutines.core
+                implementation libs.datastore.preferences.core
+                implementation libs.ktor.client.content.negotiation
+                implementation libs.ktor.client.core
+                implementation libs.ktor.client.mock
+                implementation libs.ktor.serialization.kotlinx.json
+                implementation libs.okio
+            }
+        }
+        iosMain {
+            dependencies {
+                implementation libs.ktor.client.darwin
+            }
+        }
+    }
 }

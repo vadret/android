@@ -1,0 +1,57 @@
+plugins {
+    id 'vadret.kmp.library'
+    id 'vadret.kmp.compose'
+    id 'kotlinx-serialization'
+}
+
+def changelogResources = layout.buildDirectory.dir('changelogResources')
+def copyChangelog = tasks.register('copyChangelog', Sync) {
+    from rootProject.file('androidApp/src/main/res/raw/changelog.md')
+    into changelogResources.map { directory -> directory.dir('files') }
+}
+
+kotlin {
+    android {
+        namespace = 'fi.kroon.vadret.shared'
+    }
+    [iosArm64(), iosSimulatorArm64()].each { target ->
+        target.binaries.framework {
+            baseName = 'VadretShared'
+            setStatic(true)
+        }
+    }
+    sourceSets {
+        commonMain {
+            dependencies {
+                implementation project(':core')
+                implementation project(':core:logging')
+                implementation project(':data:changelog')
+                implementation project(':data:common')
+                implementation project(':data:theme')
+                implementation project(':features:forecastwarning')
+                implementation project(':features:settings')
+                implementation project(':features:weatherforecast')
+
+                implementation libs.coroutines.core
+                implementation libs.either
+                implementation libs.koin.core
+                implementation libs.kotlinx.collections.immutable
+                implementation libs.kotlinx.serialization.json
+                implementation libs.multiplatform.lifecycle.viewmodel
+                implementation libs.multiplatform.lifecycle.viewmodel.navigation3
+                implementation libs.multiplatform.navigation3.ui
+            }
+        }
+        commonTest {
+            dependencies {
+                implementation project(':core:testing')
+                implementation libs.koin.core
+            }
+        }
+    }
+}
+
+compose.resources {
+    packageOfResClass = 'fi.kroon.vadret.shared.resources'
+    customDirectory('commonMain', copyChangelog.map { task -> changelogResources.get() })
+}

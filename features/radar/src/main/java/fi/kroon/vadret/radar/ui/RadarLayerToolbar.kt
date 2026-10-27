@@ -17,14 +17,21 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.lerp
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
-import fi.kroon.vadret.core.R
+import fi.kroon.vadret.core.resources.Res
+import fi.kroon.vadret.core.resources.ic_air
+import fi.kroon.vadret.core.resources.ic_rainy
+import fi.kroon.vadret.core.resources.ic_rainy_filled
+import fi.kroon.vadret.core.resources.precipitation
+import fi.kroon.vadret.core.resources.wind
 import fi.kroon.vadret.radar.model.RadarLayer
 import fi.kroon.vadret.ui.VadretSlidingSelector
 import fi.kroon.vadret.ui.VadretTheme
+import org.jetbrains.compose.resources.DrawableResource
+import org.jetbrains.compose.resources.StringResource
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 
 private const val FILLED_ICON_COVERAGE = 0.5f
 
@@ -90,32 +97,32 @@ private fun LayerLabel(
         modifier = modifier.padding(paddingValues = layerPadding)
     ) {
         Icon(
-            painter = painterResource(id = layer.iconResourceId(isSelected = coverage >= FILLED_ICON_COVERAGE)),
+            painter = painterResource(resource = layer.iconResource(isSelected = coverage >= FILLED_ICON_COVERAGE)),
             contentDescription = null,
             tint = iconTint,
             modifier = Modifier.size(size = layerIconSize)
         )
         Text(
-            text = stringResource(id = layer.labelResourceId()),
+            text = stringResource(resource = layer.labelResource()),
             style = VadretTheme.textStyles.detailStrong,
             color = contentColor
         )
     }
 }
 
-private fun RadarLayer.iconResourceId(isSelected: Boolean): Int =
+private fun RadarLayer.iconResource(isSelected: Boolean): DrawableResource =
     when (this) {
         RadarLayer.PRECIPITATION -> if (isSelected) {
-            R.drawable.ic_rainy_filled
+            Res.drawable.ic_rainy_filled
         } else {
-            R.drawable.ic_rainy
+            Res.drawable.ic_rainy
         }
 
-        RadarLayer.WIND -> R.drawable.ic_air
+        RadarLayer.WIND -> Res.drawable.ic_air
     }
 
-private fun RadarLayer.labelResourceId(): Int =
+private fun RadarLayer.labelResource(): StringResource =
     when (this) {
-        RadarLayer.PRECIPITATION -> R.string.precipitation
-        RadarLayer.WIND -> R.string.wind
+        RadarLayer.PRECIPITATION -> Res.string.precipitation
+        RadarLayer.WIND -> Res.string.wind
     }

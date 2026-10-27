@@ -4,7 +4,11 @@ def libs = extensions.getByType(VersionCatalogsExtension).named('libs')
 def sdk = { String name -> libs.findVersion(name).get().requiredVersion.toInteger() }
 
 android {
-    compileSdk = sdk('android-compileSdk')
+    compileSdk {
+        version = release(sdk('android-compileSdk')) {
+            minorApiLevel = sdk('android-compileSdkMinor')
+        }
+    }
     defaultConfig {
         minSdk = sdk('android-minSdk')
     }

@@ -1,7 +1,9 @@
 plugins {
-    id 'vadret.android.library'
+    id 'vadret.kmp.library'
 }
 
-android {
-    namespace = 'fi.kroon.vadret.logging'
+kotlin {
+    android {
+        namespace = 'fi.kroon.vadret.logging'
+    }
 }

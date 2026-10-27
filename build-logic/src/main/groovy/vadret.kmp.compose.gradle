@@ -1,0 +1,37 @@
+pluginManager.apply('org.jetbrains.kotlin.plugin.compose')
+pluginManager.apply('org.jetbrains.compose')
+
+def libs = extensions.getByType(VersionCatalogsExtension).named('libs')
+
+composeCompiler {
+    reportsDestination = layout.buildDirectory.dir('compose_compiler')
+    metricsDestination = layout.buildDirectory.dir('compose_compiler')
+}
+
+kotlin {
+    android {
+        androidResources {
+            enable = true
+        }
+    }
+    sourceSets {
+        commonMain {
+            dependencies {
+                [
+                    'multiplatform-compose-components-resources',
+                    'multiplatform-compose-foundation',
+                    'multiplatform-compose-material3',
+                    'multiplatform-compose-runtime',
+                    'multiplatform-compose-ui',
+                    'multiplatform-compose-ui-tooling-preview',
+                    'multiplatform-lifecycle-runtime-compose',
+                    'multiplatform-lifecycle-viewmodel-compose',
+                ].each { implementation libs.findLibrary(it).get() }
+            }
+        }
+    }
+}
+
+dependencies {
+    androidRuntimeClasspath libs.findLibrary('multiplatform-compose-ui-tooling').get()
+}

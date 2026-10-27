@@ -1,6 +1,8 @@
 package fi.kroon.vadret.radar.extension
 
-import fi.kroon.vadret.core.R
+import fi.kroon.vadret.core.resources.Res
+import fi.kroon.vadret.core.resources.an_hour_ago
+import fi.kroon.vadret.core.resources.minutes_ago
 import fi.kroon.vadret.radar.model.Radar
 import fi.kroon.vadret.radar.model.RadarFrame
 import fi.kroon.vadret.radar.model.RadarImage
@@ -20,7 +22,7 @@ private val stockholm: TimeZone = TimeZone.of(zoneId = "Europe/Stockholm")
 class RadarTest {
 
     @Test
-    fun `frames show the local time, weekday and age, past midnight too`() {
+    fun `frames show the local time with weekday and age past midnight too`() {
         val radar = Radar(
             images = listOf(
                 RadarImage(imageUrl = "https://smhi.se/2350.png", validAt = Instant.parse(input = "2026-10-24T21:50:00Z")),
@@ -34,13 +36,13 @@ class RadarTest {
                     imageUrl = "https://smhi.se/2350.png",
                     timeText = "23:50",
                     weekday = "Saturday",
-                    elapsedTime = ElapsedTime(resourceId = R.string.an_hour_ago)
+                    elapsedTime = ElapsedTime(resource = Res.string.an_hour_ago)
                 ),
                 RadarFrame(
                     imageUrl = "https://smhi.se/0055.png",
                     timeText = "00:55",
                     weekday = "Sunday",
-                    elapsedTime = ElapsedTime(resourceId = R.string.minutes_ago, count = 15)
+                    elapsedTime = ElapsedTime(resource = Res.string.minutes_ago, count = 15)
                 )
             ),
             actual = radar.toRadarFrames(

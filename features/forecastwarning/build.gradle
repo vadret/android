@@ -1,22 +1,29 @@
 plugins {
-    id 'vadret.android.feature'
+    id 'vadret.kmp.feature'
 }
 
-android {
-    namespace = 'fi.kroon.vadret.forecastwarning'
-}
+kotlin {
+    android {
+        namespace = 'fi.kroon.vadret.forecastwarning'
+    }
+    sourceSets {
+        commonMain {
+            dependencies {
+                implementation project(':core:logging')
+                implementation project(':data:aggregatedfeed')
+                implementation project(':data:common')
+                implementation project(':data:theme')
+                implementation project(':data:warningfilter')
 
-dependencies {
-    implementation project(':core:logging')
-    implementation project(':data:aggregatedfeed')
-    implementation project(':data:common')
-    implementation project(':data:theme')
-    implementation project(':data:warningfilter')
-
-    implementation libs.androidx.annotation
-    implementation libs.either
-    implementation libs.koin.core
-    implementation libs.kotlinx.collections.immutable
-
-    testImplementation project(':core:testing')
+                implementation libs.either
+                implementation libs.koin.core
+                implementation libs.kotlinx.collections.immutable
+            }
+        }
+        commonTest {
+            dependencies {
+                implementation project(':core:testing')
+            }
+        }
+    }
 }

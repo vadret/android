@@ -1,17 +1,26 @@
 plugins {
-    id 'vadret.android.library'
+    id 'vadret.kmp.library'
 }
 
-android {
-    namespace = 'fi.kroon.vadret.data.changelog'
-}
+kotlin {
+    android {
+        namespace = 'fi.kroon.vadret.data.changelog'
+    }
+    sourceSets {
+        commonMain {
+            dependencies {
+                implementation project(':core:logging')
+                implementation project(':data:common')
 
-dependencies {
-    implementation project(':core:logging')
-    implementation project(':data:common')
-
-    implementation libs.coroutines.core
-    implementation libs.either
-
-    testImplementation project(':core:testing')
+                implementation libs.coroutines.core
+                implementation libs.either
+                implementation libs.kotlinx.io.core
+            }
+        }
+        commonTest {
+            dependencies {
+                implementation project(':core:testing')
+            }
+        }
+    }
 }

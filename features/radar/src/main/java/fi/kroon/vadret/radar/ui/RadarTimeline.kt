@@ -1,13 +1,16 @@
 package fi.kroon.vadret.radar.ui
 
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.res.stringResource
-import fi.kroon.vadret.core.R
+import fi.kroon.vadret.core.resources.Res
+import fi.kroon.vadret.core.resources.day_forecast
+import fi.kroon.vadret.core.resources.now
+import fi.kroon.vadret.core.resources.source_and_time
 import fi.kroon.vadret.radar.RadarState
 import fi.kroon.vadret.radar.model.RadarFrame
 import fi.kroon.vadret.radar.model.RadarLayer
 import fi.kroon.vadret.radar.model.WindTimeFrame
 import fi.kroon.vadret.ui.elapsedTimeText
+import org.jetbrains.compose.resources.stringResource
 import java.util.Locale
 
 internal data class RadarTimeline(
@@ -43,13 +46,13 @@ private fun precipitationTimeline(
     return RadarTimeline(
         timeText = frame.timeText,
         caption = stringResource(
-            id = R.string.source_and_time,
+            resource = Res.string.source_and_time,
             frame.weekday,
             elapsedTimeText(elapsedTime = frame.elapsedTime)
         ).capitalized(),
         startLabel = frames.first().timeText,
         middleLabel = frames[frames.lastIndex / 2].timeText,
-        endLabel = stringResource(id = R.string.now),
+        endLabel = stringResource(resource = Res.string.now),
         index = index,
         lastIndex = frames.lastIndex
     )
@@ -64,10 +67,10 @@ private fun windTimeline(
     return RadarTimeline(
         timeText = frame.timeText,
         caption = stringResource(
-            id = R.string.day_forecast,
+            resource = Res.string.day_forecast,
             frame.weekday
         ).capitalized(),
-        startLabel = stringResource(id = R.string.now),
+        startLabel = stringResource(resource = Res.string.now),
         middleLabel = frames[frames.lastIndex / 2].timeText,
         endLabel = frames.last().timeText,
         index = index,

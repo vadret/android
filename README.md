@@ -30,7 +30,7 @@ A simple weather app that uses the Swedish weather service [SMHI](https://openda
 </p>
 
 ## Changelog
-Changelog available [here](https://github.com/vadret/android/blob/master/app/src/main/res/raw/changelog.md) in [keep-a-changelog](https://keepachangelog.com/en/1.0.0/) format.
+Changelog available [here](https://github.com/vadret/android/blob/master/androidApp/src/main/res/raw/changelog.md) in [keep-a-changelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ## Architecture
 
@@ -51,13 +51,23 @@ This project uses [ktlint](https://github.com/pinterest/ktlint) for linting.
 #### Running
 
 ```sh
-./gradlew :app:installFdroidLocalRelease && adb shell am start -n fi.kroon.vadret/.main.MainActivity
+./gradlew :androidApp:installFdroidLocalRelease && adb shell am start -n fi.kroon.vadret/.main.MainActivity
 ```
+
+#### Running on iOS
+
+Requires a Mac with Xcode 26. Open `iosApp/iosApp.xcodeproj` and run the `iosApp` scheme, or build from the command line:
+
+```sh
+xcodebuild -project iosApp/iosApp.xcodeproj -scheme iosApp -sdk iphonesimulator build
+```
+
+To run on a device, set your `TEAM_ID` in `iosApp/Configuration/Config.xcconfig`.
 
 #### Testing
 
 ```sh
-./gradlew test
+./gradlew test allTests
 ```
 
 #### Linting

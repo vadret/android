@@ -1,21 +1,35 @@
 plugins {
-    id 'vadret.android.library'
+    id 'vadret.kmp.library'
     id 'kotlinx-serialization'
 }
 
-android {
-    namespace = 'fi.kroon.vadret.data.common'
-}
+kotlin {
+    android {
+        namespace = 'fi.kroon.vadret.data.common'
+    }
+    sourceSets {
+        commonMain {
+            dependencies {
+                implementation project(':core:logging')
 
-dependencies {
-    implementation project(':core:logging')
-
-    implementation libs.coroutines.core
-    implementation libs.either
-    implementation libs.kotlinx.serialization.json
-    implementation libs.ktor.client.core
-    implementation libs.ktor.serialization
-
-    testImplementation project(':core:testing')
-    testImplementation libs.ktor.client.mock
+                implementation libs.coroutines.core
+                implementation libs.either
+                implementation libs.kotlinx.serialization.json
+                implementation libs.ktor.client.core
+                implementation libs.ktor.serialization
+                implementation libs.okio
+            }
+        }
+        iosMain {
+            dependencies {
+                implementation libs.ktor.client.darwin
+            }
+        }
+        commonTest {
+            dependencies {
+                implementation project(':core:testing')
+                implementation libs.ktor.client.mock
+            }
+        }
+    }
 }

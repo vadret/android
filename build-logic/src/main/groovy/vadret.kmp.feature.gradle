@@ -1,0 +1,18 @@
+pluginManager.apply('vadret.kmp.library')
+pluginManager.apply('vadret.kmp.compose')
+
+def libs = extensions.getByType(VersionCatalogsExtension).named('libs')
+
+kotlin {
+    sourceSets {
+        commonMain {
+            dependencies {
+                implementation project(':core')
+                [
+                    'coroutines-core',
+                    'multiplatform-lifecycle-viewmodel',
+                ].each { implementation libs.findLibrary(it).get() }
+            }
+        }
+    }
+}

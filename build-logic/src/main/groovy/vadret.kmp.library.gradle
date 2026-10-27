@@ -1,0 +1,37 @@
+pluginManager.apply('org.jetbrains.kotlin.multiplatform')
+pluginManager.apply('com.android.kotlin.multiplatform.library')
+
+def libs = extensions.getByType(VersionCatalogsExtension).named('libs')
+def sdk = { String name -> libs.findVersion(name).get().requiredVersion.toInteger() }
+
+kotlin {
+    jvmToolchain(17)
+
+    android {
+        compileSdk {
+            version = release(sdk('android-compileSdk')) {
+                minorApiLevel = sdk('android-compileSdkMinor')
+            }
+        }
+        minSdk = sdk('android-minSdk')
+        withHostTest {}
+        lint {
+            abortOnError = false
+        }
+    }
+    iosArm64()
+    iosSimulatorArm64()
+
+    compilerOptions {
+        optIn.add('kotlin.concurrent.atomics.ExperimentalAtomicApi')
+    }
+
+    sourceSets {
+        commonTest {
+            dependencies {
+                implementation libs.findLibrary('coroutines-test').get()
+                implementation libs.findLibrary('kotlin-test').get()
+            }
+        }
+    }
+}

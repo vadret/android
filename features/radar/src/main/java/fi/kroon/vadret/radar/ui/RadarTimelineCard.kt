@@ -28,13 +28,23 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
-import fi.kroon.vadret.core.R
+import fi.kroon.vadret.core.resources.Res
+import fi.kroon.vadret.core.resources.ic_pause_filled
+import fi.kroon.vadret.core.resources.ic_play_arrow_filled
+import fi.kroon.vadret.core.resources.pause
+import fi.kroon.vadret.core.resources.play
+import fi.kroon.vadret.core.resources.precipitation_heavy
+import fi.kroon.vadret.core.resources.precipitation_light
+import fi.kroon.vadret.core.resources.wind_speed_maximum
+import fi.kroon.vadret.core.resources.wind_speed_minimum
 import fi.kroon.vadret.radar.model.RadarLayer
 import fi.kroon.vadret.ui.VadretTheme
+import org.jetbrains.compose.resources.DrawableResource
+import org.jetbrains.compose.resources.StringResource
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import kotlin.math.roundToInt
 
 private val cardElevation = 6.dp
@@ -258,15 +268,15 @@ private fun PlayButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val iconResourceId: Int = if (isPlaying) {
-        R.drawable.ic_pause_filled
+    val iconResource: DrawableResource = if (isPlaying) {
+        Res.drawable.ic_pause_filled
     } else {
-        R.drawable.ic_play_arrow_filled
+        Res.drawable.ic_play_arrow_filled
     }
-    val contentDescriptionResourceId: Int = if (isPlaying) {
-        R.string.pause
+    val contentDescriptionResource: StringResource = if (isPlaying) {
+        Res.string.pause
     } else {
-        R.string.play
+        Res.string.play
     }
     Surface(
         onClick = onClick,
@@ -277,8 +287,8 @@ private fun PlayButton(
     ) {
         Box(contentAlignment = Alignment.Center) {
             Icon(
-                painter = painterResource(id = iconResourceId),
-                contentDescription = stringResource(id = contentDescriptionResourceId),
+                painter = painterResource(resource = iconResource),
+                contentDescription = stringResource(resource = contentDescriptionResource),
                 modifier = Modifier.size(size = playIconSize)
             )
         }
@@ -352,8 +362,8 @@ private fun Legend(
     when (layer) {
         RadarLayer.PRECIPITATION -> {
             colors = precipitationLegend
-            startLabel = stringResource(id = R.string.precipitation_light)
-            endLabel = stringResource(id = R.string.precipitation_heavy)
+            startLabel = stringResource(resource = Res.string.precipitation_light)
+            endLabel = stringResource(resource = Res.string.precipitation_heavy)
         }
 
         RadarLayer.WIND -> {
@@ -362,8 +372,8 @@ private fun Legend(
             } else {
                 dayWindLegend
             }
-            startLabel = stringResource(id = R.string.wind_speed_minimum)
-            endLabel = stringResource(id = R.string.wind_speed_maximum)
+            startLabel = stringResource(resource = Res.string.wind_speed_minimum)
+            endLabel = stringResource(resource = Res.string.wind_speed_maximum)
         }
     }
     Row(

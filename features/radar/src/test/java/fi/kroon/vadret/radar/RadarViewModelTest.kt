@@ -3,7 +3,10 @@ package fi.kroon.vadret.radar
 import android.graphics.Bitmap
 import fi.kroon.vadret.common.ErrorCode
 import fi.kroon.vadret.common.Failure
-import fi.kroon.vadret.core.R
+import fi.kroon.vadret.core.resources.Res
+import fi.kroon.vadret.core.resources.network_failure
+import fi.kroon.vadret.core.resources.no_radar_available
+import fi.kroon.vadret.core.resources.no_wind_available
 import fi.kroon.vadret.location.model.Location
 import fi.kroon.vadret.radar.model.Radar
 import fi.kroon.vadret.radar.model.RadarFrame
@@ -241,10 +244,10 @@ class RadarViewModelTest {
             val radarViewModel: RadarViewModel = viewModel()
             advanceUntilIdle()
 
-            assertEquals(expected = R.string.no_radar_available, actual = radarViewModel.state.value.errorMessageResourceId)
+            assertEquals(expected = Res.string.no_radar_available, actual = radarViewModel.state.value.errorMessageResource)
             assertEquals(expected = false, actual = radarViewModel.state.value.isLoading)
             radarViewModel.onEvent(event = RadarEvent.OnErrorShown)
-            assertNull(actual = radarViewModel.state.value.errorMessageResourceId)
+            assertNull(actual = radarViewModel.state.value.errorMessageResource)
         }
 
     @Test
@@ -278,7 +281,7 @@ class RadarViewModelTest {
             advanceUntilIdle()
 
             assertEquals(expected = false, actual = radarViewModel.state.value.isPlaying)
-            assertEquals(expected = R.string.network_failure, actual = radarViewModel.state.value.errorMessageResourceId)
+            assertEquals(expected = Res.string.network_failure, actual = radarViewModel.state.value.errorMessageResource)
         }
 
     @Test
@@ -416,7 +419,7 @@ class RadarViewModelTest {
             advanceUntilIdle()
 
             assertNull(actual = radarViewModel.state.value.deviceLocation)
-            assertNull(actual = radarViewModel.state.value.errorMessageResourceId)
+            assertNull(actual = radarViewModel.state.value.errorMessageResource)
         }
 
     @Test
@@ -481,7 +484,7 @@ class RadarViewModelTest {
 
             radarViewModel.onEvent(event = RadarEvent.OnLayerSelected(layer = RadarLayer.WIND))
             advanceUntilIdle()
-            assertEquals(expected = R.string.no_wind_available, actual = radarViewModel.state.value.errorMessageResourceId)
+            assertEquals(expected = Res.string.no_wind_available, actual = radarViewModel.state.value.errorMessageResource)
             assertEquals(expected = false, actual = radarViewModel.state.value.isLoading)
 
             radarViewModel.onEvent(event = RadarEvent.OnLayerSelected(layer = RadarLayer.PRECIPITATION))

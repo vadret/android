@@ -5,7 +5,7 @@ from pathlib import Path
 
 REPOSITORY = Path(__file__).resolve().parents[3]
 SOURCE = REPOSITORY / "icons" / "light" / "animated"
-TARGET = REPOSITORY / "ui" / "icons" / "src" / "main" / "java" / "fi" / "kroon" / "vadret" / "icons"
+TARGET = REPOSITORY / "ui" / "icons" / "src" / "commonMain" / "kotlin" / "fi" / "kroon" / "vadret" / "icons"
 PACKAGE = "fi.kroon.vadret.icons"
 INK = "#4a4f5e"
 MASK_CUTOUT = "#000"

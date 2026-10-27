@@ -1,8 +1,10 @@
 plugins {
-    id 'vadret.android.library'
-    id 'vadret.android.compose'
+    id 'vadret.kmp.library'
+    id 'vadret.kmp.compose'
 }
 
-android {
-    namespace = 'fi.kroon.vadret.ui.icons'
+kotlin {
+    android {
+        namespace = 'fi.kroon.vadret.ui.icons'
+    }
 }

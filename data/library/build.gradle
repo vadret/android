@@ -1,13 +1,21 @@
 plugins {
-    id 'vadret.android.library'
+    id 'vadret.kmp.library'
 }
 
-android {
-    namespace = 'fi.kroon.vadret.data.library'
-}
-
-dependencies {
-    implementation libs.either
-
-    testImplementation project(':core:testing')
+kotlin {
+    android {
+        namespace = 'fi.kroon.vadret.data.library'
+    }
+    sourceSets {
+        commonMain {
+            dependencies {
+                implementation libs.either
+            }
+        }
+        commonTest {
+            dependencies {
+                implementation project(':core:testing')
+            }
+        }
+    }
 }

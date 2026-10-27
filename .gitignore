@@ -113,3 +113,8 @@ fabric.properties
 ### AndroidStudio Patch ###
 
 !/gradle/wrapper/gradle-wrapper.jar
+
+### Xcode ###
+xcuserdata/
+*.xcuserstate
+DerivedData/
