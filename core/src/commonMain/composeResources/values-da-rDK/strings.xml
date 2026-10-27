@@ -90,4 +90,8 @@
         <item quantity="other">Næste %1$d dage</item>
     </plurals>
     <string name="cancel">Annuller</string>
+    <plurals name="warning_count">
+        <item quantity="one">%1$d advarsel</item>
+        <item quantity="other">%1$d advarsler</item>
+    </plurals>
 </resources>

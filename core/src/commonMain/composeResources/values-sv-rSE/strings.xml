@@ -188,4 +188,8 @@
         <item quantity="other">Kommande %1$d dagar</item>
     </plurals>
     <string name="cancel">Avbryt</string>
+    <plurals name="warning_count">
+        <item quantity="one">%1$d varning</item>
+        <item quantity="other">%1$d varningar</item>
+    </plurals>
 </resources>

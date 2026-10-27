@@ -1,4 +1,4 @@
-package fi.kroon.vadret.forecastwarning
+package fi.kroon.vadret.warning
 
 import fi.kroon.vadret.aggregatedfeed.model.AggregatedFeed
 import fi.kroon.vadret.aggregatedfeed.model.FeedSource

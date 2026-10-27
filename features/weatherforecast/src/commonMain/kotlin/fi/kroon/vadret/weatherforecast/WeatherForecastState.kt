@@ -16,6 +16,7 @@ data class WeatherForecastState(
     val isRefreshing: Boolean = false,
     val isLocationPermissionRequested: Boolean = false,
     val search: SearchState? = null,
+    val warningCount: Int = 0,
     val forecastView: ForecastView = ForecastView.DAYS,
     val errorMessageResource: StringResource? = null
 )

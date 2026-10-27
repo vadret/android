@@ -1,0 +1,26 @@
+plugins {
+    id 'vadret.kmp.library'
+}
+
+kotlin {
+    android {
+        namespace = 'fi.kroon.vadret.warning'
+    }
+    sourceSets {
+        commonMain {
+            dependencies {
+                implementation project(':data:aggregatedfeed')
+                implementation project(':data:common')
+                implementation project(':data:warningfilter')
+
+                implementation libs.either
+                implementation libs.koin.core
+            }
+        }
+        commonTest {
+            dependencies {
+                implementation project(':core:testing')
+            }
+        }
+    }
+}

@@ -92,4 +92,8 @@
         <item quantity="other">Seuraavat %1$d päivää</item>
     </plurals>
     <string name="cancel">Peruuta</string>
+    <plurals name="warning_count">
+        <item quantity="one">%1$d varoitus</item>
+        <item quantity="other">%1$d varoitusta</item>
+    </plurals>
 </resources>

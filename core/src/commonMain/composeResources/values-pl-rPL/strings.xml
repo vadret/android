@@ -79,4 +79,10 @@
         <item quantity="other">Następne %1$d dni</item>
     </plurals>
     <string name="cancel">Anuluj</string>
+    <plurals name="warning_count">
+        <item quantity="one">%1$d ostrzeżenie</item>
+        <item quantity="few">%1$d ostrzeżenia</item>
+        <item quantity="many">%1$d ostrzeżeń</item>
+        <item quantity="other">%1$d ostrzeżenia</item>
+    </plurals>
 </resources>

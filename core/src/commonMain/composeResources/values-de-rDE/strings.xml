@@ -134,4 +134,8 @@
         <item quantity="other">Nächste %1$d Tage</item>
     </plurals>
     <string name="cancel">Abbrechen</string>
+    <plurals name="warning_count">
+        <item quantity="one">%1$d Warnung</item>
+        <item quantity="other">%1$d Warnungen</item>
+    </plurals>
 </resources>

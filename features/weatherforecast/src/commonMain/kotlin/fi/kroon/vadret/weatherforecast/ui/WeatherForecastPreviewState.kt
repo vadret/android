@@ -21,6 +21,7 @@ import kotlin.time.Instant
 
 private const val PREVIEW_LANGUAGE_TAG = "en"
 private const val PREVIEW_LOCALITY = "Stockholm"
+private const val PREVIEW_WARNING_COUNT = 3
 private const val PREVIEW_LATITUDE = 59.3293
 private const val PREVIEW_LONGITUDE = 18.0686
 private const val FORECAST_HOURS = 168
@@ -57,6 +58,7 @@ internal fun weatherForecastPreviewState(): WeatherForecastState {
     return WeatherForecastState(
         forecast = weatherForecast.copy(comingDays = weatherForecast.comingDays.withDayToggled(dayKey = todayKey)),
         localityName = PREVIEW_LOCALITY,
+        warningCount = PREVIEW_WARNING_COUNT,
         isLoading = false
     )
 }

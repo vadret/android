@@ -3,12 +3,14 @@ package fi.kroon.vadret.weatherforecast
 import androidx.compose.runtime.Immutable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import fi.kroon.vadret.aggregatedfeed.model.AggregatedFeed
 import fi.kroon.vadret.autocomplete.model.AutoCompleteItem
 import fi.kroon.vadret.common.Failure
 import fi.kroon.vadret.favorite.model.Favorite
 import fi.kroon.vadret.ui.extension.launchReplacing
 import fi.kroon.vadret.ui.extension.messageResource
 import fi.kroon.vadret.ui.format.currentLanguageTag
+import fi.kroon.vadret.warning.GetWarningsTask
 import fi.kroon.vadret.weatherforecast.extension.toWeatherForecast
 import fi.kroon.vadret.weatherforecast.extension.withComingDays
 import fi.kroon.vadret.weatherforecast.extension.withDayToggled
@@ -21,6 +23,7 @@ import io.github.sphrak.either.Either
 import io.github.sphrak.either.extension.asRight
 import io.github.sphrak.either.extension.errorOrNull
 import io.github.sphrak.either.extension.onResult
+import io.github.sphrak.either.extension.successOrNull
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.CoroutineDispatcher
@@ -52,6 +55,7 @@ class WeatherForecastViewModel internal constructor(
     private val removeFavoriteTask: RemoveFavoriteTask,
     private val searchPlacesTask: SearchPlacesTask,
     private val selectPlaceTask: SelectPlaceTask,
+    private val getWarningsTask: GetWarningsTask,
     private val clock: Clock,
     private val coroutineDispatcher: CoroutineDispatcher
 ) : ViewModel() {
@@ -66,6 +70,7 @@ class WeatherForecastViewModel internal constructor(
     private val isObservingLocationChoices: AtomicBoolean = AtomicBoolean(value = false)
     private val loadJob: AtomicReference<Job?> = AtomicReference(value = null)
     private val searchJob: AtomicReference<Job?> = AtomicReference(value = null)
+    private val warningJob: AtomicReference<Job?> = AtomicReference(value = null)
 
     fun onEvent(event: WeatherForecastEvent) {
         when (event) {
@@ -123,6 +128,7 @@ class WeatherForecastViewModel internal constructor(
         if (isObservingLocationChoices.compareAndSet(expectedValue = false, newValue = true)) {
             observeLocationChoices()
         }
+        loadWarningCount(isRefresh = false)
         viewModelScope.launch(context = coroutineDispatcher) {
             getLocationModeTask()
                 .onResult(
@@ -216,6 +222,19 @@ class WeatherForecastViewModel internal constructor(
             state.copy(isRefreshing = true)
         }
         load(isAutomatic = isAutomatic)
+        loadWarningCount(isRefresh = true)
+    }
+
+    private fun loadWarningCount(isRefresh: Boolean) {
+        viewModelScope.launchReplacing(
+            currentJob = warningJob,
+            context = coroutineDispatcher
+        ) {
+            val warnings: List<AggregatedFeed> = getWarningsTask(isRefresh = isRefresh).successOrNull ?: return@launchReplacing
+            state.update { state: WeatherForecastState ->
+                state.copy(warningCount = warnings.size)
+            }
+        }
     }
 
     private fun load(isAutomatic: Boolean) {

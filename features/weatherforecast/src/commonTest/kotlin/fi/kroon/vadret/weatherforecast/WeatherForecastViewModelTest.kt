@@ -1,5 +1,6 @@
 package fi.kroon.vadret.weatherforecast
 
+import fi.kroon.vadret.aggregatedfeed.model.AggregatedFeed
 import fi.kroon.vadret.common.ErrorCode
 import fi.kroon.vadret.common.Failure
 import fi.kroon.vadret.core.resources.Res
@@ -59,6 +60,7 @@ class WeatherForecastViewModelTest {
     private val autoCompleteRepository = FakeAutoCompleteRepository()
     private val favoriteRepository = FakeFavoriteRepository()
     private val clock = FixedClock(now = Instant.parse(input = "2026-10-24T12:00:00Z"))
+    private val getWarningsTask = FakeGetWarningsTask()
     private val weatherForecastViewModel = WeatherForecastViewModel(
         getLocationModeTask = DefaultGetLocationModeTask(locationRepository = locationRepository),
         setLocationModeTask = DefaultSetLocationModeTask(locationRepository = locationRepository),
@@ -78,6 +80,7 @@ class WeatherForecastViewModelTest {
             favoriteRepository = favoriteRepository,
             locationRepository = locationRepository
         ),
+        getWarningsTask = getWarningsTask,
         clock = clock,
         coroutineDispatcher = testDispatcher
     )
@@ -200,6 +203,54 @@ class WeatherForecastViewModelTest {
             advanceUntilIdle()
 
             assertEquals(expected = 3, actual = weatherForecastRepository.requestedCoordinates.size)
+        }
+
+    @Test
+    fun `the warning count is shown once the screen is shown`() =
+        testScope.runTest {
+            weatherForecastViewModel.onEvent(event = WeatherForecastEvent.OnShown)
+            advanceUntilIdle()
+
+            assertEquals(expected = 2, actual = weatherForecastViewModel.state.value.warningCount)
+            assertEquals(expected = listOf(false), actual = getWarningsTask.refreshes)
+        }
+
+    @Test
+    fun `a refresh asks for fresh warnings`() =
+        testScope.runTest {
+            weatherForecastViewModel.onEvent(event = WeatherForecastEvent.OnShown)
+            advanceUntilIdle()
+
+            getWarningsTask.result = listOf(warning(identifier = "smhi-3")).asRight()
+            weatherForecastViewModel.onEvent(event = WeatherForecastEvent.OnRefresh)
+            advanceUntilIdle()
+
+            assertEquals(expected = 1, actual = weatherForecastViewModel.state.value.warningCount)
+            assertEquals(expected = listOf(false, true), actual = getWarningsTask.refreshes)
+        }
+
+    @Test
+    fun `warnings that cannot be loaded keep the last count without a message`() =
+        testScope.runTest {
+            weatherForecastViewModel.onEvent(event = WeatherForecastEvent.OnShown)
+            advanceUntilIdle()
+
+            getWarningsTask.result = Failure(errorCode = ErrorCode.NETWORK_FAILURE).asLeft()
+            weatherForecastViewModel.onEvent(event = WeatherForecastEvent.OnRefresh)
+            advanceUntilIdle()
+
+            assertEquals(expected = 2, actual = weatherForecastViewModel.state.value.warningCount)
+            assertNull(actual = weatherForecastViewModel.state.value.errorMessageResource)
+        }
+
+    @Test
+    fun `no warnings shows no count`() =
+        testScope.runTest {
+            getWarningsTask.result = emptyList<AggregatedFeed>().asRight()
+            weatherForecastViewModel.onEvent(event = WeatherForecastEvent.OnShown)
+            advanceUntilIdle()
+
+            assertEquals(expected = 0, actual = weatherForecastViewModel.state.value.warningCount)
         }
 
     @Test

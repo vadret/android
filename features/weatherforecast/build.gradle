@@ -10,6 +10,7 @@ kotlin {
         commonMain {
             dependencies {
                 implementation project(':core:logging')
+                implementation project(':data:aggregatedfeed')
                 implementation project(':data:autocomplete')
                 implementation project(':data:common')
                 implementation project(':data:favorite')
@@ -18,6 +19,7 @@ kotlin {
                 implementation project(':data:theme')
                 implementation project(':ui:icons')
                 implementation project(':data:weatherforecast')
+                implementation project(':domain:warning')
 
                 implementation libs.either
                 implementation libs.koin.core

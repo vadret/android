@@ -89,7 +89,16 @@ internal fun VadretApp(
                 popTransitionSpec = { instantTransition() },
                 predictivePopTransitionSpec = { instantTransition() },
                 entryProvider = entryProvider {
-                    entry<WeatherKey> { WeatherForecastRoute() }
+                    entry<WeatherKey> {
+                        WeatherForecastRoute(
+                            onWarningsClick = {
+                                selectTab(
+                                    backStack = backStack,
+                                    key = WarningKey
+                                )
+                            }
+                        )
+                    }
                     entry<WarningKey> { WarningRoute() }
                     if (radarTab != null) {
                         entry<RadarKey> { radarTab.content() }

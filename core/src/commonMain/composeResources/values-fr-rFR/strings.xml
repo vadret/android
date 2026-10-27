@@ -83,4 +83,8 @@
         <item quantity="other">%1$d prochains jours</item>
     </plurals>
     <string name="cancel">Annuler</string>
+    <plurals name="warning_count">
+        <item quantity="one">%1$d alerte</item>
+        <item quantity="other">%1$d alertes</item>
+    </plurals>
 </resources>

@@ -41,12 +41,14 @@ import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 
 private const val SEARCH_KEY = "search"
+private const val WARNING_COUNT_KEY = "warning-count"
 private const val CURRENT_WEATHER_KEY = "current-weather"
 private const val FORECAST_VIEW_KEY = "forecast-view"
 private const val FORECAST_CONTENT_KEY = "forecast-content"
 
 @Composable
 fun WeatherForecastRoute(
+    onWarningsClick: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: WeatherForecastViewModel = koinViewModel()
 ) {
@@ -54,6 +56,7 @@ fun WeatherForecastRoute(
     WeatherForecastScreen(
         state = state,
         onEvent = viewModel::onEvent,
+        onWarningsClick = onWarningsClick,
         modifier = modifier
     )
 }
@@ -62,6 +65,7 @@ fun WeatherForecastRoute(
 internal fun WeatherForecastScreen(
     state: WeatherForecastState,
     onEvent: (WeatherForecastEvent) -> Unit,
+    onWarningsClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val languageTag: String = LocalLocale.current.toLanguageTag()
@@ -99,8 +103,8 @@ internal fun WeatherForecastScreen(
         topBar = {
             VadretTopAppBar(
                 actions = {
-                    LocationChip(
-                        modifier = Modifier.padding(end = VadretTheme.spacing.extraSmall),
+                    LocationPicker(
+                        modifier = Modifier.padding(end = VadretTheme.spacing.small),
                         localityName = state.localityName,
                         locationChoices = state.locationChoices,
                         onEvent = onEvent
@@ -136,12 +140,18 @@ internal fun WeatherForecastScreen(
                             onEvent = onEvent
                         )
                     }
-                } else if (currentWeather != null) {
-                    item(
-                        key = CURRENT_WEATHER_KEY,
-                        contentType = CURRENT_WEATHER_KEY
-                    ) {
-                        CurrentWeatherCard(currentWeather = currentWeather)
+                } else {
+                    warningCount(
+                        warningCount = state.warningCount,
+                        onWarningsClick = onWarningsClick
+                    )
+                    if (currentWeather != null) {
+                        item(
+                            key = CURRENT_WEATHER_KEY,
+                            contentType = CURRENT_WEATHER_KEY
+                        ) {
+                            CurrentWeatherCard(currentWeather = currentWeather)
+                        }
                     }
                 }
                 forecast(
@@ -153,6 +163,24 @@ internal fun WeatherForecastScreen(
                 VadretProgressBar(modifier = Modifier.align(alignment = Alignment.TopCenter))
             }
         }
+    }
+}
+
+private fun LazyListScope.warningCount(
+    warningCount: Int,
+    onWarningsClick: () -> Unit
+) {
+    if (warningCount == 0) {
+        return
+    }
+    item(
+        key = WARNING_COUNT_KEY,
+        contentType = WARNING_COUNT_KEY
+    ) {
+        WarningCountChip(
+            warningCount = warningCount,
+            onClick = onWarningsClick
+        )
     }
 }
 
@@ -194,7 +222,8 @@ private fun WeatherForecastScreenPreview(
     VadretTheme(theme = theme) {
         WeatherForecastScreen(
             state = weatherForecastPreviewState(),
-            onEvent = {}
+            onEvent = {},
+            onWarningsClick = {}
         )
     }
 }

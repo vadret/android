@@ -1,5 +1,8 @@
 package fi.kroon.vadret.weatherforecast
 
+import fi.kroon.vadret.aggregatedfeed.model.AggregatedFeed
+import fi.kroon.vadret.aggregatedfeed.model.FeedSource
+import fi.kroon.vadret.aggregatedfeed.model.WarningLevel
 import fi.kroon.vadret.autocomplete.AutoCompleteRepository
 import fi.kroon.vadret.autocomplete.model.AutoCompleteItem
 import fi.kroon.vadret.common.Failure
@@ -15,6 +18,7 @@ import fi.kroon.vadret.location.model.LocationPreference
 import fi.kroon.vadret.location.model.StoredLocation
 import fi.kroon.vadret.nominatim.NominatimRepository
 import fi.kroon.vadret.nominatim.model.Locality
+import fi.kroon.vadret.warning.GetWarningsTask
 import fi.kroon.vadret.weatherforecast.model.Analysis
 import fi.kroon.vadret.weatherforecast.model.ComingDay
 import fi.kroon.vadret.weatherforecast.model.Forecast
@@ -270,5 +274,31 @@ internal class FakeAutoCompleteRepository(
                     ignoreCase = true
                 )
             }.asRight()
+    }
+}
+
+internal fun warning(identifier: String): AggregatedFeed =
+    AggregatedFeed(
+        identifier = identifier,
+        headline = "Vind",
+        areaName = "Stockholm",
+        warningLevel = WarningLevel.YELLOW,
+        details = emptyList(),
+        source = FeedSource.SMHI,
+        publishedAt = Instant.parse(input = "2026-10-24T08:00:00Z")
+    )
+
+internal class FakeGetWarningsTask(
+    var result: Either<Failure, List<AggregatedFeed>> = listOf(
+        warning(identifier = "smhi-1"),
+        warning(identifier = "smhi-2")
+    ).asRight()
+) : GetWarningsTask {
+
+    val refreshes = mutableListOf<Boolean>()
+
+    override suspend fun invoke(isRefresh: Boolean): Either<Failure, List<AggregatedFeed>> {
+        refreshes.add(isRefresh)
+        return result
     }
 }

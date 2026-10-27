@@ -12,6 +12,7 @@ import fi.kroon.vadret.core.resources.unhandled_error
 import fi.kroon.vadret.forecastwarning.model.WarningFilterState
 import fi.kroon.vadret.forecastwarning.model.WarningItem
 import fi.kroon.vadret.testing.FixedClock
+import fi.kroon.vadret.warning.GetWarningsTask
 import io.github.sphrak.either.extension.asLeft
 import io.github.sphrak.either.extension.asRight
 import kotlinx.coroutines.Dispatchers
@@ -51,7 +52,7 @@ class WarningViewModelTest {
 
     private fun viewModel(): WarningViewModel {
         val warningViewModel = WarningViewModel(
-            getWarningsTask = DefaultGetWarningsTask(
+            getWarningsTask = GetWarningsTask(
                 warningFilterRepository = warningFilterRepository,
                 aggregatedFeedRepository = aggregatedFeedRepository
             ),
@@ -68,7 +69,7 @@ class WarningViewModelTest {
     fun `nothing loads until the screen starts the view model and then only once`() =
         testScope.runTest {
             val warningViewModel = WarningViewModel(
-                getWarningsTask = DefaultGetWarningsTask(
+                getWarningsTask = GetWarningsTask(
                     warningFilterRepository = warningFilterRepository,
                     aggregatedFeedRepository = aggregatedFeedRepository
                 ),

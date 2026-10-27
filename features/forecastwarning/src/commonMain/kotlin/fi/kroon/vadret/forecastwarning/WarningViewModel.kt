@@ -14,6 +14,7 @@ import fi.kroon.vadret.forecastwarning.model.WarningFilterState
 import fi.kroon.vadret.forecastwarning.model.WarningItem
 import fi.kroon.vadret.ui.extension.launchReplacing
 import fi.kroon.vadret.ui.extension.messageResource
+import fi.kroon.vadret.warning.GetWarningsTask
 import fi.kroon.vadret.warningfilter.model.DistrictOption
 import fi.kroon.vadret.warningfilter.model.FeedSourceOption
 import fi.kroon.vadret.warningfilter.model.WarningFilter
