@@ -96,4 +96,6 @@
         <item quantity="one">%1$d varoitus</item>
         <item quantity="other">%1$d varoitusta</item>
     </plurals>
+    <string name="select_a_language">Valitse kieli</string>
+    <string name="system_language">Järjestelmän kieli</string>
 </resources>

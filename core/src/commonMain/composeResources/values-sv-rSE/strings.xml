@@ -192,4 +192,6 @@
         <item quantity="one">%1$d varning</item>
         <item quantity="other">%1$d varningar</item>
     </plurals>
+    <string name="select_a_language">Välj språk</string>
+    <string name="system_language">Systemets språk</string>
 </resources>

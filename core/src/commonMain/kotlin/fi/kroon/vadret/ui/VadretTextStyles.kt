@@ -3,9 +3,16 @@ package fi.kroon.vadret.ui
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.unit.sp
 
 private const val TABULAR_NUMBERS = "tnum"
+
+private val exactLineHeight = LineHeightStyle(
+    alignment = LineHeightStyle.Alignment.Center,
+    trim = LineHeightStyle.Trim.Both,
+    mode = LineHeightStyle.Mode.Tight
+)
 
 internal fun TextStyle.withTabularNumbers(): TextStyle = copy(fontFeatureSettings = TABULAR_NUMBERS)
 
@@ -24,10 +31,21 @@ private fun textStyle(
 @Immutable
 data class VadretTextStyles(
     val temperature: TextStyle = textStyle(
-        fontSize = 52,
-        lineHeight = 52,
+        fontSize = 55,
+        lineHeight = 55,
         fontWeight = FontWeight.Light
-    ).copy(letterSpacing = (-2).sp),
+    ).copy(
+        letterSpacing = (-2).sp,
+        lineHeightStyle = exactLineHeight
+    ),
+    val condition: TextStyle = textStyle(
+        fontSize = 21,
+        lineHeight = 25
+    ).copy(lineHeightStyle = exactLineHeight),
+    val reading: TextStyle = textStyle(
+        fontSize = 21,
+        lineHeight = 23
+    ).copy(lineHeightStyle = exactLineHeight),
     val title: TextStyle = textStyle(
         fontSize = 20,
         lineHeight = 26,

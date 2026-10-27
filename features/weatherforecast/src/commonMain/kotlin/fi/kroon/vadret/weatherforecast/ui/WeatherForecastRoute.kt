@@ -17,7 +17,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -26,6 +25,7 @@ import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import fi.kroon.vadret.di.koinViewModel
 import fi.kroon.vadret.theme.model.Theme
+import fi.kroon.vadret.ui.LocalLanguageTag
 import fi.kroon.vadret.ui.ThemePreviewParameterProvider
 import fi.kroon.vadret.ui.VadretProgressBar
 import fi.kroon.vadret.ui.VadretPullToRefreshBox
@@ -68,7 +68,7 @@ internal fun WeatherForecastScreen(
     onWarningsClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val languageTag: String = LocalLocale.current.toLanguageTag()
+    val languageTag: String = LocalLanguageTag.current
     LaunchedEffect(languageTag) {
         onEvent(WeatherForecastEvent.OnLocaleChanged(languageTag = languageTag))
     }
@@ -178,6 +178,7 @@ private fun LazyListScope.warningCount(
         contentType = WARNING_COUNT_KEY
     ) {
         WarningCountChip(
+            modifier = Modifier.padding(start = VadretTheme.spacing.small),
             warningCount = warningCount,
             onClick = onWarningsClick
         )

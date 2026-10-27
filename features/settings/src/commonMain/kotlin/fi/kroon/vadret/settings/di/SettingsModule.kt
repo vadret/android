@@ -3,11 +3,13 @@ package fi.kroon.vadret.settings.di
 import fi.kroon.vadret.settings.DefaultGetChangelogTask
 import fi.kroon.vadret.settings.DefaultGetLibrariesTask
 import fi.kroon.vadret.settings.DefaultGetSettingsTask
+import fi.kroon.vadret.settings.DefaultSetLanguageTask
 import fi.kroon.vadret.settings.DefaultSetLocationModeTask
 import fi.kroon.vadret.settings.DefaultSetThemeTask
 import fi.kroon.vadret.settings.GetChangelogTask
 import fi.kroon.vadret.settings.GetLibrariesTask
 import fi.kroon.vadret.settings.GetSettingsTask
+import fi.kroon.vadret.settings.SetLanguageTask
 import fi.kroon.vadret.settings.SetLocationModeTask
 import fi.kroon.vadret.settings.SetThemeTask
 import fi.kroon.vadret.settings.SettingsViewModel
@@ -20,6 +22,7 @@ val settingsModule: Module = module {
     factoryOf(::DefaultGetChangelogTask) { bind<GetChangelogTask>() }
     factoryOf(::DefaultGetLibrariesTask) { bind<GetLibrariesTask>() }
     factoryOf(::DefaultGetSettingsTask) { bind<GetSettingsTask>() }
+    factoryOf(::DefaultSetLanguageTask) { bind<SetLanguageTask>() }
     factoryOf(::DefaultSetLocationModeTask) { bind<SetLocationModeTask>() }
     factoryOf(::DefaultSetThemeTask) { bind<SetThemeTask>() }
     factoryOf(::SettingsViewModel)

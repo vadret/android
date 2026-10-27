@@ -28,7 +28,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
@@ -47,6 +46,7 @@ import fi.kroon.vadret.radar.model.RadarLayer
 import fi.kroon.vadret.radar.wind.WindAtLocation
 import fi.kroon.vadret.radar.wind.WindField
 import fi.kroon.vadret.radar.wind.windAt
+import fi.kroon.vadret.ui.LocalLanguageTag
 import fi.kroon.vadret.ui.VadretProgressBar
 import fi.kroon.vadret.ui.VadretTheme
 import fi.kroon.vadret.ui.VadretToast
@@ -88,7 +88,7 @@ internal fun RadarScreen(
     modifier: Modifier = Modifier
 ) {
     val snackbarHostState: SnackbarHostState = remember { SnackbarHostState() }
-    val languageTag: String = LocalLocale.current.toLanguageTag()
+    val languageTag: String = LocalLanguageTag.current
     LaunchedEffect(languageTag) {
         onEvent(RadarEvent.OnLocaleChanged(languageTag = languageTag))
     }

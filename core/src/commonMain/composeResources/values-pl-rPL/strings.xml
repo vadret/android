@@ -85,4 +85,6 @@
         <item quantity="many">%1$d ostrzeżeń</item>
         <item quantity="other">%1$d ostrzeżenia</item>
     </plurals>
+    <string name="select_a_language">Wybierz język</string>
+    <string name="system_language">Język systemu</string>
 </resources>

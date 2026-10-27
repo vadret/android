@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -15,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
@@ -35,31 +37,35 @@ import fi.kroon.vadret.weatherforecast.model.CurrentWeather
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
-private val weatherIconSize = 64.dp
-private val windArrowSize = 15.dp
-private val descriptionTopPadding = 6.dp
+private val cardPadding = 21.dp
+private val cardShape = RoundedCornerShape(size = 21.dp)
+private val weatherIconSize = 55.dp
+private val conditionSpacing = 8.dp
+private val dividerTopPadding = 21.dp
+private val dividerBottomPadding = 13.dp
+private val statSpacing = 8.dp
+private val statLabelSpacing = 3.dp
+private val windArrowSize = 16.dp
+private const val STAT_WEIGHT = 1f
+private const val SINGLE_LINE = 1
 
 @Composable
 internal fun CurrentWeatherCard(
     currentWeather: CurrentWeather,
     modifier: Modifier = Modifier
 ) {
-    val verticalPadding = 24.dp
     val degree: String = stringResource(resource = Res.string.degree)
-    VadretCard(modifier = modifier) {
-        Column(
-            modifier = Modifier.padding(horizontal = 16.dp)
-        ) {
+    VadretCard(
+        modifier = modifier,
+        shape = cardShape
+    ) {
+        Column(modifier = Modifier.padding(all = cardPadding)) {
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 24.dp, vertical = verticalPadding),
+                modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
+                Column(verticalArrangement = Arrangement.spacedBy(space = conditionSpacing)) {
                     Text(
                         text = "${currentWeather.temperatureText}$degree",
                         style = VadretTheme.textStyles.temperature,
@@ -67,9 +73,8 @@ internal fun CurrentWeatherCard(
                     )
                     Text(
                         text = stringResource(resource = currentWeather.descriptionResource),
-                        style = VadretTheme.textStyles.detail,
-                        color = VadretTheme.colorScheme.onSurface,
-                        modifier = Modifier.padding(top = descriptionTopPadding)
+                        style = VadretTheme.textStyles.condition,
+                        color = VadretTheme.colorScheme.onSurface
                     )
                 }
                 VadretIcon(
@@ -79,20 +84,26 @@ internal fun CurrentWeatherCard(
                     modifier = Modifier.size(size = weatherIconSize)
                 )
             }
-            HorizontalDivider(color = VadretTheme.colors.divider)
+            HorizontalDivider(
+                color = VadretTheme.colors.divider,
+                modifier = Modifier.padding(
+                    top = dividerTopPadding,
+                    bottom = dividerBottomPadding
+                )
+            )
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = verticalPadding),
-                horizontalArrangement = Arrangement.SpaceEvenly
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(space = statSpacing)
             ) {
                 Stat(
                     label = stringResource(resource = Res.string.feels_like),
-                    value = "${currentWeather.feelsLikeTemperatureText}$degree"
+                    value = "${currentWeather.feelsLikeTemperatureText}$degree",
+                    modifier = Modifier.weight(weight = STAT_WEIGHT)
                 )
                 Stat(
                     label = stringResource(resource = Res.string.wind),
                     value = "${currentWeather.windSpeed} ${stringResource(resource = Res.string.m_s)}",
+                    modifier = Modifier.weight(weight = STAT_WEIGHT),
                     trailing = {
                         Icon(
                             painter = painterResource(resource = Res.drawable.ic_north),
@@ -106,7 +117,8 @@ internal fun CurrentWeatherCard(
                 )
                 Stat(
                     label = stringResource(resource = Res.string.humidity),
-                    value = "${currentWeather.humidityPercent}${stringResource(resource = Res.string.percent)}"
+                    value = "${currentWeather.humidityPercent}${stringResource(resource = Res.string.percent)}",
+                    modifier = Modifier.weight(weight = STAT_WEIGHT)
                 )
             }
         }
@@ -121,23 +133,26 @@ private fun Stat(
     trailing: @Composable () -> Unit = {}
 ) {
     Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(space = 2.dp),
+        verticalArrangement = Arrangement.spacedBy(space = statLabelSpacing),
         modifier = modifier
     ) {
         Text(
             text = label,
-            style = VadretTheme.textStyles.label,
-            color = VadretTheme.colorScheme.onSurfaceVariant
+            style = VadretTheme.textStyles.detailLabel,
+            color = VadretTheme.colorScheme.onSurfaceVariant,
+            maxLines = SINGLE_LINE,
+            overflow = TextOverflow.Ellipsis
         )
         Row(
-            horizontalArrangement = Arrangement.spacedBy(space = VadretTheme.spacing.extraSmall),
+            horizontalArrangement = Arrangement.spacedBy(space = statLabelSpacing),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
                 text = value,
-                style = VadretTheme.textStyles.value,
-                color = VadretTheme.colorScheme.onSurface
+                style = VadretTheme.textStyles.reading,
+                color = VadretTheme.colorScheme.onSurface,
+                maxLines = SINGLE_LINE,
+                softWrap = false
             )
             trailing()
         }

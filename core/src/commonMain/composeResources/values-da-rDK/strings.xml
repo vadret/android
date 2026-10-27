@@ -94,4 +94,6 @@
         <item quantity="one">%1$d advarsel</item>
         <item quantity="other">%1$d advarsler</item>
     </plurals>
+    <string name="select_a_language">Vælg sprog</string>
+    <string name="system_language">Systemets sprog</string>
 </resources>

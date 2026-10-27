@@ -87,4 +87,6 @@
         <item quantity="one">%1$d alerte</item>
         <item quantity="other">%1$d alertes</item>
     </plurals>
+    <string name="select_a_language">Choisir une langue</string>
+    <string name="system_language">Langue du système</string>
 </resources>

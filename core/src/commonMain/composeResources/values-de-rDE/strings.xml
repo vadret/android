@@ -138,4 +138,6 @@
         <item quantity="one">%1$d Warnung</item>
         <item quantity="other">%1$d Warnungen</item>
     </plurals>
+    <string name="select_a_language">Sprache auswählen</string>
+    <string name="system_language">Systemsprache</string>
 </resources>

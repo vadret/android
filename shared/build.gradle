@@ -30,6 +30,7 @@ kotlin {
                 implementation project(':core:logging')
                 implementation project(':data:changelog')
                 implementation project(':data:common')
+                implementation project(':data:language')
                 implementation project(':data:theme')
                 implementation project(':domain:warning')
                 implementation project(':features:forecastwarning')

@@ -64,6 +64,7 @@ internal data class SettingsState(
     val selectedLibrary: Library? = null,
     val aboutRows: ImmutableList<AboutRow> = persistentListOf(),
     val isThemeDialogVisible: Boolean = false,
+    val isLanguageDialogVisible: Boolean = false,
     val changelog: Changelog? = null,
     val isChangelogVisible: Boolean = false
 )

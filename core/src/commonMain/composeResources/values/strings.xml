@@ -255,4 +255,14 @@
         <item quantity="one">%1$d warning</item>
         <item quantity="other">%1$d warnings</item>
     </plurals>
+    <string name="select_a_language">Select a language</string>
+    <string name="system_language">System language</string>
+    <string name="language_english" translatable="false">English</string>
+    <string name="language_swedish" translatable="false">Svenska</string>
+    <string name="language_danish" translatable="false">Dansk</string>
+    <string name="language_german" translatable="false">Deutsch</string>
+    <string name="language_finnish" translatable="false">Suomi</string>
+    <string name="language_french" translatable="false">Français</string>
+    <string name="language_norwegian" translatable="false">Norsk</string>
+    <string name="language_polish" translatable="false">Polski</string>
 </resources>

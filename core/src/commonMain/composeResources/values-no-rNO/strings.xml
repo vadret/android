@@ -92,4 +92,6 @@
         <item quantity="one">%1$d varsel</item>
         <item quantity="other">%1$d varsler</item>
     </plurals>
+    <string name="select_a_language">Velg språk</string>
+    <string name="system_language">Systemets språk</string>
 </resources>

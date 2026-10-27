@@ -10,6 +10,8 @@ import fi.kroon.vadret.core.resources.setting_county
 import fi.kroon.vadret.core.resources.setting_latitude
 import fi.kroon.vadret.core.resources.setting_longitude
 import fi.kroon.vadret.core.resources.setting_municipality
+import fi.kroon.vadret.language.LanguageRepository
+import fi.kroon.vadret.language.model.AppLanguage
 import fi.kroon.vadret.library.LibraryRepository
 import fi.kroon.vadret.library.model.Library
 import fi.kroon.vadret.location.LocationRepository
@@ -50,6 +52,17 @@ private val stockholm = StoredLocation(
     latitude = 59.3293,
     longitude = 18.0686
 )
+
+private class FakeLanguageRepository(
+    var language: Either<Failure, AppLanguage> = AppLanguage.SYSTEM.asRight()
+) : LanguageRepository {
+    override suspend fun getLanguage(): Either<Failure, AppLanguage> = language
+    override fun observeLanguage(): Flow<Either<Failure, AppLanguage>> = emptyFlow()
+    override suspend fun setLanguage(language: AppLanguage): Either<Failure, Unit> {
+        this.language = language.asRight()
+        return Unit.asRight()
+    }
+}
 
 private class FakeThemeRepository(
     var theme: Either<Failure, Theme> = Theme.LIGHT.asRight()
@@ -116,6 +129,7 @@ class SettingsViewModelTest {
     private val testDispatcher: TestDispatcher = StandardTestDispatcher()
     private val testScope = TestScope(testDispatcher)
     private val themeRepository = FakeThemeRepository()
+    private val languageRepository = FakeLanguageRepository()
     private val locationRepository = FakeLocationRepository()
     private val changelogRepository = FakeChangelogRepository()
 
@@ -133,10 +147,12 @@ class SettingsViewModelTest {
         val settingsViewModel = SettingsViewModel(
             getSettingsTask = DefaultGetSettingsTask(
                 locationRepository = locationRepository,
-                themeRepository = themeRepository
+                themeRepository = themeRepository,
+                languageRepository = languageRepository
             ),
             setLocationModeTask = DefaultSetLocationModeTask(locationRepository = locationRepository),
             setThemeTask = DefaultSetThemeTask(themeRepository = themeRepository),
+            setLanguageTask = DefaultSetLanguageTask(languageRepository = languageRepository),
             getLibrariesTask = DefaultGetLibrariesTask(libraryRepository = FakeLibraryRepository()),
             getChangelogTask = DefaultGetChangelogTask(changelogRepository = changelogRepository),
             appInfo = appInfo,
@@ -157,6 +173,7 @@ class SettingsViewModelTest {
                 expected = Settings(
                     isAutomaticLocation = true,
                     theme = Theme.LIGHT,
+                    language = AppLanguage.SYSTEM,
                     storedLocation = stockholm
                 ),
                 actual = state.settings
@@ -189,6 +206,17 @@ class SettingsViewModelTest {
     fun `settings that cannot be read are not shown`() =
         testScope.runTest {
             themeRepository.theme = Failure(errorCode = ErrorCode.UNKNOWN).asLeft()
+
+            val settingsViewModel: SettingsViewModel = viewModel()
+            advanceUntilIdle()
+
+            assertNull(actual = settingsViewModel.state.value.settings)
+        }
+
+    @Test
+    fun `a language that cannot be read hides the settings`() =
+        testScope.runTest {
+            languageRepository.language = Failure(errorCode = ErrorCode.STORAGE_FAILED).asLeft()
 
             val settingsViewModel: SettingsViewModel = viewModel()
             advanceUntilIdle()
@@ -236,6 +264,37 @@ class SettingsViewModelTest {
 
             assertEquals(expected = false, actual = settingsViewModel.state.value.isThemeDialogVisible)
             assertEquals(expected = Theme.LIGHT, actual = settingsViewModel.state.value.settings?.theme)
+        }
+
+    @Test
+    fun `choosing a language closes the dialog and shows the language`() =
+        testScope.runTest {
+            val settingsViewModel: SettingsViewModel = viewModel()
+            advanceUntilIdle()
+
+            settingsViewModel.onEvent(event = SettingsEvent.OnLanguageRowClicked)
+            val isOpened: Boolean = settingsViewModel.state.value.isLanguageDialogVisible
+            settingsViewModel.onEvent(event = SettingsEvent.OnLanguageSelected(language = AppLanguage.SWEDISH))
+            advanceUntilIdle()
+
+            assertEquals(expected = true, actual = isOpened)
+            assertEquals(expected = false, actual = settingsViewModel.state.value.isLanguageDialogVisible)
+            assertEquals(expected = AppLanguage.SWEDISH, actual = settingsViewModel.state.value.settings?.language)
+            assertEquals(expected = AppLanguage.SWEDISH.asRight(), actual = languageRepository.language)
+        }
+
+    @Test
+    fun `dismissing the language dialog keeps the language`() =
+        testScope.runTest {
+            val settingsViewModel: SettingsViewModel = viewModel()
+            advanceUntilIdle()
+
+            settingsViewModel.onEvent(event = SettingsEvent.OnLanguageRowClicked)
+            settingsViewModel.onEvent(event = SettingsEvent.OnLanguageDialogDismissed)
+            advanceUntilIdle()
+
+            assertEquals(expected = false, actual = settingsViewModel.state.value.isLanguageDialogVisible)
+            assertEquals(expected = AppLanguage.SYSTEM, actual = settingsViewModel.state.value.settings?.language)
         }
 
     @Test

@@ -3,6 +3,7 @@ package fi.kroon.vadret.di
 import fi.kroon.vadret.aggregatedfeed.AggregatedFeedRepository
 import fi.kroon.vadret.autocomplete.AutoCompleteRepository
 import fi.kroon.vadret.core.resources.Res
+import fi.kroon.vadret.language.LanguageRepository
 import fi.kroon.vadret.library.LibraryRepository
 import fi.kroon.vadret.nominatim.NominatimRepository
 import fi.kroon.vadret.radar.RadarRepository
@@ -39,6 +40,7 @@ val repositoryModule: Module = module {
             coroutineDispatcher = get()
         )
     }
+    single<LanguageRepository> { LanguageRepository(dataStore = get()) }
     single<ThemeRepository> { ThemeRepository(dataStore = get()) }
     single<WeatherForecastRepository> { WeatherForecastRepository(httpClient = inject()) }
     single<WindRepository> {

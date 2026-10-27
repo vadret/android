@@ -1,6 +1,7 @@
 package fi.kroon.vadret.ui
 
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -22,7 +23,8 @@ fun VadretTopAppBar(
         title = {
             Text(
                 text = stringResource(resource = Res.string.app_name),
-                style = VadretTheme.textStyles.title
+                style = VadretTheme.textStyles.title,
+                modifier = Modifier.padding(start = VadretTheme.spacing.extraSmall)
             )
         },
         actions = actions,

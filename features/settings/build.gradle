@@ -12,6 +12,7 @@ kotlin {
                 implementation project(':core:logging')
                 implementation project(':data:changelog')
                 implementation project(':data:common')
+                implementation project(':data:language')
                 implementation project(':data:library')
                 implementation project(':data:location')
                 implementation project(':data:theme')

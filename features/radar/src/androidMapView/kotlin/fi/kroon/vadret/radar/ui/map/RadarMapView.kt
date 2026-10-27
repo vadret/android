@@ -23,6 +23,7 @@ import org.maplibre.android.maps.Style
 import org.maplibre.android.style.layers.Layer
 import org.maplibre.android.style.layers.PropertyFactory
 import org.maplibre.android.style.layers.SymbolLayer
+import java.util.Locale
 import kotlin.math.abs
 
 private const val ZOOM_TOLERANCE = 0.01
@@ -255,7 +256,7 @@ internal class RadarMapView(
             "https://tiles.openfreemap.org/styles/positron"
         }
         map.setStyle(Style.Builder().fromUri(styleUri)) { style: Style ->
-            style.localizeLabels(language = resources.configuration.locales[0].language)
+            style.localizeLabels(language = Locale.getDefault().language)
             if (isDark) {
                 style.useDarkMapColors()
             }

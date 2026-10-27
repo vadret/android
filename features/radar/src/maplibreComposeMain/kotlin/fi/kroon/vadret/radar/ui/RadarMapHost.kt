@@ -8,12 +8,12 @@ import androidx.compose.runtime.ProvidableCompositionLocal
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.staticCompositionLocalOf
-import androidx.compose.ui.platform.LocalLocale
 import fi.kroon.vadret.radar.ui.map.RadarMapLayers
 import fi.kroon.vadret.radar.ui.map.RadarRasterLayers
 import fi.kroon.vadret.radar.ui.map.RetainedRadarMap
 import fi.kroon.vadret.radar.ui.map.initialRadarCamera
 import fi.kroon.vadret.radar.ui.map.restyle
+import fi.kroon.vadret.ui.LocalLanguageTag
 import fi.kroon.vadret.ui.VadretTheme
 import org.maplibre.compose.camera.CameraPosition
 import org.maplibre.compose.map.MapState
@@ -33,7 +33,7 @@ internal val LocalRetainedRadarMap: ProvidableCompositionLocal<RetainedRadarMap>
 @Composable
 fun RadarMapHost(content: @Composable () -> Unit) {
     val isDark: Boolean = VadretTheme.isDark
-    val language: String = LocalLocale.current.toLanguageTag().substringBefore(delimiter = LANGUAGE_SEPARATOR)
+    val language: String = LocalLanguageTag.current.substringBefore(delimiter = LANGUAGE_SEPARATOR)
     val baseStyle: BaseStyle = remember(isDark) {
         BaseStyle.Uri(
             uri = if (isDark) {

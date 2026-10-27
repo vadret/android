@@ -23,6 +23,7 @@ import fi.kroon.vadret.core.resources.display
 import fi.kroon.vadret.core.resources.gps_is_being_used
 import fi.kroon.vadret.core.resources.gps_is_not_being_used
 import fi.kroon.vadret.core.resources.ic_chevron_right
+import fi.kroon.vadret.core.resources.select_a_language
 import fi.kroon.vadret.core.resources.select_a_theme
 import fi.kroon.vadret.core.resources.setting_current_location
 import fi.kroon.vadret.core.resources.setting_location_title
@@ -43,7 +44,7 @@ private const val HIDDEN_ALPHA = 0f
 private const val LOCATION_HEADER_KEY = "location-header"
 private const val GPS_KEY = "gps"
 private const val DISPLAY_HEADER_KEY = "display-header"
-private const val THEME_KEY = "theme"
+private const val DISPLAY_KEY = "display"
 private const val CURRENT_LOCATION_HEADER_KEY = "current-location-header"
 private const val CURRENT_LOCATION_KEY = "current-location"
 
@@ -87,13 +88,20 @@ internal fun PreferencesPage(
         item(key = DISPLAY_HEADER_KEY, contentType = PreferenceContentType.HEADER) {
             SettingsSectionHeader(text = stringResource(resource = Res.string.display))
         }
-        item(key = THEME_KEY, contentType = PreferenceContentType.CARD) {
+        item(key = DISPLAY_KEY, contentType = PreferenceContentType.CARD) {
             VadretCard {
                 SettingsValueRow(
                     title = stringResource(resource = Res.string.select_a_theme),
                     value = stringResource(resource = settings.theme.labelResource()),
                     trailingIconResource = Res.drawable.ic_chevron_right,
                     onClick = { onEvent(SettingsEvent.OnThemeRowClicked) }
+                )
+                SettingsRowDivider()
+                SettingsValueRow(
+                    title = stringResource(resource = Res.string.select_a_language),
+                    value = stringResource(resource = settings.language.labelResource()),
+                    trailingIconResource = Res.drawable.ic_chevron_right,
+                    onClick = { onEvent(SettingsEvent.OnLanguageRowClicked) }
                 )
             }
         }

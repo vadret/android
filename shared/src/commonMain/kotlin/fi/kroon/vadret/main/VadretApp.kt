@@ -48,11 +48,14 @@ private val navigationConfiguration: SavedStateConfiguration = SavedStateConfigu
 }
 
 @Composable
+internal fun rememberVadretBackStack(): NavBackStack<NavKey> = rememberNavBackStack(navigationConfiguration, WeatherKey)
+
+@Composable
 internal fun VadretApp(
+    backStack: NavBackStack<NavKey>,
     radarTab: RadarTab?,
     modifier: Modifier = Modifier
 ) {
-    val backStack: NavBackStack<NavKey> = rememberNavBackStack(navigationConfiguration, WeatherKey)
     val currentKey: NavKey? = backStack.lastOrNull()
     val destinations: ImmutableList<TopLevelDestination> = remember(radarTab) {
         TopLevelDestination.entries

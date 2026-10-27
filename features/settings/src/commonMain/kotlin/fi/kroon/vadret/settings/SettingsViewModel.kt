@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import fi.kroon.vadret.changelog.model.Changelog
 import fi.kroon.vadret.common.Failure
+import fi.kroon.vadret.language.model.AppLanguage
 import fi.kroon.vadret.library.model.Library
 import fi.kroon.vadret.model.AppInfo
 import fi.kroon.vadret.settings.extension.toLibraryGroups
@@ -21,6 +22,7 @@ class SettingsViewModel internal constructor(
     private val getSettingsTask: GetSettingsTask,
     private val setLocationModeTask: SetLocationModeTask,
     private val setThemeTask: SetThemeTask,
+    private val setLanguageTask: SetLanguageTask,
     private val getLibrariesTask: GetLibrariesTask,
     private val getChangelogTask: GetChangelogTask,
     appInfo: AppInfo,
@@ -49,6 +51,16 @@ class SettingsViewModel internal constructor(
             }
 
             is SettingsEvent.OnThemeSelected -> onThemeSelected(theme = event.theme)
+
+            SettingsEvent.OnLanguageRowClicked -> state.update { state: SettingsState ->
+                state.copy(isLanguageDialogVisible = true)
+            }
+
+            SettingsEvent.OnLanguageDialogDismissed -> state.update { state: SettingsState ->
+                state.copy(isLanguageDialogVisible = false)
+            }
+
+            is SettingsEvent.OnLanguageSelected -> onLanguageSelected(language = event.language)
 
             is SettingsEvent.OnLibraryClicked -> state.update { state: SettingsState ->
                 state.copy(selectedLibrary = event.library)
@@ -117,6 +129,18 @@ class SettingsViewModel internal constructor(
     private fun onLocationModeToggled(isAutomaticLocation: Boolean) {
         viewModelScope.launch(context = coroutineDispatcher) {
             setLocationModeTask(isAutomaticLocation = isAutomaticLocation).onResult(
+                onError = { _: Failure -> },
+                onSuccess = { loadSettings() }
+            )
+        }
+    }
+
+    private fun onLanguageSelected(language: AppLanguage) {
+        state.update { state: SettingsState ->
+            state.copy(isLanguageDialogVisible = false)
+        }
+        viewModelScope.launch(context = coroutineDispatcher) {
+            setLanguageTask(language = language).onResult(
                 onError = { _: Failure -> },
                 onSuccess = { loadSettings() }
             )

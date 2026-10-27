@@ -1,6 +1,7 @@
 package fi.kroon.vadret.settings.ui
 
 import fi.kroon.vadret.changelog.model.Changelog
+import fi.kroon.vadret.language.model.AppLanguage
 import fi.kroon.vadret.library.model.Library
 import fi.kroon.vadret.location.model.StoredLocation
 import fi.kroon.vadret.settings.Settings
@@ -62,6 +63,7 @@ internal fun settingsPreviewState(theme: Theme): SettingsState {
     val settings = Settings(
         isAutomaticLocation = false,
         theme = theme,
+        language = AppLanguage.SYSTEM,
         storedLocation = previewLocation
     )
     return SettingsState(

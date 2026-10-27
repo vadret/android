@@ -3,6 +3,7 @@ package fi.kroon.vadret.main
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import fi.kroon.vadret.common.Failure
+import fi.kroon.vadret.language.model.AppLanguage
 import fi.kroon.vadret.theme.model.Theme
 import io.github.sphrak.either.Either
 import io.github.sphrak.either.extension.onResult
@@ -14,11 +15,15 @@ import kotlin.concurrent.atomics.AtomicBoolean
 
 internal class MainViewModel(
     private val observeThemeTask: ObserveThemeTask,
+    private val observeLanguageTask: ObserveLanguageTask,
     private val coroutineDispatcher: CoroutineDispatcher
 ) : ViewModel() {
 
     val theme: StateFlow<Theme?>
         field = MutableStateFlow<Theme?>(value = null)
+
+    val language: StateFlow<AppLanguage?>
+        field = MutableStateFlow<AppLanguage?>(value = null)
 
     private val isStarted: AtomicBoolean = AtomicBoolean(value = false)
 
@@ -35,6 +40,14 @@ internal class MainViewModel(
                     theme.value = result.onResult(
                         onError = { _: Failure -> Theme.LIGHT },
                         onSuccess = { observedTheme: Theme -> observedTheme }
+                    )
+                }
+            }
+            viewModelScope.launch(context = coroutineDispatcher) {
+                observeLanguageTask().collect { result: Either<Failure, AppLanguage> ->
+                    language.value = result.onResult(
+                        onError = { _: Failure -> AppLanguage.SYSTEM },
+                        onSuccess = { observedLanguage: AppLanguage -> observedLanguage }
                     )
                 }
             }
