@@ -94,10 +94,7 @@ internal fun ComingHourStrip(
             windColor = windColor,
             modifier = Modifier
                 .align(alignment = Alignment.BottomStart)
-                .padding(
-                   start = 16.dp,
-                   // bottom = stripBottomPadding
-                )
+                .padding(start = 16.dp)
         )
     }
 }
