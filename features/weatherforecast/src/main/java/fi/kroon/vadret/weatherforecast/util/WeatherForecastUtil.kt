@@ -1,6 +1,39 @@
 package fi.kroon.vadret.weatherforecast.util
 
 import fi.kroon.vadret.core.R
+import fi.kroon.vadret.icons.ClearSky
+import fi.kroon.vadret.icons.ClearSkyNight
+import fi.kroon.vadret.icons.CloudySky
+import fi.kroon.vadret.icons.Fog
+import fi.kroon.vadret.icons.HalfClearSky
+import fi.kroon.vadret.icons.HalfClearSkyNight
+import fi.kroon.vadret.icons.HeavyRain
+import fi.kroon.vadret.icons.HeavyRainShowers
+import fi.kroon.vadret.icons.HeavySleet
+import fi.kroon.vadret.icons.HeavySleetShowers
+import fi.kroon.vadret.icons.HeavySnowShowers
+import fi.kroon.vadret.icons.HeavySnowfall
+import fi.kroon.vadret.icons.LightRain
+import fi.kroon.vadret.icons.LightRainShowers
+import fi.kroon.vadret.icons.LightSleet
+import fi.kroon.vadret.icons.LightSleetShowers
+import fi.kroon.vadret.icons.LightSnowShowers
+import fi.kroon.vadret.icons.LightSnowfall
+import fi.kroon.vadret.icons.ModerateRain
+import fi.kroon.vadret.icons.ModerateRainShowers
+import fi.kroon.vadret.icons.ModerateSleet
+import fi.kroon.vadret.icons.ModerateSleetShowers
+import fi.kroon.vadret.icons.ModerateSnowShowers
+import fi.kroon.vadret.icons.ModerateSnowfall
+import fi.kroon.vadret.icons.NearlyClearSky
+import fi.kroon.vadret.icons.NearlyClearSkyNight
+import fi.kroon.vadret.icons.Overcast
+import fi.kroon.vadret.icons.Thunder
+import fi.kroon.vadret.icons.Thunderstorm
+import fi.kroon.vadret.icons.VadretIconGraphic
+import fi.kroon.vadret.icons.VadretIcons
+import fi.kroon.vadret.icons.VariableCloudiness
+import fi.kroon.vadret.icons.VariableCloudinessNight
 import fi.kroon.vadret.logging.Logger
 import fi.kroon.vadret.logging.LoggerFactory
 
@@ -8,48 +41,84 @@ private val logger: Logger = LoggerFactory.getLogger(tag = "fi.kroon.vadret.weat
 
 internal object WeatherForecastUtil {
 
-    fun getWeatherSymbolIconResourceId(
+    fun getWeatherSymbolIcon(
         symbolCode: Int,
         isDaytime: Boolean
-    ): Int =
+    ): VadretIconGraphic =
         when (symbolCode) {
             1 -> if (isDaytime) {
-                R.drawable.ic_clear_day
+                VadretIcons.Weather.ClearSky
             } else {
-                R.drawable.ic_clear_night
+                VadretIcons.Weather.ClearSkyNight
             }
 
-            2, 3, 4 -> if (isDaytime) {
-                R.drawable.ic_partly_cloudy_day
+            2 -> if (isDaytime) {
+                VadretIcons.Weather.NearlyClearSky
             } else {
-                R.drawable.ic_partly_cloudy_night
+                VadretIcons.Weather.NearlyClearSkyNight
             }
 
-            5, 6 -> R.drawable.ic_cloud
+            3 -> if (isDaytime) {
+                VadretIcons.Weather.VariableCloudiness
+            } else {
+                VadretIcons.Weather.VariableCloudinessNight
+            }
 
-            7 -> R.drawable.ic_foggy
+            4 -> if (isDaytime) {
+                VadretIcons.Weather.HalfClearSky
+            } else {
+                VadretIcons.Weather.HalfClearSkyNight
+            }
 
-            8, 18 -> R.drawable.ic_rainy_light
+            5 -> VadretIcons.Weather.CloudySky
 
-            9, 19 -> R.drawable.ic_rainy
+            6 -> VadretIcons.Weather.Overcast
 
-            10, 20 -> R.drawable.ic_rainy_heavy
+            7 -> VadretIcons.Weather.Fog
 
-            11, 21 -> R.drawable.ic_thunderstorm
+            8 -> VadretIcons.Weather.LightRainShowers
 
-            12, 13, 14 -> R.drawable.ic_weather_mix
+            9 -> VadretIcons.Weather.ModerateRainShowers
 
-            22, 23, 24 -> R.drawable.ic_rainy_snow
+            10 -> VadretIcons.Weather.HeavyRainShowers
 
-            15, 25 -> R.drawable.ic_weather_snowy
+            11 -> VadretIcons.Weather.Thunderstorm
 
-            16, 26 -> R.drawable.ic_snowing
+            12 -> VadretIcons.Weather.LightSleetShowers
 
-            17, 27 -> R.drawable.ic_snowing_heavy
+            13 -> VadretIcons.Weather.ModerateSleetShowers
+
+            14 -> VadretIcons.Weather.HeavySleetShowers
+
+            15 -> VadretIcons.Weather.LightSnowShowers
+
+            16 -> VadretIcons.Weather.ModerateSnowShowers
+
+            17 -> VadretIcons.Weather.HeavySnowShowers
+
+            18 -> VadretIcons.Weather.LightRain
+
+            19 -> VadretIcons.Weather.ModerateRain
+
+            20 -> VadretIcons.Weather.HeavyRain
+
+            21 -> VadretIcons.Weather.Thunder
+
+            22 -> VadretIcons.Weather.LightSleet
+
+            23 -> VadretIcons.Weather.ModerateSleet
+
+            24 -> VadretIcons.Weather.HeavySleet
+
+            25 -> VadretIcons.Weather.LightSnowfall
+
+            26 -> VadretIcons.Weather.ModerateSnowfall
+
+            27 -> VadretIcons.Weather.HeavySnowfall
 
             else -> {
                 logger.warn { "Unknown weather symbol $symbolCode" }
-                R.drawable.ic_cloud
+                VadretIcons.Weather.Overcast
             }
         }
 

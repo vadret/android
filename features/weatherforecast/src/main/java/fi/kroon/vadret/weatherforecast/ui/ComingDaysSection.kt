@@ -36,6 +36,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import fi.kroon.vadret.core.R
+import fi.kroon.vadret.icons.VadretIcon
 import fi.kroon.vadret.theme.model.Theme
 import fi.kroon.vadret.ui.ThemePreviewParameterProvider
 import fi.kroon.vadret.ui.VadretCard
@@ -194,8 +195,8 @@ private fun ComingDayRow(
                 maxLines = SINGLE_LINE
             )
         }
-        Icon(
-            painter = painterResource(id = comingDay.iconResourceId),
+        VadretIcon(
+            icon = comingDay.icon,
             contentDescription = stringResource(id = comingDay.descriptionResourceId),
             tint = VadretTheme.colors.icon,
             modifier = Modifier.size(size = dayIconSize)

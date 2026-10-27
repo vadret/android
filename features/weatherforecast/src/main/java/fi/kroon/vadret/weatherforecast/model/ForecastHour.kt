@@ -1,7 +1,7 @@
 package fi.kroon.vadret.weatherforecast.model
 
-import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import fi.kroon.vadret.icons.VadretIconGraphic
 
 data class ForecastHour(
     val key: String,
@@ -10,6 +10,5 @@ data class ForecastHour(
     val feelsLikeTemperature: String?,
     @StringRes
     val descriptionResourceId: Int,
-    @DrawableRes
-    val iconResourceId: Int
+    val icon: VadretIconGraphic
 )

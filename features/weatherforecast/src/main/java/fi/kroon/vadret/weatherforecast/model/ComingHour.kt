@@ -1,14 +1,13 @@
 package fi.kroon.vadret.weatherforecast.model
 
-import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import fi.kroon.vadret.icons.VadretIconGraphic
 
 data class ComingHour(
     val key: String,
     val isNow: Boolean,
     val timeText: String,
-    @DrawableRes
-    val iconResourceId: Int,
+    val icon: VadretIconGraphic,
     @StringRes
     val descriptionResourceId: Int,
     val temperatureText: String,

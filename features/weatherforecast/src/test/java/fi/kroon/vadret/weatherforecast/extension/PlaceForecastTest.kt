@@ -1,6 +1,13 @@
 package fi.kroon.vadret.weatherforecast.extension
 
 import fi.kroon.vadret.core.R
+import fi.kroon.vadret.icons.ClearSky
+import fi.kroon.vadret.icons.ClearSkyNight
+import fi.kroon.vadret.icons.Overcast
+import fi.kroon.vadret.icons.VadretIconGraphic
+import fi.kroon.vadret.icons.VadretIcons
+import fi.kroon.vadret.icons.VariableCloudiness
+import fi.kroon.vadret.icons.VariableCloudinessNight
 import fi.kroon.vadret.weatherforecast.model.Analysis
 import fi.kroon.vadret.weatherforecast.model.CurrentWeather
 import fi.kroon.vadret.weatherforecast.model.Forecast
@@ -143,7 +150,7 @@ class PlaceForecastTest {
 
         assertEquals(expected = "10.9", actual = currentWeather.temperatureText)
         assertEquals(expected = R.string.wsymb2_overcast, actual = currentWeather.descriptionResourceId)
-        assertEquals(expected = R.drawable.ic_cloud, actual = currentWeather.iconResourceId)
+        assertEquals(expected = VadretIcons.Weather.Overcast, actual = currentWeather.icon)
         assertEquals(expected = 86, actual = currentWeather.humidityPercent)
         assertEquals(expected = 5.4, actual = currentWeather.windSpeed)
     }
@@ -236,12 +243,12 @@ class PlaceForecastTest {
 
         assertEquals(
             expected = listOf(
-                R.drawable.ic_clear_day,
-                R.drawable.ic_clear_night,
-                R.drawable.ic_partly_cloudy_day,
-                R.drawable.ic_partly_cloudy_night
+                VadretIcons.Weather.ClearSky,
+                VadretIcons.Weather.ClearSkyNight,
+                VadretIcons.Weather.VariableCloudiness,
+                VadretIcons.Weather.VariableCloudinessNight
             ),
-            actual = hours.map { hour: ForecastHour -> hour.iconResourceId }
+            actual = hours.map { hour: ForecastHour -> hour.icon }
         )
     }
 
@@ -249,22 +256,22 @@ class PlaceForecastTest {
     fun `cloud and precipitation symbols look the same by day and night`() {
         val symbolCodes: List<Int> = (5..27).toList()
 
-        val dayIcons: List<Int> = weatherForecast(
+        val dayIcons: List<VadretIconGraphic> = weatherForecast(
             forecasts = symbolCodes.map { symbolCode: Int ->
                 forecast(
                     validAt = Instant.parse(input = "2026-10-24T10:00:00Z"),
                     symbolCode = symbolCode
                 )
             }
-        ).days.flatMap { day: ForecastDay -> day.hours.map { hour: ForecastHour -> hour.iconResourceId } }
-        val nightIcons: List<Int> = weatherForecast(
+        ).days.flatMap { day: ForecastDay -> day.hours.map { hour: ForecastHour -> hour.icon } }
+        val nightIcons: List<VadretIconGraphic> = weatherForecast(
             forecasts = symbolCodes.map { symbolCode: Int ->
                 forecast(
                     validAt = Instant.parse(input = "2026-10-24T20:00:00Z"),
                     symbolCode = symbolCode
                 )
             }
-        ).days.flatMap { day: ForecastDay -> day.hours.map { hour: ForecastHour -> hour.iconResourceId } }
+        ).days.flatMap { day: ForecastDay -> day.hours.map { hour: ForecastHour -> hour.icon } }
 
         assertEquals(expected = dayIcons, actual = nightIcons)
     }

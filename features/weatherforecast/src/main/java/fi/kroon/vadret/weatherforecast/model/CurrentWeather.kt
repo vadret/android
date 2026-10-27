@@ -1,13 +1,12 @@
 package fi.kroon.vadret.weatherforecast.model
 
-import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import fi.kroon.vadret.icons.VadretIconGraphic
 
 data class CurrentWeather(
     val temperatureText: String,
     val feelsLikeTemperatureText: String,
-    @DrawableRes
-    val iconResourceId: Int,
+    val icon: VadretIconGraphic,
     @StringRes
     val descriptionResourceId: Int,
     @StringRes

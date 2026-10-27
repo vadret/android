@@ -134,7 +134,7 @@ private fun Forecast.toCurrentWeather(isDaytime: Boolean): CurrentWeather =
     CurrentWeather(
         temperatureText = airTemperature.toTemperatureText(),
         feelsLikeTemperatureText = (windChill() ?: airTemperature).toTemperatureText(),
-        iconResourceId = WeatherForecastUtil.getWeatherSymbolIconResourceId(
+        icon = WeatherForecastUtil.getWeatherSymbolIcon(
             symbolCode = symbolCode,
             isDaytime = isDaytime
         ),
@@ -169,7 +169,7 @@ private fun Forecast.toForecastHour(
         temperature = airTemperature,
         feelsLikeTemperature = feelsLikeTemperature(),
         descriptionResourceId = WeatherForecastUtil.getWsymb2ResourceId(symbolCode = symbolCode),
-        iconResourceId = WeatherForecastUtil.getWeatherSymbolIconResourceId(
+        icon = WeatherForecastUtil.getWeatherSymbolIcon(
             symbolCode = symbolCode,
             isDaytime = isDaytime
         )

@@ -1,7 +1,7 @@
 package fi.kroon.vadret.weatherforecast.model
 
-import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import fi.kroon.vadret.icons.VadretIconGraphic
 import kotlinx.collections.immutable.ImmutableList
 
 data class ComingDay(
@@ -9,8 +9,7 @@ data class ComingDay(
     val isToday: Boolean,
     val weekdayText: String,
     val dateText: String,
-    @DrawableRes
-    val iconResourceId: Int,
+    val icon: VadretIconGraphic,
     @StringRes
     val descriptionResourceId: Int,
     val precipitationText: String?,

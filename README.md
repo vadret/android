@@ -6,7 +6,7 @@
 <img src="https://raw.githubusercontent.com/vadret/android/master/assets/logo.png" alt="Vädret" width="128">
 
 # Vädret
-A simple weather app that uses the Swedish weather service [SMHI](https://opendata.smhi.se/) to fetch weather data, and [Krisinformation](https://www.krisinformation.se/en) for emergency information from Swedish authorities. MVI written entirely in Kotlin. Icons used in this project can be found [here](https://github.com/vadret/assets). The data is licensed under [Creative commons Erkännande 4.0 SE](https://www.smhi.se/data/om-smhis-data/villkor-for-anvandning).
+A simple weather app that uses the Swedish weather service [SMHI](https://opendata.smhi.se/) to fetch weather data, and [Krisinformation](https://www.krisinformation.se/en) for emergency information from Swedish authorities. MVI written entirely in Kotlin. Icons used in this project can be found [here](icons/). The data is licensed under [Creative commons Erkännande 4.0 SE](https://www.smhi.se/data/om-smhis-data/villkor-for-anvandning).
 
 [<img src="https://f-droid.org/badge/get-it-on.png"
       alt="Get it on F-Droid"

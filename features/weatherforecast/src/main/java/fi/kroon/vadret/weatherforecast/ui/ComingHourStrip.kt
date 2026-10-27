@@ -16,7 +16,6 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -32,6 +31,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import fi.kroon.vadret.core.R
+import fi.kroon.vadret.icons.VadretIcon
 import fi.kroon.vadret.theme.model.Theme
 import fi.kroon.vadret.ui.ThemePreviewParameterProvider
 import fi.kroon.vadret.ui.VadretTheme
@@ -193,8 +193,8 @@ private fun ComingHourCell(
                 maxLines = SINGLE_LINE
             )
         }
-        Icon(
-            painter = painterResource(id = comingHour.iconResourceId),
+        VadretIcon(
+            icon = comingHour.icon,
             contentDescription = stringResource(id = comingHour.descriptionResourceId),
             tint = VadretTheme.colors.icon,
             modifier = Modifier.size(size = hourIconSize)

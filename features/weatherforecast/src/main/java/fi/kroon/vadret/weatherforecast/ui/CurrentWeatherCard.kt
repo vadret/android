@@ -21,6 +21,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import fi.kroon.vadret.core.R
+import fi.kroon.vadret.icons.VadretIcon
 import fi.kroon.vadret.theme.model.Theme
 import fi.kroon.vadret.ui.ThemePreviewParameterProvider
 import fi.kroon.vadret.ui.VadretCard
@@ -64,8 +65,8 @@ internal fun CurrentWeatherCard(
                         modifier = Modifier.padding(top = descriptionTopPadding)
                     )
                 }
-                Icon(
-                    painter = painterResource(id = currentWeather.iconResourceId),
+                VadretIcon(
+                    icon = currentWeather.icon,
                     contentDescription = stringResource(id = currentWeather.descriptionResourceId),
                     tint = VadretTheme.colors.icon,
                     modifier = Modifier.size(size = weatherIconSize)

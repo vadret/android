@@ -1,6 +1,11 @@
 package fi.kroon.vadret.weatherforecast.extension
 
 import fi.kroon.vadret.core.R
+import fi.kroon.vadret.icons.ClearSky
+import fi.kroon.vadret.icons.ClearSkyNight
+import fi.kroon.vadret.icons.Overcast
+import fi.kroon.vadret.icons.VadretIcons
+import fi.kroon.vadret.icons.VariableCloudiness
 import fi.kroon.vadret.weatherforecast.model.Analysis
 import fi.kroon.vadret.weatherforecast.model.ComingDay
 import fi.kroon.vadret.weatherforecast.model.ComingHour
@@ -322,7 +327,7 @@ class ForecastTest {
             )
         ).single()
 
-        assertEquals(expected = R.drawable.ic_partly_cloudy_day, actual = day.iconResourceId)
+        assertEquals(expected = VadretIcons.Weather.VariableCloudiness, actual = day.icon)
     }
 
     @Test
@@ -334,7 +339,7 @@ class ForecastTest {
             )
         ).single()
 
-        assertEquals(expected = R.drawable.ic_cloud, actual = day.iconResourceId)
+        assertEquals(expected = VadretIcons.Weather.Overcast, actual = day.icon)
         assertEquals(expected = R.string.wsymb2_overcast, actual = day.descriptionResourceId)
     }
 
@@ -352,7 +357,7 @@ class ForecastTest {
             )
         ).single()
 
-        assertEquals(expected = R.drawable.ic_partly_cloudy_day, actual = today.iconResourceId)
+        assertEquals(expected = VadretIcons.Weather.VariableCloudiness, actual = today.icon)
     }
 
     @Test
@@ -365,8 +370,8 @@ class ForecastTest {
         ).single()
 
         assertEquals(
-            expected = listOf(R.drawable.ic_clear_night, R.drawable.ic_clear_day),
-            actual = day.hours.map { comingHour: ComingHour -> comingHour.iconResourceId }
+            expected = listOf(VadretIcons.Weather.ClearSkyNight, VadretIcons.Weather.ClearSky),
+            actual = day.hours.map { comingHour: ComingHour -> comingHour.icon }
         )
     }
 
@@ -583,7 +588,7 @@ class ForecastTest {
             )
         ).single()
 
-        assertEquals(expected = R.drawable.ic_clear_day, actual = today.iconResourceId)
+        assertEquals(expected = VadretIcons.Weather.ClearSky, actual = today.icon)
     }
 
     @Test

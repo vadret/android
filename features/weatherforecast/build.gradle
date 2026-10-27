@@ -14,6 +14,7 @@ dependencies {
     implementation project(':data:location')
     implementation project(':data:nominatim')
     implementation project(':data:theme')
+    implementation project(':ui:icons')
     implementation project(':data:weatherforecast')
 
     implementation libs.androidx.activity.compose

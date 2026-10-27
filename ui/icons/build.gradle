@@ -1,0 +1,8 @@
+plugins {
+    id 'vadret.android.library'
+    id 'vadret.android.compose'
+}
+
+android {
+    namespace = 'fi.kroon.vadret.ui.icons'
+}

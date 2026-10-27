@@ -183,7 +183,7 @@ private fun DaySummary.toComingDay(
             .format(middayDate)
             .replaceFirstChar { character: Char -> character.titlecase(locale = locale) },
         dateText = dayFormats.dateFormat.format(middayDate),
-        iconResourceId = WeatherForecastUtil.getWeatherSymbolIconResourceId(
+        icon = WeatherForecastUtil.getWeatherSymbolIcon(
             symbolCode = symbolCode,
             isDaytime = true
         ),
@@ -292,7 +292,7 @@ private fun Forecast.toComingHour(
                 length = HOUR_DIGITS,
                 padChar = HOUR_PADDING
             ),
-        iconResourceId = WeatherForecastUtil.getWeatherSymbolIconResourceId(
+        icon = WeatherForecastUtil.getWeatherSymbolIcon(
             symbolCode = symbolCode,
             isDaytime = isDaytime
         ),

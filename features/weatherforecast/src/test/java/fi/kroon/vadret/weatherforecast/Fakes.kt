@@ -6,6 +6,8 @@ import fi.kroon.vadret.common.Failure
 import fi.kroon.vadret.core.R
 import fi.kroon.vadret.favorite.FavoriteRepository
 import fi.kroon.vadret.favorite.model.Favorite
+import fi.kroon.vadret.icons.Overcast
+import fi.kroon.vadret.icons.VadretIcons
 import fi.kroon.vadret.location.LocationRepository
 import fi.kroon.vadret.location.model.Location
 import fi.kroon.vadret.location.model.LocationPreference
@@ -87,7 +89,7 @@ internal fun comingDay(
         isToday = false,
         weekdayText = "Mon",
         dateText = "16 Nov",
-        iconResourceId = R.drawable.ic_cloud,
+        icon = VadretIcons.Weather.Overcast,
         descriptionResourceId = R.string.wsymb2_overcast,
         precipitationText = null,
         lowTemperatureText = "1",
