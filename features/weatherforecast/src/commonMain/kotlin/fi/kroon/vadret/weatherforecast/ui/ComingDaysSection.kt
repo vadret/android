@@ -8,13 +8,12 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -54,18 +53,26 @@ import org.jetbrains.compose.resources.stringResource
 private const val COLLAPSED_DEGREES = 0f
 private const val EXPANDED_DEGREES = 180f
 private const val SINGLE_LINE = 1
+private const val PRECIPITATION_MAX_LINES = 2
 
 private val headerInset = 4.dp
-private val dayNameWidth = 60.dp
-private val dayIconSize = 26.dp
+private val cardShape = RoundedCornerShape(size = 21.dp)
+private val cardVerticalPadding = 10.5.dp
+private val dayRowMinHeight = 55.dp
+private val dayRowHorizontalPadding = 21.dp
+private val dayRowSpacing = 8.dp
+private val dayNameWidth = 55.dp
+private val dayNameSpacing = 2.dp
+private val dayIconSize = 34.dp
 private val dayPrecipitationWidth = 42.dp
 private val dayTemperatureWidth = 28.dp
-private val chevronSize = 20.dp
-private val dividerStartPadding = 16.dp
-private val hoursBottomPadding = 14.dp
+private val chevronSize = 21.dp
+private val dividerHorizontalPadding = 21.dp
+private val hoursBottomPadding = 2.dp
+private const val RANGE_BAR_WEIGHT = 1f
 private val dayNameAutoSize = TextAutoSize.StepBased(
     minFontSize = 11.sp,
-    maxFontSize = 15.sp
+    maxFontSize = 16.sp
 )
 
 @Composable
@@ -95,20 +102,23 @@ internal fun ComingDaysCard(
     onDayToggled: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    VadretCard(modifier = modifier) {
-        comingDays.forEachIndexed { index: Int, comingDay: ComingDay ->
-            if (index > 0) {
-                HorizontalDivider(
-                    color = VadretTheme.colors.divider,
-                    modifier = Modifier.padding(start = dividerStartPadding)
+    VadretCard(
+        modifier = modifier,
+        shape = cardShape
+    ) {
+        Column(modifier = Modifier.padding(vertical = cardVerticalPadding)) {
+            comingDays.forEachIndexed { index: Int, comingDay: ComingDay ->
+                if (index > 0) {
+                    HorizontalDivider(
+                        color = VadretTheme.colors.divider,
+                        modifier = Modifier.padding(horizontal = dividerHorizontalPadding)
+                    )
+                }
+                ComingDayItem(
+                    comingDay = comingDay,
+                    onDayToggled = onDayToggled
                 )
             }
-            ComingDayItem(
-                comingDay = comingDay,
-                onDayToggled = onDayToggled,
-                isFirst = index == 0,
-                isLast = index == comingDays.lastIndex
-            )
         }
     }
 }
@@ -117,15 +127,11 @@ internal fun ComingDaysCard(
 private fun ComingDayItem(
     comingDay: ComingDay,
     onDayToggled: (String) -> Unit,
-    isFirst: Boolean,
-    isLast: Boolean,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier.fillMaxWidth()) {
         ComingDayRow(
             comingDay = comingDay,
-            isFirst = isFirst,
-            isLast = isLast,
             onClick = { onDayToggled(comingDay.key) }
         )
         AnimatedVisibility(visible = comingDay.isExpanded) {
@@ -142,8 +148,6 @@ private fun ComingDayItem(
 private fun ComingDayRow(
     comingDay: ComingDay,
     onClick: () -> Unit,
-    isFirst: Boolean,
-    isLast: Boolean,
     modifier: Modifier = Modifier
 ) {
     val degree: String = stringResource(resource = Res.string.degree)
@@ -163,7 +167,7 @@ private fun ComingDayRow(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .heightIn(min = 60.dp)
+            .heightIn(min = dayRowMinHeight)
             .clickable(
                 interactionSource = null,
                 indication = null,
@@ -171,16 +175,12 @@ private fun ComingDayRow(
                 onClick = onClick
             )
             .semantics { stateDescription = expansionDescription }
-            .padding(
-                top = if (isFirst) 16.dp else 16.dp,
-                start = 16.dp,
-                end = 16.dp,
-                bottom = if (isLast) 16.dp else 16.dp
-            ),
-        horizontalArrangement = Arrangement.spacedBy(space = 8.dp),
+            .padding(horizontal = dayRowHorizontalPadding),
+        horizontalArrangement = Arrangement.spacedBy(space = dayRowSpacing),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Column(
+            verticalArrangement = Arrangement.spacedBy(space = dayNameSpacing),
             modifier = Modifier.width(width = dayNameWidth)
         ) {
             Text(
@@ -189,15 +189,14 @@ private fun ComingDayRow(
                 } else {
                     comingDay.weekdayText
                 },
-                style = VadretTheme.textStyles.bodyStrong,
+                style = VadretTheme.textStyles.value,
                 color = VadretTheme.colorScheme.onSurface,
                 autoSize = dayNameAutoSize,
                 maxLines = SINGLE_LINE
             )
-            Spacer(Modifier.height(2.dp))
             Text(
                 text = comingDay.dateText,
-                style = VadretTheme.textStyles.label,
+                style = VadretTheme.textStyles.detailLabel,
                 color = VadretTheme.colorScheme.onSurfaceVariant,
                 maxLines = SINGLE_LINE
             )
@@ -210,15 +209,15 @@ private fun ComingDayRow(
         )
         Text(
             text = comingDay.precipitationText.withMillimeters(),
-            style = VadretTheme.textStyles.label,
+            style = VadretTheme.textStyles.detailLabel,
             color = VadretTheme.colors.precipitation,
             textAlign = TextAlign.End,
-            maxLines = SINGLE_LINE,
+            maxLines = PRECIPITATION_MAX_LINES,
             modifier = Modifier.width(width = dayPrecipitationWidth)
         )
         Text(
             text = "${comingDay.lowTemperatureText}$degree",
-            style = VadretTheme.textStyles.detail,
+            style = VadretTheme.textStyles.listItem,
             color = VadretTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.End,
             maxLines = SINGLE_LINE,
@@ -227,12 +226,13 @@ private fun ComingDayRow(
         TemperatureRangeBar(
             rangeStart = comingDay.temperatureRangeStart,
             rangeEnd = comingDay.temperatureRangeEnd,
-            modifier = Modifier.weight(weight = 1f)
+            modifier = Modifier.weight(weight = RANGE_BAR_WEIGHT)
         )
         Text(
             text = "${comingDay.highTemperatureText}$degree",
-            style = VadretTheme.textStyles.detailStrong,
+            style = VadretTheme.textStyles.value,
             color = VadretTheme.colorScheme.onSurface,
+            textAlign = TextAlign.End,
             maxLines = SINGLE_LINE,
             modifier = Modifier.width(width = dayTemperatureWidth)
         )

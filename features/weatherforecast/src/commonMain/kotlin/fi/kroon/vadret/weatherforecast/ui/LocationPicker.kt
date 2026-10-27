@@ -14,6 +14,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -58,7 +59,7 @@ internal fun LocationPicker(
     Box(modifier = modifier) {
         Text(
             text = localityName ?: stringResource(resource = Res.string.automatic_location),
-            style = VadretTheme.textStyles.bodyStrong,
+            style = VadretTheme.textStyles.value,
             color = VadretTheme.colorScheme.onSurfaceVariant,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
@@ -104,7 +105,12 @@ private fun LocationMenu(
         DropdownMenuItem(
             text = { MenuText(text = stringResource(resource = Res.string.automatic_location)) },
             leadingIcon = { SelectionMark(isSelected = locationChoices.isAutomatic) },
-            trailingIcon = { MenuIcon(iconResource = Res.drawable.ic_my_location) },
+            trailingIcon = {
+                MenuIcon(
+                    iconResource = Res.drawable.ic_my_location,
+                    modifier = Modifier.minimumInteractiveComponentSize()
+                )
+            },
             onClick = { onEvent(WeatherForecastEvent.OnAutomaticLocationClicked) }
         )
         if (locationChoices.favorites.isNotEmpty()) {

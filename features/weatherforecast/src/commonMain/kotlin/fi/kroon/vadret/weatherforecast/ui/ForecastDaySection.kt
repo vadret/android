@@ -4,10 +4,11 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -24,14 +25,18 @@ import fi.kroon.vadret.weatherforecast.model.ForecastDay
 import fi.kroon.vadret.weatherforecast.model.ForecastHour
 import org.jetbrains.compose.resources.stringResource
 
-private val dayHeaderTopPadding = 6.dp
-private val dayHeaderInset = 4.dp
-private val hourRowHeight = 58.dp
-private val hourRowSpacing = 14.dp
+private val dayHeaderPadding = 8.dp
+private val cardShape = RoundedCornerShape(size = 21.dp)
+private val cardVerticalPadding = 10.5.dp
+private val hourRowMinHeight = 55.dp
+private val hourRowHorizontalPadding = 21.dp
+private val hourRowSpacing = 8.dp
 private val hourTimeWidth = 44.dp
-private val hourIconSize = 24.dp
-private val temperatureSpacing = 1.dp
+private val hourIconSize = 34.dp
+private val temperatureSpacing = 2.dp
 private const val DESCRIPTION_MAX_LINES = 2
+private const val SINGLE_LINE = 1
+private const val DESCRIPTION_WEIGHT = 1f
 
 @Composable
 internal fun ForecastDayHeader(
@@ -42,14 +47,14 @@ internal fun ForecastDayHeader(
         modifier = modifier
             .fillMaxWidth()
             .padding(
-                start = dayHeaderInset,
-                end = dayHeaderInset,
-                top = dayHeaderTopPadding
+                start = dayHeaderPadding,
+                end = dayHeaderPadding,
+                top = dayHeaderPadding
             )
     ) {
         Text(
             text = forecastDay.weekday,
-            style = VadretTheme.textStyles.heading,
+            style = VadretTheme.textStyles.title,
             color = VadretTheme.colorScheme.onBackground,
             modifier = Modifier
                 .weight(weight = 1f)
@@ -57,7 +62,7 @@ internal fun ForecastDayHeader(
         )
         Text(
             text = forecastDay.dateText,
-            style = VadretTheme.textStyles.detail,
+            style = VadretTheme.textStyles.detailLabel,
             color = VadretTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.alignByBaseline()
         )
@@ -69,12 +74,20 @@ internal fun ForecastDayCard(
     forecastDay: ForecastDay,
     modifier: Modifier = Modifier
 ) {
-    VadretCard(modifier = modifier) {
-        forecastDay.hours.forEachIndexed { index: Int, forecastHour: ForecastHour ->
-            if (index > 0) {
-                HorizontalDivider(color = VadretTheme.colors.divider)
+    VadretCard(
+        modifier = modifier,
+        shape = cardShape
+    ) {
+        Column(modifier = Modifier.padding(vertical = cardVerticalPadding)) {
+            forecastDay.hours.forEachIndexed { index: Int, forecastHour: ForecastHour ->
+                if (index > 0) {
+                    HorizontalDivider(
+                        color = VadretTheme.colors.divider,
+                        modifier = Modifier.padding(horizontal = hourRowHorizontalPadding)
+                    )
+                }
+                ForecastHourRow(forecastHour = forecastHour)
             }
-            ForecastHourRow(forecastHour = forecastHour)
         }
     }
 }
@@ -91,12 +104,12 @@ private fun ForecastHourRow(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
             .fillMaxWidth()
-            .height(height = hourRowHeight)
-            .padding(horizontal = VadretTheme.spacing.large)
+            .heightIn(min = hourRowMinHeight)
+            .padding(horizontal = hourRowHorizontalPadding)
     ) {
         Text(
             text = forecastHour.timeText,
-            style = VadretTheme.textStyles.bodyStrong,
+            style = VadretTheme.textStyles.value,
             color = VadretTheme.colorScheme.onSurface,
             modifier = Modifier.width(width = hourTimeWidth)
         )
@@ -108,10 +121,10 @@ private fun ForecastHourRow(
         )
         Text(
             text = stringResource(resource = forecastHour.descriptionResource),
-            style = VadretTheme.textStyles.body,
+            style = VadretTheme.textStyles.listItem,
             color = VadretTheme.colorScheme.onSurface,
             maxLines = DESCRIPTION_MAX_LINES,
-            modifier = Modifier.weight(weight = 1f)
+            modifier = Modifier.weight(weight = DESCRIPTION_WEIGHT)
         )
         Column(
             horizontalAlignment = Alignment.End,
@@ -125,8 +138,10 @@ private fun ForecastHourRow(
             if (feelsLikeTemperature != null) {
                 Text(
                     text = "${stringResource(resource = Res.string.feels_like)} $feelsLikeTemperature$degree",
-                    style = VadretTheme.textStyles.label,
-                    color = VadretTheme.colorScheme.onSurfaceVariant
+                    style = VadretTheme.textStyles.detailLabel,
+                    color = VadretTheme.colorScheme.onSurfaceVariant,
+                    maxLines = SINGLE_LINE,
+                    softWrap = false
                 )
             }
         }

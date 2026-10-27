@@ -49,7 +49,8 @@ private const val SINGLE_LINE = 1
 private val hourColumnWidth = 46.dp
 private val hourCellContentSpacing = 5.dp
 private val hourCellVerticalPadding = 4.dp
-private val nowHourShape = RoundedCornerShape(size = 12.dp)
+private val nowHourCornerRadius = 12.dp
+private val nowHourShape = RoundedCornerShape(size = nowHourCornerRadius)
 private val hourIconSize = 22.dp
 private val temperatureLegendSpacing = 6.dp
 private val temperatureChartHeight = 64.dp
@@ -117,9 +118,19 @@ private fun ComingHourColumn(
     val comingHour: ComingHour = hours[index]
     val temperatureText = "${comingHour.temperatureText}${stringResource(resource = Res.string.degree)}"
     val windDescription = "${stringResource(resource = comingHour.windDirectionResource)} ${comingHour.windSpeedText} ${stringResource(resource = Res.string.m_s)}"
+    val highlightColor: Color = if (comingHour.isNow) {
+        VadretTheme.colorScheme.secondaryContainer
+    } else {
+        Color.Transparent
+    }
     Column(
         modifier = modifier
             .width(width = hourColumnWidth)
+            .background(
+                color = highlightColor,
+                shape = nowHourShape
+            )
+            .padding(bottom = nowHourCornerRadius)
             .semantics(mergeDescendants = true) {}
     ) {
         ComingHourCell(comingHour = comingHour)
@@ -165,20 +176,11 @@ private fun ComingHourCell(
     comingHour: ComingHour,
     modifier: Modifier = Modifier
 ) {
-    val backgroundColor: Color = if (comingHour.isNow) {
-        VadretTheme.colorScheme.secondaryContainer
-    } else {
-        Color.Transparent
-    }
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(space = hourCellContentSpacing),
         modifier = modifier
             .fillMaxWidth()
-            .background(
-                color = backgroundColor,
-                shape = nowHourShape
-            )
             .padding(vertical = hourCellVerticalPadding)
     ) {
         if (comingHour.isNow) {
@@ -227,7 +229,7 @@ private fun ChartLegends(
             title = stringResource(resource = Res.string.wind_in_meters_per_second),
             color = windColor
         )
-        Spacer(modifier = Modifier.height(height = windChartHeight))
+        Spacer(modifier = Modifier.height(height = windChartHeight + nowHourCornerRadius))
     }
 }
 

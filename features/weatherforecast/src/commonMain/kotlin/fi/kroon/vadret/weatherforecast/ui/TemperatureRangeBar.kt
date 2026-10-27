@@ -16,7 +16,7 @@ import fi.kroon.vadret.ui.VadretTheme
 import kotlin.math.max
 import kotlin.math.min
 
-private val barHeight = 6.dp
+private val barHeight = 5.dp
 private const val HALF = 0.5f
 private const val COLD_STOP = 0f
 private const val COOL_STOP = 0.4f

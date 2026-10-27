@@ -16,6 +16,7 @@ import androidx.compose.runtime.key
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.dp
 import fi.kroon.vadret.ui.VadretTheme
 import fi.kroon.vadret.weatherforecast.WeatherForecastEvent
 import fi.kroon.vadret.weatherforecast.model.ComingDay
@@ -27,6 +28,10 @@ import kotlinx.collections.immutable.ImmutableList
 private const val SLIDE_MILLISECONDS = 300
 private const val TOWARDS_START = -1
 private const val TOWARDS_END = 1
+
+private val slideGutter = 13.dp
+private val forecastDaySpacing = 13.dp
+private val forecastDayHeaderSpacing = 8.dp
 
 private val slideSpec: TweenSpec<IntOffset> = tween(
     durationMillis = SLIDE_MILLISECONDS,
@@ -41,7 +46,7 @@ internal fun ForecastContent(
     modifier: Modifier = Modifier
 ) {
     val gutter: Int = with(receiver = LocalDensity.current) {
-        VadretTheme.spacing.medium.roundToPx()
+        slideGutter.roundToPx()
     }
     AnimatedContent(
         targetState = forecastView,
@@ -106,13 +111,15 @@ private fun ForecastDaysContent(
     modifier: Modifier = Modifier
 ) {
     Column(
-        verticalArrangement = Arrangement.spacedBy(space = VadretTheme.spacing.medium),
+        verticalArrangement = Arrangement.spacedBy(space = forecastDaySpacing),
         modifier = modifier
     ) {
         forecastDays.forEach { forecastDay: ForecastDay ->
             key(forecastDay.key) {
-                ForecastDayHeader(forecastDay = forecastDay)
-                ForecastDayCard(forecastDay = forecastDay)
+                Column(verticalArrangement = Arrangement.spacedBy(space = forecastDayHeaderSpacing)) {
+                    ForecastDayHeader(forecastDay = forecastDay)
+                    ForecastDayCard(forecastDay = forecastDay)
+                }
             }
         }
     }

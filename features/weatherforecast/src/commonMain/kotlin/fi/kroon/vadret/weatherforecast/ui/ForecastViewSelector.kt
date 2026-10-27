@@ -24,7 +24,7 @@ import fi.kroon.vadret.weatherforecast.model.ForecastView
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
-private val selectorHeight = 44.dp
+private val selectorHeight = 42.dp
 private val selectorInnerPadding = 4.dp
 private val selectorBorderWidth = 1.dp
 private val optionIconSize = 18.dp

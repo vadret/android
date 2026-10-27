@@ -46,6 +46,11 @@ private const val CURRENT_WEATHER_KEY = "current-weather"
 private const val FORECAST_VIEW_KEY = "forecast-view"
 private const val FORECAST_CONTENT_KEY = "forecast-content"
 
+private val locationEndPadding = 9.dp
+private val contentHorizontalPadding = 13.dp
+private val contentBottomPadding = 21.dp
+private val contentSpacing = 13.dp
+
 @Composable
 fun WeatherForecastRoute(
     onWarningsClick: () -> Unit,
@@ -104,7 +109,7 @@ internal fun WeatherForecastScreen(
             VadretTopAppBar(
                 actions = {
                     LocationPicker(
-                        modifier = Modifier.padding(end = VadretTheme.spacing.small),
+                        modifier = Modifier.padding(end = locationEndPadding),
                         localityName = state.localityName,
                         locationChoices = state.locationChoices,
                         onEvent = onEvent
@@ -126,9 +131,11 @@ internal fun WeatherForecastScreen(
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
                 contentPadding = PaddingValues(
-                    all = VadretTheme.spacing.medium
+                    start = contentHorizontalPadding,
+                    end = contentHorizontalPadding,
+                    bottom = contentBottomPadding
                 ),
-                verticalArrangement = Arrangement.spacedBy(space = 16.dp)
+                verticalArrangement = Arrangement.spacedBy(space = contentSpacing)
             ) {
                 if (search != null) {
                     item(

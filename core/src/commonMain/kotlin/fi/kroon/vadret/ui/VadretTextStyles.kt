@@ -47,7 +47,7 @@ data class VadretTextStyles(
         lineHeight = 23
     ).copy(lineHeightStyle = exactLineHeight),
     val title: TextStyle = textStyle(
-        fontSize = 20,
+        fontSize = 21,
         lineHeight = 26,
         fontWeight = FontWeight.Medium
     ),
