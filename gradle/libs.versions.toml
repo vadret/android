@@ -31,6 +31,7 @@ ktlint = "1.8.0"
 leakcanary = "2.14"
 lifecycle = "2.11.0"
 maplibre = "13.7.1"
+maplibreCompose = "0.20.0"
 markdownRenderer = "0.46.0"
 mockk = "1.14.11"
 navigation3 = "1.2.0"
@@ -106,6 +107,7 @@ datastore-preferences-core = { module = "androidx.datastore:datastore-preference
 room-compiler = { module = "androidx.room3:room3-compiler", version.ref = "room" }
 room-runtime = { module = "androidx.room3:room3-runtime", version.ref = "room" }
 sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version.ref = "sqlite" }
+sqlite-framework = { module = "androidx.sqlite:sqlite-framework", version.ref = "sqlite" }
 sqlite-bundled-jvm = { module = "androidx.sqlite:sqlite-bundled-jvm", version.ref = "sqlite" }
 
 # Serialization
@@ -123,6 +125,8 @@ coil-network-ktor = { module = "io.coil-kt.coil3:coil-network-ktor3", version.re
 commons-csv = { module = "org.apache.commons:commons-csv", version.ref = "commonsCsv" }
 either = { module = "io.github.sphrak:either", version.ref = "either" }
 maplibre-android = { module = "org.maplibre.gl:android-sdk", version.ref = "maplibre" }
+maplibre-compose = { module = "org.maplibre.compose:maplibre-compose", version.ref = "maplibreCompose" }
+maplibre-compose-runtime-opengl = { module = "org.maplibre.compose:maplibre-compose-runtime-opengl-android", version.ref = "maplibreCompose" }
 markdown-renderer-m3 = { module = "com.mikepenz:multiplatform-markdown-renderer-m3", version.ref = "markdownRenderer" }
 
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }

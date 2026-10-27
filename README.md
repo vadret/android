@@ -54,6 +54,12 @@ This project uses [ktlint](https://github.com/pinterest/ktlint) for linting.
 ./gradlew :androidApp:installFdroidLocalRelease && adb shell am start -n fi.kroon.vadret/.main.MainActivity
 ```
 
+The radar uses the shared maplibre-compose map by default. To build Android with the older MapLibre Android map instead, for comparison:
+
+```sh
+./gradlew :androidApp:installFdroidLocalRelease -Pvadret.radarMap=mapView
+```
+
 #### Running on iOS
 
 Requires a Mac with Xcode 26. Open `iosApp/iosApp.xcodeproj` and run the `iosApp` scheme, or build from the command line:

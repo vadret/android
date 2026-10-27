@@ -1,6 +1,6 @@
 package fi.kroon.vadret.favorite.local
 
 import androidx.room3.RoomDatabase
-import androidx.sqlite.driver.bundled.BundledSQLiteDriver
+import androidx.sqlite.driver.NativeSQLiteDriver
 
-internal actual fun <T : RoomDatabase> RoomDatabase.Builder<T>.forTests(): RoomDatabase.Builder<T> = setDriver(driver = BundledSQLiteDriver())
+internal actual fun <T : RoomDatabase> RoomDatabase.Builder<T>.forTests(): RoomDatabase.Builder<T> = setDriver(driver = NativeSQLiteDriver())

@@ -1,7 +1,7 @@
 package fi.kroon.vadret.favorite
 
 import androidx.room3.Room
-import androidx.sqlite.driver.bundled.BundledSQLiteDriver
+import androidx.sqlite.driver.NativeSQLiteDriver
 import fi.kroon.vadret.favorite.local.FavoriteDatabase
 import fi.kroon.vadret.idgenerator.IdGenerator
 import kotlinx.coroutines.CoroutineDispatcher
@@ -16,7 +16,7 @@ fun FavoriteRepository(
     FavoriteRepository(
         databaseBuilder = Room
             .databaseBuilder<FavoriteDatabase>(name = "$databaseDirectory/$FAVORITE_DATABASE_NAME")
-            .setDriver(driver = BundledSQLiteDriver())
+            .setDriver(driver = NativeSQLiteDriver())
             .setQueryCoroutineContext(context = coroutineDispatcher),
         idGenerator = idGenerator,
         clock = clock

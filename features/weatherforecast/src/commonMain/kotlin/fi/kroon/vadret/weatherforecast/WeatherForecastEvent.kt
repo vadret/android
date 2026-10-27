@@ -7,6 +7,7 @@ import fi.kroon.vadret.weatherforecast.model.ForecastView
 sealed interface WeatherForecastEvent {
 
     data object OnShown : WeatherForecastEvent
+    data object OnResumed : WeatherForecastEvent
     data class OnLocaleChanged(val languageTag: String) : WeatherForecastEvent
     data object OnRefresh : WeatherForecastEvent
     data object OnErrorShown : WeatherForecastEvent

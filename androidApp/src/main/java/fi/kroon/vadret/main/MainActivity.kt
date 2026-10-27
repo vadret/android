@@ -11,12 +11,12 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import fi.kroon.vadret.BaseApplication
 import fi.kroon.vadret.di.LocalKoin
-import fi.kroon.vadret.radar.ui.KeepRadarMapAlive
+import fi.kroon.vadret.radar.ui.RadarMapHost
 import fi.kroon.vadret.radar.ui.RadarRoute
 import org.koin.core.Koin
 
 private val radarTab = RadarTab(
-    host = { content: @Composable () -> Unit -> KeepRadarMapAlive(content = content) },
+    host = { content: @Composable () -> Unit -> RadarMapHost(content = content) },
     content = { RadarRoute() }
 )
 

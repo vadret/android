@@ -33,6 +33,8 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
+import kotlin.time.Duration.Companion.minutes
+import kotlin.time.Duration.Companion.seconds
 import kotlin.time.Instant
 
 private val threeDays: List<Forecast> = listOf(
@@ -56,6 +58,7 @@ class WeatherForecastViewModelTest {
     private val weatherForecastRepository = FakeWeatherForecastRepository()
     private val autoCompleteRepository = FakeAutoCompleteRepository()
     private val favoriteRepository = FakeFavoriteRepository()
+    private val clock = FixedClock(now = Instant.parse(input = "2026-10-24T12:00:00Z"))
     private val weatherForecastViewModel = WeatherForecastViewModel(
         getLocationModeTask = DefaultGetLocationModeTask(locationRepository = locationRepository),
         setLocationModeTask = DefaultSetLocationModeTask(locationRepository = locationRepository),
@@ -75,7 +78,7 @@ class WeatherForecastViewModelTest {
             favoriteRepository = favoriteRepository,
             locationRepository = locationRepository
         ),
-        clock = FixedClock(now = Instant.parse(input = "2026-10-24T12:00:00Z")),
+        clock = clock,
         coroutineDispatcher = testDispatcher
     )
 
@@ -141,6 +144,62 @@ class WeatherForecastViewModelTest {
 
             assertEquals(expected = false, actual = weatherForecastViewModel.state.value.isRefreshing)
             assertTrue(actual = weatherForecastRepository.requestedCoordinates.isEmpty())
+        }
+
+    @Test
+    fun `resuming more than two minutes after the last fetch refreshes the forecast`() =
+        testScope.runTest {
+            weatherForecastViewModel.onEvent(event = WeatherForecastEvent.OnShown)
+            advanceUntilIdle()
+
+            clock.now += 2.minutes + 1.seconds
+            weatherForecastViewModel.onEvent(event = WeatherForecastEvent.OnResumed)
+            val whileRefreshing: Boolean = weatherForecastViewModel.state.value.isRefreshing
+            advanceUntilIdle()
+
+            assertTrue(actual = whileRefreshing)
+            assertEquals(expected = false, actual = weatherForecastViewModel.state.value.isRefreshing)
+            assertEquals(expected = 2, actual = weatherForecastRepository.requestedCoordinates.size)
+        }
+
+    @Test
+    fun `resuming within two minutes of the last fetch keeps the forecast`() =
+        testScope.runTest {
+            weatherForecastViewModel.onEvent(event = WeatherForecastEvent.OnShown)
+            advanceUntilIdle()
+
+            clock.now += 2.minutes
+            weatherForecastViewModel.onEvent(event = WeatherForecastEvent.OnResumed)
+            advanceUntilIdle()
+
+            assertEquals(expected = false, actual = weatherForecastViewModel.state.value.isRefreshing)
+            assertEquals(expected = 1, actual = weatherForecastRepository.requestedCoordinates.size)
+        }
+
+    @Test
+    fun `resuming before anything was fetched fetches nothing`() =
+        testScope.runTest {
+            weatherForecastViewModel.onEvent(event = WeatherForecastEvent.OnResumed)
+            advanceUntilIdle()
+
+            assertTrue(actual = weatherForecastRepository.requestedCoordinates.isEmpty())
+        }
+
+    @Test
+    fun `the time since the last successful fetch decides a refresh on resume`() =
+        testScope.runTest {
+            weatherForecastViewModel.onEvent(event = WeatherForecastEvent.OnShown)
+            advanceUntilIdle()
+            weatherForecastRepository.forecasts = Failure(errorCode = ErrorCode.WEATHER_FORECAST_NOT_AVAILABLE_FOR_LOCATION).asLeft()
+            clock.now += 1.minutes
+            weatherForecastViewModel.onEvent(event = WeatherForecastEvent.OnRefresh)
+            advanceUntilIdle()
+
+            clock.now += 1.minutes + 1.seconds
+            weatherForecastViewModel.onEvent(event = WeatherForecastEvent.OnResumed)
+            advanceUntilIdle()
+
+            assertEquals(expected = 3, actual = weatherForecastRepository.requestedCoordinates.size)
         }
 
     @Test

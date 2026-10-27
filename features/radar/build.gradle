@@ -1,28 +1,79 @@
+import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
+
 plugins {
-    id 'vadret.android.feature'
+    id 'vadret.kmp.feature'
 }
 
-android {
-    namespace = 'fi.kroon.vadret.radar'
+def radarMaps = ['maplibreCompose', 'mapView']
+def radarMap = providers.gradleProperty('vadret.radarMap').get()
+if (!radarMaps.contains(radarMap)) {
+    throw new GradleException("vadret.radarMap must be one of $radarMaps but was $radarMap")
 }
+def isMapView = radarMap == 'mapView'
 
-dependencies {
-    implementation project(':core:logging')
-    implementation project(':data:common')
-    implementation project(':data:location')
-    implementation project(':data:radar')
-    implementation project(':data:wind')
+kotlin {
+    applyDefaultHierarchyTemplate {
+        it.common {
+            it.group('maplibreCompose') {
+                it.withIos()
+                if (!isMapView) {
+                    it.withCompilations { compilation -> compilation.platformType == KotlinPlatformType.androidJvm }
+                }
+            }
+        }
+    }
+    android {
+        namespace = 'fi.kroon.vadret.radar'
+    }
+    sourceSets {
+        commonMain {
+            dependencies {
+                implementation project(':core:logging')
+                implementation project(':data:common')
+                implementation project(':data:location')
+                implementation project(':data:radar')
+                implementation project(':data:wind')
 
-    implementation libs.androidx.annotation
-    implementation libs.coil.core
-    implementation libs.coil.network.ktor
-    implementation libs.either
-    implementation libs.koin.core
-    implementation libs.kotlinx.collections.immutable
-    implementation libs.kotlinx.datetime
-    implementation libs.ktor.client.core
-    implementation libs.maplibre.android
-    implementation libs.multiplatform.compose.components.resources
-
-    testImplementation project(':core:testing')
+                implementation libs.coil.core
+                implementation libs.coil.network.ktor
+                implementation libs.either
+                implementation libs.koin.core
+                implementation libs.kotlinx.collections.immutable
+                implementation libs.kotlinx.datetime
+                implementation libs.kotlinx.io.core
+                implementation libs.ktor.client.core
+                implementation libs.okio
+            }
+        }
+        maplibreComposeMain {
+            dependencies {
+                implementation libs.maplibre.compose
+                implementation libs.kotlinx.serialization.json
+            }
+        }
+        androidMain {
+            if (isMapView) {
+                kotlin.srcDir('src/androidMapView/kotlin')
+            }
+            dependencies {
+                implementation libs.androidx.core.ktx
+                implementation libs.compose.material3
+                if (isMapView) {
+                    implementation libs.maplibre.android
+                } else {
+                    runtimeOnly libs.maplibre.compose.runtime.opengl
+                }
+            }
+        }
+        androidHostTest {
+            if (isMapView) {
+                kotlin.srcDir('src/androidMapViewHostTest/kotlin')
+            }
+        }
+        commonTest {
+            dependencies {
+                implementation project(':core:testing')
+            }
+        }
+    }
 }

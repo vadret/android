@@ -8,6 +8,11 @@ kotlin {
     android {
         namespace = 'fi.kroon.vadret.data.warningfilter'
     }
+    [iosArm64(), iosSimulatorArm64()].each { target ->
+        target.binaries.configureEach { binary ->
+            binary.linkerOpts('-lsqlite3')
+        }
+    }
     sourceSets {
         commonMain {
             dependencies {
@@ -24,7 +29,7 @@ kotlin {
         }
         iosMain {
             dependencies {
-                implementation libs.sqlite.bundled
+                implementation libs.sqlite.framework
             }
         }
         commonTest {

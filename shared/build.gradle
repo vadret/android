@@ -19,6 +19,9 @@ kotlin {
             baseName = 'VadretShared'
             setStatic(true)
         }
+        target.binaries.configureEach { binary ->
+            binary.linkerOpts('-lsqlite3')
+        }
     }
     sourceSets {
         commonMain {
@@ -29,6 +32,7 @@ kotlin {
                 implementation project(':data:common')
                 implementation project(':data:theme')
                 implementation project(':features:forecastwarning')
+                implementation project(':features:radar')
                 implementation project(':features:settings')
                 implementation project(':features:weatherforecast')
 

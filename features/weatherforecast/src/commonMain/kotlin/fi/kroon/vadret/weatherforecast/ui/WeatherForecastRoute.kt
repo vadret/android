@@ -22,6 +22,7 @@ import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import fi.kroon.vadret.di.koinViewModel
 import fi.kroon.vadret.theme.model.Theme
@@ -69,6 +70,10 @@ internal fun WeatherForecastScreen(
     }
     LaunchedEffect(Unit) {
         onEvent(WeatherForecastEvent.OnShown)
+    }
+    LifecycleResumeEffect(Unit) {
+        onEvent(WeatherForecastEvent.OnResumed)
+        onPauseOrDispose {}
     }
     LocationPermissionEffect(
         isRequested = state.isLocationPermissionRequested,

@@ -3,6 +3,9 @@ package fi.kroon.vadret.di
 import fi.kroon.vadret.forecastwarning.WarningViewModel
 import fi.kroon.vadret.main.MainViewModel
 import fi.kroon.vadret.model.AppInfo
+import fi.kroon.vadret.radar.RadarViewModel
+import fi.kroon.vadret.radar.di.iosRadarModule
+import fi.kroon.vadret.radar.di.radarModule
 import fi.kroon.vadret.settings.SettingsViewModel
 import fi.kroon.vadret.weatherforecast.WeatherForecastViewModel
 import kotlinx.coroutines.CoroutineDispatcher
@@ -43,7 +46,7 @@ class IosModulesTest {
     private fun koin(): Koin =
         koinApplication {
             modules(
-                modules = sharedModules + iosPlatformModule(appInfo = appInfo) + module {
+                modules = sharedModules + listOf(iosPlatformModule(appInfo = appInfo), radarModule, iosRadarModule) + module {
                     factory<CoroutineDispatcher> { testDispatcher }
                 }
             )
@@ -54,6 +57,7 @@ class IosModulesTest {
         val koin: Koin = koin()
 
         assertNotNull(actual = koin.get<MainViewModel>())
+        assertNotNull(actual = koin.get<RadarViewModel>())
         assertNotNull(actual = koin.get<SettingsViewModel>())
         assertNotNull(actual = koin.get<WarningViewModel>())
         assertNotNull(actual = koin.get<WeatherForecastViewModel>())

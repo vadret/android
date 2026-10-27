@@ -2,6 +2,7 @@ package fi.kroon.vadret.weatherforecast.extension
 
 import fi.kroon.vadret.ui.format.DateTextFormatter
 import fi.kroon.vadret.ui.format.DateTextStyle
+import fi.kroon.vadret.ui.format.toOneDecimalText
 import fi.kroon.vadret.weatherforecast.model.ComingDay
 import fi.kroon.vadret.weatherforecast.model.ComingHour
 import fi.kroon.vadret.weatherforecast.model.Forecast

@@ -36,8 +36,11 @@ import kotlin.concurrent.atomics.AtomicReference
 import kotlin.time.Clock
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.minutes
+import kotlin.time.Instant
 
 private val searchDebounce: Duration = 70.milliseconds
+private val staleForecastAge: Duration = 2.minutes
 
 @Immutable
 class WeatherForecastViewModel internal constructor(
@@ -59,6 +62,7 @@ class WeatherForecastViewModel internal constructor(
     private val loadedLocationMode: AtomicReference<Boolean?> = AtomicReference(value = null)
     private val languageTag: AtomicReference<String> = AtomicReference(value = currentLanguageTag())
     private val placeForecast: AtomicReference<PlaceForecast?> = AtomicReference(value = null)
+    private val fetchedAt: AtomicReference<Instant?> = AtomicReference(value = null)
     private val isObservingLocationChoices: AtomicBoolean = AtomicBoolean(value = false)
     private val loadJob: AtomicReference<Job?> = AtomicReference(value = null)
     private val searchJob: AtomicReference<Job?> = AtomicReference(value = null)
@@ -66,6 +70,8 @@ class WeatherForecastViewModel internal constructor(
     fun onEvent(event: WeatherForecastEvent) {
         when (event) {
             WeatherForecastEvent.OnShown -> onShown()
+
+            WeatherForecastEvent.OnResumed -> onResumed()
 
             is WeatherForecastEvent.OnLocaleChanged -> onLocaleChanged(languageTag = event.languageTag)
 
@@ -197,6 +203,13 @@ class WeatherForecastViewModel internal constructor(
         }
     }
 
+    private fun onResumed() {
+        val lastFetchedAt: Instant = fetchedAt.load() ?: return
+        if (clock.now() - lastFetchedAt > staleForecastAge) {
+            onRefresh()
+        }
+    }
+
     private fun onRefresh() {
         val isAutomatic: Boolean = loadedLocationMode.load() ?: return
         state.update { state: WeatherForecastState ->
@@ -220,6 +233,7 @@ class WeatherForecastViewModel internal constructor(
     }
 
     private fun displayForecast(placeForecast: PlaceForecast) {
+        fetchedAt.store(newValue = clock.now())
         val previousPlaceForecast: PlaceForecast? = this.placeForecast.exchange(newValue = placeForecast)
         val isSamePlace: Boolean = previousPlaceForecast?.placeName == placeForecast.placeName
         state.update { state: WeatherForecastState ->
