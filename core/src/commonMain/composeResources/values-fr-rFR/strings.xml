@@ -73,6 +73,9 @@
     <string name="licenses_intro">Vädret est construit avec les projets open source suivants.</string>
     <string name="forecast_days">Jours</string>
     <string name="forecast_hours">Heures</string>
+    <string name="enable_hourly_forecast">Activer la météo heure par heure</string>
+    <string name="hourly_forecast_is_enabled">Vous pouvez passer des jours aux heures</string>
+    <string name="hourly_forecast_is_disabled">Seuls les jours sont affichés</string>
     <string name="today">Aujourd\'hui</string>
     <string name="expanded">Développé</string>
     <string name="collapsed">Réduit</string>

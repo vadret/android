@@ -124,6 +124,9 @@
     <string name="licenses_intro">Vädret basiert auf den folgenden Open-Source-Projekten.</string>
     <string name="forecast_days">Tage</string>
     <string name="forecast_hours">Stunden</string>
+    <string name="enable_hourly_forecast">Wetter Stunde für Stunde aktivieren</string>
+    <string name="hourly_forecast_is_enabled">Du kannst zwischen Tagen und Stunden wechseln</string>
+    <string name="hourly_forecast_is_disabled">Nur Tage werden angezeigt</string>
     <string name="today">Heute</string>
     <string name="expanded">Aufgeklappt</string>
     <string name="collapsed">Zugeklappt</string>

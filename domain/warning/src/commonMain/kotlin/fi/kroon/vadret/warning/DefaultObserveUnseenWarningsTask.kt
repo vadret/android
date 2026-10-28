@@ -24,22 +24,23 @@ internal class DefaultObserveUnseenWarningsTask(
     override fun invoke(
         warningPlace: WarningPlace,
         isRefresh: Boolean
-    ): Flow<Either<Failure, List<AggregatedFeed>>> = flow {
-        feedRepository
-            .getAggregatedFeed(isRefresh = isRefresh)
-            .onResult(
-                onError = { failure: Failure -> emit(failure.asLeft()) },
-                onSuccess = { aggregatedFeeds: List<AggregatedFeed> ->
-                    emitAll(
-                        observeUnseen(
-                            affectingWarnings = aggregatedFeeds.filter { aggregatedFeed: AggregatedFeed ->
-                                aggregatedFeed.affects(warningPlace = warningPlace)
-                            }
+    ): Flow<Either<Failure, List<AggregatedFeed>>> =
+        flow {
+            feedRepository
+                .getAggregatedFeed(isRefresh = isRefresh)
+                .onResult(
+                    onError = { failure: Failure -> emit(failure.asLeft()) },
+                    onSuccess = { aggregatedFeeds: List<AggregatedFeed> ->
+                        emitAll(
+                            observeUnseen(
+                                affectingWarnings = aggregatedFeeds.filter { aggregatedFeed: AggregatedFeed ->
+                                    aggregatedFeed.affects(warningPlace = warningPlace)
+                                }
+                            )
                         )
-                    )
-                }
-            )
-    }.distinctUntilChanged()
+                    }
+                )
+        }.distinctUntilChanged()
 
     private fun observeUnseen(affectingWarnings: List<AggregatedFeed>): Flow<Either<Failure, List<AggregatedFeed>>> =
         feedRepository

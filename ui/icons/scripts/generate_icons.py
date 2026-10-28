@@ -18,8 +18,9 @@ SHARED_OUTLINES = {
     "m400.69-183.08": "bolt",
 }
 
+IGNORED_MOTIONS = {"vdSpin"}
+
 MOTION_KINDS = {
-    "vdSpin": "SPIN",
     "vdDrift": "DRIFT",
     "vdFallV": "FALL",
     "vdFallS": "SLANTED_FALL",
@@ -163,16 +164,14 @@ def parse_motion(style):
     if not match:
         return None
     name, duration, easing, delay = match.group(1).split()[:4]
-    pivot = re.search(r"transform-box:view-box;transform-origin:([\d.]+)px ([\d.]+)px", style)
+    if name in IGNORED_MOTIONS:
+        return None
     arguments = [
         f"kind = IconMotionKind.{MOTION_KINDS[name]}",
         f"durationMilliseconds = {seconds_to_milliseconds(duration)}",
         f"delayMilliseconds = {seconds_to_milliseconds(delay)}",
         f"easing = IconEasing.{EASINGS[easing]}",
     ]
-    if pivot:
-        arguments.append(f"pivotX = {kotlin_float(pivot.group(1))}")
-        arguments.append(f"pivotY = {kotlin_float(pivot.group(2))}")
     return "IconMotion(" + ", ".join(arguments) + ")"
 
 

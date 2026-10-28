@@ -16,9 +16,8 @@ class VadretIconCatalogTest {
     }
 
     @Test
-    fun `precipitation moves and a cloudless sun keeps turning`() {
+    fun `precipitation thunder and fog move`() {
         val movingIcons: List<VadretIconGraphic> = listOf(
-            VadretIcons.Weather.ClearSky,
             VadretIcons.Weather.LightRain,
             VadretIcons.Weather.HeavySnowShowers,
             VadretIcons.Weather.Thunder,
@@ -29,8 +28,10 @@ class VadretIconCatalogTest {
     }
 
     @Test
-    fun `an overcast sky and the symbols stand still`() {
+    fun `the sun an overcast sky and the symbols stand still`() {
         val stillIcons: List<VadretIconGraphic> = listOf(
+            VadretIcons.Weather.ClearSky,
+            VadretIcons.Weather.NearlyClearSky,
             VadretIcons.Weather.Overcast,
             VadretIcons.Weather.ClearSkyNight,
             VadretIcons.Symbol.Drop,

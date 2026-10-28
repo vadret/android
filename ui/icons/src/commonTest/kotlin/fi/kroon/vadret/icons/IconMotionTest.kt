@@ -23,18 +23,6 @@ private fun motion(
 class IconMotionTest {
 
     @Test
-    fun `a spin turns once around over its duration`() {
-        val spin: IconMotion = motion(kind = IconMotionKind.SPIN)
-
-        assertEquals(
-            expected = listOf(0f, 90f, 180f, 0f),
-            actual = listOf(0L, 250L, 500L, 1_000L).map { timeMilliseconds: Long ->
-                spin.poseAt(timeMilliseconds = timeMilliseconds).rotationDegrees
-            }
-        )
-    }
-
-    @Test
     fun `a negative delay starts the motion part of the way through`() {
         val delayedFall: IconMotion = motion(
             kind = IconMotionKind.FALL,

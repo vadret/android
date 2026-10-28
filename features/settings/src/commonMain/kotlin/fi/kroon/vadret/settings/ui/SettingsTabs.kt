@@ -16,6 +16,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import fi.kroon.vadret.ui.VadretSlidingSelector
 import fi.kroon.vadret.ui.VadretTheme
+import kotlinx.collections.immutable.ImmutableList
 import org.jetbrains.compose.resources.stringResource
 
 private val tabsHeight = 44.dp
@@ -24,6 +25,7 @@ private val tabsBorderWidth = 1.dp
 
 @Composable
 internal fun SettingsTabs(
+    pages: ImmutableList<SettingsPage>,
     selectedPage: SettingsPage,
     onPageClick: (SettingsPage) -> Unit,
     modifier: Modifier = Modifier
@@ -40,9 +42,9 @@ internal fun SettingsTabs(
             .height(height = tabsHeight)
     ) {
         VadretSlidingSelector(
-            optionCount = SettingsPage.entries.size,
-            selectedIndex = selectedPage.ordinal,
-            onOptionSelected = { index: Int -> onPageClick(SettingsPage.entries[index]) },
+            optionCount = pages.size,
+            selectedIndex = pages.indexOf(element = selectedPage),
+            onOptionSelected = { index: Int -> onPageClick(pages[index]) },
             role = Role.Tab,
             isEqualWidth = true,
             modifier = Modifier
@@ -50,7 +52,7 @@ internal fun SettingsTabs(
                 .padding(all = tabsInnerPadding)
         ) { index: Int, contentColor: Color, _: Float ->
             Text(
-                text = stringResource(resource = SettingsPage.entries[index].titleResource),
+                text = stringResource(resource = pages[index].titleResource),
                 style = VadretTheme.textStyles.bodyStrong,
                 color = contentColor,
                 maxLines = 1,

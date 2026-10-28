@@ -15,6 +15,7 @@ kotlin {
                 implementation project(':data:aggregatedfeed')
                 implementation project(':data:common')
                 implementation project(':data:favorite')
+                implementation project(':data:forecastpreference')
                 implementation project(':data:language')
                 implementation project(':data:library')
                 implementation project(':data:location')

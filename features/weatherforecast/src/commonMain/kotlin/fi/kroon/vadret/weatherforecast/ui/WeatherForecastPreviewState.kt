@@ -59,7 +59,12 @@ internal fun weatherForecastPreviewState(): WeatherForecastState {
     val weatherForecast: WeatherForecast = previewWeatherForecast()
     val todayKey: String = weatherForecast.comingDays.first().key
     return WeatherForecastState(
-        forecast = weatherForecast.copy(comingDays = weatherForecast.comingDays.withDayToggled(dayKey = todayKey)),
+        forecast = weatherForecast.copy(
+            comingDays = weatherForecast.comingDays.withDayToggled(
+                dayKey = todayKey,
+                isExpandOnceEnabled = false
+            )
+        ),
         localityName = PREVIEW_LOCALITY,
         latestWarning = LatestWarning(
             warningLevel = WarningLevel.YELLOW,

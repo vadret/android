@@ -1,6 +1,8 @@
 package fi.kroon.vadret.settings
 
 import fi.kroon.vadret.common.Failure
+import fi.kroon.vadret.forecastpreference.ForecastPreferenceRepository
+import fi.kroon.vadret.forecastpreference.model.ForecastPreferences
 import fi.kroon.vadret.language.LanguageRepository
 import fi.kroon.vadret.language.model.AppLanguage
 import fi.kroon.vadret.location.LocationRepository
@@ -14,7 +16,8 @@ import io.github.sphrak.either.map
 internal class DefaultGetSettingsTask(
     private val locationRepository: LocationRepository,
     private val themeRepository: ThemeRepository,
-    private val languageRepository: LanguageRepository
+    private val languageRepository: LanguageRepository,
+    private val forecastPreferenceRepository: ForecastPreferenceRepository
 ) : GetSettingsTask {
 
     override suspend fun invoke(): Either<Failure, Settings> =
@@ -27,15 +30,21 @@ internal class DefaultGetSettingsTask(
                         languageRepository
                             .getLanguage()
                             .flatMap { language: AppLanguage ->
-                                locationRepository
-                                    .getStoredLocation()
-                                    .map { storedLocation: StoredLocation ->
-                                        Settings(
-                                            isAutomaticLocation = isAutomaticLocation,
-                                            theme = theme,
-                                            language = language,
-                                            storedLocation = storedLocation
-                                        )
+                                forecastPreferenceRepository
+                                    .getForecastPreferences()
+                                    .flatMap { forecastPreferences: ForecastPreferences ->
+                                        locationRepository
+                                            .getStoredLocation()
+                                            .map { storedLocation: StoredLocation ->
+                                                Settings(
+                                                    isAutomaticLocation = isAutomaticLocation,
+                                                    theme = theme,
+                                                    language = language,
+                                                    isHourlyForecastEnabled = forecastPreferences.isHourlyForecastEnabled,
+                                                    isExpandOnceEnabled = forecastPreferences.isExpandOnceEnabled,
+                                                    storedLocation = storedLocation
+                                                )
+                                            }
                                     }
                             }
                     }

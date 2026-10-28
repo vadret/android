@@ -53,7 +53,7 @@ internal fun SettingsScreen(
     onEvent: (SettingsEvent) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val pagerState: PagerState = rememberPagerState(pageCount = { SettingsPage.entries.size })
+    val pagerState: PagerState = rememberPagerState(pageCount = { state.pages.size })
     val coroutineScope = rememberCoroutineScope()
     LaunchedEffect(Unit) {
         onEvent(SettingsEvent.OnStart)
@@ -62,9 +62,10 @@ internal fun SettingsScreen(
     Column(modifier = modifier.fillMaxSize()) {
         VadretTopAppBar()
         SettingsTabs(
-            selectedPage = SettingsPage.entries[pagerState.targetPage],
+            pages = state.pages,
+            selectedPage = state.pages[pagerState.targetPage],
             onPageClick = { page: SettingsPage ->
-                coroutineScope.launch { pagerState.animateScrollToPage(page = page.ordinal) }
+                coroutineScope.launch { pagerState.animateScrollToPage(page = state.pages.indexOf(element = page)) }
             },
             modifier = Modifier.padding(horizontal = VadretTheme.spacing.large)
         )
@@ -72,7 +73,7 @@ internal fun SettingsScreen(
             state = pagerState,
             modifier = Modifier.fillMaxSize()
         ) { pageIndex: Int ->
-            when (SettingsPage.entries[pageIndex]) {
+            when (state.pages[pageIndex]) {
                 SettingsPage.PREFERENCES -> PreferencesPage(
                     state = state,
                     onEvent = onEvent
@@ -88,6 +89,11 @@ internal fun SettingsScreen(
                 SettingsPage.ABOUT -> AboutPage(
                     aboutRows = state.aboutRows,
                     onChangelogClick = { onEvent(SettingsEvent.OnChangelogClicked) }
+                )
+
+                SettingsPage.DEVELOPER -> DeveloperPage(
+                    state = state,
+                    onEvent = onEvent
                 )
             }
         }

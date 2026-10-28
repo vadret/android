@@ -82,6 +82,9 @@
     <string name="licenses_intro">Vädret on rakennettu seuraavien avoimen lähdekoodin projektien varaan.</string>
     <string name="forecast_days">Päivät</string>
     <string name="forecast_hours">Tunnit</string>
+    <string name="enable_hourly_forecast">Ota tunneittainen sää käyttöön</string>
+    <string name="hourly_forecast_is_enabled">Voit vaihtaa päivien ja tuntien välillä</string>
+    <string name="hourly_forecast_is_disabled">Vain päivät näytetään</string>
     <string name="today">Tänään</string>
     <string name="expanded">Laajennettu</string>
     <string name="collapsed">Pienennetty</string>

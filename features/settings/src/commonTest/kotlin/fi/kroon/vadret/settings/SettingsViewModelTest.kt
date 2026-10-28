@@ -10,6 +10,8 @@ import fi.kroon.vadret.core.resources.setting_county
 import fi.kroon.vadret.core.resources.setting_latitude
 import fi.kroon.vadret.core.resources.setting_longitude
 import fi.kroon.vadret.core.resources.setting_municipality
+import fi.kroon.vadret.forecastpreference.ForecastPreferenceRepository
+import fi.kroon.vadret.forecastpreference.model.ForecastPreferences
 import fi.kroon.vadret.language.LanguageRepository
 import fi.kroon.vadret.language.model.AppLanguage
 import fi.kroon.vadret.library.LibraryRepository
@@ -22,11 +24,13 @@ import fi.kroon.vadret.model.AppInfo
 import fi.kroon.vadret.settings.model.AboutRowHint
 import fi.kroon.vadret.settings.model.LibraryGroup
 import fi.kroon.vadret.settings.model.LocationRow
+import fi.kroon.vadret.settings.ui.SettingsPage
 import fi.kroon.vadret.theme.ThemeRepository
 import fi.kroon.vadret.theme.model.Theme
 import io.github.sphrak.either.Either
 import io.github.sphrak.either.extension.asLeft
 import io.github.sphrak.either.extension.asRight
+import io.github.sphrak.either.map
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -89,6 +93,24 @@ private class FakeLocationRepository(
     override suspend fun selectStoredLocation(storedLocation: StoredLocation): Either<Failure, Unit> = error("Settings never store a place")
 }
 
+private class FakeForecastPreferenceRepository(
+    var forecastPreferences: Either<Failure, ForecastPreferences> = ForecastPreferences(
+        isHourlyForecastEnabled = false,
+        isExpandOnceEnabled = true
+    ).asRight()
+) : ForecastPreferenceRepository {
+    override suspend fun getForecastPreferences(): Either<Failure, ForecastPreferences> = forecastPreferences
+    override fun observeForecastPreferences(): Flow<Either<Failure, ForecastPreferences>> = emptyFlow()
+    override suspend fun setHourlyForecastEnabled(isEnabled: Boolean): Either<Failure, Unit> {
+        forecastPreferences = forecastPreferences.map { stored: ForecastPreferences -> stored.copy(isHourlyForecastEnabled = isEnabled) }
+        return Unit.asRight()
+    }
+    override suspend fun setExpandOnceEnabled(isEnabled: Boolean): Either<Failure, Unit> {
+        forecastPreferences = forecastPreferences.map { stored: ForecastPreferences -> stored.copy(isExpandOnceEnabled = isEnabled) }
+        return Unit.asRight()
+    }
+}
+
 private class FakeLibraryRepository : LibraryRepository {
     override fun getLibraries(): Either<Nothing, List<Library>> = listOf(ktor, coil, kotlinxDatetime).asRight()
 }
@@ -117,13 +139,13 @@ private val ktor: Library = library(author = "JetBrains", title = "Ktor")
 private val coil: Library = library(author = "Coil Contributors", title = "Coil")
 private val kotlinxDatetime: Library = library(author = "JetBrains", title = "kotlinx-datetime")
 
-@OptIn(ExperimentalCoroutinesApi::class)
-private val appInfo = AppInfo(
+private val debugAppInfo = AppInfo(
     applicationId = "fi.kroon.vadret",
     versionName = "3.1.0-test",
     isDebug = true
 )
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class SettingsViewModelTest {
 
     private val testDispatcher: TestDispatcher = StandardTestDispatcher()
@@ -132,6 +154,7 @@ class SettingsViewModelTest {
     private val languageRepository = FakeLanguageRepository()
     private val locationRepository = FakeLocationRepository()
     private val changelogRepository = FakeChangelogRepository()
+    private val forecastPreferenceRepository = FakeForecastPreferenceRepository()
 
     @BeforeTest
     fun setUp() {
@@ -143,16 +166,19 @@ class SettingsViewModelTest {
         Dispatchers.resetMain()
     }
 
-    private fun viewModel(): SettingsViewModel {
+    private fun viewModel(appInfo: AppInfo = debugAppInfo): SettingsViewModel {
         val settingsViewModel = SettingsViewModel(
             getSettingsTask = DefaultGetSettingsTask(
                 locationRepository = locationRepository,
                 themeRepository = themeRepository,
-                languageRepository = languageRepository
+                languageRepository = languageRepository,
+                forecastPreferenceRepository = forecastPreferenceRepository
             ),
             setLocationModeTask = DefaultSetLocationModeTask(locationRepository = locationRepository),
             setThemeTask = DefaultSetThemeTask(themeRepository = themeRepository),
             setLanguageTask = DefaultSetLanguageTask(languageRepository = languageRepository),
+            setHourlyForecastTask = DefaultSetHourlyForecastTask(forecastPreferenceRepository = forecastPreferenceRepository),
+            setExpandOnceTask = DefaultSetExpandOnceTask(forecastPreferenceRepository = forecastPreferenceRepository),
             getLibrariesTask = DefaultGetLibrariesTask(libraryRepository = FakeLibraryRepository()),
             getChangelogTask = DefaultGetChangelogTask(changelogRepository = changelogRepository),
             appInfo = appInfo,
@@ -174,6 +200,8 @@ class SettingsViewModelTest {
                     isAutomaticLocation = true,
                     theme = Theme.LIGHT,
                     language = AppLanguage.SYSTEM,
+                    isHourlyForecastEnabled = false,
+                    isExpandOnceEnabled = true,
                     storedLocation = stockholm
                 ),
                 actual = state.settings
@@ -197,7 +225,7 @@ class SettingsViewModelTest {
             )
             assertEquals(expected = 4, actual = state.aboutRows.size)
             assertEquals(
-                expected = AboutRowHint.Plain(text = appInfo.versionName),
+                expected = AboutRowHint.Plain(text = debugAppInfo.versionName),
                 actual = state.aboutRows.first().hint
             )
         }
@@ -234,6 +262,63 @@ class SettingsViewModelTest {
             advanceUntilIdle()
 
             assertEquals(expected = false, actual = settingsViewModel.state.value.settings?.isAutomaticLocation)
+        }
+
+    @Test
+    fun `turning the hourly forecast on is stored and shown`() =
+        testScope.runTest {
+            val settingsViewModel: SettingsViewModel = viewModel()
+            advanceUntilIdle()
+
+            settingsViewModel.onEvent(event = SettingsEvent.OnHourlyForecastToggled(isHourlyForecastEnabled = true))
+            advanceUntilIdle()
+
+            assertEquals(expected = true, actual = settingsViewModel.state.value.settings?.isHourlyForecastEnabled)
+        }
+
+    @Test
+    fun `turning expand once off is stored and shown`() =
+        testScope.runTest {
+            val settingsViewModel: SettingsViewModel = viewModel()
+            advanceUntilIdle()
+
+            settingsViewModel.onEvent(event = SettingsEvent.OnExpandOnceToggled(isExpandOnceEnabled = false))
+            advanceUntilIdle()
+
+            assertEquals(
+                expected = ForecastPreferences(
+                    isHourlyForecastEnabled = false,
+                    isExpandOnceEnabled = false
+                ).asRight(),
+                actual = forecastPreferenceRepository.forecastPreferences
+            )
+            assertEquals(expected = false, actual = settingsViewModel.state.value.settings?.isExpandOnceEnabled)
+        }
+
+    @Test
+    fun `the developer tab is shown in debug builds only`() =
+        testScope.runTest {
+            assertEquals(
+                expected = listOf(
+                    listOf(SettingsPage.PREFERENCES, SettingsPage.LIBRARIES, SettingsPage.ABOUT, SettingsPage.DEVELOPER),
+                    listOf(SettingsPage.PREFERENCES, SettingsPage.LIBRARIES, SettingsPage.ABOUT)
+                ),
+                actual = listOf(
+                    viewModel(appInfo = debugAppInfo).state.value.pages,
+                    viewModel(appInfo = debugAppInfo.copy(isDebug = false)).state.value.pages
+                )
+            )
+        }
+
+    @Test
+    fun `forecast preferences that cannot be read hide the settings`() =
+        testScope.runTest {
+            forecastPreferenceRepository.forecastPreferences = Failure(errorCode = ErrorCode.STORAGE_FAILED).asLeft()
+
+            val settingsViewModel: SettingsViewModel = viewModel()
+            advanceUntilIdle()
+
+            assertNull(actual = settingsViewModel.state.value.settings)
         }
 
     @Test

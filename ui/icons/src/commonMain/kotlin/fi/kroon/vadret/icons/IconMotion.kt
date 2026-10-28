@@ -7,7 +7,6 @@ import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.sin
 
-private const val FULL_TURN_DEGREES = 360f
 private const val FULL_TURN_RADIANS = 2 * PI
 private const val DRIFT_DISTANCE = 3f
 private const val FALL_DISTANCE = 10f
@@ -40,7 +39,6 @@ private val easeInOut: Easing = CubicBezierEasing(
 )
 
 internal enum class IconMotionKind {
-    SPIN,
     DRIFT,
     FALL,
     SLANTED_FALL,
@@ -61,15 +59,12 @@ internal class IconMotion(
     val kind: IconMotionKind,
     val durationMilliseconds: Int,
     val delayMilliseconds: Int,
-    val easing: IconEasing,
-    val pivotX: Float = 0f,
-    val pivotY: Float = 0f
+    val easing: IconEasing
 )
 
 internal class IconPose(
     val offsetX: Float = 0f,
     val offsetY: Float = 0f,
-    val rotationDegrees: Float = 0f,
     val alpha: Float = FULL_ALPHA
 )
 
@@ -80,8 +75,6 @@ internal fun IconMotion.poseAt(timeMilliseconds: Long): IconPose {
     val eased: Float = easing.curve.transform(fraction = progress)
     val wave: Double = FULL_TURN_RADIANS * eased
     return when (kind) {
-        IconMotionKind.SPIN -> IconPose(rotationDegrees = FULL_TURN_DEGREES * eased)
-
         IconMotionKind.DRIFT -> IconPose(offsetX = DRIFT_DISTANCE * (HALF - HALF * cos(x = wave).toFloat()))
 
         IconMotionKind.FALL -> IconPose(

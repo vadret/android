@@ -78,6 +78,9 @@
     <string name="licenses_intro">Vädret er bygget med følgende åpen kildekode-prosjekter.</string>
     <string name="forecast_days">Dager</string>
     <string name="forecast_hours">Timer</string>
+    <string name="enable_hourly_forecast">Aktiver været time for time</string>
+    <string name="hourly_forecast_is_enabled">Du kan bytte mellom dager og timer</string>
+    <string name="hourly_forecast_is_disabled">Bare dager vises</string>
     <string name="today">I dag</string>
     <string name="expanded">Utvidet</string>
     <string name="collapsed">Skjult</string>

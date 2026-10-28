@@ -9,6 +9,8 @@ import fi.kroon.vadret.core.resources.Res
 import fi.kroon.vadret.core.resources.wsymb2_overcast
 import fi.kroon.vadret.favorite.FavoriteRepository
 import fi.kroon.vadret.favorite.model.Favorite
+import fi.kroon.vadret.forecastpreference.ForecastPreferenceRepository
+import fi.kroon.vadret.forecastpreference.model.ForecastPreferences
 import fi.kroon.vadret.icons.Overcast
 import fi.kroon.vadret.icons.VadretIcons
 import fi.kroon.vadret.location.LocationRepository
@@ -322,5 +324,33 @@ internal class FakeObserveUnseenWarningsTask(
     ): Flow<Either<Failure, List<AggregatedFeed>>> {
         requests.add(element = warningPlace to isRefresh)
         return unseenWarnings
+    }
+}
+
+internal class FakeForecastPreferenceRepository : ForecastPreferenceRepository {
+
+    private var forecastPreferences = ForecastPreferences(
+        isHourlyForecastEnabled = false,
+        isExpandOnceEnabled = true
+    )
+    private val observedForecastPreferences = MutableStateFlow<Either<Failure, ForecastPreferences>>(value = forecastPreferences.asRight())
+
+    override suspend fun getForecastPreferences(): Either<Failure, ForecastPreferences> = forecastPreferences.asRight()
+
+    override fun observeForecastPreferences(): Flow<Either<Failure, ForecastPreferences>> = observedForecastPreferences
+
+    override suspend fun setHourlyForecastEnabled(isEnabled: Boolean): Either<Failure, Unit> {
+        store(forecastPreferences = forecastPreferences.copy(isHourlyForecastEnabled = isEnabled))
+        return Unit.asRight()
+    }
+
+    override suspend fun setExpandOnceEnabled(isEnabled: Boolean): Either<Failure, Unit> {
+        store(forecastPreferences = forecastPreferences.copy(isExpandOnceEnabled = isEnabled))
+        return Unit.asRight()
+    }
+
+    private fun store(forecastPreferences: ForecastPreferences) {
+        this.forecastPreferences = forecastPreferences
+        observedForecastPreferences.value = forecastPreferences.asRight()
     }
 }

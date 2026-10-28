@@ -22,8 +22,10 @@ import fi.kroon.vadret.settings.model.AboutRowAction
 import fi.kroon.vadret.settings.model.AboutRowHint
 import fi.kroon.vadret.settings.model.LibraryGroup
 import fi.kroon.vadret.settings.model.LocationRow
+import fi.kroon.vadret.settings.ui.SettingsPage
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toImmutableList
 
 internal fun aboutRows(appVersion: String): ImmutableList<AboutRow> =
     persistentListOf(
@@ -57,7 +59,13 @@ internal fun aboutRows(appVersion: String): ImmutableList<AboutRow> =
         )
     )
 
+internal fun settingsPages(isDebug: Boolean): ImmutableList<SettingsPage> =
+    SettingsPage.entries
+        .filter { settingsPage: SettingsPage -> settingsPage != SettingsPage.DEVELOPER || isDebug }
+        .toImmutableList()
+
 internal data class SettingsState(
+    val pages: ImmutableList<SettingsPage> = settingsPages(isDebug = false),
     val settings: Settings? = null,
     val locationRows: ImmutableList<LocationRow> = persistentListOf(),
     val libraryGroups: ImmutableList<LibraryGroup> = persistentListOf(),

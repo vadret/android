@@ -234,6 +234,13 @@
     <string name="licenses_intro">Vädret is built with the following open source projects.</string>
     <string name="forecast_days">Days</string>
     <string name="forecast_hours">Hours</string>
+    <string name="enable_hourly_forecast">Enable weather by the hour</string>
+    <string name="hourly_forecast_is_enabled">You can switch between days and hours</string>
+    <string name="hourly_forecast_is_disabled">Only days are shown</string>
+    <string name="developer_settings_title">Developer</string>
+    <string name="allow_expand_once">Allow expand once</string>
+    <string name="expand_once_is_enabled">Opening a day closes the day already open</string>
+    <string name="expand_once_is_disabled">Several days can be open at the same time</string>
     <string name="today">Today</string>
     <string name="expanded">Expanded</string>
     <string name="collapsed">Collapsed</string>

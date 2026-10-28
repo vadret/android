@@ -67,6 +67,9 @@
     <string name="licenses_intro">Vädret korzysta z następujących projektów open source.</string>
     <string name="forecast_days">Dni</string>
     <string name="forecast_hours">Godziny</string>
+    <string name="enable_hourly_forecast">Włącz pogodę godzina po godzinie</string>
+    <string name="hourly_forecast_is_enabled">Możesz przełączać między dniami a godzinami</string>
+    <string name="hourly_forecast_is_disabled">Wyświetlane są tylko dni</string>
     <string name="today">Dzisiaj</string>
     <string name="expanded">Rozwinięte</string>
     <string name="collapsed">Zwinięte</string>

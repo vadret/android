@@ -1,6 +1,7 @@
 package fi.kroon.vadret.di
 
 import fi.kroon.vadret.core.resources.Res
+import fi.kroon.vadret.forecastpreference.ForecastPreferenceRepository
 import fi.kroon.vadret.language.LanguageRepository
 import fi.kroon.vadret.library.LibraryRepository
 import fi.kroon.vadret.nominatim.NominatimRepository
@@ -31,6 +32,7 @@ val repositoryModule: Module = module {
             coroutineDispatcher = get()
         )
     }
+    single<ForecastPreferenceRepository> { ForecastPreferenceRepository(dataStore = get()) }
     single<LanguageRepository> { LanguageRepository(dataStore = get()) }
     single<ThemeRepository> { ThemeRepository(dataStore = get()) }
     single<WeatherForecastRepository> { WeatherForecastRepository(httpClient = inject()) }

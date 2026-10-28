@@ -64,6 +64,8 @@ internal fun settingsPreviewState(theme: Theme): SettingsState {
         isAutomaticLocation = false,
         theme = theme,
         language = AppLanguage.SYSTEM,
+        isHourlyForecastEnabled = false,
+        isExpandOnceEnabled = true,
         storedLocation = previewLocation
     )
     return SettingsState(

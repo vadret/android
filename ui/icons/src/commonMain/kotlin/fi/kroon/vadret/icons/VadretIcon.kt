@@ -190,23 +190,10 @@ private fun DrawScope.drawElement(
     tint: Color,
     pose: IconPose
 ) {
-    val motion: IconMotion? = iconElement.motion
-    val pivot: Offset = if (motion != null) {
-        Offset(
-            x = motion.pivotX,
-            y = motion.pivotY
-        )
-    } else {
-        Offset.Zero
-    }
     withTransform({
         translate(
             left = pose.offsetX,
             top = pose.offsetY
-        )
-        rotate(
-            degrees = pose.rotationDegrees,
-            pivot = pivot
         )
         translate(
             left = iconElement.placement.translateX,

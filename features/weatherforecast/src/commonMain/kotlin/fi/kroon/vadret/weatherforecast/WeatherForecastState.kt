@@ -19,5 +19,6 @@ data class WeatherForecastState(
     val search: SearchState? = null,
     val latestWarning: LatestWarning? = null,
     val forecastView: ForecastView = ForecastView.DAYS,
+    val isHourlyForecastEnabled: Boolean = false,
     val errorMessageResource: StringResource? = null
 )

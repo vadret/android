@@ -23,6 +23,8 @@ class SettingsViewModel internal constructor(
     private val setLocationModeTask: SetLocationModeTask,
     private val setThemeTask: SetThemeTask,
     private val setLanguageTask: SetLanguageTask,
+    private val setHourlyForecastTask: SetHourlyForecastTask,
+    private val setExpandOnceTask: SetExpandOnceTask,
     private val getLibrariesTask: GetLibrariesTask,
     private val getChangelogTask: GetChangelogTask,
     appInfo: AppInfo,
@@ -30,7 +32,12 @@ class SettingsViewModel internal constructor(
 ) : ViewModel() {
 
     internal val state: StateFlow<SettingsState>
-        field = MutableStateFlow(value = SettingsState(aboutRows = aboutRows(appVersion = appInfo.versionName)))
+        field = MutableStateFlow(
+            value = SettingsState(
+                pages = settingsPages(isDebug = appInfo.isDebug),
+                aboutRows = aboutRows(appVersion = appInfo.versionName)
+            )
+        )
 
     private val isStarted: AtomicBoolean = AtomicBoolean(value = false)
 
@@ -40,6 +47,14 @@ class SettingsViewModel internal constructor(
 
             is SettingsEvent.OnLocationModeToggled -> onLocationModeToggled(
                 isAutomaticLocation = event.isAutomaticLocation
+            )
+
+            is SettingsEvent.OnHourlyForecastToggled -> onHourlyForecastToggled(
+                isHourlyForecastEnabled = event.isHourlyForecastEnabled
+            )
+
+            is SettingsEvent.OnExpandOnceToggled -> onExpandOnceToggled(
+                isExpandOnceEnabled = event.isExpandOnceEnabled
             )
 
             SettingsEvent.OnThemeRowClicked -> state.update { state: SettingsState ->
@@ -129,6 +144,24 @@ class SettingsViewModel internal constructor(
     private fun onLocationModeToggled(isAutomaticLocation: Boolean) {
         viewModelScope.launch(context = coroutineDispatcher) {
             setLocationModeTask(isAutomaticLocation = isAutomaticLocation).onResult(
+                onError = { _: Failure -> },
+                onSuccess = { loadSettings() }
+            )
+        }
+    }
+
+    private fun onHourlyForecastToggled(isHourlyForecastEnabled: Boolean) {
+        viewModelScope.launch(context = coroutineDispatcher) {
+            setHourlyForecastTask(isHourlyForecastEnabled = isHourlyForecastEnabled).onResult(
+                onError = { _: Failure -> },
+                onSuccess = { loadSettings() }
+            )
+        }
+    }
+
+    private fun onExpandOnceToggled(isExpandOnceEnabled: Boolean) {
+        viewModelScope.launch(context = coroutineDispatcher) {
+            setExpandOnceTask(isExpandOnceEnabled = isExpandOnceEnabled).onResult(
                 onError = { _: Failure -> },
                 onSuccess = { loadSettings() }
             )

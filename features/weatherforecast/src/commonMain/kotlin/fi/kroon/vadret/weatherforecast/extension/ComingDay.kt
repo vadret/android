@@ -4,12 +4,15 @@ import fi.kroon.vadret.weatherforecast.model.ComingDay
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 
-internal fun List<ComingDay>.withDayToggled(dayKey: String): ImmutableList<ComingDay> =
+internal fun List<ComingDay>.withDayToggled(
+    dayKey: String,
+    isExpandOnceEnabled: Boolean
+): ImmutableList<ComingDay> =
     map { comingDay: ComingDay ->
-        if (comingDay.key == dayKey) {
-            comingDay.copy(isExpanded = !comingDay.isExpanded)
-        } else {
-            comingDay
+        when {
+            comingDay.key == dayKey -> comingDay.copy(isExpanded = !comingDay.isExpanded)
+            isExpandOnceEnabled -> comingDay.copy(isExpanded = false)
+            else -> comingDay
         }
     }.toImmutableList()
 

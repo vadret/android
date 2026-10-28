@@ -200,16 +200,18 @@ private fun LazyListScope.forecast(
     if (state.forecast.days.isEmpty()) {
         return
     }
-    item(
-        key = FORECAST_VIEW_KEY,
-        contentType = FORECAST_VIEW_KEY
-    ) {
-        ForecastViewSelector(
-            forecastView = state.forecastView,
-            onForecastViewSelected = { forecastView: ForecastView ->
-                onEvent(WeatherForecastEvent.OnForecastViewSelected(forecastView = forecastView))
-            }
-        )
+    if (state.isHourlyForecastEnabled) {
+        item(
+            key = FORECAST_VIEW_KEY,
+            contentType = FORECAST_VIEW_KEY
+        ) {
+            ForecastViewSelector(
+                forecastView = state.forecastView,
+                onForecastViewSelected = { forecastView: ForecastView ->
+                    onEvent(WeatherForecastEvent.OnForecastViewSelected(forecastView = forecastView))
+                }
+            )
+        }
     }
     item(
         key = FORECAST_CONTENT_KEY,

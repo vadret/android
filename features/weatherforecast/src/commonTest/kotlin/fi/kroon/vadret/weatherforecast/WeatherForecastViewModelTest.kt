@@ -41,6 +41,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
+import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.Instant
@@ -68,6 +69,7 @@ class WeatherForecastViewModelTest {
     private val favoriteRepository = FakeFavoriteRepository()
     private val clock = FixedClock(now = Instant.parse(input = "2026-10-24T12:00:00Z"))
     private val observeUnseenWarningsTask = FakeObserveUnseenWarningsTask()
+    private val forecastPreferenceRepository = FakeForecastPreferenceRepository()
     private val weatherForecastViewModel = WeatherForecastViewModel(
         getLocationModeTask = DefaultGetLocationModeTask(locationRepository = locationRepository),
         setLocationModeTask = DefaultSetLocationModeTask(locationRepository = locationRepository),
@@ -80,6 +82,7 @@ class WeatherForecastViewModelTest {
             favoriteRepository = favoriteRepository,
             locationRepository = locationRepository
         ),
+        observeForecastPreferencesTask = DefaultObserveForecastPreferencesTask(forecastPreferenceRepository = forecastPreferenceRepository),
         selectFavoriteTask = DefaultSelectFavoriteTask(locationRepository = locationRepository),
         removeFavoriteTask = DefaultRemoveFavoriteTask(favoriteRepository = favoriteRepository),
         searchPlacesTask = DefaultSearchPlacesTask(placeRepository = placeRepository),
@@ -546,9 +549,13 @@ class WeatherForecastViewModelTest {
         }
 
     @Test
-    fun `days is the default view and hours can be picked`() =
+    fun `days is the default view and hours can be picked once the hourly forecast is on`() =
         testScope.runTest {
+            assertEquals(expected = false, actual = weatherForecastViewModel.state.value.isHourlyForecastEnabled)
             assertEquals(expected = ForecastView.DAYS, actual = weatherForecastViewModel.state.value.forecastView)
+            forecastPreferenceRepository.setHourlyForecastEnabled(isEnabled = true)
+            weatherForecastViewModel.onEvent(event = WeatherForecastEvent.OnShown)
+            advanceUntilIdle()
 
             weatherForecastViewModel.onEvent(event = WeatherForecastEvent.OnForecastViewSelected(forecastView = ForecastView.HOURS))
             advanceUntilIdle()
@@ -557,6 +564,43 @@ class WeatherForecastViewModelTest {
             weatherForecastViewModel.onEvent(event = WeatherForecastEvent.OnForecastViewSelected(forecastView = ForecastView.DAYS))
             advanceUntilIdle()
             assertEquals(expected = ForecastView.DAYS, actual = weatherForecastViewModel.state.value.forecastView)
+        }
+
+    @Test
+    fun `turning the hourly forecast off hides the switcher and shows the days`() =
+        testScope.runTest {
+            forecastPreferenceRepository.setHourlyForecastEnabled(isEnabled = true)
+            weatherForecastViewModel.onEvent(event = WeatherForecastEvent.OnShown)
+            advanceUntilIdle()
+            weatherForecastViewModel.onEvent(event = WeatherForecastEvent.OnForecastViewSelected(forecastView = ForecastView.HOURS))
+            advanceUntilIdle()
+
+            forecastPreferenceRepository.setHourlyForecastEnabled(isEnabled = false)
+            advanceUntilIdle()
+
+            val state: WeatherForecastState = weatherForecastViewModel.state.value
+            assertEquals(expected = false, actual = state.isHourlyForecastEnabled)
+            assertEquals(expected = ForecastView.DAYS, actual = state.forecastView)
+        }
+
+    @Test
+    fun `hours cannot be picked while the hourly forecast is off and can again once it is on`() =
+        testScope.runTest {
+            weatherForecastViewModel.onEvent(event = WeatherForecastEvent.OnShown)
+            advanceUntilIdle()
+
+            weatherForecastViewModel.onEvent(event = WeatherForecastEvent.OnForecastViewSelected(forecastView = ForecastView.HOURS))
+            advanceUntilIdle()
+            val viewWhileOff: ForecastView = weatherForecastViewModel.state.value.forecastView
+
+            forecastPreferenceRepository.setHourlyForecastEnabled(isEnabled = true)
+            advanceUntilIdle()
+            weatherForecastViewModel.onEvent(event = WeatherForecastEvent.OnForecastViewSelected(forecastView = ForecastView.HOURS))
+            advanceUntilIdle()
+
+            assertEquals(expected = ForecastView.DAYS, actual = viewWhileOff)
+            assertEquals(expected = true, actual = weatherForecastViewModel.state.value.isHourlyForecastEnabled)
+            assertEquals(expected = ForecastView.HOURS, actual = weatherForecastViewModel.state.value.forecastView)
         }
 
     @Test
@@ -572,6 +616,50 @@ class WeatherForecastViewModelTest {
             weatherForecastViewModel.onEvent(event = WeatherForecastEvent.OnDayToggled(dayKey = "coming-day-2026-10-24"))
             advanceUntilIdle()
             assertEquals(expected = listOf(false), actual = expansion())
+        }
+
+    @Test
+    fun `by default opening a day closes the one already open`() =
+        testScope.runTest {
+            weatherForecastRepository.forecasts = listOf(
+                noon,
+                noon.copy(
+                    validAt = noon.validAt + 1.days,
+                    intervalStartedAt = noon.intervalStartedAt + 1.days
+                )
+            ).asRight()
+            weatherForecastViewModel.onEvent(event = WeatherForecastEvent.OnShown)
+            advanceUntilIdle()
+
+            weatherForecastViewModel.onEvent(event = WeatherForecastEvent.OnDayToggled(dayKey = "coming-day-2026-10-24"))
+            advanceUntilIdle()
+            val firstOpened: List<Boolean> = expansion()
+            weatherForecastViewModel.onEvent(event = WeatherForecastEvent.OnDayToggled(dayKey = "coming-day-2026-10-25"))
+            advanceUntilIdle()
+
+            assertEquals(expected = listOf(true, false), actual = firstOpened)
+            assertEquals(expected = listOf(false, true), actual = expansion())
+        }
+
+    @Test
+    fun `with expand once off several days stay open`() =
+        testScope.runTest {
+            weatherForecastRepository.forecasts = listOf(
+                noon,
+                noon.copy(
+                    validAt = noon.validAt + 1.days,
+                    intervalStartedAt = noon.intervalStartedAt + 1.days
+                )
+            ).asRight()
+            forecastPreferenceRepository.setExpandOnceEnabled(isEnabled = false)
+            weatherForecastViewModel.onEvent(event = WeatherForecastEvent.OnShown)
+            advanceUntilIdle()
+
+            weatherForecastViewModel.onEvent(event = WeatherForecastEvent.OnDayToggled(dayKey = "coming-day-2026-10-24"))
+            weatherForecastViewModel.onEvent(event = WeatherForecastEvent.OnDayToggled(dayKey = "coming-day-2026-10-25"))
+            advanceUntilIdle()
+
+            assertEquals(expected = listOf(true, true), actual = expansion())
         }
 
     @Test

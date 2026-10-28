@@ -1,27 +1,19 @@
 package fi.kroon.vadret.settings.ui
 
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.Switch
-import androidx.compose.material3.SwitchDefaults
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.semantics.clearAndSetSemantics
 import fi.kroon.vadret.core.resources.Res
 import fi.kroon.vadret.core.resources.display
+import fi.kroon.vadret.core.resources.enable_hourly_forecast
 import fi.kroon.vadret.core.resources.gps_is_being_used
 import fi.kroon.vadret.core.resources.gps_is_not_being_used
+import fi.kroon.vadret.core.resources.hourly_forecast_is_disabled
+import fi.kroon.vadret.core.resources.hourly_forecast_is_enabled
 import fi.kroon.vadret.core.resources.ic_chevron_right
 import fi.kroon.vadret.core.resources.select_a_language
 import fi.kroon.vadret.core.resources.select_a_theme
@@ -40,7 +32,6 @@ import org.jetbrains.compose.resources.stringResource
 
 private const val FULL_ALPHA = 1f
 private const val DISABLED_ALPHA = 0.38f
-private const val HIDDEN_ALPHA = 0f
 private const val LOCATION_HEADER_KEY = "location-header"
 private const val GPS_KEY = "gps"
 private const val DISPLAY_HEADER_KEY = "display-header"
@@ -103,6 +94,16 @@ internal fun PreferencesPage(
                     trailingIconResource = Res.drawable.ic_chevron_right,
                     onClick = { onEvent(SettingsEvent.OnLanguageRowClicked) }
                 )
+                SettingsRowDivider()
+                SwitchRow(
+                    title = stringResource(resource = Res.string.enable_hourly_forecast),
+                    checkedSummary = stringResource(resource = Res.string.hourly_forecast_is_enabled),
+                    uncheckedSummary = stringResource(resource = Res.string.hourly_forecast_is_disabled),
+                    isChecked = settings.isHourlyForecastEnabled,
+                    onCheckedChange = { isChecked: Boolean ->
+                        onEvent(SettingsEvent.OnHourlyForecastToggled(isHourlyForecastEnabled = isChecked))
+                    }
+                )
             }
         }
         item(key = CURRENT_LOCATION_HEADER_KEY, contentType = PreferenceContentType.HEADER) {
@@ -134,76 +135,6 @@ private fun LocationCard(
             )
         }
     }
-}
-
-@Composable
-private fun SwitchRow(
-    title: String,
-    checkedSummary: String,
-    uncheckedSummary: String,
-    isChecked: Boolean,
-    onCheckedChange: (Boolean) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier
-            .fillMaxWidth()
-            .clickable { onCheckedChange(!isChecked) }
-            .padding(all = VadretTheme.spacing.large)
-    ) {
-        Column(
-            modifier = Modifier
-                .weight(weight = 1f)
-                .padding(end = VadretTheme.spacing.large)
-        ) {
-            Text(
-                text = title,
-                style = VadretTheme.textStyles.listItem,
-                color = VadretTheme.colorScheme.onSurface
-            )
-            Box {
-                SwitchSummary(
-                    text = checkedSummary,
-                    isShown = isChecked
-                )
-                SwitchSummary(
-                    text = uncheckedSummary,
-                    isShown = !isChecked
-                )
-            }
-        }
-        Switch(
-            checked = isChecked,
-            onCheckedChange = onCheckedChange,
-            colors = SwitchDefaults.colors(
-                uncheckedThumbColor = VadretTheme.colorScheme.onPrimary,
-                uncheckedBorderColor = Color.Transparent,
-                uncheckedTrackColor = VadretTheme.colorScheme.primary
-            )
-        )
-    }
-}
-
-@Composable
-private fun SwitchSummary(
-    text: String,
-    isShown: Boolean,
-    modifier: Modifier = Modifier
-) {
-    val visibilityModifier: Modifier = if (isShown) {
-        Modifier
-    } else {
-        Modifier
-            .alpha(alpha = HIDDEN_ALPHA)
-            .clearAndSetSemantics { }
-    }
-    Text(
-        text = text,
-        style = VadretTheme.textStyles.detail,
-        color = VadretTheme.colorScheme.onSurfaceVariant,
-        modifier = modifier.then(other = visibilityModifier)
-    )
 }
 
 private fun locationAlpha(isAutomaticLocation: Boolean): Float =

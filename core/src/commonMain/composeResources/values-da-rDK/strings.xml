@@ -80,6 +80,9 @@
     <string name="licenses_intro">Vädret er bygget med følgende open source-projekter.</string>
     <string name="forecast_days">Dage</string>
     <string name="forecast_hours">Timer</string>
+    <string name="enable_hourly_forecast">Aktivér vejret time for time</string>
+    <string name="hourly_forecast_is_enabled">Du kan skifte mellem dage og timer</string>
+    <string name="hourly_forecast_is_disabled">Kun dage vises</string>
     <string name="today">I dag</string>
     <string name="expanded">Udvidet</string>
     <string name="collapsed">Skjult</string>

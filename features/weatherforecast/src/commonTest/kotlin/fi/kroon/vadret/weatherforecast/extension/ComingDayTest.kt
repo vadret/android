@@ -14,12 +14,43 @@ class ComingDayTest {
 
     @Test
     fun `a toggled day opens alone and closes again`() {
-        val opened: List<ComingDay> = listOf(monday, tuesday).withDayToggled(dayKey = tuesday.key)
+        val opened: List<ComingDay> = listOf(monday, tuesday).withDayToggled(
+            dayKey = tuesday.key,
+            isExpandOnceEnabled = false
+        )
 
         assertEquals(expected = listOf(false, true), actual = opened.expansion())
         assertEquals(
             expected = listOf(false, false),
-            actual = opened.withDayToggled(dayKey = tuesday.key).expansion()
+            actual = opened.withDayToggled(
+                dayKey = tuesday.key,
+                isExpandOnceEnabled = false
+            ).expansion()
+        )
+    }
+
+    @Test
+    fun `with expand once a toggled day closes every other day`() {
+        val bothOpen: List<ComingDay> = listOf(
+            monday.copy(isExpanded = true),
+            tuesday
+        )
+
+        assertEquals(
+            expected = listOf(false, true),
+            actual = bothOpen
+                .withDayToggled(
+                    dayKey = tuesday.key,
+                    isExpandOnceEnabled = true
+                ).expansion()
+        )
+        assertEquals(
+            expected = listOf(false, false),
+            actual = listOf(monday.copy(isExpanded = true), tuesday.copy(isExpanded = true))
+                .withDayToggled(
+                    dayKey = tuesday.key,
+                    isExpandOnceEnabled = true
+                ).expansion()
         )
     }
 
@@ -27,7 +58,10 @@ class ComingDayTest {
     fun `toggling a day that is not shown changes nothing`() {
         assertEquals(
             expected = listOf(monday, tuesday),
-            actual = listOf(monday, tuesday).withDayToggled(dayKey = "coming-day-2026-11-18")
+            actual = listOf(monday, tuesday).withDayToggled(
+                dayKey = "coming-day-2026-11-18",
+                isExpandOnceEnabled = false
+            )
         )
     }
 

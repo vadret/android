@@ -8,5 +8,7 @@ internal data class Settings(
     val isAutomaticLocation: Boolean,
     val theme: Theme,
     val language: AppLanguage,
+    val isHourlyForecastEnabled: Boolean,
+    val isExpandOnceEnabled: Boolean,
     val storedLocation: StoredLocation
 )

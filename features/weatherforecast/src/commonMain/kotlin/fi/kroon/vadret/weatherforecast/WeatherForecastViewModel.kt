@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import fi.kroon.vadret.aggregatedfeed.model.AggregatedFeed
 import fi.kroon.vadret.common.Failure
 import fi.kroon.vadret.favorite.model.Favorite
+import fi.kroon.vadret.forecastpreference.model.ForecastPreferences
 import fi.kroon.vadret.place.model.Place
 import fi.kroon.vadret.ui.extension.launchReplacing
 import fi.kroon.vadret.ui.extension.messageResource
@@ -17,6 +18,7 @@ import fi.kroon.vadret.weatherforecast.extension.toWeatherForecast
 import fi.kroon.vadret.weatherforecast.extension.withComingDays
 import fi.kroon.vadret.weatherforecast.extension.withDayToggled
 import fi.kroon.vadret.weatherforecast.extension.withForecast
+import fi.kroon.vadret.weatherforecast.model.ForecastView
 import fi.kroon.vadret.weatherforecast.model.LocationChoices
 import fi.kroon.vadret.weatherforecast.model.PlaceForecast
 import fi.kroon.vadret.weatherforecast.model.SearchState
@@ -52,6 +54,7 @@ class WeatherForecastViewModel internal constructor(
     private val setLocationModeTask: SetLocationModeTask,
     private val getWeatherForecastTask: GetWeatherForecastTask,
     private val observeLocationChoicesTask: ObserveLocationChoicesTask,
+    private val observeForecastPreferencesTask: ObserveForecastPreferencesTask,
     private val selectFavoriteTask: SelectFavoriteTask,
     private val removeFavoriteTask: RemoveFavoriteTask,
     private val searchPlacesTask: SearchPlacesTask,
@@ -70,6 +73,8 @@ class WeatherForecastViewModel internal constructor(
     private val unseenWarnings: AtomicReference<List<AggregatedFeed>> = AtomicReference(value = emptyList())
     private val fetchedAt: AtomicReference<Instant?> = AtomicReference(value = null)
     private val isObservingLocationChoices: AtomicBoolean = AtomicBoolean(value = false)
+    private val isObservingForecastPreferences: AtomicBoolean = AtomicBoolean(value = false)
+    private val isExpandOnceEnabled: AtomicBoolean = AtomicBoolean(value = true)
     private val loadJob: AtomicReference<Job?> = AtomicReference(value = null)
     private val searchJob: AtomicReference<Job?> = AtomicReference(value = null)
     private val warningJob: AtomicReference<Job?> = AtomicReference(value = null)
@@ -89,7 +94,7 @@ class WeatherForecastViewModel internal constructor(
             }
 
             is WeatherForecastEvent.OnForecastViewSelected -> state.update { state: WeatherForecastState ->
-                state.copy(forecastView = event.forecastView)
+                state.withForecastView(forecastView = event.forecastView)
             }
 
             is WeatherForecastEvent.OnDayToggled -> onDayToggled(dayKey = event.dayKey)
@@ -121,7 +126,12 @@ class WeatherForecastViewModel internal constructor(
     private fun onDayToggled(dayKey: String) {
         viewModelScope.launch(context = coroutineDispatcher) {
             state.update { state: WeatherForecastState ->
-                state.withComingDays(comingDays = state.forecast.comingDays.withDayToggled(dayKey = dayKey))
+                state.withComingDays(
+                    comingDays = state.forecast.comingDays.withDayToggled(
+                        dayKey = dayKey,
+                        isExpandOnceEnabled = isExpandOnceEnabled.load()
+                    )
+                )
             }
         }
     }
@@ -129,6 +139,13 @@ class WeatherForecastViewModel internal constructor(
     private fun onShown() {
         if (isObservingLocationChoices.compareAndSet(expectedValue = false, newValue = true)) {
             observeLocationChoices()
+        }
+        val isFirstForecastPreferencesObservation: Boolean = isObservingForecastPreferences.compareAndSet(
+            expectedValue = false,
+            newValue = true
+        )
+        if (isFirstForecastPreferencesObservation) {
+            observeForecastPreferences()
         }
         viewModelScope.launch(context = coroutineDispatcher) {
             getLocationModeTask()
@@ -142,6 +159,33 @@ class WeatherForecastViewModel internal constructor(
                 )
         }
     }
+
+    private fun observeForecastPreferences() {
+        viewModelScope.launch(context = coroutineDispatcher) {
+            observeForecastPreferencesTask().collect { result: Either<Failure, ForecastPreferences> ->
+                result.onResult(
+                    onError = { failure: Failure -> displayError(failure = failure) },
+                    onSuccess = { forecastPreferences: ForecastPreferences ->
+                        isExpandOnceEnabled.store(newValue = forecastPreferences.isExpandOnceEnabled)
+                        state.update { state: WeatherForecastState ->
+                            state
+                                .copy(isHourlyForecastEnabled = forecastPreferences.isHourlyForecastEnabled)
+                                .withForecastView(forecastView = state.forecastView)
+                        }
+                    }
+                )
+            }
+        }
+    }
+
+    private fun WeatherForecastState.withForecastView(forecastView: ForecastView): WeatherForecastState =
+        copy(
+            forecastView = if (isHourlyForecastEnabled) {
+                forecastView
+            } else {
+                ForecastView.DAYS
+            }
+        )
 
     private fun observeLocationChoices() {
         viewModelScope.launch(context = coroutineDispatcher) {

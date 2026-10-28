@@ -177,6 +177,9 @@
     <string name="licenses_intro">Vädret är byggt med följande projekt med öppen källkod.</string>
     <string name="forecast_days">Dagar</string>
     <string name="forecast_hours">Timmar</string>
+    <string name="enable_hourly_forecast">Aktivera väder timme för timme</string>
+    <string name="hourly_forecast_is_enabled">Du kan växla mellan dagar och timmar</string>
+    <string name="hourly_forecast_is_disabled">Bara dagar visas</string>
     <string name="today">Idag</string>
     <string name="expanded">Utfälld</string>
     <string name="collapsed">Infälld</string>
