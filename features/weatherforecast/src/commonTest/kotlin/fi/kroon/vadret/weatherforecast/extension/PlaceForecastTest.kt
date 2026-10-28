@@ -75,6 +75,8 @@ class PlaceForecastTest {
     ): WeatherForecast =
         PlaceForecast(
             placeName = "Stockholm",
+            municipality = "Stockholm",
+            county = "Stockholm",
             latitude = 59.33,
             longitude = 18.07,
             forecasts = forecasts,

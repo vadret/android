@@ -20,11 +20,11 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.ImeAction
-import fi.kroon.vadret.autocomplete.model.AutoCompleteItem
 import fi.kroon.vadret.core.resources.Res
 import fi.kroon.vadret.core.resources.add_place
 import fi.kroon.vadret.core.resources.close_search
 import fi.kroon.vadret.core.resources.ic_close
+import fi.kroon.vadret.place.model.Place
 import fi.kroon.vadret.ui.VadretCard
 import fi.kroon.vadret.ui.VadretTheme
 import fi.kroon.vadret.weatherforecast.WeatherForecastEvent
@@ -67,13 +67,13 @@ internal fun SearchPanel(
                 .fillMaxWidth()
                 .focusRequester(focusRequester = focusRequester)
         )
-        search.suggestions.forEachIndexed { index: Int, autoCompleteItem: AutoCompleteItem ->
+        search.suggestions.forEachIndexed { index: Int, place: Place ->
             if (index > 0) {
                 HorizontalDivider(color = VadretTheme.colors.divider)
             }
             SuggestionRow(
-                autoCompleteItem = autoCompleteItem,
-                onClick = { onEvent(WeatherForecastEvent.OnSuggestionClicked(autoCompleteItem = autoCompleteItem)) }
+                place = place,
+                onClick = { onEvent(WeatherForecastEvent.OnSuggestionClicked(place = place)) }
             )
         }
     }
@@ -81,7 +81,7 @@ internal fun SearchPanel(
 
 @Composable
 private fun SuggestionRow(
-    autoCompleteItem: AutoCompleteItem,
+    place: Place,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -95,12 +95,12 @@ private fun SuggestionRow(
             )
     ) {
         Text(
-            text = autoCompleteItem.locality,
+            text = place.locality,
             style = VadretTheme.textStyles.value,
             color = VadretTheme.colorScheme.onSurface
         )
         Text(
-            text = "${autoCompleteItem.municipality}, ${autoCompleteItem.county}",
+            text = "${place.municipality}, ${place.county}",
             style = VadretTheme.textStyles.detail,
             color = VadretTheme.colorScheme.onSurfaceVariant
         )

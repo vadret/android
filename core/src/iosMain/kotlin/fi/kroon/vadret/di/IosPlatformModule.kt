@@ -1,10 +1,10 @@
 package fi.kroon.vadret.di
 
+import fi.kroon.vadret.aggregatedfeed.FeedRepository
 import fi.kroon.vadret.favorite.FavoriteRepository
 import fi.kroon.vadret.location.LocationRepository
 import fi.kroon.vadret.model.AppDirectories
 import fi.kroon.vadret.model.AppInfo
-import fi.kroon.vadret.warningfilter.WarningFilterRepository
 import io.ktor.client.engine.HttpClientEngine
 import io.ktor.client.engine.darwin.Darwin
 import kotlinx.coroutines.Dispatchers
@@ -50,10 +50,12 @@ fun iosPlatformModule(appInfo: AppInfo): Module =
                 mainDispatcher = Dispatchers.Main
             )
         }
-        single<WarningFilterRepository> {
-            WarningFilterRepository(
+        single<FeedRepository> {
+            FeedRepository(
                 databaseDirectory = get<AppDirectories>().filesDirectoryPath,
                 httpClient = inject(),
+                diskCache = get(),
+                clock = get(),
                 coroutineDispatcher = get()
             )
         }

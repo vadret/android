@@ -1,90 +1,80 @@
 package fi.kroon.vadret.forecastwarning
 
-import fi.kroon.vadret.aggregatedfeed.AggregatedFeedRepository
 import fi.kroon.vadret.aggregatedfeed.model.AggregatedFeed
+import fi.kroon.vadret.aggregatedfeed.model.FeedArea
 import fi.kroon.vadret.aggregatedfeed.model.FeedDetail
-import fi.kroon.vadret.aggregatedfeed.model.FeedDetailKind
+import fi.kroon.vadret.aggregatedfeed.model.FeedRegion
 import fi.kroon.vadret.aggregatedfeed.model.FeedSource
+import fi.kroon.vadret.aggregatedfeed.model.GeoLine
+import fi.kroon.vadret.aggregatedfeed.model.GeoPolygon
 import fi.kroon.vadret.aggregatedfeed.model.WarningLevel
 import fi.kroon.vadret.common.Failure
-import fi.kroon.vadret.warningfilter.WarningFilterRepository
-import fi.kroon.vadret.warningfilter.model.DistrictCategory
-import fi.kroon.vadret.warningfilter.model.DistrictOption
-import fi.kroon.vadret.warningfilter.model.FeedSourceOption
-import fi.kroon.vadret.warningfilter.model.WarningFilter
+import fi.kroon.vadret.warning.GetWarningsTask
 import io.github.sphrak.either.Either
 import io.github.sphrak.either.extension.asRight
 import kotlin.time.Instant
 
-internal val stockholm = DistrictOption(
-    districtId = 1,
-    name = "Stockholms län",
-    category = DistrictCategory.COUNTY,
-    isEnabled = true
-)
-
-internal val gotland = DistrictOption(
-    districtId = 9,
-    name = "Gotlands län",
-    category = DistrictCategory.COUNTY,
-    isEnabled = false
-)
-
-internal val defaultWarningFilter = WarningFilter(
-    districts = listOf(gotland, stockholm),
-    feedSources = listOf(
-        FeedSourceOption(feedSource = FeedSource.KRISINFORMATION, isEnabled = false),
-        FeedSourceOption(feedSource = FeedSource.SMHI, isEnabled = true)
-    )
-)
-
-internal fun aggregatedFeed(identifier: String): AggregatedFeed =
+internal fun aggregatedFeed(
+    identifier: String,
+    publishedAt: Instant = Instant.parse(input = "2026-10-24T08:00:00Z"),
+    source: FeedSource = FeedSource.SMHI,
+    headline: String = "Vind",
+    areaName: String? = "Gotlands län",
+    warningLevel: WarningLevel? = WarningLevel.YELLOW,
+    details: List<FeedDetail> = emptyList(),
+    senderName: String? = null,
+    startsAt: Instant? = null,
+    endsAt: Instant? = null,
+    polygons: List<GeoPolygon> = emptyList(),
+    lines: List<GeoLine> = emptyList(),
+    regions: List<FeedRegion> = emptyList()
+): AggregatedFeed =
     AggregatedFeed(
         identifier = identifier,
-        headline = "Vind",
-        areaName = "Gotland",
-        warningLevel = WarningLevel.YELLOW,
-        details = listOf(
-            FeedDetail(
-                kind = FeedDetailKind.DESCRIPTION,
-                title = "Händelsebeskrivning",
-                text = "Hårda vindbyar"
-            )
-        ),
-        source = FeedSource.SMHI,
-        publishedAt = Instant.parse(input = "2026-10-24T08:00:00Z")
+        headline = headline,
+        areaName = areaName,
+        warningLevel = warningLevel,
+        details = details,
+        source = source,
+        isPublicAlert = false,
+        senderName = senderName,
+        publishedAt = publishedAt,
+        startsAt = startsAt,
+        endsAt = endsAt,
+        area = FeedArea(
+            polygons = polygons,
+            lines = lines,
+            regions = regions
+        )
     )
 
-internal class FakeWarningFilterRepository(
-    var warningFilter: Either<Failure, WarningFilter> = defaultWarningFilter.asRight(),
-    var setResult: Either<Failure, Unit> = Unit.asRight()
-) : WarningFilterRepository {
+internal class FakeGetWarningsTask(
+    var result: Either<Failure, List<AggregatedFeed>> = listOf(
+        aggregatedFeed(
+            identifier = "smhi-1-2",
+            publishedAt = Instant.parse(input = "2026-10-24T08:00:00Z")
+        ),
+        aggregatedFeed(
+            identifier = "smhi-1-1",
+            publishedAt = Instant.parse(input = "2026-10-24T07:00:00Z")
+        )
+    ).asRight()
+) : GetWarningsTask {
 
-    val storedFilters = mutableListOf<Pair<Set<Int>, Set<FeedSource>>>()
+    val refreshes = mutableListOf<Boolean>()
 
-    override suspend fun getWarningFilter(): Either<Failure, WarningFilter> = warningFilter
-
-    override suspend fun setWarningFilter(
-        enabledDistrictIds: Set<Int>,
-        enabledFeedSources: Set<FeedSource>
-    ): Either<Failure, Unit> {
-        storedFilters.add(enabledDistrictIds to enabledFeedSources)
-        return setResult
+    override suspend fun invoke(isRefresh: Boolean): Either<Failure, List<AggregatedFeed>> {
+        refreshes.add(element = isRefresh)
+        return result
     }
 }
 
-internal class FakeAggregatedFeedRepository(
-    var result: Either<Failure, List<AggregatedFeed>> = listOf(aggregatedFeed(identifier = "smhi-1-1")).asRight()
-) : AggregatedFeedRepository {
+internal class FakeMarkWarningSeenTask : MarkWarningSeenTask {
 
-    val requests = mutableListOf<Triple<Set<FeedSource>, Set<Int>, Boolean>>()
+    val warningIdentifiers = mutableListOf<String>()
 
-    override suspend fun getAggregatedFeed(
-        feedSources: Set<FeedSource>,
-        districtIds: Set<Int>,
-        isRefresh: Boolean
-    ): Either<Failure, List<AggregatedFeed>> {
-        requests.add(Triple(feedSources, districtIds, isRefresh))
-        return result
+    override suspend fun invoke(warningIdentifier: String): Either<Failure, Unit> {
+        warningIdentifiers.add(element = warningIdentifier)
+        return Unit.asRight()
     }
 }

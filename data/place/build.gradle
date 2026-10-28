@@ -1,0 +1,26 @@
+plugins {
+    id 'vadret.kmp.library'
+}
+
+kotlin {
+    android {
+        namespace = 'fi.kroon.vadret.data.place'
+    }
+    sourceSets {
+        commonMain {
+            dependencies {
+                implementation project(':core:logging')
+                implementation project(':data:common')
+
+                implementation libs.coroutines.core
+                implementation libs.either
+                implementation libs.kotlinx.io.core
+            }
+        }
+        commonTest {
+            dependencies {
+                implementation project(':core:testing')
+            }
+        }
+    }
+}

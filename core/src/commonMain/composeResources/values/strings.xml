@@ -206,11 +206,6 @@
     <string name="alert">Alert</string>
     <string name="wind">Wind</string>
 
-    <string name="filter_failure_districts_not_available">Failed to load districts</string>
-    <string name="filter_feed_source">Feed source</string>
-    <string name="filter_district">District</string>
-    <string name="filter_must_select_one">At least one district and feed source required.</string>
-    <string name="filter_apply">Apply</string>
     <string name="warning_display_no_warnings_issued">No warnings issued at present</string>
     <string name="automatic_location">Automatic</string>
     <string name="choose_location">Choose location</string>
@@ -218,7 +213,6 @@
     <string name="remove_favorite">Remove %1$s</string>
     <string name="selected">Selected</string>
     <string name="humidity">Humidity</string>
-    <string name="filter_warnings">Filter warnings</string>
     <string name="warning_level_message">Message</string>
     <string name="warning_level_yellow">Yellow warning</string>
     <string name="warning_level_orange">Orange warning</string>
@@ -251,10 +245,6 @@
         <item quantity="other">Next %1$d days</item>
     </plurals>
     <string name="cancel">Cancel</string>
-    <plurals name="warning_count">
-        <item quantity="one">%1$d warning</item>
-        <item quantity="other">%1$d warnings</item>
-    </plurals>
     <string name="select_a_language">Select a language</string>
     <string name="system_language">System language</string>
     <string name="language_english" translatable="false">English</string>
@@ -265,4 +255,10 @@
     <string name="language_french" translatable="false">Français</string>
     <string name="language_norwegian" translatable="false">Norsk</string>
     <string name="language_polish" translatable="false">Polski</string>
+    <string name="warning_until">until %1$s</string>
+    <string name="warning_from">from %1$s</string>
+    <string name="warning_when">When</string>
+    <string name="close">Close</string>
+    <string name="back">Back</string>
+    <string name="warning_period" translatable="false">%1$s - %2$s</string>
 </resources>

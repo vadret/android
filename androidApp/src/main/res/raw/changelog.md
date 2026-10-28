@@ -13,6 +13,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Codebase is now a Kotlin Multiplatform project
 - bump kotlin 2.5.0-beta2
+- updated Warnings feature
+- Refine weather forecast design
 
 ## [3.1.0] -- 2026-10-27
 

@@ -10,5 +10,9 @@ internal data class AddressDto(
     @SerialName(value = "hamlet")
     val hamlet: String? = null,
     @SerialName(value = "village")
-    val village: String? = null
+    val village: String? = null,
+    @SerialName(value = "municipality")
+    val municipality: String? = null,
+    @SerialName(value = "county")
+    val county: String? = null
 )

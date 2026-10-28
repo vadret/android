@@ -43,7 +43,13 @@ internal class DefaultGetWeatherForecastTask(
                     latitude = location.latitude,
                     longitude = location.longitude
                 ).flatMap { placeForecast: PlaceForecast ->
-                    placeForecast.copy(placeName = getPlaceName(location = location)).asRight()
+                    val locality: Locality? = getLocality(location = location)
+                    placeForecast
+                        .copy(
+                            placeName = locality?.name,
+                            municipality = locality?.municipality,
+                            county = locality?.county
+                        ).asRight()
                 }
             }
 
@@ -55,7 +61,11 @@ internal class DefaultGetWeatherForecastTask(
                     latitude = storedLocation.latitude,
                     longitude = storedLocation.longitude
                 ).map { placeForecast: PlaceForecast ->
-                    placeForecast.copy(placeName = storedLocation.locality)
+                    placeForecast.copy(
+                        placeName = storedLocation.locality,
+                        municipality = storedLocation.municipality,
+                        county = storedLocation.county
+                    )
                 }
             }
 
@@ -80,6 +90,8 @@ internal class DefaultGetWeatherForecastTask(
             forecasts.flatMap { forecastList: List<Forecast> ->
                 PlaceForecast(
                     placeName = null,
+                    municipality = null,
+                    county = null,
                     latitude = latitude,
                     longitude = longitude,
                     forecasts = forecastList,
@@ -101,13 +113,13 @@ internal class DefaultGetWeatherForecastTask(
                 onSuccess = { analyses: List<Analysis> -> analyses }
             )
 
-    private suspend fun getPlaceName(location: Location): String? =
+    private suspend fun getLocality(location: Location): Locality? =
         nominatimRepository
             .getLocality(
                 latitude = location.latitude,
                 longitude = location.longitude
             ).onResult(
                 onError = { _: Failure -> null },
-                onSuccess = { locality: Locality -> locality.name }
+                onSuccess = { locality: Locality -> locality }
             )
 }

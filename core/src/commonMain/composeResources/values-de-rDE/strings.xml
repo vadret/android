@@ -134,10 +134,11 @@
         <item quantity="other">Nächste %1$d Tage</item>
     </plurals>
     <string name="cancel">Abbrechen</string>
-    <plurals name="warning_count">
-        <item quantity="one">%1$d Warnung</item>
-        <item quantity="other">%1$d Warnungen</item>
-    </plurals>
     <string name="select_a_language">Sprache auswählen</string>
     <string name="system_language">Systemsprache</string>
+    <string name="warning_until">bis %1$s</string>
+    <string name="warning_from">ab %1$s</string>
+    <string name="warning_when">Wann</string>
+    <string name="close">Schließen</string>
+    <string name="back">Zurück</string>
 </resources>

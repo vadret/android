@@ -12,24 +12,24 @@ import fi.kroon.vadret.core.resources.Res
 import fi.kroon.vadret.core.resources.app_name
 import org.jetbrains.compose.resources.stringResource
 
-private val topAppBarHeight = 55.dp
 private val titleStartPadding = 5.dp
 
 @Composable
 fun VadretTopAppBar(
     modifier: Modifier = Modifier,
+    title: String = stringResource(resource = Res.string.app_name),
     actions: @Composable RowScope.() -> Unit = {}
 ) {
     TopAppBar(
         title = {
             Text(
-                text = stringResource(resource = Res.string.app_name),
+                text = title,
                 style = VadretTheme.textStyles.title,
                 modifier = Modifier.padding(start = titleStartPadding)
             )
         },
         actions = actions,
-        expandedHeight = topAppBarHeight,
+        expandedHeight = TopAppBarDefaults.TopAppBarExpandedHeight,
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = VadretTheme.colorScheme.background,
             titleContentColor = VadretTheme.colorScheme.onBackground,

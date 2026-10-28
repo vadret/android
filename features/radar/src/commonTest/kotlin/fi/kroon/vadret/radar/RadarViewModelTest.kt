@@ -356,6 +356,24 @@ class RadarViewModelTest {
         }
 
     @Test
+    fun `leaving the radar stops playing and keeps the frame`() =
+        testScope.runTest {
+            val radarViewModel: RadarViewModel = viewModel()
+            advanceUntilIdle()
+            radarViewModel.onEvent(event = RadarEvent.OnPlayButtonClicked)
+            advanceTimeBy(delayTimeMillis = 128)
+            runCurrent()
+
+            radarViewModel.onEvent(event = RadarEvent.OnLeft)
+            advanceTimeBy(delayTimeMillis = 1_000)
+            runCurrent()
+
+            val state: RadarState = radarViewModel.state.value
+            assertEquals(expected = false, actual = state.isPlaying)
+            assertEquals(expected = 0, actual = state.precipitationIndex)
+        }
+
+    @Test
     fun `pausing keeps the frame still`() =
         testScope.runTest {
             val radarViewModel: RadarViewModel = viewModel()

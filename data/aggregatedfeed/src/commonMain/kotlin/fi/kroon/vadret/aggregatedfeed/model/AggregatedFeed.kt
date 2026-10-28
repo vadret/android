@@ -9,5 +9,10 @@ data class AggregatedFeed(
     val warningLevel: WarningLevel?,
     val details: List<FeedDetail>,
     val source: FeedSource,
-    val publishedAt: Instant
+    val isPublicAlert: Boolean,
+    val senderName: String?,
+    val publishedAt: Instant,
+    val startsAt: Instant?,
+    val endsAt: Instant?,
+    val area: FeedArea
 )

@@ -2,6 +2,8 @@ package fi.kroon.vadret.di
 
 import android.content.Context
 import android.location.LocationManager
+import fi.kroon.vadret.forecastwarning.WarningDetailViewModel
+import fi.kroon.vadret.forecastwarning.WarningStoryViewModel
 import fi.kroon.vadret.forecastwarning.WarningViewModel
 import fi.kroon.vadret.radar.RadarViewModel
 import fi.kroon.vadret.settings.SettingsViewModel
@@ -65,6 +67,8 @@ class AppModulesTest {
         assertNotNull(actual = koin.get<RadarViewModel>())
         assertNotNull(actual = koin.get<SettingsViewModel>())
         assertNotNull(actual = koin.get<WarningViewModel>())
+        assertNotNull(actual = koin.get<WarningDetailViewModel>())
+        assertNotNull(actual = koin.get<WarningStoryViewModel>())
         assertNotNull(actual = koin.get<WeatherForecastViewModel>())
     }
 }

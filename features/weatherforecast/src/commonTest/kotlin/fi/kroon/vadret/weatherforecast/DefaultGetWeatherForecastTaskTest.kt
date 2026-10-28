@@ -31,6 +31,8 @@ class DefaultGetWeatherForecastTaskTest {
             assertEquals<Either<Failure, PlaceForecast>>(
                 expected = PlaceForecast(
                     placeName = "Stockholm",
+                    municipality = "Stockholm",
+                    county = "Stockholm",
                     latitude = 59.3293,
                     longitude = 18.0686,
                     forecasts = listOf(noon),
@@ -41,13 +43,15 @@ class DefaultGetWeatherForecastTaskTest {
         }
 
     @Test
-    fun `the device location is forecast and named by OpenStreetMap`() =
+    fun `the device location is forecast and placed by OpenStreetMap`() =
         runTest {
             locationRepository.isAutomatic = true.asRight()
 
             assertEquals<Either<Failure, PlaceForecast>>(
                 expected = PlaceForecast(
                     placeName = "Göteborg",
+                    municipality = "Göteborgs kommun",
+                    county = "Västra Götalands län",
                     latitude = 57.7,
                     longitude = 11.97,
                     forecasts = listOf(noon),
@@ -80,6 +84,8 @@ class DefaultGetWeatherForecastTaskTest {
             assertEquals<Either<Failure, PlaceForecast>>(
                 expected = PlaceForecast(
                     placeName = "Stockholm",
+                    municipality = "Stockholm",
+                    county = "Stockholm",
                     latitude = 59.3293,
                     longitude = 18.0686,
                     forecasts = listOf(noon),
@@ -95,15 +101,33 @@ class DefaultGetWeatherForecastTaskTest {
             locationRepository.isAutomatic = true.asRight()
             val failures: List<Either<Failure, Locality>> = listOf(
                 Failure(errorCode = ErrorCode.HTTP_FORBIDDEN).asLeft(),
-                Locality(name = null).asRight()
+                Locality(
+                    name = null,
+                    municipality = null,
+                    county = null
+                ).asRight()
             )
 
-            val placeNames: List<String?> = failures.map { locality: Either<Failure, Locality> ->
+            val places: List<Triple<String?, String?, String?>> = failures.map { locality: Either<Failure, Locality> ->
                 nominatimRepository.locality = locality
-                (getWeatherForecastTask() as Either.Right).b.placeName
+                val placeForecast: PlaceForecast = (getWeatherForecastTask() as Either.Right).b
+                Triple(
+                    first = placeForecast.placeName,
+                    second = placeForecast.municipality,
+                    third = placeForecast.county
+                )
             }
 
-            assertEquals(expected = listOf(null, null), actual = placeNames)
+            assertEquals(
+                expected = List(size = failures.size) {
+                    Triple(
+                        first = null,
+                        second = null,
+                        third = null
+                    )
+                },
+                actual = places
+            )
         }
 
     @Test

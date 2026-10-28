@@ -1,11 +1,10 @@
 package fi.kroon.vadret.di
 
-import fi.kroon.vadret.aggregatedfeed.AggregatedFeedRepository
-import fi.kroon.vadret.autocomplete.AutoCompleteRepository
 import fi.kroon.vadret.core.resources.Res
 import fi.kroon.vadret.language.LanguageRepository
 import fi.kroon.vadret.library.LibraryRepository
 import fi.kroon.vadret.nominatim.NominatimRepository
+import fi.kroon.vadret.place.PlaceRepository
 import fi.kroon.vadret.radar.RadarRepository
 import fi.kroon.vadret.theme.ThemeRepository
 import fi.kroon.vadret.weatherforecast.WeatherForecastRepository
@@ -16,16 +15,8 @@ import org.koin.dsl.module
 private const val PLACES_FILE = "files/sweden.csv"
 
 val repositoryModule: Module = module {
-    single<AggregatedFeedRepository> {
-        AggregatedFeedRepository(
-            httpClient = inject(),
-            diskCache = get(),
-            clock = get(),
-            coroutineDispatcher = get()
-        )
-    }
-    single<AutoCompleteRepository> {
-        AutoCompleteRepository(
+    single<PlaceRepository> {
+        PlaceRepository(
             readPlaces = { Res.readBytes(path = PLACES_FILE).decodeToString() },
             coroutineDispatcher = get()
         )

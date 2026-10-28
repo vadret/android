@@ -6,9 +6,11 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -18,6 +20,7 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.DividerDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
@@ -43,6 +46,9 @@ private val navigationBarHeight = 72.dp
 private val indicatorWidth = 56.dp
 private val indicatorHeight = 30.dp
 private val navigationIconSize = 22.dp
+
+@Composable
+internal fun navigationBarPadding(): PaddingValues = PaddingValues(bottom = navigationBarHeight + DividerDefaults.Thickness + WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding())
 
 @Composable
 internal fun VadretNavigationBar(

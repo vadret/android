@@ -46,6 +46,11 @@ data class VadretTextStyles(
         fontSize = 21,
         lineHeight = 23
     ).copy(lineHeightStyle = exactLineHeight),
+    val headline: TextStyle = textStyle(
+        fontSize = 26,
+        lineHeight = 31,
+        fontWeight = FontWeight.Medium
+    ).copy(letterSpacing = (-0.3).sp),
     val title: TextStyle = textStyle(
         fontSize = 21,
         lineHeight = 26,

@@ -97,6 +97,8 @@ class ForecastTest {
     ): List<ComingDay> =
         PlaceForecast(
             placeName = "Stockholm",
+            municipality = "Stockholm",
+            county = "Stockholm",
             latitude = latitude,
             longitude = longitude,
             forecasts = forecasts,

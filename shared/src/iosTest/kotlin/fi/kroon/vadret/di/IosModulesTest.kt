@@ -1,5 +1,7 @@
 package fi.kroon.vadret.di
 
+import fi.kroon.vadret.forecastwarning.WarningDetailViewModel
+import fi.kroon.vadret.forecastwarning.WarningStoryViewModel
 import fi.kroon.vadret.forecastwarning.WarningViewModel
 import fi.kroon.vadret.main.MainViewModel
 import fi.kroon.vadret.model.AppInfo
@@ -60,6 +62,8 @@ class IosModulesTest {
         assertNotNull(actual = koin.get<RadarViewModel>())
         assertNotNull(actual = koin.get<SettingsViewModel>())
         assertNotNull(actual = koin.get<WarningViewModel>())
+        assertNotNull(actual = koin.get<WarningDetailViewModel>())
+        assertNotNull(actual = koin.get<WarningStoryViewModel>())
         assertNotNull(actual = koin.get<WeatherForecastViewModel>())
     }
 }

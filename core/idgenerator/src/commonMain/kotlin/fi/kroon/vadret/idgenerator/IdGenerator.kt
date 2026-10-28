@@ -10,7 +10,5 @@ interface IdGenerator {
 fun IdGenerator(): IdGenerator = DefaultIdGenerator()
 
 internal class DefaultIdGenerator : IdGenerator {
-
-    @OptIn(ExperimentalUuidApi::class)
     override fun generate(): String = Uuid.generateV7().toString()
 }

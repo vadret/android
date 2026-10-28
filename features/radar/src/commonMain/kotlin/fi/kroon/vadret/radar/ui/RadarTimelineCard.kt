@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -99,7 +100,7 @@ private val nightWindLegend: List<Color> = listOf(
 @Composable
 internal fun RadarTimelineCard(
     layer: RadarLayer,
-    timeline: RadarTimeline,
+    timeline: RadarTimeline?,
     isPlaying: Boolean,
     onPlayClick: () -> Unit,
     onIndexChange: (Int) -> Unit,
@@ -110,25 +111,26 @@ internal fun RadarTimelineCard(
             horizontalArrangement = Arrangement.spacedBy(space = cardSectionSpacing),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            PlayButton(
-                isPlaying = isPlaying,
-                onClick = onPlayClick
-            )
-            TimelineColumn(
-                timeline = timeline,
-                onIndexChange = onIndexChange,
-                modifier = Modifier.weight(weight = 1f)
-            )
+            if (timeline != null) {
+                PlayButton(
+                    isPlaying = isPlaying,
+                    onClick = onPlayClick
+                )
+                TimelineColumn(
+                    timeline = timeline,
+                    onIndexChange = onIndexChange,
+                    modifier = Modifier.weight(weight = 1f)
+                )
+            } else {
+                TimelinePlaceholder(modifier = Modifier.weight(weight = 1f))
+            }
         }
         Legend(layer = layer)
     }
 }
 
 @Composable
-internal fun RadarTimelinePlaceholder(
-    layer: RadarLayer,
-    modifier: Modifier = Modifier
-) {
+private fun RowScope.TimelinePlaceholder(modifier: Modifier = Modifier) {
     val boneAlpha: Float by rememberInfiniteTransition(label = "placeholder").animateFloat(
         initialValue = 1f,
         targetValue = PLACEHOLDER_MINIMUM_ALPHA,
@@ -138,65 +140,57 @@ internal fun RadarTimelinePlaceholder(
         ),
         label = "placeholderAlpha"
     )
-    TimelineCardSurface(modifier = modifier) {
+    Surface(
+        shape = CircleShape,
+        color = VadretTheme.colorScheme.primary.copy(alpha = DISABLED_ALPHA),
+        modifier = Modifier.size(size = playButtonSize),
+        content = {}
+    )
+    Column(
+        verticalArrangement = Arrangement.spacedBy(space = timelineSpacing),
+        modifier = modifier
+    ) {
         Row(
-            horizontalArrangement = Arrangement.spacedBy(space = cardSectionSpacing),
-            verticalAlignment = Alignment.CenterVertically
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth()
         ) {
-            Surface(
-                shape = CircleShape,
-                color = VadretTheme.colorScheme.primary.copy(alpha = DISABLED_ALPHA),
-                modifier = Modifier.size(size = playButtonSize),
-                content = {}
+            TextBone(
+                text = TIME_PLACEHOLDER,
+                style = VadretTheme.textStyles.heading,
+                alpha = { boneAlpha }
             )
-            Column(
-                verticalArrangement = Arrangement.spacedBy(space = timelineSpacing),
-                modifier = Modifier.weight(weight = 1f)
-            ) {
-                Row(
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    TextBone(
-                        text = TIME_PLACEHOLDER,
-                        style = VadretTheme.textStyles.heading,
-                        alpha = { boneAlpha }
-                    )
-                    TextBone(
-                        text = CAPTION_PLACEHOLDER,
-                        style = VadretTheme.textStyles.label,
-                        alpha = { boneAlpha }
-                    )
-                }
-                Box(
-                    contentAlignment = Alignment.Center,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(height = sliderHeight)
-                ) {
-                    Bone(
-                        alpha = { boneAlpha },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(height = placeholderTrackHeight)
-                    )
-                }
-                Row(
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    repeat(times = TIMELINE_LABEL_COUNT) {
-                        TextBone(
-                            text = TIME_PLACEHOLDER,
-                            style = VadretTheme.textStyles.label,
-                            alpha = { boneAlpha }
-                        )
-                    }
-                }
+            TextBone(
+                text = CAPTION_PLACEHOLDER,
+                style = VadretTheme.textStyles.label,
+                alpha = { boneAlpha }
+            )
+        }
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(height = sliderHeight)
+        ) {
+            Bone(
+                alpha = { boneAlpha },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(height = placeholderTrackHeight)
+            )
+        }
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            repeat(times = TIMELINE_LABEL_COUNT) {
+                TextBone(
+                    text = TIME_PLACEHOLDER,
+                    style = VadretTheme.textStyles.label,
+                    alpha = { boneAlpha }
+                )
             }
         }
-        Legend(layer = layer)
     }
 }
 

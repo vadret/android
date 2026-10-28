@@ -1,6 +1,7 @@
 package fi.kroon.vadret.weatherforecast.ui
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
@@ -36,12 +37,12 @@ import fi.kroon.vadret.weatherforecast.WeatherForecastState
 import fi.kroon.vadret.weatherforecast.WeatherForecastViewModel
 import fi.kroon.vadret.weatherforecast.model.CurrentWeather
 import fi.kroon.vadret.weatherforecast.model.ForecastView
+import fi.kroon.vadret.weatherforecast.model.LatestWarning
 import fi.kroon.vadret.weatherforecast.model.SearchState
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 
 private const val SEARCH_KEY = "search"
-private const val WARNING_COUNT_KEY = "warning-count"
 private const val CURRENT_WEATHER_KEY = "current-weather"
 private const val FORECAST_VIEW_KEY = "forecast-view"
 private const val FORECAST_CONTENT_KEY = "forecast-content"
@@ -53,7 +54,7 @@ private val contentSpacing = 13.dp
 
 @Composable
 fun WeatherForecastRoute(
-    onWarningsClick: () -> Unit,
+    onWarningClick: (List<String>) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: WeatherForecastViewModel = koinViewModel()
 ) {
@@ -61,7 +62,7 @@ fun WeatherForecastRoute(
     WeatherForecastScreen(
         state = state,
         onEvent = viewModel::onEvent,
-        onWarningsClick = onWarningsClick,
+        onWarningClick = onWarningClick,
         modifier = modifier
     )
 }
@@ -70,7 +71,7 @@ fun WeatherForecastRoute(
 internal fun WeatherForecastScreen(
     state: WeatherForecastState,
     onEvent: (WeatherForecastEvent) -> Unit,
-    onWarningsClick: () -> Unit,
+    onWarningClick: (List<String>) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val languageTag: String = LocalLanguageTag.current
@@ -147,18 +148,16 @@ internal fun WeatherForecastScreen(
                             onEvent = onEvent
                         )
                     }
-                } else {
-                    warningCount(
-                        warningCount = state.warningCount,
-                        onWarningsClick = onWarningsClick
-                    )
-                    if (currentWeather != null) {
-                        item(
-                            key = CURRENT_WEATHER_KEY,
-                            contentType = CURRENT_WEATHER_KEY
-                        ) {
-                            CurrentWeatherCard(currentWeather = currentWeather)
-                        }
+                } else if (currentWeather != null) {
+                    item(
+                        key = CURRENT_WEATHER_KEY,
+                        contentType = CURRENT_WEATHER_KEY
+                    ) {
+                        CurrentWeather(
+                            currentWeather = currentWeather,
+                            latestWarning = state.latestWarning,
+                            onWarningClick = onWarningClick
+                        )
                     }
                 }
                 forecast(
@@ -173,22 +172,24 @@ internal fun WeatherForecastScreen(
     }
 }
 
-private fun LazyListScope.warningCount(
-    warningCount: Int,
-    onWarningsClick: () -> Unit
+@Composable
+private fun CurrentWeather(
+    currentWeather: CurrentWeather,
+    latestWarning: LatestWarning?,
+    onWarningClick: (List<String>) -> Unit,
+    modifier: Modifier = Modifier
 ) {
-    if (warningCount == 0) {
-        return
-    }
-    item(
-        key = WARNING_COUNT_KEY,
-        contentType = WARNING_COUNT_KEY
+    Column(
+        verticalArrangement = Arrangement.spacedBy(space = contentSpacing),
+        modifier = modifier
     ) {
-        WarningCountChip(
-            modifier = Modifier.padding(start = VadretTheme.spacing.small),
-            warningCount = warningCount,
-            onClick = onWarningsClick
-        )
+        if (latestWarning != null) {
+            WarningPill(
+                latestWarning = latestWarning,
+                onClick = { onWarningClick(latestWarning.warningIdentifiers) }
+            )
+        }
+        CurrentWeatherCard(currentWeather = currentWeather)
     }
 }
 
@@ -231,7 +232,7 @@ private fun WeatherForecastScreenPreview(
         WeatherForecastScreen(
             state = weatherForecastPreviewState(),
             onEvent = {},
-            onWarningsClick = {}
+            onWarningClick = {}
         )
     }
 }

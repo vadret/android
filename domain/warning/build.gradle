@@ -11,8 +11,7 @@ kotlin {
             dependencies {
                 implementation project(':data:aggregatedfeed')
                 implementation project(':data:common')
-                implementation project(':data:warningfilter')
-
+                implementation libs.coroutines.core
                 implementation libs.either
                 implementation libs.koin.core
             }

@@ -14,4 +14,13 @@ class NsLogSinkTest {
             actual = LogLevel.entries.map { level: LogLevel -> sink.accepts(level = level) }
         )
     }
+
+    @Test
+    fun `a line with format characters is written as text`() {
+        nsLogSink(minimumLevel = LogLevel.DEBUG).write(
+            level = LogLevel.WARN,
+            tag = "fi.kroon.vadret.logging",
+            message = "Dropping 100% of %@ %s at path: ${'$'}.items[0]"
+        )
+    }
 }

@@ -1,78 +1,229 @@
 package fi.kroon.vadret.forecastwarning.ui
 
+import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import fi.kroon.vadret.aggregatedfeed.model.AggregatedFeed
+import fi.kroon.vadret.aggregatedfeed.model.FeedArea
 import fi.kroon.vadret.aggregatedfeed.model.FeedDetail
 import fi.kroon.vadret.aggregatedfeed.model.FeedDetailKind
+import fi.kroon.vadret.aggregatedfeed.model.FeedRegion
+import fi.kroon.vadret.aggregatedfeed.model.FeedRegionKind
 import fi.kroon.vadret.aggregatedfeed.model.FeedSource
+import fi.kroon.vadret.aggregatedfeed.model.GeoPolygon
+import fi.kroon.vadret.aggregatedfeed.model.GeoPosition
 import fi.kroon.vadret.aggregatedfeed.model.WarningLevel
 import fi.kroon.vadret.forecastwarning.WarningState
 import fi.kroon.vadret.forecastwarning.extension.toWarningItem
+import fi.kroon.vadret.forecastwarning.extension.toWarningItems
 import fi.kroon.vadret.forecastwarning.model.WarningItem
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.toImmutableList
+import kotlinx.datetime.TimeZone
+import kotlin.time.Duration.Companion.hours
 import kotlin.time.Instant
 
-private val previewNow: Instant = Instant.parse(input = "2026-10-26T09:00:00Z")
+private const val PREVIEW_LANGUAGE_TAG = "sv-SE"
 
-private val previewFeeds: List<AggregatedFeed> = listOf(
+private val previewNow: Instant = Instant.parse(input = "2026-10-24T09:00:00Z")
+private val previewTimeZone: TimeZone = TimeZone.of(zoneId = "Europe/Stockholm")
+
+private fun square(
+    south: Double,
+    west: Double,
+    north: Double,
+    east: Double
+): GeoPolygon =
+    GeoPolygon(
+        outline = listOf(
+            GeoPosition(
+                latitude = south,
+                longitude = west
+            ),
+            GeoPosition(
+                latitude = south,
+                longitude = east
+            ),
+            GeoPosition(
+                latitude = north,
+                longitude = east
+            ),
+            GeoPosition(
+                latitude = north,
+                longitude = west
+            ),
+            GeoPosition(
+                latitude = south,
+                longitude = west
+            )
+        ),
+        holes = emptyList()
+    )
+
+private fun smhiWarning(
+    identifier: String,
+    headline: String,
+    areaName: String,
+    warningLevel: WarningLevel,
+    hoursAgo: Int,
+    startsAt: Instant?,
+    endsAt: Instant?,
+    polygon: GeoPolygon,
+    description: String
+): AggregatedFeed =
     AggregatedFeed(
-        identifier = "smhi-wind-gotland",
-        headline = "Vind",
-        areaName = "Gotlands län",
-        warningLevel = WarningLevel.ORANGE,
+        identifier = identifier,
+        headline = headline,
+        areaName = areaName,
+        warningLevel = warningLevel,
         details = listOf(
             FeedDetail(
-                kind = FeedDetailKind.WHAT_HAPPENS,
-                title = "Vad händer",
-                text = "Mycket hårda vindbyar, 30 m/s i byarna, under natten mot tisdag."
+                kind = FeedDetailKind.DESCRIPTION,
+                title = "Händelsebeskrivning",
+                text = description
             ),
             FeedDetail(
                 kind = FeedDetailKind.ADVICE,
-                title = "Råd",
-                text = "Förankra lösa föremål utomhus och undvik onödiga resor."
+                title = "Vad ska jag tänka på?",
+                text = "Undvik onödiga resor och följ myndigheternas råd."
             )
         ),
         source = FeedSource.SMHI,
-        publishedAt = Instant.parse(input = "2026-10-26T08:15:00Z")
-    ),
-    AggregatedFeed(
-        identifier = "smhi-rain-vastra-gotaland",
-        headline = "Regn",
-        areaName = "Västra Götalands län",
+        isPublicAlert = false,
+        senderName = null,
+        publishedAt = previewNow - hoursAgo.hours,
+        startsAt = startsAt,
+        endsAt = endsAt,
+        area = FeedArea(
+            polygons = listOf(polygon),
+            lines = emptyList(),
+            regions = emptyList()
+        )
+    )
+
+private val previewFeeds: List<AggregatedFeed> = listOf(
+    smhiWarning(
+        identifier = "smhi-yellow",
+        headline = "Hård vind med snödrev eller nederbörd",
+        areaName = "Härjedalsfjällen, Jämtlands län",
         warningLevel = WarningLevel.YELLOW,
-        details = listOf(
-            FeedDetail(
-                kind = FeedDetailKind.WHAT_HAPPENS,
-                title = "Vad händer",
-                text = "Skyfallsliknande regn, 40 mm på 3 timmar, under tisdagen."
-            )
+        hoursAgo = 12,
+        startsAt = null,
+        endsAt = previewNow + 12.hours,
+        polygon = square(
+            south = 62.2,
+            west = 12.2,
+            north = 62.8,
+            east = 13.4
         ),
-        source = FeedSource.SMHI,
-        publishedAt = Instant.parse(input = "2026-10-26T06:00:00Z")
+        description = "Täta snöbyar och på kalfjället tidvis hård nordvästlig till nordlig vind."
+    ),
+    smhiWarning(
+        identifier = "smhi-orange",
+        headline = "Mycket kraftiga vindbyar",
+        areaName = "Gotlands län",
+        warningLevel = WarningLevel.ORANGE,
+        hoursAgo = 3,
+        startsAt = previewNow + 8.hours,
+        endsAt = previewNow + 30.hours,
+        polygon = square(
+            south = 56.9,
+            west = 18.1,
+            north = 57.9,
+            east = 19.2
+        ),
+        description = "Vindbyar på 30 m/s, under natten mot söndag."
+    ),
+    smhiWarning(
+        identifier = "smhi-red",
+        headline = "Extremt kraftiga regnskurar",
+        areaName = "Västra Götalands län",
+        warningLevel = WarningLevel.RED,
+        hoursAgo = 1,
+        startsAt = previewNow - 1.hours,
+        endsAt = previewNow + 6.hours,
+        polygon = square(
+            south = 57.5,
+            west = 11.7,
+            north = 58.4,
+            east = 12.8
+        ),
+        description = "Skyfall med upp till 80 mm på några timmar."
     ),
     AggregatedFeed(
-        identifier = "krisinformation-storm",
-        headline = "Varning för kraftiga vindar i södra och mellersta Sverige",
+        identifier = "krisinformation-fjallen",
+        headline = "Undvik färd på kalfjället i helgen",
         areaName = null,
         warningLevel = null,
         details = listOf(
             FeedDetail(
                 kind = FeedDetailKind.SUMMARY,
                 title = "",
-                text = "SMHI har utfärdat varningar för blåsigt väder med mycket hårda vindbyar i delar av landet."
+                text = "Länsstyrelsen avråder från färd på kalfjället under helgen på grund av hård vind och snödrev."
             )
         ),
         source = FeedSource.KRISINFORMATION,
-        publishedAt = Instant.parse(input = "2026-10-24T14:00:00Z")
+        isPublicAlert = false,
+        senderName = "Länsstyrelsen Jämtlands län",
+        publishedAt = previewNow - 3.hours,
+        startsAt = null,
+        endsAt = null,
+        area = FeedArea(
+            polygons = emptyList(),
+            lines = emptyList(),
+            regions = listOf(
+                FeedRegion(
+                    kind = FeedRegionKind.COUNTY,
+                    name = "Jämtlands län"
+                )
+            )
+        )
+    ),
+    AggregatedFeed(
+        identifier = "krisinformation-vma-ostersund",
+        headline = "Viktigt meddelande till allmänheten: brand i Östersund",
+        areaName = null,
+        warningLevel = null,
+        details = listOf(
+            FeedDetail(
+                kind = FeedDetailKind.SUMMARY,
+                title = "",
+                text = "Räddningstjänsten uppmanar alla i centrala Östersund att gå inomhus och stänga dörrar, fönster och ventilation."
+            )
+        ),
+        source = FeedSource.KRISINFORMATION,
+        isPublicAlert = true,
+        senderName = "Räddningstjänsten Jämtland",
+        publishedAt = previewNow - 1.hours,
+        startsAt = null,
+        endsAt = null,
+        area = FeedArea(
+            polygons = emptyList(),
+            lines = emptyList(),
+            regions = listOf(
+                FeedRegion(
+                    kind = FeedRegionKind.COUNTY,
+                    name = "Jämtlands län"
+                )
+            )
+        )
     )
 )
 
-internal fun warningPreviewState(): WarningState {
-    val warnings: ImmutableList<WarningItem> = previewFeeds
-        .map { aggregatedFeed: AggregatedFeed -> aggregatedFeed.toWarningItem(now = previewNow) }
-        .toImmutableList()
-    return WarningState(
-        warnings = warnings,
+internal fun warningPreviewState(): WarningState =
+    WarningState(
+        warnings = previewFeeds.toWarningItems(
+            now = previewNow,
+            timeZone = previewTimeZone,
+            languageTag = PREVIEW_LANGUAGE_TAG
+        ),
         isLoading = false
     )
+
+internal class WarningPreviewParameterProvider : PreviewParameterProvider<WarningItem> {
+    override val values: Sequence<WarningItem> = previewFeeds
+        .asSequence()
+        .map { aggregatedFeed: AggregatedFeed ->
+            aggregatedFeed.toWarningItem(
+                now = previewNow,
+                timeZone = previewTimeZone,
+                languageTag = PREVIEW_LANGUAGE_TAG
+            )
+        }
 }

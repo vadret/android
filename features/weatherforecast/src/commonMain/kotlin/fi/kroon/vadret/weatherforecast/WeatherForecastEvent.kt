@@ -1,7 +1,7 @@
 package fi.kroon.vadret.weatherforecast
 
-import fi.kroon.vadret.autocomplete.model.AutoCompleteItem
 import fi.kroon.vadret.favorite.model.Favorite
+import fi.kroon.vadret.place.model.Place
 import fi.kroon.vadret.weatherforecast.model.ForecastView
 
 sealed interface WeatherForecastEvent {
@@ -21,5 +21,5 @@ sealed interface WeatherForecastEvent {
     data object OnSearchDismissed : WeatherForecastEvent
     data object OnSearchSubmitted : WeatherForecastEvent
     data class OnSearchQueryChanged(val query: String) : WeatherForecastEvent
-    data class OnSuggestionClicked(val autoCompleteItem: AutoCompleteItem) : WeatherForecastEvent
+    data class OnSuggestionClicked(val place: Place) : WeatherForecastEvent
 }

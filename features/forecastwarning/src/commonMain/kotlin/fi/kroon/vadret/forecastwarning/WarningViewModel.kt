@@ -4,40 +4,29 @@ import androidx.compose.runtime.Immutable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import fi.kroon.vadret.aggregatedfeed.model.AggregatedFeed
-import fi.kroon.vadret.aggregatedfeed.model.FeedSource
 import fi.kroon.vadret.common.Failure
-import fi.kroon.vadret.core.resources.Res
-import fi.kroon.vadret.core.resources.filter_must_select_one
-import fi.kroon.vadret.forecastwarning.extension.toWarningFilterState
-import fi.kroon.vadret.forecastwarning.extension.toWarningItem
-import fi.kroon.vadret.forecastwarning.model.WarningFilterState
+import fi.kroon.vadret.forecastwarning.extension.toWarningItems
 import fi.kroon.vadret.forecastwarning.model.WarningItem
 import fi.kroon.vadret.ui.extension.launchReplacing
 import fi.kroon.vadret.ui.extension.messageResource
+import fi.kroon.vadret.ui.format.currentLanguageTag
 import fi.kroon.vadret.warning.GetWarningsTask
-import fi.kroon.vadret.warningfilter.model.DistrictOption
-import fi.kroon.vadret.warningfilter.model.FeedSourceOption
-import fi.kroon.vadret.warningfilter.model.WarningFilter
 import io.github.sphrak.either.extension.onResult
 import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import org.jetbrains.compose.resources.StringResource
+import kotlinx.datetime.TimeZone
 import kotlin.concurrent.atomics.AtomicBoolean
 import kotlin.concurrent.atomics.AtomicReference
 import kotlin.time.Clock
-import kotlin.time.Instant
 
 @Immutable
 class WarningViewModel internal constructor(
     private val getWarningsTask: GetWarningsTask,
-    private val getWarningFilterTask: GetWarningFilterTask,
-    private val setWarningFilterTask: SetWarningFilterTask,
     private val clock: Clock,
     private val coroutineDispatcher: CoroutineDispatcher
 ) : ViewModel() {
@@ -45,8 +34,9 @@ class WarningViewModel internal constructor(
     internal val state: StateFlow<WarningState>
         field = MutableStateFlow(value = WarningState())
 
-    private val filterDispatcher: CoroutineDispatcher = coroutineDispatcher.limitedParallelism(parallelism = 1)
     private val isStarted: AtomicBoolean = AtomicBoolean(value = false)
+    private val languageTag: AtomicReference<String> = AtomicReference(value = currentLanguageTag())
+    private val warnings: AtomicReference<List<AggregatedFeed>> = AtomicReference(value = emptyList())
     private val loadJob: AtomicReference<Job?> = AtomicReference(value = null)
 
     internal fun onEvent(event: WarningEvent) {
@@ -59,21 +49,7 @@ class WarningViewModel internal constructor(
                 state.copy(errorMessageResource = null)
             }
 
-            WarningEvent.OnFilterButtonClicked -> onFilterButtonClicked()
-
-            WarningEvent.OnFilterDismissed -> state.update { state: WarningState ->
-                state.copy(filter = null)
-            }
-
-            WarningEvent.OnFilterApplied -> onFilterApplied()
-
-            is WarningEvent.OnFeedSourceToggled -> updateFilter { filter: WarningFilterState ->
-                filter.toggle(feedSource = event.feedSource)
-            }
-
-            is WarningEvent.OnDistrictToggled -> updateFilter { filter: WarningFilterState ->
-                filter.toggle(districtId = event.districtId)
-            }
+            is WarningEvent.OnLocaleChanged -> onLocaleChanged(languageTag = event.languageTag)
         }
     }
 
@@ -90,33 +66,47 @@ class WarningViewModel internal constructor(
         load(isRefresh = true)
     }
 
+    private fun onLocaleChanged(languageTag: String) {
+        if (this.languageTag.exchange(newValue = languageTag) == languageTag) {
+            return
+        }
+        viewModelScope.launch(context = coroutineDispatcher) {
+            state.update { state: WarningState ->
+                state.copy(warnings = warnings.load().toItems())
+            }
+        }
+    }
+
     private fun load(isRefresh: Boolean) {
         viewModelScope.launchReplacing(
             currentJob = loadJob,
             context = coroutineDispatcher
         ) {
-            val now: Instant = clock.now()
             getWarningsTask(isRefresh = isRefresh)
                 .onResult(
                     onError = { failure: Failure -> displayError(failure = failure) },
-                    onSuccess = { aggregatedFeedList: List<AggregatedFeed> ->
-                        displayWarnings(
-                            warnings = aggregatedFeedList
-                                .map { aggregatedFeed: AggregatedFeed -> aggregatedFeed.toWarningItem(now = now) }
-                                .toImmutableList()
-                        )
+                    onSuccess = { aggregatedFeeds: List<AggregatedFeed> ->
+                        warnings.store(newValue = aggregatedFeeds)
+                        displayWarnings(warningItems = aggregatedFeeds.toItems())
                     }
                 )
         }
     }
 
-    private fun displayWarnings(warnings: ImmutableList<WarningItem>) {
+    private fun List<AggregatedFeed>.toItems(): ImmutableList<WarningItem> =
+        toWarningItems(
+            now = clock.now(),
+            timeZone = TimeZone.currentSystemDefault(),
+            languageTag = languageTag.load()
+        )
+
+    private fun displayWarnings(warningItems: ImmutableList<WarningItem>) {
         state.update { state: WarningState ->
             state.copy(
-                warnings = warnings,
+                warnings = warningItems,
                 isLoading = false,
                 isRefreshing = false,
-                isEmpty = warnings.isEmpty()
+                isEmpty = warningItems.isEmpty()
             )
         }
     }
@@ -130,116 +120,4 @@ class WarningViewModel internal constructor(
             )
         }
     }
-
-    private fun onFilterButtonClicked() {
-        viewModelScope.launch(context = coroutineDispatcher) {
-            getWarningFilterTask()
-                .onResult(
-                    onError = { failure: Failure ->
-                        state.update { state: WarningState ->
-                            state.copy(errorMessageResource = failure.messageResource())
-                        }
-                    },
-                    onSuccess = { warningFilter: WarningFilter ->
-                        state.update { state: WarningState ->
-                            state.copy(filter = warningFilter.toWarningFilterState())
-                        }
-                    }
-                )
-        }
-    }
-
-    private fun updateFilter(transform: (WarningFilterState) -> WarningFilterState) {
-        viewModelScope.launch(context = filterDispatcher) {
-            state.update { state: WarningState ->
-                val filter: WarningFilterState? = state.filter
-                if (filter != null) {
-                    state.copy(filter = transform(filter))
-                } else {
-                    state
-                }
-            }
-        }
-    }
-
-    private fun onFilterApplied() {
-        viewModelScope.launch(context = filterDispatcher) {
-            if (applyFilter()) {
-                load(isRefresh = false)
-            }
-        }
-    }
-
-    private suspend fun applyFilter(): Boolean {
-        val filter: WarningFilterState = state.value.filter ?: return false
-        val enabledDistrictIds: Set<Int> = filter.districts
-            .filter { districtOption: DistrictOption -> districtOption.isEnabled }
-            .map { districtOption: DistrictOption -> districtOption.districtId }
-            .toSet()
-        val enabledFeedSources: Set<FeedSource> = filter.feedSources
-            .filter { feedSourceOption: FeedSourceOption -> feedSourceOption.isEnabled }
-            .map { feedSourceOption: FeedSourceOption -> feedSourceOption.feedSource }
-            .toSet()
-        if (enabledDistrictIds.isEmpty() || enabledFeedSources.isEmpty()) {
-            showFilterError(errorMessageResource = Res.string.filter_must_select_one)
-            return false
-        }
-        return setWarningFilterTask(
-            enabledDistrictIds = enabledDistrictIds,
-            enabledFeedSources = enabledFeedSources
-        ).onResult(
-            onError = { failure: Failure ->
-                showFilterError(errorMessageResource = failure.messageResource())
-                false
-            },
-            onSuccess = {
-                state.update { state: WarningState ->
-                    state.copy(
-                        filter = null,
-                        isRefreshing = true
-                    )
-                }
-                true
-            }
-        )
-    }
-
-    private fun showFilterError(errorMessageResource: StringResource) {
-        state.update { state: WarningState ->
-            val filter: WarningFilterState? = state.filter
-            if (filter != null) {
-                state.copy(filter = filter.copy(errorMessageResource = errorMessageResource))
-            } else {
-                state
-            }
-        }
-    }
-
-    private fun WarningFilterState.toggle(feedSource: FeedSource): WarningFilterState =
-        copy(
-            feedSources = feedSources
-                .map { feedSourceOption: FeedSourceOption ->
-                    if (feedSourceOption.feedSource == feedSource) {
-                        feedSourceOption.copy(isEnabled = !feedSourceOption.isEnabled)
-                    } else {
-                        feedSourceOption
-                    }
-                }
-                .toImmutableList(),
-            errorMessageResource = null
-        )
-
-    private fun WarningFilterState.toggle(districtId: Int): WarningFilterState =
-        copy(
-            districts = districts
-                .map { districtOption: DistrictOption ->
-                    if (districtOption.districtId == districtId) {
-                        districtOption.copy(isEnabled = !districtOption.isEnabled)
-                    } else {
-                        districtOption
-                    }
-                }
-                .toImmutableList(),
-            errorMessageResource = null
-        )
 }

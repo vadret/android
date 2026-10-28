@@ -90,10 +90,11 @@
         <item quantity="other">Næste %1$d dage</item>
     </plurals>
     <string name="cancel">Annuller</string>
-    <plurals name="warning_count">
-        <item quantity="one">%1$d advarsel</item>
-        <item quantity="other">%1$d advarsler</item>
-    </plurals>
     <string name="select_a_language">Vælg sprog</string>
     <string name="system_language">Systemets sprog</string>
+    <string name="warning_until">indtil %1$s</string>
+    <string name="warning_from">fra %1$s</string>
+    <string name="warning_when">Hvornår</string>
+    <string name="close">Luk</string>
+    <string name="back">Tilbage</string>
 </resources>

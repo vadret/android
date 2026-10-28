@@ -1,84 +1,95 @@
 package fi.kroon.vadret.warning
 
-import fi.kroon.vadret.aggregatedfeed.AggregatedFeedRepository
+import fi.kroon.vadret.aggregatedfeed.FeedRepository
 import fi.kroon.vadret.aggregatedfeed.model.AggregatedFeed
-import fi.kroon.vadret.aggregatedfeed.model.FeedDetail
-import fi.kroon.vadret.aggregatedfeed.model.FeedDetailKind
+import fi.kroon.vadret.aggregatedfeed.model.FeedArea
+import fi.kroon.vadret.aggregatedfeed.model.FeedRegion
 import fi.kroon.vadret.aggregatedfeed.model.FeedSource
+import fi.kroon.vadret.aggregatedfeed.model.GeoLine
+import fi.kroon.vadret.aggregatedfeed.model.GeoPolygon
+import fi.kroon.vadret.aggregatedfeed.model.GeoPosition
+import fi.kroon.vadret.aggregatedfeed.model.SeenWarning
 import fi.kroon.vadret.aggregatedfeed.model.WarningLevel
 import fi.kroon.vadret.common.Failure
-import fi.kroon.vadret.warningfilter.WarningFilterRepository
-import fi.kroon.vadret.warningfilter.model.DistrictCategory
-import fi.kroon.vadret.warningfilter.model.DistrictOption
-import fi.kroon.vadret.warningfilter.model.FeedSourceOption
-import fi.kroon.vadret.warningfilter.model.WarningFilter
 import io.github.sphrak.either.Either
 import io.github.sphrak.either.extension.asRight
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlin.time.Instant
 
-private val stockholm = DistrictOption(
-    districtId = 1,
-    name = "Stockholms län",
-    category = DistrictCategory.COUNTY,
-    isEnabled = true
-)
-
-private val gotland = DistrictOption(
-    districtId = 9,
-    name = "Gotlands län",
-    category = DistrictCategory.COUNTY,
-    isEnabled = false
-)
-
-private val defaultWarningFilter = WarningFilter(
-    districts = listOf(gotland, stockholm),
-    feedSources = listOf(
-        FeedSourceOption(feedSource = FeedSource.KRISINFORMATION, isEnabled = false),
-        FeedSourceOption(feedSource = FeedSource.SMHI, isEnabled = true)
+internal fun square(
+    south: Double,
+    west: Double,
+    north: Double,
+    east: Double
+): List<GeoPosition> =
+    listOf(
+        GeoPosition(
+            latitude = south,
+            longitude = west
+        ),
+        GeoPosition(
+            latitude = south,
+            longitude = east
+        ),
+        GeoPosition(
+            latitude = north,
+            longitude = east
+        ),
+        GeoPosition(
+            latitude = north,
+            longitude = west
+        ),
+        GeoPosition(
+            latitude = south,
+            longitude = west
+        )
     )
-)
 
-private fun aggregatedFeed(identifier: String): AggregatedFeed =
+internal fun aggregatedFeed(
+    identifier: String,
+    publishedAt: Instant = Instant.parse(input = "2026-10-24T08:00:00Z"),
+    source: FeedSource = FeedSource.SMHI,
+    polygons: List<GeoPolygon> = emptyList(),
+    lines: List<GeoLine> = emptyList(),
+    regions: List<FeedRegion> = emptyList()
+): AggregatedFeed =
     AggregatedFeed(
         identifier = identifier,
         headline = "Vind",
-        areaName = "Gotland",
+        areaName = "Jämtlands län",
         warningLevel = WarningLevel.YELLOW,
-        details = listOf(
-            FeedDetail(
-                kind = FeedDetailKind.DESCRIPTION,
-                title = "Händelsebeskrivning",
-                text = "Hårda vindbyar"
-            )
-        ),
-        source = FeedSource.SMHI,
-        publishedAt = Instant.parse(input = "2026-10-24T08:00:00Z")
+        details = emptyList(),
+        source = source,
+        isPublicAlert = false,
+        senderName = null,
+        publishedAt = publishedAt,
+        startsAt = null,
+        endsAt = null,
+        area = FeedArea(
+            polygons = polygons,
+            lines = lines,
+            regions = regions
+        )
     )
 
-internal class FakeWarningFilterRepository(
-    var warningFilter: Either<Failure, WarningFilter> = defaultWarningFilter.asRight()
-) : WarningFilterRepository {
-
-    override suspend fun getWarningFilter(): Either<Failure, WarningFilter> = warningFilter
-
-    override suspend fun setWarningFilter(
-        enabledDistrictIds: Set<Int>,
-        enabledFeedSources: Set<FeedSource>
-    ): Either<Failure, Unit> = Unit.asRight()
-}
-
-internal class FakeAggregatedFeedRepository(
+internal class FakeFeedRepository(
     var result: Either<Failure, List<AggregatedFeed>> = listOf(aggregatedFeed(identifier = "smhi-1-1")).asRight()
-) : AggregatedFeedRepository {
+) : FeedRepository {
 
-    val requests = mutableListOf<Triple<Set<FeedSource>, Set<Int>, Boolean>>()
+    val refreshes = mutableListOf<Boolean>()
+    val seenWarnings: MutableStateFlow<Either<Failure, List<SeenWarning>>> = MutableStateFlow(value = emptyList<SeenWarning>().asRight())
+    val markedSeen = mutableListOf<String>()
 
-    override suspend fun getAggregatedFeed(
-        feedSources: Set<FeedSource>,
-        districtIds: Set<Int>,
-        isRefresh: Boolean
-    ): Either<Failure, List<AggregatedFeed>> {
-        requests.add(Triple(feedSources, districtIds, isRefresh))
+    override suspend fun getAggregatedFeed(isRefresh: Boolean): Either<Failure, List<AggregatedFeed>> {
+        refreshes.add(element = isRefresh)
         return result
+    }
+
+    override fun observeSeenWarnings(): Flow<Either<Failure, List<SeenWarning>>> = seenWarnings
+
+    override suspend fun markSeen(warningIdentifier: String): Either<Failure, Unit> {
+        markedSeen.add(element = warningIdentifier)
+        return Unit.asRight()
     }
 }

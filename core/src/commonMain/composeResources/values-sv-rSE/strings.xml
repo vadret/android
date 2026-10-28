@@ -156,7 +156,6 @@
     <string name="remove_favorite">Ta bort %1$s</string>
     <string name="selected">Vald</string>
     <string name="humidity">Luftfuktighet</string>
-    <string name="filter_warnings">Filtrera varningar</string>
     <string name="warning_level_message">Meddelande</string>
     <string name="warning_level_yellow">Gul varning</string>
     <string name="warning_level_orange">Orange varning</string>
@@ -188,10 +187,11 @@
         <item quantity="other">Kommande %1$d dagar</item>
     </plurals>
     <string name="cancel">Avbryt</string>
-    <plurals name="warning_count">
-        <item quantity="one">%1$d varning</item>
-        <item quantity="other">%1$d varningar</item>
-    </plurals>
     <string name="select_a_language">Välj språk</string>
     <string name="system_language">Systemets språk</string>
+    <string name="warning_until">till %1$s</string>
+    <string name="warning_from">från %1$s</string>
+    <string name="warning_when">När</string>
+    <string name="close">Stäng</string>
+    <string name="back">Tillbaka</string>
 </resources>

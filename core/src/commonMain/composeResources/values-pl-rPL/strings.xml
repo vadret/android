@@ -79,12 +79,11 @@
         <item quantity="other">Następne %1$d dni</item>
     </plurals>
     <string name="cancel">Anuluj</string>
-    <plurals name="warning_count">
-        <item quantity="one">%1$d ostrzeżenie</item>
-        <item quantity="few">%1$d ostrzeżenia</item>
-        <item quantity="many">%1$d ostrzeżeń</item>
-        <item quantity="other">%1$d ostrzeżenia</item>
-    </plurals>
     <string name="select_a_language">Wybierz język</string>
     <string name="system_language">Język systemu</string>
+    <string name="warning_until">do %1$s</string>
+    <string name="warning_from">od %1$s</string>
+    <string name="warning_when">Kiedy</string>
+    <string name="close">Zamknij</string>
+    <string name="back">Wstecz</string>
 </resources>

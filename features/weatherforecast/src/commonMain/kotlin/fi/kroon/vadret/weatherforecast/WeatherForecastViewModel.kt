@@ -4,13 +4,15 @@ import androidx.compose.runtime.Immutable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import fi.kroon.vadret.aggregatedfeed.model.AggregatedFeed
-import fi.kroon.vadret.autocomplete.model.AutoCompleteItem
 import fi.kroon.vadret.common.Failure
 import fi.kroon.vadret.favorite.model.Favorite
+import fi.kroon.vadret.place.model.Place
 import fi.kroon.vadret.ui.extension.launchReplacing
 import fi.kroon.vadret.ui.extension.messageResource
 import fi.kroon.vadret.ui.format.currentLanguageTag
-import fi.kroon.vadret.warning.GetWarningsTask
+import fi.kroon.vadret.warning.ObserveUnseenWarningsTask
+import fi.kroon.vadret.warning.model.WarningPlace
+import fi.kroon.vadret.weatherforecast.extension.toLatestWarning
 import fi.kroon.vadret.weatherforecast.extension.toWeatherForecast
 import fi.kroon.vadret.weatherforecast.extension.withComingDays
 import fi.kroon.vadret.weatherforecast.extension.withDayToggled
@@ -23,7 +25,6 @@ import io.github.sphrak.either.Either
 import io.github.sphrak.either.extension.asRight
 import io.github.sphrak.either.extension.errorOrNull
 import io.github.sphrak.either.extension.onResult
-import io.github.sphrak.either.extension.successOrNull
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.CoroutineDispatcher
@@ -55,7 +56,7 @@ class WeatherForecastViewModel internal constructor(
     private val removeFavoriteTask: RemoveFavoriteTask,
     private val searchPlacesTask: SearchPlacesTask,
     private val selectPlaceTask: SelectPlaceTask,
-    private val getWarningsTask: GetWarningsTask,
+    private val observeUnseenWarningsTask: ObserveUnseenWarningsTask,
     private val clock: Clock,
     private val coroutineDispatcher: CoroutineDispatcher
 ) : ViewModel() {
@@ -66,6 +67,7 @@ class WeatherForecastViewModel internal constructor(
     private val loadedLocationMode: AtomicReference<Boolean?> = AtomicReference(value = null)
     private val languageTag: AtomicReference<String> = AtomicReference(value = currentLanguageTag())
     private val placeForecast: AtomicReference<PlaceForecast?> = AtomicReference(value = null)
+    private val unseenWarnings: AtomicReference<List<AggregatedFeed>> = AtomicReference(value = emptyList())
     private val fetchedAt: AtomicReference<Instant?> = AtomicReference(value = null)
     private val isObservingLocationChoices: AtomicBoolean = AtomicBoolean(value = false)
     private val loadJob: AtomicReference<Job?> = AtomicReference(value = null)
@@ -112,7 +114,7 @@ class WeatherForecastViewModel internal constructor(
 
             is WeatherForecastEvent.OnSearchQueryChanged -> onSearchQueryChanged(query = event.query)
 
-            is WeatherForecastEvent.OnSuggestionClicked -> onSuggestionClicked(autoCompleteItem = event.autoCompleteItem)
+            is WeatherForecastEvent.OnSuggestionClicked -> onSuggestionClicked(place = event.place)
         }
     }
 
@@ -128,7 +130,6 @@ class WeatherForecastViewModel internal constructor(
         if (isObservingLocationChoices.compareAndSet(expectedValue = false, newValue = true)) {
             observeLocationChoices()
         }
-        loadWarningCount(isRefresh = false)
         viewModelScope.launch(context = coroutineDispatcher) {
             getLocationModeTask()
                 .onResult(
@@ -183,7 +184,10 @@ class WeatherForecastViewModel internal constructor(
                 isRefreshing = true
             )
         }
-        load(isAutomatic = false)
+        load(
+            isAutomatic = false,
+            isRefresh = false
+        )
     }
 
     private fun startLoading(isAutomatic: Boolean) {
@@ -192,7 +196,10 @@ class WeatherForecastViewModel internal constructor(
                 state.copy(isLocationPermissionRequested = true)
             }
         } else {
-            load(isAutomatic = false)
+            load(
+                isAutomatic = false,
+                isRefresh = false
+            )
         }
     }
 
@@ -204,7 +211,12 @@ class WeatherForecastViewModel internal constructor(
             setLocationModeTask(isAutomatic = isGranted)
                 .onResult(
                     onError = { failure: Failure -> displayError(failure = failure) },
-                    onSuccess = { load(isAutomatic = isGranted) }
+                    onSuccess = {
+                        load(
+                            isAutomatic = isGranted,
+                            isRefresh = false
+                        )
+                    }
                 )
         }
     }
@@ -221,23 +233,16 @@ class WeatherForecastViewModel internal constructor(
         state.update { state: WeatherForecastState ->
             state.copy(isRefreshing = true)
         }
-        load(isAutomatic = isAutomatic)
-        loadWarningCount(isRefresh = true)
+        load(
+            isAutomatic = isAutomatic,
+            isRefresh = true
+        )
     }
 
-    private fun loadWarningCount(isRefresh: Boolean) {
-        viewModelScope.launchReplacing(
-            currentJob = warningJob,
-            context = coroutineDispatcher
-        ) {
-            val warnings: List<AggregatedFeed> = getWarningsTask(isRefresh = isRefresh).successOrNull ?: return@launchReplacing
-            state.update { state: WeatherForecastState ->
-                state.copy(warningCount = warnings.size)
-            }
-        }
-    }
-
-    private fun load(isAutomatic: Boolean) {
+    private fun load(
+        isAutomatic: Boolean,
+        isRefresh: Boolean
+    ) {
         loadedLocationMode.store(newValue = isAutomatic)
         viewModelScope.launchReplacing(
             currentJob = loadJob,
@@ -246,8 +251,54 @@ class WeatherForecastViewModel internal constructor(
             getWeatherForecastTask()
                 .onResult(
                     onError = { failure: Failure -> displayError(failure = failure) },
-                    onSuccess = { placeForecast: PlaceForecast -> displayForecast(placeForecast = placeForecast) }
+                    onSuccess = { placeForecast: PlaceForecast ->
+                        displayForecast(placeForecast = placeForecast)
+                        observeWarnings(
+                            placeForecast = placeForecast,
+                            isRefresh = isRefresh
+                        )
+                    }
                 )
+        }
+    }
+
+    private fun observeWarnings(
+        placeForecast: PlaceForecast,
+        isRefresh: Boolean
+    ) {
+        viewModelScope.launchReplacing(
+            currentJob = warningJob,
+            context = coroutineDispatcher
+        ) {
+            observeUnseenWarningsTask(
+                warningPlace = WarningPlace(
+                    latitude = placeForecast.latitude,
+                    longitude = placeForecast.longitude,
+                    county = placeForecast.county,
+                    municipality = placeForecast.municipality
+                ),
+                isRefresh = isRefresh
+            ).collect { result: Either<Failure, List<AggregatedFeed>> ->
+                result.onResult(
+                    onError = {},
+                    onSuccess = { warnings: List<AggregatedFeed> ->
+                        unseenWarnings.store(newValue = warnings)
+                        displayLatestWarning()
+                    }
+                )
+            }
+        }
+    }
+
+    private fun displayLatestWarning() {
+        state.update { state: WeatherForecastState ->
+            state.copy(
+                latestWarning = unseenWarnings.load().toLatestWarning(
+                    now = clock.now(),
+                    timeZone = TimeZone.currentSystemDefault(),
+                    languageTag = languageTag.load()
+                )
+            )
         }
     }
 
@@ -273,6 +324,7 @@ class WeatherForecastViewModel internal constructor(
             return
         }
         viewModelScope.launch(context = coroutineDispatcher) {
+            displayLatestWarning()
             val loadedPlaceForecast: PlaceForecast = placeForecast.load() ?: return@launch
             state.update { state: WeatherForecastState ->
                 state.withForecast(
@@ -313,7 +365,7 @@ class WeatherForecastViewModel internal constructor(
             delay(duration = searchDebounce)
             search(query = query).onResult(
                 onError = { failure: Failure -> displayError(failure = failure) },
-                onSuccess = { suggestions: List<AutoCompleteItem> ->
+                onSuccess = { suggestions: List<Place> ->
                     displaySuggestions(
                         query = query,
                         suggestions = suggestions.toImmutableList()
@@ -323,16 +375,16 @@ class WeatherForecastViewModel internal constructor(
         }
     }
 
-    private suspend fun search(query: String): Either<Failure, List<AutoCompleteItem>> =
+    private suspend fun search(query: String): Either<Failure, List<Place>> =
         if (query.isBlank()) {
-            emptyList<AutoCompleteItem>().asRight()
+            emptyList<Place>().asRight()
         } else {
             searchPlacesTask(prefix = query)
         }
 
     private fun displaySuggestions(
         query: String,
-        suggestions: ImmutableList<AutoCompleteItem>
+        suggestions: ImmutableList<Place>
     ) {
         state.update { state: WeatherForecastState ->
             val search: SearchState? = state.search
@@ -345,14 +397,14 @@ class WeatherForecastViewModel internal constructor(
     }
 
     private fun onSearchSubmitted() {
-        val autoCompleteItem: AutoCompleteItem = state.value.search?.suggestions?.firstOrNull() ?: return
-        onSuggestionClicked(autoCompleteItem = autoCompleteItem)
+        val place: Place = state.value.search?.suggestions?.firstOrNull() ?: return
+        onSuggestionClicked(place = place)
     }
 
-    private fun onSuggestionClicked(autoCompleteItem: AutoCompleteItem) {
+    private fun onSuggestionClicked(place: Place) {
         searchJob.exchange(newValue = null)?.cancel()
         viewModelScope.launch(context = coroutineDispatcher) {
-            selectPlaceTask(autoCompleteItem = autoCompleteItem)
+            selectPlaceTask(place = place)
                 .onResult(
                     onError = { failure: Failure -> displayError(failure = failure) },
                     onSuccess = { reloadStoredLocation() }

@@ -6,5 +6,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 internal data class SmhiAffectedAreaDto(
     @SerialName(value = "id")
-    val id: Int
+    val id: Int,
+    @SerialName(value = "sv")
+    val sv: String? = null
 )

@@ -5,14 +5,9 @@ import fi.kroon.vadret.aggregatedfeed.model.FeedSource
 import fi.kroon.vadret.common.ErrorCode
 import fi.kroon.vadret.common.Failure
 import fi.kroon.vadret.core.resources.Res
-import fi.kroon.vadret.core.resources.filter_failure_districts_not_available
-import fi.kroon.vadret.core.resources.filter_must_select_one
 import fi.kroon.vadret.core.resources.no_network_available
-import fi.kroon.vadret.core.resources.unhandled_error
-import fi.kroon.vadret.forecastwarning.model.WarningFilterState
 import fi.kroon.vadret.forecastwarning.model.WarningItem
 import fi.kroon.vadret.testing.FixedClock
-import fi.kroon.vadret.warning.GetWarningsTask
 import io.github.sphrak.either.extension.asLeft
 import io.github.sphrak.either.extension.asRight
 import kotlinx.coroutines.Dispatchers
@@ -28,8 +23,8 @@ import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertNull
 import kotlin.test.assertTrue
+import kotlin.time.Duration.Companion.hours
 import kotlin.time.Instant
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -37,8 +32,12 @@ class WarningViewModelTest {
 
     private val testDispatcher: TestDispatcher = StandardTestDispatcher()
     private val testScope = TestScope(testDispatcher)
-    private val warningFilterRepository = FakeWarningFilterRepository()
-    private val aggregatedFeedRepository = FakeAggregatedFeedRepository()
+    private val getWarningsTask = FakeGetWarningsTask()
+    private val warningViewModel = WarningViewModel(
+        getWarningsTask = getWarningsTask,
+        clock = FixedClock(now = Instant.parse(input = "2026-10-24T08:30:00Z")),
+        coroutineDispatcher = testDispatcher
+    )
 
     @BeforeTest
     fun setUp() {
@@ -50,230 +49,98 @@ class WarningViewModelTest {
         Dispatchers.resetMain()
     }
 
-    private fun viewModel(): WarningViewModel {
-        val warningViewModel = WarningViewModel(
-            getWarningsTask = GetWarningsTask(
-                warningFilterRepository = warningFilterRepository,
-                aggregatedFeedRepository = aggregatedFeedRepository
-            ),
-            getWarningFilterTask = DefaultGetWarningFilterTask(warningFilterRepository = warningFilterRepository),
-            setWarningFilterTask = DefaultSetWarningFilterTask(warningFilterRepository = warningFilterRepository),
-            clock = FixedClock(now = Instant.parse(input = "2026-10-24T08:30:00Z")),
-            coroutineDispatcher = testDispatcher
-        )
-        warningViewModel.onEvent(event = WarningEvent.OnStart)
-        return warningViewModel
-    }
+    private fun shownIdentifiers(): List<String> = warningViewModel.state.value.warnings.map { warningItem: WarningItem -> warningItem.identifier }
 
     @Test
     fun `nothing loads until the screen starts the view model and then only once`() =
         testScope.runTest {
-            val warningViewModel = WarningViewModel(
-                getWarningsTask = GetWarningsTask(
-                    warningFilterRepository = warningFilterRepository,
-                    aggregatedFeedRepository = aggregatedFeedRepository
-                ),
-                getWarningFilterTask = DefaultGetWarningFilterTask(warningFilterRepository = warningFilterRepository),
-                setWarningFilterTask = DefaultSetWarningFilterTask(warningFilterRepository = warningFilterRepository),
-                clock = FixedClock(now = Instant.parse(input = "2026-10-24T08:30:00Z")),
-                coroutineDispatcher = testDispatcher
-            )
             advanceUntilIdle()
-            val requestsBeforeStart: Int = aggregatedFeedRepository.requests.size
+            assertEquals(expected = emptyList(), actual = getWarningsTask.refreshes)
 
             warningViewModel.onEvent(event = WarningEvent.OnStart)
             warningViewModel.onEvent(event = WarningEvent.OnStart)
             advanceUntilIdle()
 
-            assertEquals(expected = 0, actual = requestsBeforeStart)
-            assertEquals(expected = 1, actual = aggregatedFeedRepository.requests.size)
+            assertEquals(expected = listOf(false), actual = getWarningsTask.refreshes)
         }
 
     @Test
-    fun `warnings are shown once loaded`() =
+    fun `every warning is shown in one list newest first`() =
         testScope.runTest {
-            val warningViewModel: WarningViewModel = viewModel()
-            assertTrue(actual = warningViewModel.state.value.isLoading)
+            getWarningsTask.result = listOf(
+                aggregatedFeed(
+                    identifier = "smhi-1",
+                    publishedAt = Instant.parse(input = "2026-10-24T05:00:00Z")
+                ),
+                aggregatedFeed(
+                    identifier = "krisinformation-1",
+                    publishedAt = Instant.parse(input = "2026-10-24T07:00:00Z"),
+                    source = FeedSource.KRISINFORMATION
+                ),
+                aggregatedFeed(
+                    identifier = "smhi-2",
+                    publishedAt = Instant.parse(input = "2026-10-24T06:00:00Z")
+                )
+            ).asRight()
 
+            warningViewModel.onEvent(event = WarningEvent.OnStart)
             advanceUntilIdle()
 
-            val state: WarningState = warningViewModel.state.value
-            assertEquals(
-                expected = listOf("smhi-1-1"),
-                actual = state.warnings.map { warningItem: WarningItem -> warningItem.identifier }
-            )
-            assertEquals(expected = false, actual = state.isLoading)
-            assertEquals(expected = false, actual = state.isEmpty)
-            assertEquals(expected = false, actual = aggregatedFeedRepository.requests.single().third)
+            assertEquals(expected = listOf("krisinformation-1", "smhi-2", "smhi-1"), actual = shownIdentifiers())
+            assertEquals(expected = false, actual = warningViewModel.state.value.isLoading)
+            assertEquals(expected = false, actual = warningViewModel.state.value.isEmpty)
         }
 
     @Test
     fun `no warnings is told apart from a failed load`() =
         testScope.runTest {
-            aggregatedFeedRepository.result = emptyList<AggregatedFeed>().asRight()
-            val emptyViewModel: WarningViewModel = viewModel()
+            getWarningsTask.result = emptyList<AggregatedFeed>().asRight()
+            warningViewModel.onEvent(event = WarningEvent.OnStart)
             advanceUntilIdle()
-            aggregatedFeedRepository.result = Failure(errorCode = ErrorCode.NETWORK_UNAVAILABLE).asLeft()
-            val failedViewModel: WarningViewModel = viewModel()
+            assertTrue(actual = warningViewModel.state.value.isEmpty)
+
+            getWarningsTask.result = Failure(errorCode = ErrorCode.NETWORK_UNAVAILABLE).asLeft()
+            warningViewModel.onEvent(event = WarningEvent.OnRefresh)
             advanceUntilIdle()
 
-            assertTrue(actual = emptyViewModel.state.value.isEmpty)
-            assertEquals(expected = false, actual = failedViewModel.state.value.isEmpty)
-            assertEquals(
-                expected = Res.string.no_network_available,
-                actual = failedViewModel.state.value.errorMessageResource
-            )
-            failedViewModel.onEvent(event = WarningEvent.OnErrorShown)
-            assertNull(actual = failedViewModel.state.value.errorMessageResource)
+            assertEquals(expected = Res.string.no_network_available, actual = warningViewModel.state.value.errorMessageResource)
+            assertEquals(expected = false, actual = warningViewModel.state.value.isRefreshing)
+
+            warningViewModel.onEvent(event = WarningEvent.OnErrorShown)
+            assertEquals(expected = null, actual = warningViewModel.state.value.errorMessageResource)
         }
 
     @Test
     fun `a refresh skips the cache`() =
         testScope.runTest {
-            val warningViewModel: WarningViewModel = viewModel()
+            warningViewModel.onEvent(event = WarningEvent.OnStart)
             advanceUntilIdle()
-
             warningViewModel.onEvent(event = WarningEvent.OnRefresh)
-            assertTrue(actual = warningViewModel.state.value.isRefreshing)
             advanceUntilIdle()
 
-            assertEquals(
-                expected = listOf(false, true),
-                actual = aggregatedFeedRepository.requests.map { request -> request.third }
-            )
-            assertEquals(expected = false, actual = warningViewModel.state.value.isRefreshing)
+            assertEquals(expected = listOf(false, true), actual = getWarningsTask.refreshes)
         }
 
     @Test
-    fun `the filter opens with the stored selection and toggles until applied`() =
+    fun `a new language tells the times again without loading`() =
         testScope.runTest {
-            val warningViewModel: WarningViewModel = viewModel()
+            getWarningsTask.result = listOf(
+                aggregatedFeed(
+                    identifier = "smhi-1",
+                    endsAt = Instant.parse(input = "2026-10-24T08:30:00Z") + 48.hours
+                )
+            ).asRight()
+            warningViewModel.onEvent(event = WarningEvent.OnLocaleChanged(languageTag = "en"))
+            warningViewModel.onEvent(event = WarningEvent.OnStart)
             advanceUntilIdle()
+            val englishText: String? = warningViewModel.state.value.warnings.single().endsAtText
 
-            warningViewModel.onEvent(event = WarningEvent.OnFilterButtonClicked)
+            warningViewModel.onEvent(event = WarningEvent.OnLocaleChanged(languageTag = "sv-SE"))
             advanceUntilIdle()
-            warningViewModel.onEvent(event = WarningEvent.OnDistrictToggled(districtId = gotland.districtId))
-            warningViewModel.onEvent(event = WarningEvent.OnFeedSourceToggled(feedSource = FeedSource.KRISINFORMATION))
-            advanceUntilIdle()
+            val swedishText: String? = warningViewModel.state.value.warnings.single().endsAtText
 
-            val filter: WarningFilterState? = warningViewModel.state.value.filter
-            assertEquals(
-                expected = listOf(true, true),
-                actual = filter?.districts?.map { districtOption -> districtOption.isEnabled }
-            )
-            assertEquals(
-                expected = listOf(true, true),
-                actual = filter?.feedSources?.map { feedSourceOption -> feedSourceOption.isEnabled }
-            )
-            assertTrue(actual = warningFilterRepository.storedFilters.isEmpty())
-        }
-
-    @Test
-    fun `applying stores the filter and loads the feed for it`() =
-        testScope.runTest {
-            val warningViewModel: WarningViewModel = viewModel()
-            advanceUntilIdle()
-            warningViewModel.onEvent(event = WarningEvent.OnFilterButtonClicked)
-            advanceUntilIdle()
-
-            warningViewModel.onEvent(event = WarningEvent.OnDistrictToggled(districtId = gotland.districtId))
-            warningViewModel.onEvent(event = WarningEvent.OnFilterApplied)
-            advanceUntilIdle()
-
-            assertEquals(
-                expected = listOf(setOf(gotland.districtId, stockholm.districtId) to setOf(FeedSource.SMHI)),
-                actual = warningFilterRepository.storedFilters
-            )
-            assertNull(actual = warningViewModel.state.value.filter)
-            assertEquals(expected = 2, actual = aggregatedFeedRepository.requests.size)
-        }
-
-    @Test
-    fun `a filter without a district or a feed source is not stored`() =
-        testScope.runTest {
-            val warningViewModel: WarningViewModel = viewModel()
-            advanceUntilIdle()
-            warningViewModel.onEvent(event = WarningEvent.OnFilterButtonClicked)
-            advanceUntilIdle()
-
-            warningViewModel.onEvent(event = WarningEvent.OnFeedSourceToggled(feedSource = FeedSource.SMHI))
-            warningViewModel.onEvent(event = WarningEvent.OnFilterApplied)
-            advanceUntilIdle()
-
-            assertEquals(
-                expected = Res.string.filter_must_select_one,
-                actual = warningViewModel.state.value.filter?.errorMessageResource
-            )
-            assertTrue(actual = warningFilterRepository.storedFilters.isEmpty())
-
-            warningViewModel.onEvent(event = WarningEvent.OnFeedSourceToggled(feedSource = FeedSource.SMHI))
-            advanceUntilIdle()
-            assertNull(actual = warningViewModel.state.value.filter?.errorMessageResource)
-        }
-
-    @Test
-    fun `a filter that cannot be stored stays open with the error`() =
-        testScope.runTest {
-            warningFilterRepository.setResult = Failure(errorCode = ErrorCode.STORAGE_FAILED).asLeft()
-            val warningViewModel: WarningViewModel = viewModel()
-            advanceUntilIdle()
-            warningViewModel.onEvent(event = WarningEvent.OnFilterButtonClicked)
-            advanceUntilIdle()
-
-            warningViewModel.onEvent(event = WarningEvent.OnFilterApplied)
-            advanceUntilIdle()
-
-            assertEquals(
-                expected = Res.string.unhandled_error,
-                actual = warningViewModel.state.value.filter?.errorMessageResource
-            )
-            assertEquals(expected = 1, actual = aggregatedFeedRepository.requests.size)
-        }
-
-    @Test
-    fun `dismissing the filter forgets the edits`() =
-        testScope.runTest {
-            val warningViewModel: WarningViewModel = viewModel()
-            advanceUntilIdle()
-            warningViewModel.onEvent(event = WarningEvent.OnFilterButtonClicked)
-            advanceUntilIdle()
-
-            warningViewModel.onEvent(event = WarningEvent.OnFilterDismissed)
-
-            assertNull(actual = warningViewModel.state.value.filter)
-        }
-
-    @Test
-    fun `a filter that cannot be read stays closed and shows the error`() =
-        testScope.runTest {
-            val warningViewModel: WarningViewModel = viewModel()
-            advanceUntilIdle()
-            warningFilterRepository.warningFilter = Failure(errorCode = ErrorCode.DISTRICTS_NOT_AVAILABLE).asLeft()
-
-            warningViewModel.onEvent(event = WarningEvent.OnFilterButtonClicked)
-            advanceUntilIdle()
-
-            assertEquals(
-                expected = Res.string.filter_failure_districts_not_available,
-                actual = warningViewModel.state.value.errorMessageResource
-            )
-            assertNull(actual = warningViewModel.state.value.filter)
-        }
-
-    @Test
-    fun `toggling or applying without an open filter changes nothing`() =
-        testScope.runTest {
-            val warningViewModel: WarningViewModel = viewModel()
-            advanceUntilIdle()
-            val stateBefore: WarningState = warningViewModel.state.value
-
-            warningViewModel.onEvent(event = WarningEvent.OnDistrictToggled(districtId = gotland.districtId))
-            warningViewModel.onEvent(event = WarningEvent.OnFeedSourceToggled(feedSource = FeedSource.KRISINFORMATION))
-            warningViewModel.onEvent(event = WarningEvent.OnFilterApplied)
-            advanceUntilIdle()
-
-            assertEquals(expected = stateBefore, actual = warningViewModel.state.value)
-            assertTrue(actual = warningFilterRepository.storedFilters.isEmpty())
-            assertEquals(expected = 1, actual = aggregatedFeedRepository.requests.size)
+            assertEquals(expected = true, actual = englishText?.startsWith(prefix = "Mon"))
+            assertEquals(expected = true, actual = swedishText?.startsWith(prefix = "mån"))
+            assertEquals(expected = listOf(false), actual = getWarningsTask.refreshes)
         }
 }

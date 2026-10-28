@@ -1,5 +1,7 @@
 package fi.kroon.vadret.weatherforecast.ui
 
+import fi.kroon.vadret.aggregatedfeed.model.FeedSource
+import fi.kroon.vadret.aggregatedfeed.model.WarningLevel
 import fi.kroon.vadret.weatherforecast.WeatherForecastState
 import fi.kroon.vadret.weatherforecast.extension.toWeatherForecast
 import fi.kroon.vadret.weatherforecast.extension.withDayToggled
@@ -8,9 +10,11 @@ import fi.kroon.vadret.weatherforecast.model.ComingDay
 import fi.kroon.vadret.weatherforecast.model.ComingHour
 import fi.kroon.vadret.weatherforecast.model.CurrentWeather
 import fi.kroon.vadret.weatherforecast.model.Forecast
+import fi.kroon.vadret.weatherforecast.model.LatestWarning
 import fi.kroon.vadret.weatherforecast.model.PlaceForecast
 import fi.kroon.vadret.weatherforecast.model.WeatherForecast
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.datetime.TimeZone
 import kotlin.math.PI
 import kotlin.math.cos
@@ -21,7 +25,6 @@ import kotlin.time.Instant
 
 private const val PREVIEW_LANGUAGE_TAG = "en"
 private const val PREVIEW_LOCALITY = "Stockholm"
-private const val PREVIEW_WARNING_COUNT = 3
 private const val PREVIEW_LATITUDE = 59.3293
 private const val PREVIEW_LONGITUDE = 18.0686
 private const val FORECAST_HOURS = 168
@@ -58,7 +61,14 @@ internal fun weatherForecastPreviewState(): WeatherForecastState {
     return WeatherForecastState(
         forecast = weatherForecast.copy(comingDays = weatherForecast.comingDays.withDayToggled(dayKey = todayKey)),
         localityName = PREVIEW_LOCALITY,
-        warningCount = PREVIEW_WARNING_COUNT,
+        latestWarning = LatestWarning(
+            warningLevel = WarningLevel.YELLOW,
+            source = FeedSource.SMHI,
+            isPublicAlert = false,
+            headline = "Kuling 14-17 m/s",
+            endsAtText = "13:00",
+            warningIdentifiers = persistentListOf("smhi-3376-10720")
+        ),
         isLoading = false
     )
 }
@@ -74,6 +84,8 @@ internal fun nowHourIndexPreview(): Int = comingHoursPreview().indexOfFirst { co
 private fun previewWeatherForecast(): WeatherForecast =
     PlaceForecast(
         placeName = PREVIEW_LOCALITY,
+        municipality = PREVIEW_LOCALITY,
+        county = PREVIEW_LOCALITY,
         latitude = PREVIEW_LATITUDE,
         longitude = PREVIEW_LONGITUDE,
         forecasts = previewHours(hourOffsets = FIRST_FORECAST_HOUR until FORECAST_HOURS),

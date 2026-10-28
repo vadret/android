@@ -1,17 +1,23 @@
 package fi.kroon.vadret.weatherforecast
 
 import fi.kroon.vadret.aggregatedfeed.model.AggregatedFeed
+import fi.kroon.vadret.aggregatedfeed.model.FeedSource
+import fi.kroon.vadret.aggregatedfeed.model.WarningLevel
 import fi.kroon.vadret.common.ErrorCode
 import fi.kroon.vadret.common.Failure
 import fi.kroon.vadret.core.resources.Res
 import fi.kroon.vadret.core.resources.data_not_available_at_this_location
 import fi.kroon.vadret.core.resources.unhandled_error
 import fi.kroon.vadret.testing.FixedClock
+import fi.kroon.vadret.ui.format.currentLanguageTag
+import fi.kroon.vadret.ui.format.toDayTimeText
+import fi.kroon.vadret.warning.model.WarningPlace
 import fi.kroon.vadret.weatherforecast.model.ComingDay
 import fi.kroon.vadret.weatherforecast.model.FavoriteChoice
 import fi.kroon.vadret.weatherforecast.model.Forecast
 import fi.kroon.vadret.weatherforecast.model.ForecastDay
 import fi.kroon.vadret.weatherforecast.model.ForecastView
+import fi.kroon.vadret.weatherforecast.model.LatestWarning
 import fi.kroon.vadret.weatherforecast.model.LocationChoices
 import fi.kroon.vadret.weatherforecast.model.SearchState
 import io.github.sphrak.either.extension.asLeft
@@ -27,6 +33,7 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import kotlinx.datetime.TimeZone
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -57,10 +64,10 @@ class WeatherForecastViewModelTest {
     private val testScope = TestScope(testDispatcher)
     private val locationRepository = FakeLocationRepository()
     private val weatherForecastRepository = FakeWeatherForecastRepository()
-    private val autoCompleteRepository = FakeAutoCompleteRepository()
+    private val placeRepository = FakePlaceRepository()
     private val favoriteRepository = FakeFavoriteRepository()
     private val clock = FixedClock(now = Instant.parse(input = "2026-10-24T12:00:00Z"))
-    private val getWarningsTask = FakeGetWarningsTask()
+    private val observeUnseenWarningsTask = FakeObserveUnseenWarningsTask()
     private val weatherForecastViewModel = WeatherForecastViewModel(
         getLocationModeTask = DefaultGetLocationModeTask(locationRepository = locationRepository),
         setLocationModeTask = DefaultSetLocationModeTask(locationRepository = locationRepository),
@@ -75,12 +82,12 @@ class WeatherForecastViewModelTest {
         ),
         selectFavoriteTask = DefaultSelectFavoriteTask(locationRepository = locationRepository),
         removeFavoriteTask = DefaultRemoveFavoriteTask(favoriteRepository = favoriteRepository),
-        searchPlacesTask = DefaultSearchPlacesTask(autoCompleteRepository = autoCompleteRepository),
+        searchPlacesTask = DefaultSearchPlacesTask(placeRepository = placeRepository),
         selectPlaceTask = DefaultSelectPlaceTask(
             favoriteRepository = favoriteRepository,
             locationRepository = locationRepository
         ),
-        getWarningsTask = getWarningsTask,
+        observeUnseenWarningsTask = observeUnseenWarningsTask,
         clock = clock,
         coroutineDispatcher = testDispatcher
     )
@@ -206,13 +213,76 @@ class WeatherForecastViewModelTest {
         }
 
     @Test
-    fun `the warning count is shown once the screen is shown`() =
+    fun `the latest unseen warning for the place is shown once the forecast is shown`() =
         testScope.runTest {
             weatherForecastViewModel.onEvent(event = WeatherForecastEvent.OnShown)
             advanceUntilIdle()
 
-            assertEquals(expected = 2, actual = weatherForecastViewModel.state.value.warningCount)
-            assertEquals(expected = listOf(false), actual = getWarningsTask.refreshes)
+            assertEquals(
+                expected = LatestWarning(
+                    warningLevel = WarningLevel.YELLOW,
+                    source = FeedSource.SMHI,
+                    isPublicAlert = false,
+                    headline = "Vind",
+                    endsAtText = null,
+                    warningIdentifiers = persistentListOf("smhi-1", "smhi-2")
+                ),
+                actual = weatherForecastViewModel.state.value.latestWarning
+            )
+            assertEquals(
+                expected = listOf(
+                    WarningPlace(
+                        latitude = 59.3293,
+                        longitude = 18.0686,
+                        county = "Stockholm",
+                        municipality = "Stockholm"
+                    ) to false
+                ),
+                actual = observeUnseenWarningsTask.requests
+            )
+        }
+
+    @Test
+    fun `the device location is matched with the county and municipality it lies in`() =
+        testScope.runTest {
+            locationRepository.isAutomatic = true.asRight()
+            weatherForecastViewModel.onEvent(event = WeatherForecastEvent.OnLocationPermissionResult(isGranted = true))
+            advanceUntilIdle()
+
+            assertEquals(
+                expected = listOf(
+                    WarningPlace(
+                        latitude = 57.7,
+                        longitude = 11.97,
+                        county = "Västra Götalands län",
+                        municipality = "Göteborgs kommun"
+                    ) to false
+                ),
+                actual = observeUnseenWarningsTask.requests
+            )
+        }
+
+    @Test
+    fun `the end of the latest warning is told as a time`() =
+        testScope.runTest {
+            val endsAt: Instant = clock.now + 30.minutes
+            observeUnseenWarningsTask.unseenWarnings.value = listOf(
+                warning(
+                    identifier = "smhi-1",
+                    endsAt = endsAt
+                )
+            ).asRight()
+            weatherForecastViewModel.onEvent(event = WeatherForecastEvent.OnShown)
+            advanceUntilIdle()
+
+            assertEquals(
+                expected = endsAt.toDayTimeText(
+                    now = clock.now,
+                    timeZone = TimeZone.currentSystemDefault(),
+                    languageTag = currentLanguageTag()
+                ),
+                actual = weatherForecastViewModel.state.value.latestWarning?.endsAtText
+            )
         }
 
     @Test
@@ -221,36 +291,58 @@ class WeatherForecastViewModelTest {
             weatherForecastViewModel.onEvent(event = WeatherForecastEvent.OnShown)
             advanceUntilIdle()
 
-            getWarningsTask.result = listOf(warning(identifier = "smhi-3")).asRight()
             weatherForecastViewModel.onEvent(event = WeatherForecastEvent.OnRefresh)
             advanceUntilIdle()
 
-            assertEquals(expected = 1, actual = weatherForecastViewModel.state.value.warningCount)
-            assertEquals(expected = listOf(false, true), actual = getWarningsTask.refreshes)
+            assertEquals(
+                expected = listOf(false, true),
+                actual = observeUnseenWarningsTask.requests.map { request: Pair<WarningPlace, Boolean> -> request.second }
+            )
         }
 
     @Test
-    fun `warnings that cannot be loaded keep the last count without a message`() =
+    fun `seeing every warning removes the pill`() =
         testScope.runTest {
             weatherForecastViewModel.onEvent(event = WeatherForecastEvent.OnShown)
             advanceUntilIdle()
 
-            getWarningsTask.result = Failure(errorCode = ErrorCode.NETWORK_FAILURE).asLeft()
-            weatherForecastViewModel.onEvent(event = WeatherForecastEvent.OnRefresh)
+            observeUnseenWarningsTask.unseenWarnings.value = listOf(warning(identifier = "smhi-2")).asRight()
+            advanceUntilIdle()
+            assertEquals(
+                expected = persistentListOf("smhi-2"),
+                actual = weatherForecastViewModel.state.value.latestWarning?.warningIdentifiers
+            )
+
+            observeUnseenWarningsTask.unseenWarnings.value = emptyList<AggregatedFeed>().asRight()
+            advanceUntilIdle()
+            assertNull(actual = weatherForecastViewModel.state.value.latestWarning)
+        }
+
+    @Test
+    fun `warnings that cannot be loaded keep the last pill without a message`() =
+        testScope.runTest {
+            weatherForecastViewModel.onEvent(event = WeatherForecastEvent.OnShown)
             advanceUntilIdle()
 
-            assertEquals(expected = 2, actual = weatherForecastViewModel.state.value.warningCount)
+            observeUnseenWarningsTask.unseenWarnings.value = Failure(errorCode = ErrorCode.NETWORK_FAILURE).asLeft()
+            advanceUntilIdle()
+
+            assertEquals(
+                expected = persistentListOf("smhi-1", "smhi-2"),
+                actual = weatherForecastViewModel.state.value.latestWarning?.warningIdentifiers
+            )
             assertNull(actual = weatherForecastViewModel.state.value.errorMessageResource)
         }
 
     @Test
-    fun `no warnings shows no count`() =
+    fun `no forecast means no warnings are asked for`() =
         testScope.runTest {
-            getWarningsTask.result = emptyList<AggregatedFeed>().asRight()
+            weatherForecastRepository.forecasts = Failure(errorCode = ErrorCode.WEATHER_FORECAST_NOT_AVAILABLE_FOR_LOCATION).asLeft()
             weatherForecastViewModel.onEvent(event = WeatherForecastEvent.OnShown)
             advanceUntilIdle()
 
-            assertEquals(expected = 0, actual = weatherForecastViewModel.state.value.warningCount)
+            assertEquals(expected = emptyList(), actual = observeUnseenWarningsTask.requests)
+            assertNull(actual = weatherForecastViewModel.state.value.latestWarning)
         }
 
     @Test
@@ -277,7 +369,7 @@ class WeatherForecastViewModelTest {
             weatherForecastViewModel.onEvent(event = WeatherForecastEvent.OnSearchQueryChanged(query = "Ki"))
             advanceUntilIdle()
 
-            assertEquals(expected = listOf("Ki" to 10), actual = autoCompleteRepository.searches)
+            assertEquals(expected = listOf("Ki" to 10), actual = placeRepository.searches)
             assertEquals(
                 expected = SearchState(
                     query = "Ki",
@@ -294,7 +386,7 @@ class WeatherForecastViewModelTest {
             weatherForecastViewModel.onEvent(event = WeatherForecastEvent.OnSearchQueryChanged(query = " "))
             advanceUntilIdle()
 
-            assertTrue(actual = autoCompleteRepository.searches.isEmpty())
+            assertTrue(actual = placeRepository.searches.isEmpty())
             assertEquals(
                 expected = SearchState(
                     query = " ",
@@ -335,7 +427,7 @@ class WeatherForecastViewModelTest {
             weatherForecastViewModel.onEvent(event = WeatherForecastEvent.OnShown)
             advanceUntilIdle()
 
-            weatherForecastViewModel.onEvent(event = WeatherForecastEvent.OnSuggestionClicked(autoCompleteItem = kiruna))
+            weatherForecastViewModel.onEvent(event = WeatherForecastEvent.OnSuggestionClicked(place = kiruna))
             advanceUntilIdle()
 
             assertEquals(

@@ -3,13 +3,13 @@ package fi.kroon.vadret.di
 import android.content.Context
 import android.location.LocationManager
 import android.os.Looper
+import fi.kroon.vadret.aggregatedfeed.FeedRepository
 import fi.kroon.vadret.favorite.FavoriteRepository
 import fi.kroon.vadret.location.LocationRepository
 import fi.kroon.vadret.logging.Logger
 import fi.kroon.vadret.logging.LoggerFactory
 import fi.kroon.vadret.model.AppDirectories
 import fi.kroon.vadret.model.AppInfo
-import fi.kroon.vadret.warningfilter.WarningFilterRepository
 import io.ktor.client.engine.HttpClientEngine
 import io.ktor.client.engine.okhttp.OkHttp
 import okhttp3.Cache
@@ -61,10 +61,13 @@ fun androidPlatformModule(
                 coroutineDispatcher = get()
             )
         }
-        single<WarningFilterRepository> {
-            WarningFilterRepository(
+        single<FeedRepository> {
+            FeedRepository(
                 context = context,
-                httpClient = inject()
+                httpClient = inject(),
+                diskCache = get(),
+                clock = get(),
+                coroutineDispatcher = get()
             )
         }
     }

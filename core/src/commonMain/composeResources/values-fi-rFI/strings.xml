@@ -92,10 +92,11 @@
         <item quantity="other">Seuraavat %1$d päivää</item>
     </plurals>
     <string name="cancel">Peruuta</string>
-    <plurals name="warning_count">
-        <item quantity="one">%1$d varoitus</item>
-        <item quantity="other">%1$d varoitusta</item>
-    </plurals>
     <string name="select_a_language">Valitse kieli</string>
     <string name="system_language">Järjestelmän kieli</string>
+    <string name="warning_until">%1$s asti</string>
+    <string name="warning_from">%1$s alkaen</string>
+    <string name="warning_when">Milloin</string>
+    <string name="close">Sulje</string>
+    <string name="back">Takaisin</string>
 </resources>

@@ -19,6 +19,7 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -98,6 +99,9 @@ internal fun RadarScreen(
     }
     LaunchedEffect(Unit) {
         onEvent(RadarEvent.OnStart)
+    }
+    DisposableEffect(Unit) {
+        onDispose { onEvent(RadarEvent.OnLeft) }
     }
     val errorMessageResource: StringResource? = state.errorMessageResource
     if (errorMessageResource != null) {
@@ -215,18 +219,13 @@ private fun RadarBottomPanel(
                 ).padding(paddingValues = attributionPadding)
         )
         val timeline: RadarTimeline? = radarTimeline(state = state)
-        if (timeline != null) {
+        if (timeline != null || state.isLoading || state.isInitialLoading) {
             RadarTimelineCard(
                 layer = state.layer,
                 timeline = timeline,
                 isPlaying = state.isPlaying,
                 onPlayClick = { onEvent(RadarEvent.OnPlayButtonClicked) },
                 onIndexChange = { index: Int -> onEvent(RadarEvent.OnIndexChanged(index = index)) },
-                modifier = dockModifier
-            )
-        } else if (state.isInitialLoading) {
-            RadarTimelinePlaceholder(
-                layer = state.layer,
                 modifier = dockModifier
             )
         }

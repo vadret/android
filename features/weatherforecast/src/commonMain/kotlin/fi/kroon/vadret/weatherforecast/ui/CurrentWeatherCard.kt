@@ -39,7 +39,7 @@ import org.jetbrains.compose.resources.stringResource
 
 private val cardPadding = 21.dp
 private val cardShape = RoundedCornerShape(size = 21.dp)
-private val weatherIconSize = 55.dp
+private val weatherIconSize = 64.dp
 private val conditionSpacing = 8.dp
 private val dividerTopPadding = 21.dp
 private val dividerBottomPadding = 13.dp

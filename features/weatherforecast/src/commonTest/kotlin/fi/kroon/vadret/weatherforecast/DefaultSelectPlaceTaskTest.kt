@@ -33,7 +33,7 @@ class DefaultSelectPlaceTaskTest {
         runTest {
             assertEquals<Either<Failure, Unit>>(
                 expected = Unit.asRight(),
-                actual = selectPlaceTask(autoCompleteItem = kiruna)
+                actual = selectPlaceTask(place = kiruna)
             )
             assertEquals(expected = listOf(kirunaFavorite), actual = favoriteRepository.favorites.value)
             assertEquals(expected = listOf("selected=Kiruna"), actual = locationRepository.writes)
@@ -49,8 +49,8 @@ class DefaultSelectPlaceTaskTest {
     @Test
     fun `picking a favorite place again keeps one favorite`() =
         runTest {
-            selectPlaceTask(autoCompleteItem = kiruna)
-            selectPlaceTask(autoCompleteItem = kiruna)
+            selectPlaceTask(place = kiruna)
+            selectPlaceTask(place = kiruna)
 
             assertEquals(expected = listOf(kirunaFavorite), actual = favoriteRepository.favorites.value)
         }
@@ -63,7 +63,7 @@ class DefaultSelectPlaceTaskTest {
 
             assertEquals<Either<Failure, Unit>>(
                 expected = failure.asLeft(),
-                actual = selectPlaceTask(autoCompleteItem = kiruna)
+                actual = selectPlaceTask(place = kiruna)
             )
             assertEquals(expected = emptyList(), actual = locationRepository.writes)
             assertEquals<Either<Failure, Boolean>>(expected = true.asRight(), actual = locationRepository.isAutomatic())
@@ -77,7 +77,7 @@ class DefaultSelectPlaceTaskTest {
 
             assertEquals<Either<Failure, Unit>>(
                 expected = failure.asLeft(),
-                actual = selectPlaceTask(autoCompleteItem = kiruna)
+                actual = selectPlaceTask(place = kiruna)
             )
             assertEquals<Either<Failure, Boolean>>(expected = true.asRight(), actual = locationRepository.isAutomatic())
         }

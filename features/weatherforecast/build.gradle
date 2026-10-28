@@ -11,11 +11,11 @@ kotlin {
             dependencies {
                 implementation project(':core:logging')
                 implementation project(':data:aggregatedfeed')
-                implementation project(':data:autocomplete')
                 implementation project(':data:common')
                 implementation project(':data:favorite')
                 implementation project(':data:location')
                 implementation project(':data:nominatim')
+                implementation project(':data:place')
                 implementation project(':data:theme')
                 implementation project(':ui:icons')
                 implementation project(':data:weatherforecast')

@@ -25,6 +25,12 @@ internal data object WeatherKey : NavKey
 internal data object WarningKey : NavKey
 
 @Serializable
+internal data class WarningDetailKey(val warningIdentifier: String) : NavKey
+
+@Serializable
+internal data class WarningStoryKey(val warningIdentifiers: List<String>) : NavKey
+
+@Serializable
 internal data object RadarKey : NavKey
 
 @Serializable

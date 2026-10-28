@@ -17,6 +17,20 @@ internal data class AggregatedFeedEntity(
     val details: List<FeedDetailEntity>,
     @SerialName(value = "source")
     val source: String,
+    @SerialName(value = "is_public_alert")
+    val isPublicAlert: Boolean = false,
+    @SerialName(value = "sender_name")
+    val senderName: String? = null,
     @SerialName(value = "published_at_epoch_millis")
-    val publishedAtEpochMillis: Long
+    val publishedAtEpochMillis: Long,
+    @SerialName(value = "starts_at_epoch_millis")
+    val startsAtEpochMillis: Long? = null,
+    @SerialName(value = "ends_at_epoch_millis")
+    val endsAtEpochMillis: Long? = null,
+    @SerialName(value = "polygons")
+    val polygons: List<GeoPolygonEntity>,
+    @SerialName(value = "lines")
+    val lines: List<GeoLineEntity>,
+    @SerialName(value = "regions")
+    val regions: List<FeedRegionEntity>
 )

@@ -1,15 +1,14 @@
 package fi.kroon.vadret.forecastwarning.ui
 
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
+import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -24,31 +23,40 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import fi.kroon.vadret.core.resources.Res
-import fi.kroon.vadret.core.resources.filter_warnings
-import fi.kroon.vadret.core.resources.ic_filter_list
 import fi.kroon.vadret.core.resources.warning_display_no_warnings_issued
+import fi.kroon.vadret.core.resources.warnings
 import fi.kroon.vadret.di.koinViewModel
 import fi.kroon.vadret.forecastwarning.WarningEvent
 import fi.kroon.vadret.forecastwarning.WarningState
 import fi.kroon.vadret.forecastwarning.WarningViewModel
-import fi.kroon.vadret.forecastwarning.model.WarningFilterState
 import fi.kroon.vadret.forecastwarning.model.WarningItem
 import fi.kroon.vadret.theme.model.Theme
+import fi.kroon.vadret.ui.LocalLanguageTag
 import fi.kroon.vadret.ui.ThemePreviewParameterProvider
+import fi.kroon.vadret.ui.VadretCard
 import fi.kroon.vadret.ui.VadretProgressBar
 import fi.kroon.vadret.ui.VadretPullToRefreshBox
 import fi.kroon.vadret.ui.VadretTheme
 import fi.kroon.vadret.ui.VadretTopAppBar
+import kotlinx.collections.immutable.ImmutableList
 import org.jetbrains.compose.resources.StringResource
-import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
-private const val WARNING_CONTENT_TYPE = "warning"
+private const val WARNING_LIST_KEY = "warning-list"
+
+private val contentHorizontalPadding = 13.dp
+private val contentTopPadding = 8.dp
+private val contentBottomPadding = 21.dp
+private val listCornerRadius = 21.dp
+private val listVerticalPadding = 13.dp
 
 @Composable
 fun WarningRoute(
+    onWarningClick: (String) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: WarningViewModel = koinViewModel()
 ) {
@@ -56,18 +64,23 @@ fun WarningRoute(
     WarningScreen(
         state = state,
         onEvent = viewModel::onEvent,
+        onWarningClick = onWarningClick,
         modifier = modifier
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun WarningScreen(
     state: WarningState,
     onEvent: (WarningEvent) -> Unit,
+    onWarningClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val snackbarHostState: SnackbarHostState = remember { SnackbarHostState() }
+    val languageTag: String = LocalLanguageTag.current
+    LaunchedEffect(languageTag) {
+        onEvent(WarningEvent.OnLocaleChanged(languageTag = languageTag))
+    }
     LaunchedEffect(Unit) {
         onEvent(WarningEvent.OnStart)
     }
@@ -81,17 +94,7 @@ internal fun WarningScreen(
     }
 
     Scaffold(
-        topBar = {
-            VadretTopAppBar {
-                IconButton(onClick = { onEvent(WarningEvent.OnFilterButtonClicked) }) {
-                    Icon(
-                        painter = painterResource(resource = Res.drawable.ic_filter_list),
-                        contentDescription = stringResource(resource = Res.string.filter_warnings),
-                        tint = VadretTheme.colorScheme.onBackground
-                    )
-                }
-            }
-        },
+        topBar = { VadretTopAppBar(title = stringResource(resource = Res.string.warnings)) },
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         containerColor = VadretTheme.colorScheme.background,
         contentWindowInsets = WindowInsets(),
@@ -106,21 +109,17 @@ internal fun WarningScreen(
         ) {
             LazyColumn(
                 contentPadding = PaddingValues(
-                    start = VadretTheme.spacing.medium,
-                    end = VadretTheme.spacing.medium,
-                    top = VadretTheme.spacing.extraSmall,
-                    bottom = VadretTheme.spacing.medium
+                    start = contentHorizontalPadding,
+                    top = contentTopPadding,
+                    end = contentHorizontalPadding,
+                    bottom = contentBottomPadding
                 ),
-                verticalArrangement = Arrangement.spacedBy(space = VadretTheme.spacing.medium),
                 modifier = Modifier.fillMaxSize()
             ) {
-                items(
-                    items = state.warnings,
-                    key = { warning: WarningItem -> warning.identifier },
-                    contentType = { WARNING_CONTENT_TYPE }
-                ) { warning: WarningItem ->
-                    WarningCard(warning = warning)
-                }
+                warningList(
+                    warnings = state.warnings,
+                    onWarningClick = onWarningClick
+                )
             }
             if (state.isLoading) {
                 VadretProgressBar(modifier = Modifier.align(alignment = Alignment.TopCenter))
@@ -138,15 +137,55 @@ internal fun WarningScreen(
             }
         }
     }
+}
 
-    val filter: WarningFilterState? = state.filter
-    if (filter != null) {
-        WarningFilterSheet(
-            filter = filter,
-            onEvent = onEvent
-        )
+private fun LazyListScope.warningList(
+    warnings: ImmutableList<WarningItem>,
+    onWarningClick: (String) -> Unit
+) {
+    if (warnings.isEmpty()) {
+        return
+    }
+    item(
+        key = WARNING_LIST_KEY,
+        contentType = WARNING_LIST_KEY
+    ) {
+        VadretCard(shape = RoundedCornerShape(size = listCornerRadius)) {
+            warnings.forEachIndexed { index: Int, warning: WarningItem ->
+                val isFirst: Boolean = index == 0
+                val isLast: Boolean = index == warnings.lastIndex
+                if (!isFirst) {
+                    HorizontalDivider(
+                        color = VadretTheme.colors.divider,
+                        modifier = Modifier.padding(
+                            start = rowDividerStartPadding,
+                            end = rowDividerEndPadding
+                        )
+                    )
+                }
+                WarningRow(
+                    warning = warning,
+                    onClick = { onWarningClick(warning.identifier) },
+                    shape = RoundedCornerShape(
+                        topStart = listCornerRadius.onlyOnEdge(isEdge = isFirst),
+                        topEnd = listCornerRadius.onlyOnEdge(isEdge = isFirst),
+                        bottomStart = listCornerRadius.onlyOnEdge(isEdge = isLast),
+                        bottomEnd = listCornerRadius.onlyOnEdge(isEdge = isLast)
+                    ),
+                    edgeTopPadding = listVerticalPadding.onlyOnEdge(isEdge = isFirst),
+                    edgeBottomPadding = listVerticalPadding.onlyOnEdge(isEdge = isLast)
+                )
+            }
+        }
     }
 }
+
+private fun Dp.onlyOnEdge(isEdge: Boolean): Dp =
+    if (isEdge) {
+        this
+    } else {
+        0.dp
+    }
 
 @Preview(device = Devices.PHONE)
 @Composable
@@ -156,7 +195,8 @@ private fun WarningScreenPreview(
     VadretTheme(theme = theme) {
         WarningScreen(
             state = warningPreviewState(),
-            onEvent = {}
+            onEvent = {},
+            onWarningClick = {}
         )
     }
 }

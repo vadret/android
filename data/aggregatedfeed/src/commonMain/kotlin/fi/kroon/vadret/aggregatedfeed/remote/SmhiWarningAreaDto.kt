@@ -9,6 +9,10 @@ internal data class SmhiWarningAreaDto(
     val id: Int,
     @SerialName(value = "published")
     val published: String,
+    @SerialName(value = "approximateStart")
+    val approximateStart: String? = null,
+    @SerialName(value = "approximateEnd")
+    val approximateEnd: String? = null,
     @SerialName(value = "areaName")
     val areaName: SmhiTextDto,
     @SerialName(value = "warningLevel")
@@ -18,5 +22,7 @@ internal data class SmhiWarningAreaDto(
     @SerialName(value = "affectedAreas")
     val affectedAreas: List<SmhiAffectedAreaDto>? = null,
     @SerialName(value = "descriptions")
-    val descriptions: List<SmhiDescriptionDto>? = null
+    val descriptions: List<SmhiDescriptionDto>? = null,
+    @SerialName(value = "area")
+    val area: GeoJsonDto? = null
 )

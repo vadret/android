@@ -14,5 +14,9 @@ internal data class KrisinformationFeedDto(
     @SerialName(value = "preamble")
     val preamble: String? = null,
     @SerialName(value = "bodyText")
-    val bodyText: String? = null
+    val bodyText: String? = null,
+    @SerialName(value = "senderName")
+    val senderName: String? = null,
+    @SerialName(value = "area")
+    val area: List<KrisinformationAreaDto>? = null
 )

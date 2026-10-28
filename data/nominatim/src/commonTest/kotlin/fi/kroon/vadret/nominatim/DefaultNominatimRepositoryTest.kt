@@ -89,8 +89,32 @@ class DefaultNominatimRepositoryTest {
             }
 
             assertEquals(
-                expected = bodies.mapValues { (_, name: String?) -> Locality(name = name).asRight() },
+                expected = bodies.mapValues { (_, name: String?) ->
+                    Locality(
+                        name = name,
+                        municipality = null,
+                        county = null
+                    ).asRight()
+                },
                 actual = actual
+            )
+        }
+
+    @Test
+    fun `the municipality and county come along with the locality`() =
+        runTest {
+            assertEquals(
+                expected = Locality(
+                    name = "Funäsdalen",
+                    municipality = "Härjedalens kommun",
+                    county = "Jämtlands län"
+                ).asRight(),
+                actual = respondingWith(
+                    body = """{"address":{"village":"Funäsdalen","municipality":"Härjedalens kommun","county":"Jämtlands län"}}"""
+                ).getLocality(
+                    latitude = 62.54,
+                    longitude = 12.55
+                )
             )
         }
 

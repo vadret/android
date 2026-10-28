@@ -1,10 +1,9 @@
 package fi.kroon.vadret.weatherforecast
 
 import fi.kroon.vadret.aggregatedfeed.model.AggregatedFeed
+import fi.kroon.vadret.aggregatedfeed.model.FeedArea
 import fi.kroon.vadret.aggregatedfeed.model.FeedSource
 import fi.kroon.vadret.aggregatedfeed.model.WarningLevel
-import fi.kroon.vadret.autocomplete.AutoCompleteRepository
-import fi.kroon.vadret.autocomplete.model.AutoCompleteItem
 import fi.kroon.vadret.common.Failure
 import fi.kroon.vadret.core.resources.Res
 import fi.kroon.vadret.core.resources.wsymb2_overcast
@@ -18,7 +17,10 @@ import fi.kroon.vadret.location.model.LocationPreference
 import fi.kroon.vadret.location.model.StoredLocation
 import fi.kroon.vadret.nominatim.NominatimRepository
 import fi.kroon.vadret.nominatim.model.Locality
-import fi.kroon.vadret.warning.GetWarningsTask
+import fi.kroon.vadret.place.PlaceRepository
+import fi.kroon.vadret.place.model.Place
+import fi.kroon.vadret.warning.ObserveUnseenWarningsTask
+import fi.kroon.vadret.warning.model.WarningPlace
 import fi.kroon.vadret.weatherforecast.model.Analysis
 import fi.kroon.vadret.weatherforecast.model.ComingDay
 import fi.kroon.vadret.weatherforecast.model.Forecast
@@ -45,7 +47,7 @@ internal val stockholm = StoredLocation(
     longitude = 18.0686
 )
 
-internal val kiruna = AutoCompleteItem(
+internal val kiruna = Place(
     locality = "Kiruna",
     municipality = "Kiruna",
     county = "Norrbotten",
@@ -248,7 +250,11 @@ internal class FakeWeatherForecastRepository(
 }
 
 internal class FakeNominatimRepository(
-    var locality: Either<Failure, Locality> = Locality(name = "Göteborg").asRight()
+    var locality: Either<Failure, Locality> = Locality(
+        name = "Göteborg",
+        municipality = "Göteborgs kommun",
+        county = "Västra Götalands län"
+    ).asRight()
 ) : NominatimRepository {
     override suspend fun getLocality(
         latitude: Double,
@@ -256,20 +262,20 @@ internal class FakeNominatimRepository(
     ): Either<Failure, Locality> = locality
 }
 
-internal class FakeAutoCompleteRepository(
-    var items: List<AutoCompleteItem> = listOf(kiruna)
-) : AutoCompleteRepository {
+internal class FakePlaceRepository(
+    var items: List<Place> = listOf(kiruna)
+) : PlaceRepository {
 
     val searches = mutableListOf<Pair<String, Int>>()
 
     override suspend fun search(
         prefix: String,
         limit: Int
-    ): Either<Failure, List<AutoCompleteItem>> {
+    ): Either<Failure, List<Place>> {
         searches.add(prefix to limit)
         return items
-            .filter { autoCompleteItem: AutoCompleteItem ->
-                autoCompleteItem.locality.startsWith(
+            .filter { place: Place ->
+                place.locality.startsWith(
                     prefix = prefix,
                     ignoreCase = true
                 )
@@ -277,7 +283,10 @@ internal class FakeAutoCompleteRepository(
     }
 }
 
-internal fun warning(identifier: String): AggregatedFeed =
+internal fun warning(
+    identifier: String,
+    endsAt: Instant? = null
+): AggregatedFeed =
     AggregatedFeed(
         identifier = identifier,
         headline = "Vind",
@@ -285,20 +294,33 @@ internal fun warning(identifier: String): AggregatedFeed =
         warningLevel = WarningLevel.YELLOW,
         details = emptyList(),
         source = FeedSource.SMHI,
-        publishedAt = Instant.parse(input = "2026-10-24T08:00:00Z")
+        isPublicAlert = false,
+        senderName = null,
+        publishedAt = Instant.parse(input = "2026-10-24T08:00:00Z"),
+        startsAt = null,
+        endsAt = endsAt,
+        area = FeedArea(
+            polygons = emptyList(),
+            lines = emptyList(),
+            regions = emptyList()
+        )
     )
 
-internal class FakeGetWarningsTask(
-    var result: Either<Failure, List<AggregatedFeed>> = listOf(
+internal class FakeObserveUnseenWarningsTask(
+    initial: Either<Failure, List<AggregatedFeed>> = listOf(
         warning(identifier = "smhi-1"),
         warning(identifier = "smhi-2")
     ).asRight()
-) : GetWarningsTask {
+) : ObserveUnseenWarningsTask {
 
-    val refreshes = mutableListOf<Boolean>()
+    val unseenWarnings: MutableStateFlow<Either<Failure, List<AggregatedFeed>>> = MutableStateFlow(value = initial)
+    val requests = mutableListOf<Pair<WarningPlace, Boolean>>()
 
-    override suspend fun invoke(isRefresh: Boolean): Either<Failure, List<AggregatedFeed>> {
-        refreshes.add(isRefresh)
-        return result
+    override fun invoke(
+        warningPlace: WarningPlace,
+        isRefresh: Boolean
+    ): Flow<Either<Failure, List<AggregatedFeed>>> {
+        requests.add(element = warningPlace to isRefresh)
+        return unseenWarnings
     }
 }

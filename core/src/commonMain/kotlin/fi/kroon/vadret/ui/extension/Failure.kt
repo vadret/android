@@ -5,7 +5,6 @@ import fi.kroon.vadret.common.Failure
 import fi.kroon.vadret.core.resources.Res
 import fi.kroon.vadret.core.resources.data_not_available_at_this_location
 import fi.kroon.vadret.core.resources.failed_loading_file
-import fi.kroon.vadret.core.resources.filter_failure_districts_not_available
 import fi.kroon.vadret.core.resources.http_bad_request_400
 import fi.kroon.vadret.core.resources.http_forbidden_403
 import fi.kroon.vadret.core.resources.http_gateway_timeout_504
@@ -54,8 +53,6 @@ fun Failure.messageResource(): StringResource =
         ErrorCode.RADAR_NOT_AVAILABLE -> Res.string.no_radar_available
 
         ErrorCode.WIND_NOT_AVAILABLE -> Res.string.no_wind_available
-
-        ErrorCode.DISTRICTS_NOT_AVAILABLE -> Res.string.filter_failure_districts_not_available
 
         ErrorCode.STORAGE_FAILED,
         ErrorCode.UNKNOWN -> Res.string.unhandled_error

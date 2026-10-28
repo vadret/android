@@ -88,6 +88,8 @@ class RadarViewModel internal constructor(
         when (event) {
             RadarEvent.OnStart -> onStart()
 
+            RadarEvent.OnLeft -> stopPlaying()
+
             is RadarEvent.OnLocaleChanged -> onLocaleChanged(languageTag = event.languageTag)
 
             is RadarEvent.OnDarkThemeChanged -> onDarkThemeChanged(isDarkTheme = event.isDarkTheme)
