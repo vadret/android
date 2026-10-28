@@ -129,6 +129,7 @@ android {
 kotlin {
     compilerOptions {
         optIn.add('kotlin.concurrent.atomics.ExperimentalAtomicApi')
+        freeCompilerArgs.addAll('-Xfull-value-classes', '-Xcompanion-blocks-and-extensions')
     }
 }
 
