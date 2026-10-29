@@ -30,7 +30,7 @@ A simple weather app that uses the Swedish weather service [SMHI](https://openda
 </p>
 
 ## Changelog
-Changelog available [here](https://github.com/vadret/android/blob/master/androidApp/src/main/res/raw/changelog.md) in [keep-a-changelog](https://keepachangelog.com/en/1.0.0/) format.
+Changelog available [here](https://github.com/vadret/android/blob/master/androidApp/src/main/res/raw/changelog.md).
 
 ## Architecture
 

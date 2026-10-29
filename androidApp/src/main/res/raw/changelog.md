@@ -5,6 +5,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.2.0] -- 2026-10-29
+
 ### Added
 
 - Added new iOS target
@@ -15,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - bump kotlin 2.5.0-beta2
 - updated Warnings feature
 - Refine weather forecast design
+- Hourly view is now toggled off by default (still available in settings)
 
 ## [3.1.0] -- 2026-10-27
 
@@ -318,7 +321,8 @@ they did not work very well and weren't used a lot. The release includes a total
 - Radar imagery
 - 10 day weather forecast
 
-[Unreleased]: https://github.com/vadret/android/compare/3.1.0...HEAD
+[Unreleased]: https://github.com/vadret/android/compare/3.2.0...HEAD
+[3.2.0]: https://github.com/vadret/android/compare/3.1.0...3.2.0
 [3.1.0]: https://github.com/vadret/android/compare/3.0.0...3.1.0
 [3.0.0]: https://github.com/vadret/android/compare/2.0.3...3.0.0
 [2.0.3]: https://github.com/vadret/android/compare/2.0.2...2.0.3
