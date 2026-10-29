@@ -3,7 +3,7 @@
 [![ktlint](https://img.shields.io/badge/code%20style-%E2%9D%A4-FF4081.svg)](https://ktlint.github.io/)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/vadret/android/blob/master/LICENSE)
 
-<img src="https://raw.githubusercontent.com/vadret/android/master/assets/logo.png" alt="Vädret" width="64">
+<img src="https://raw.githubusercontent.com/vadret/android/dev/assets/logo.png" alt="Vädret" width="64">
 
 # Vädret
 A simple weather app that uses the Swedish weather service [SMHI](https://opendata.smhi.se/) to fetch weather data, and [Krisinformation](https://www.krisinformation.se/en) for emergency information from Swedish authorities. MVI written in Kotlin Multiplatform supporting Android and iOS targets. The data is licensed under [Creative commons Erkännande 4.0 SE](https://www.smhi.se/data/om-smhis-data/villkor-for-anvandning).
