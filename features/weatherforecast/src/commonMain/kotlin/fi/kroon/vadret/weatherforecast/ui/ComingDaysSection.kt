@@ -22,13 +22,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import fi.kroon.vadret.core.resources.Res
@@ -54,6 +57,9 @@ private const val COLLAPSED_DEGREES = 0f
 private const val EXPANDED_DEGREES = 180f
 private const val SINGLE_LINE = 1
 private const val PRECIPITATION_MAX_LINES = 2
+private const val FIRST_DAY_INDEX = 0
+private const val EXPANDED_STATE_LAYER_ALPHA = 0.04f
+private const val NO_STATE_LAYER_ALPHA = 0f
 
 private val headerInset = 4.dp
 private val cardShape = RoundedCornerShape(size = 21.dp)
@@ -69,6 +75,7 @@ private val dayTemperatureWidth = 34.dp
 private val chevronSize = 21.dp
 private val dividerHorizontalPadding = 21.dp
 private val hoursBottomPadding = 2.dp
+private val noEdgePadding = 0.dp
 private const val RANGE_BAR_WEIGHT = 1f
 private val dayNameAutoSize = TextAutoSize.StepBased(
     minFontSize = 11.sp,
@@ -106,7 +113,7 @@ internal fun ComingDaysCard(
         modifier = modifier,
         shape = cardShape
     ) {
-        Column(modifier = Modifier.padding(vertical = cardVerticalPadding)) {
+        Column {
             comingDays.forEachIndexed { index: Int, comingDay: ComingDay ->
                 if (index > 0) {
                     HorizontalDivider(
@@ -116,7 +123,9 @@ internal fun ComingDaysCard(
                 }
                 ComingDayItem(
                     comingDay = comingDay,
-                    onDayToggled = onDayToggled
+                    onDayToggled = onDayToggled,
+                    edgeTopPadding = cardVerticalPadding.onlyOnEdge(isEdge = index == FIRST_DAY_INDEX),
+                    edgeBottomPadding = cardVerticalPadding.onlyOnEdge(isEdge = index == comingDays.lastIndex)
                 )
             }
         }
@@ -127,11 +136,18 @@ internal fun ComingDaysCard(
 private fun ComingDayItem(
     comingDay: ComingDay,
     onDayToggled: (String) -> Unit,
+    edgeTopPadding: Dp,
+    edgeBottomPadding: Dp,
     modifier: Modifier = Modifier
 ) {
-    Column(modifier = modifier.fillMaxWidth()) {
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(bottom = edgeBottomPadding)
+    ) {
         ComingDayRow(
             comingDay = comingDay,
+            edgeTopPadding = edgeTopPadding,
             onClick = { onDayToggled(comingDay.key) }
         )
         AnimatedVisibility(visible = comingDay.isExpanded) {
@@ -147,6 +163,7 @@ private fun ComingDayItem(
 @Composable
 private fun ComingDayRow(
     comingDay: ComingDay,
+    edgeTopPadding: Dp,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -163,18 +180,32 @@ private fun ComingDayRow(
             COLLAPSED_DEGREES
         }
     )
+    val stateLayerColor: Color = VadretTheme.colorScheme.onSurface
+    val stateLayerAlpha: Float by animateFloatAsState(
+        targetValue = if (comingDay.isExpanded) {
+            EXPANDED_STATE_LAYER_ALPHA
+        } else {
+            NO_STATE_LAYER_ALPHA
+        }
+    )
 
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .heightIn(min = dayRowMinHeight)
-            .clickable(
+            .drawBehind {
+                drawRect(
+                    color = stateLayerColor,
+                    alpha = stateLayerAlpha
+                )
+            }.clickable(
                 interactionSource = null,
                 indication = null,
                 role = Role.Button,
                 onClick = onClick
             )
             .semantics { stateDescription = expansionDescription }
+            .padding(top = edgeTopPadding)
+            .heightIn(min = dayRowMinHeight)
             .padding(horizontal = dayRowHorizontalPadding),
         horizontalArrangement = Arrangement.spacedBy(space = dayRowSpacing),
         verticalAlignment = Alignment.CenterVertically
@@ -268,3 +299,10 @@ private fun ComingDaysCardPreview(
         )
     }
 }
+
+private fun Dp.onlyOnEdge(isEdge: Boolean): Dp =
+    if (isEdge) {
+        this
+    } else {
+        noEdgePadding
+    }
