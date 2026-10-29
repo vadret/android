@@ -142,7 +142,8 @@ private val kotlinxDatetime: Library = library(author = "JetBrains", title = "ko
 private val debugAppInfo = AppInfo(
     applicationId = "fi.kroon.vadret",
     versionName = "3.1.0-test",
-    isDebug = true
+    isDebug = true,
+    isDeveloperSettingsShown = true
 )
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -296,7 +297,7 @@ class SettingsViewModelTest {
         }
 
     @Test
-    fun `the developer tab is shown in debug builds only`() =
+    fun `the developer tab is shown only in builds that show developer settings`() =
         testScope.runTest {
             assertEquals(
                 expected = listOf(
@@ -305,7 +306,7 @@ class SettingsViewModelTest {
                 ),
                 actual = listOf(
                     viewModel(appInfo = debugAppInfo).state.value.pages,
-                    viewModel(appInfo = debugAppInfo.copy(isDebug = false)).state.value.pages
+                    viewModel(appInfo = debugAppInfo.copy(isDeveloperSettingsShown = false)).state.value.pages
                 )
             )
         }

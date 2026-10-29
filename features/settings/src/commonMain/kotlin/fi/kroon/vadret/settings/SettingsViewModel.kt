@@ -34,7 +34,7 @@ class SettingsViewModel internal constructor(
     internal val state: StateFlow<SettingsState>
         field = MutableStateFlow(
             value = SettingsState(
-                pages = settingsPages(isDebug = appInfo.isDebug),
+                pages = settingsPages(isDeveloperSettingsShown = appInfo.isDeveloperSettingsShown),
                 aboutRows = aboutRows(appVersion = appInfo.versionName)
             )
         )

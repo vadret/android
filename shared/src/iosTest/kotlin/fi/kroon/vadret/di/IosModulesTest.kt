@@ -32,7 +32,8 @@ class IosModulesTest {
     private val appInfo = AppInfo(
         applicationId = "fi.kroon.vadret",
         versionName = "3.1.0-test",
-        isDebug = true
+        isDebug = true,
+        isDeveloperSettingsShown = true
     )
 
     @BeforeTest
