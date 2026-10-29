@@ -166,8 +166,6 @@
     <string name="warning_detail_advice">Att tänka på</string>
     <string name="warning_detail_comment">Kommentar</string>
     <string name="precipitation">Nederbörd</string>
-    <string name="precipitation_light">Lätt</string>
-    <string name="precipitation_heavy">Kraftig</string>
     <string name="now">Nu</string>
     <string name="almost_there">Nästan där..</string>
     <string name="day_forecast">Prognos för %1$s</string>

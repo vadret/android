@@ -223,8 +223,6 @@
     <string name="warning_detail_advice">Advice</string>
     <string name="warning_detail_comment">Comment</string>
     <string name="precipitation">Precipitation</string>
-    <string name="precipitation_light">Light</string>
-    <string name="precipitation_heavy">Heavy</string>
     <string name="now">Now</string>
     <string name="almost_there">Almost there..</string>
     <string name="day_forecast">%1$s forecast</string>
