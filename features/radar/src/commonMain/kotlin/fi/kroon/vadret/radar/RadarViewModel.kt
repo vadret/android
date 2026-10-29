@@ -86,7 +86,7 @@ class RadarViewModel internal constructor(
 
     internal fun onEvent(event: RadarEvent) {
         when (event) {
-            RadarEvent.OnStart -> onStart()
+            is RadarEvent.OnStart -> onStart(initialImageUrl = event.initialImageUrl)
 
             RadarEvent.OnLeft -> stopPlaying()
 
@@ -114,16 +114,16 @@ class RadarViewModel internal constructor(
         }
     }
 
-    private fun onStart() {
+    private fun onStart(initialImageUrl: String?) {
         if (isStarted.compareAndSet(expectedValue = false, newValue = true)) {
-            loadPrecipitation()
+            loadPrecipitation(initialImageUrl = initialImageUrl)
             loadDeviceLocation()
         }
     }
 
-    private fun loadPrecipitation() {
+    private fun loadPrecipitation(initialImageUrl: String?) {
         viewModelScope.launch(context = coroutineDispatcher) {
-            getRadarTask()
+            getRadarTask(imageUrl = initialImageUrl)
                 .onResult(
                     onError = { failure: Failure -> displayPrecipitationError(failure = failure) },
                     onSuccess = { loadedRadar: Radar ->
@@ -132,7 +132,7 @@ class RadarViewModel internal constructor(
                             val frames: ImmutableList<RadarFrame> = loadedRadar.toFrames()
                             state.copy(
                                 precipitationFrames = frames,
-                                precipitationIndex = frames.lastIndex.coerceAtLeast(minimumValue = 0),
+                                precipitationIndex = frames.initialIndex(initialImageUrl = initialImageUrl),
                                 isPrecipitationUnavailable = frames.isEmpty(),
                                 isLoading = state.isLoading && state.layer == RadarLayer.WIND && state.windField == null
                             )
@@ -140,7 +140,7 @@ class RadarViewModel internal constructor(
                         if (updatedState.layer == RadarLayer.PRECIPITATION) {
                             showFrame(
                                 layer = RadarLayer.PRECIPITATION,
-                                index = updatedState.precipitationFrames.lastIndex
+                                index = updatedState.precipitationIndex
                             )
                         }
                     }
@@ -173,6 +173,15 @@ class RadarViewModel internal constructor(
         }
         viewModelScope.launch(context = coroutineDispatcher) {
             loadWindFrame(index = state.value.windIndex)
+        }
+    }
+
+    private fun ImmutableList<RadarFrame>.initialIndex(initialImageUrl: String?): Int {
+        val initialImageIndex: Int = indexOfFirst { frame: RadarFrame -> frame.imageUrl == initialImageUrl }
+        return if (initialImageIndex >= 0) {
+            initialImageIndex
+        } else {
+            lastIndex.coerceAtLeast(minimumValue = 0)
         }
     }
 

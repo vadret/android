@@ -72,9 +72,13 @@ private const val ATTRIBUTION_BACKGROUND_ALPHA = 0.85f
 @Composable
 fun RadarRoute(
     modifier: Modifier = Modifier,
+    initialImageUrl: String? = null,
     viewModel: RadarViewModel = koinViewModel()
 ) {
     val state: RadarState by viewModel.state.collectAsStateWithLifecycle()
+    LaunchedEffect(initialImageUrl) {
+        viewModel.onEvent(event = RadarEvent.OnStart(initialImageUrl = initialImageUrl))
+    }
     RadarScreen(
         state = state,
         onEvent = viewModel::onEvent,
@@ -96,9 +100,6 @@ internal fun RadarScreen(
     val isDarkTheme: Boolean = VadretTheme.isDark
     LaunchedEffect(isDarkTheme) {
         onEvent(RadarEvent.OnDarkThemeChanged(isDarkTheme = isDarkTheme))
-    }
-    LaunchedEffect(Unit) {
-        onEvent(RadarEvent.OnStart)
     }
     DisposableEffect(Unit) {
         onDispose { onEvent(RadarEvent.OnLeft) }

@@ -82,6 +82,12 @@ To run on a device, set your `TEAM_ID` in `iosApp/Configuration/Config.xcconfig`
 ./gradlew ktlintFormat
 ```
 
+#### Releasing
+
+```sh
+./release.sh <version>
+```
+
 ## Contributor Guidelines
 If you would like to contribute code to the project fork the project and find an issue/feature you would like to work on. Ideally check with a maintainer so you dont work on something that might be in the workings already.
 

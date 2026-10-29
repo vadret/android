@@ -74,5 +74,5 @@ private fun appInfo(): AppInfo =
         applicationId = NSBundle.mainBundle.bundleIdentifier.orEmpty(),
         versionName = NSBundle.mainBundle.objectForInfoDictionaryKey(key = VERSION_KEY) as? String ?: UNKNOWN_VERSION,
         isDebug = Platform.isDebugBinary,
-        isDeveloperSettingsShown = Platform.isDebugBinary
+        isDeveloperBuild = Platform.isDebugBinary
     )

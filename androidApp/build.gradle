@@ -93,19 +93,19 @@ android {
             shrinkResources = true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt')
             buildConfigField "String", "APP_VERSION", "\"${defaultConfig.versionName}\""
-            buildConfigField "boolean", "IS_DEVELOPER_SETTINGS_SHOWN", "false"
+            buildConfigField "boolean", "IS_DEVELOPER_BUILD", "false"
         }
         localRelease {
             initWith release
             signingConfig = signingConfigs.debug
             matchingFallbacks = ['release']
-            buildConfigField "boolean", "IS_DEVELOPER_SETTINGS_SHOWN", "true"
+            buildConfigField "boolean", "IS_DEVELOPER_BUILD", "true"
         }
         debug {
             enableAndroidTestCoverage = true
             versionNameSuffix = "debug"
             buildConfigField "String", "APP_VERSION", "\"${defaultConfig.versionName}-${versionNameSuffix}-${getGitSha}\""
-            buildConfigField "boolean", "IS_DEVELOPER_SETTINGS_SHOWN", "true"
+            buildConfigField "boolean", "IS_DEVELOPER_BUILD", "true"
         }
     }
     flavorDimensions = ["default"]

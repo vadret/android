@@ -15,7 +15,7 @@ internal fun appModules(context: Context): List<Module> =
                 applicationId = BuildConfig.APPLICATION_ID,
                 versionName = BuildConfig.APP_VERSION,
                 isDebug = BuildConfig.DEBUG,
-                isDeveloperSettingsShown = BuildConfig.IS_DEVELOPER_SETTINGS_SHOWN
+                isDeveloperBuild = BuildConfig.IS_DEVELOPER_BUILD
             )
         ),
         radarModule,

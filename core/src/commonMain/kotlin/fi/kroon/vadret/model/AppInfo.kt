@@ -4,5 +4,5 @@ data class AppInfo(
     val applicationId: String,
     val versionName: String,
     val isDebug: Boolean,
-    val isDeveloperSettingsShown: Boolean
+    val isDeveloperBuild: Boolean
 )

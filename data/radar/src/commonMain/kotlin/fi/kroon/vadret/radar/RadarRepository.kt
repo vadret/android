@@ -13,6 +13,7 @@ import kotlin.time.Clock
 interface RadarRepository {
 
     suspend fun getRadar(): Either<Failure, Radar>
+    suspend fun getRadarContaining(imageUrl: String): Either<Failure, Radar>
 }
 
 fun RadarRepository(

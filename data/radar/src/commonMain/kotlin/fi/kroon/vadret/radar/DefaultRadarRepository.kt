@@ -6,6 +6,7 @@ import fi.kroon.vadret.common.either
 import fi.kroon.vadret.radar.extension.toFailure
 import fi.kroon.vadret.radar.extension.toRadar
 import fi.kroon.vadret.radar.extension.toRadarCacheEntity
+import fi.kroon.vadret.radar.extension.toRadarDate
 import fi.kroon.vadret.radar.local.RadarCacheEntity
 import fi.kroon.vadret.radar.local.RadarLocalDataSource
 import fi.kroon.vadret.radar.model.Radar
@@ -27,22 +28,29 @@ internal class DefaultRadarRepository(
     private val clock: Clock
 ) : RadarRepository {
 
-    override suspend fun getRadar(): Either<Failure, Radar> =
-        either { getRadarCacheEntity().toRadar() }
-            .catch { exception: Exception -> exception.toFailure() }
+    override suspend fun getRadar(): Either<Failure, Radar> = either {
+        getRadarCacheEntity(
+            date = clock.now().toLocalDateTime(timeZone = TimeZone.UTC).date
+        ).toRadar()
+    }.catch { exception: Exception -> exception.toFailure() }
 
-    private suspend fun getRadarCacheEntity(): RadarCacheEntity {
+    override suspend fun getRadarContaining(
+        imageUrl: String
+    ): Either<Failure, Radar> = either {
+        getRadarCacheEntity(date = imageUrl.toRadarDate()).toRadar()
+    }.catch { exception: Exception -> exception.toFailure() }
+
+    private suspend fun getRadarCacheEntity(date: LocalDate): RadarCacheEntity {
         val now: Instant = clock.now()
-        val today: LocalDate = now.toLocalDateTime(timeZone = TimeZone.UTC).date
         val cachedRadar: RadarCacheEntity? = radarLocalDataSource.getRadar()
-        return if (cachedRadar != null && cachedRadar.isCurrent(now = now, today = today)) {
+        return if (cachedRadar != null && cachedRadar.isCurrent(now = now, date = date)) {
             cachedRadar
         } else {
             val fetchedRadar: RadarCacheEntity = radarRemoteDataSource
-                .getRadar(date = today)
+                .getRadar(date = date)
                 .toRadarCacheEntity(
                     fetchedAt = now,
-                    date = today
+                    date = date
                 )
             radarLocalDataSource.setRadar(radarCacheEntity = fetchedRadar)
             fetchedRadar
@@ -51,10 +59,10 @@ internal class DefaultRadarRepository(
 
     private fun RadarCacheEntity.isCurrent(
         now: Instant,
-        today: LocalDate
+        date: LocalDate
     ): Boolean {
         val age: Duration = now - Instant.fromEpochMilliseconds(epochMilliseconds = fetchedAtEpochMillis)
-        return date == today.toString() &&
+        return this.date == date.toString() &&
             age >= Duration.ZERO &&
             age < cacheLifetime &&
             images.isNotEmpty()

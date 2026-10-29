@@ -1,5 +1,6 @@
 package fi.kroon.vadret.main
 
+import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -10,15 +11,26 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import fi.kroon.vadret.BaseApplication
+import fi.kroon.vadret.BuildConfig
 import fi.kroon.vadret.di.LocalKoin
 import fi.kroon.vadret.radar.ui.RadarMapHost
 import fi.kroon.vadret.radar.ui.RadarRoute
 import org.koin.core.Koin
 
-private val radarTab = RadarTab(
-    host = { content: @Composable () -> Unit -> RadarMapHost(content = content) },
-    content = { RadarRoute() }
-)
+private const val RADAR_IMAGE_URL_EXTRA = "radar_image_url"
+
+private fun radarTab(initialRadarImageUrl: String?): RadarTab =
+    RadarTab(
+        host = { content: @Composable () -> Unit -> RadarMapHost(content = content) },
+        content = { RadarRoute(initialImageUrl = initialRadarImageUrl) }
+    )
+
+private fun Intent.initialRadarImageUrl(): String? =
+    if (BuildConfig.IS_DEVELOPER_BUILD) {
+        getStringExtra(RADAR_IMAGE_URL_EXTRA)
+    } else {
+        null
+    }
 
 class MainActivity : ComponentActivity() {
 
@@ -26,6 +38,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         val koin: Koin = (application as BaseApplication).koinApplication.koin
+        val radarTab: RadarTab = radarTab(initialRadarImageUrl = intent.initialRadarImageUrl())
         setContent {
             CompositionLocalProvider(LocalKoin provides koin) {
                 VadretRoot(

@@ -59,13 +59,13 @@ internal fun aboutRows(appVersion: String): ImmutableList<AboutRow> =
         )
     )
 
-internal fun settingsPages(isDeveloperSettingsShown: Boolean): ImmutableList<SettingsPage> =
+internal fun settingsPages(isDeveloperBuild: Boolean): ImmutableList<SettingsPage> =
     SettingsPage.entries
-        .filter { settingsPage: SettingsPage -> settingsPage != SettingsPage.DEVELOPER || isDeveloperSettingsShown }
+        .filter { settingsPage: SettingsPage -> settingsPage != SettingsPage.DEVELOPER || isDeveloperBuild }
         .toImmutableList()
 
 internal data class SettingsState(
-    val pages: ImmutableList<SettingsPage> = settingsPages(isDeveloperSettingsShown = false),
+    val pages: ImmutableList<SettingsPage> = settingsPages(isDeveloperBuild = false),
     val settings: Settings? = null,
     val locationRows: ImmutableList<LocationRow> = persistentListOf(),
     val libraryGroups: ImmutableList<LibraryGroup> = persistentListOf(),

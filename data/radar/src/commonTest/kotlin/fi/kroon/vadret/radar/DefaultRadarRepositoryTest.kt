@@ -299,4 +299,42 @@ class DefaultRadarRepositoryTest {
                 )
             }
         }
+
+    @Test
+    fun `the radar containing an image is the radar of the day in its url`() =
+        testScope.runTest {
+            assertEquals<Either<Failure, Radar>>(
+                expected = fetchedRadar.asRight(),
+                actual = radarRepository.getRadarContaining(imageUrl = "https://opendata-download-radar.smhi.se/api/version/latest/area/sweden/product/comp/2026/10/25/radar_2610251300.tif")
+            )
+            assertEquals(
+                expected = listOf(LocalDate.parse(input = "2026-10-25")),
+                actual = radarRemoteDataSource.requestedDates
+            )
+        }
+
+    @Test
+    fun `an image url without a radar day is a radar that is not available`() =
+        testScope.runTest {
+            val imageUrls: List<String> = listOf(
+                "https://smhi.se/1355.tif",
+                "https://opendata-download-radar.smhi.se/api/version/latest/area/sweden/product/comp/2026/13/40/radar_2613400000.tif",
+                "https://opendata-download-radar.smhi.se/api/version/latest/area/sweden/product/comp/2026/10/25/radar_2610251300.png"
+            )
+
+            withRecordedLogs { recordingLogSink ->
+                assertEquals(
+                    expected = imageUrls.map { Failure(errorCode = ErrorCode.RADAR_NOT_AVAILABLE).asLeft() },
+                    actual = imageUrls.map { imageUrl: String -> radarRepository.getRadarContaining(imageUrl = imageUrl) }
+                )
+                assertEquals(
+                    expected = imageUrls.map { "fi.kroon.vadret.radar" to LogLevel.WARN },
+                    actual = recordingLogSink.lines.map { line: LogLine -> line.tag to line.level }
+                )
+            }
+            assertEquals(
+                expected = emptyList(),
+                actual = radarRemoteDataSource.requestedDates
+            )
+        }
 }

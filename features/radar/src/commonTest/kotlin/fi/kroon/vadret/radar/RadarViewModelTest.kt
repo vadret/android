@@ -52,7 +52,13 @@ import kotlin.time.Instant
 private class FakeGetRadarTask(
     var result: Either<Failure, Radar>
 ) : GetRadarTask {
-    override suspend fun invoke(): Either<Failure, Radar> = result
+
+    val requestedImageUrls = mutableListOf<String?>()
+
+    override suspend fun invoke(imageUrl: String?): Either<Failure, Radar> {
+        requestedImageUrls.add(imageUrl)
+        return result
+    }
 }
 
 private class FakeRadarImageLoader : RadarImageLoader {
@@ -204,7 +210,10 @@ class RadarViewModelTest {
         Dispatchers.resetMain()
     }
 
-    private fun viewModel(isStarted: Boolean = true): RadarViewModel {
+    private fun viewModel(
+        isStarted: Boolean = true,
+        initialImageUrl: String? = null
+    ): RadarViewModel {
         val radarViewModel = RadarViewModel(
             getRadarTask = getRadarTask,
             getWindForecastTask = getWindForecastTask,
@@ -216,7 +225,7 @@ class RadarViewModelTest {
             coroutineDispatcher = testDispatcher
         )
         if (isStarted) {
-            radarViewModel.onEvent(event = RadarEvent.OnStart)
+            radarViewModel.onEvent(event = RadarEvent.OnStart(initialImageUrl = initialImageUrl))
         }
         return radarViewModel
     }
@@ -233,6 +242,27 @@ class RadarViewModelTest {
             assertSame(expected = radarImageLoader.radarEchoes["https://smhi.se/2.png"]?.image, actual = state.shownEchoes)
             assertNull(actual = state.shownMotion)
             assertEquals(expected = false, actual = state.isLoading)
+        }
+
+    @Test
+    fun `a requested image is asked for and shown first`() =
+        testScope.runTest {
+            val radarViewModel: RadarViewModel = viewModel(initialImageUrl = "https://smhi.se/1.png")
+            advanceUntilIdle()
+
+            val state: RadarState = radarViewModel.state.value
+            assertEquals(expected = listOf<String?>("https://smhi.se/1.png"), actual = getRadarTask.requestedImageUrls)
+            assertEquals(expected = 1, actual = state.precipitationIndex)
+            assertSame(expected = radarImageLoader.radarEchoes["https://smhi.se/1.png"]?.image, actual = state.shownEchoes)
+        }
+
+    @Test
+    fun `a requested image that the radar lacks shows the newest frame`() =
+        testScope.runTest {
+            val radarViewModel: RadarViewModel = viewModel(initialImageUrl = "https://smhi.se/9.png")
+            advanceUntilIdle()
+
+            assertEquals(expected = 2, actual = radarViewModel.state.value.precipitationIndex)
         }
 
     @Test
@@ -673,7 +703,7 @@ class RadarViewModelTest {
             radarViewModel.onEvent(event = RadarEvent.OnLayerSelected(layer = RadarLayer.WIND))
             advanceUntilIdle()
 
-            radarViewModel.onEvent(event = RadarEvent.OnStart)
+            radarViewModel.onEvent(event = RadarEvent.OnStart(initialImageUrl = null))
             advanceUntilIdle()
 
             assertEquals(expected = false, actual = radarViewModel.state.value.isLoading)
@@ -684,7 +714,7 @@ class RadarViewModelTest {
         testScope.runTest {
             val radarViewModel: RadarViewModel = viewModel(isStarted = false)
             radarViewModel.onEvent(event = RadarEvent.OnLocaleChanged(languageTag = "en"))
-            radarViewModel.onEvent(event = RadarEvent.OnStart)
+            radarViewModel.onEvent(event = RadarEvent.OnStart(initialImageUrl = null))
             advanceUntilIdle()
             radarViewModel.onEvent(event = RadarEvent.OnIndexChanged(index = 1))
             radarViewModel.onEvent(event = RadarEvent.OnLayerSelected(layer = RadarLayer.WIND))
@@ -707,7 +737,7 @@ class RadarViewModelTest {
         testScope.runTest {
             val radarViewModel: RadarViewModel = viewModel(isStarted = false)
             radarViewModel.onEvent(event = RadarEvent.OnLocaleChanged(languageTag = "en"))
-            radarViewModel.onEvent(event = RadarEvent.OnStart)
+            radarViewModel.onEvent(event = RadarEvent.OnStart(initialImageUrl = null))
             advanceUntilIdle()
             val before: RadarState = radarViewModel.state.value
 
@@ -723,7 +753,7 @@ class RadarViewModelTest {
             val radarViewModel: RadarViewModel = viewModel(isStarted = false)
             radarViewModel.onEvent(event = RadarEvent.OnLocaleChanged(languageTag = "sv-SE"))
             advanceUntilIdle()
-            radarViewModel.onEvent(event = RadarEvent.OnStart)
+            radarViewModel.onEvent(event = RadarEvent.OnStart(initialImageUrl = null))
             advanceUntilIdle()
 
             assertEquals(expected = listOf("lördag"), actual = radarViewModel.state.value.precipitationFrames.map { frame: RadarFrame -> frame.weekday }.distinct())
@@ -751,7 +781,7 @@ class RadarViewModelTest {
             radarViewModel.onEvent(event = RadarEvent.OnMapLoaded)
             val mapWithoutImage: Boolean = radarViewModel.state.value.isInitialLoading
 
-            radarViewModel.onEvent(event = RadarEvent.OnStart)
+            radarViewModel.onEvent(event = RadarEvent.OnStart(initialImageUrl = null))
             advanceUntilIdle()
 
             assertEquals(expected = true, actual = mapWithoutImage)

@@ -3,7 +3,7 @@ package fi.kroon.vadret.radar
 import fi.kroon.vadret.radar.model.RadarLayer
 
 internal sealed interface RadarEvent {
-    data object OnStart : RadarEvent
+    data class OnStart(val initialImageUrl: String?) : RadarEvent
     data object OnLeft : RadarEvent
     data object OnMapLoaded : RadarEvent
     data class OnLocaleChanged(val languageTag: String) : RadarEvent

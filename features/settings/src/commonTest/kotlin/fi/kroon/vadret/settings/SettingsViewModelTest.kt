@@ -143,7 +143,7 @@ private val debugAppInfo = AppInfo(
     applicationId = "fi.kroon.vadret",
     versionName = "3.1.0-test",
     isDebug = true,
-    isDeveloperSettingsShown = true
+    isDeveloperBuild = true
 )
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -297,7 +297,7 @@ class SettingsViewModelTest {
         }
 
     @Test
-    fun `the developer tab is shown only in builds that show developer settings`() =
+    fun `the developer tab is shown only in developer builds`() =
         testScope.runTest {
             assertEquals(
                 expected = listOf(
@@ -306,7 +306,7 @@ class SettingsViewModelTest {
                 ),
                 actual = listOf(
                     viewModel(appInfo = debugAppInfo).state.value.pages,
-                    viewModel(appInfo = debugAppInfo.copy(isDeveloperSettingsShown = false)).state.value.pages
+                    viewModel(appInfo = debugAppInfo.copy(isDeveloperBuild = false)).state.value.pages
                 )
             )
         }

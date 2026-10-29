@@ -33,7 +33,7 @@ class IosModulesTest {
         applicationId = "fi.kroon.vadret",
         versionName = "3.1.0-test",
         isDebug = true,
-        isDeveloperSettingsShown = true
+        isDeveloperBuild = true
     )
 
     @BeforeTest
