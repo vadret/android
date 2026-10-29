@@ -21,7 +21,7 @@ def static loadFromFile(String key, String value) {
 
 def isRunningOnCI = System.getenv("CI") == "true"
 
-def appVersionCode = 30
+def appVersionCode = 31
 def abiVersionCodes = ["armeabi-v7a": 1, "arm64-v8a": 2, "x86_64": 4]
 
 def getGitSha = { ->
@@ -43,7 +43,7 @@ android {
         minSdk = libs.versions.android.minSdk.get().toInteger()
         targetSdk = libs.versions.android.targetSdk.get().toInteger()
         versionCode = appVersionCode
-        versionName = "3.2.0alpha02"
+        versionName = "3.2.0"
         vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner = "androidx.top.runner.AndroidJUnitRunner"
         multiDexEnabled = true

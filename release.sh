@@ -266,7 +266,7 @@ stage_release_files() {
 print_commit_and_tag_command() {
     local version="$1"
     step "Prepared ${version}. Look over git diff --cached and ${SCREENSHOT_DIRECTORY}, then commit and tag with:"
-    echo "git commit -m \"release/${version}\" && git tag ${version} -m \"https://github.com/vadret/android/blob/${version}/androidApp/src/main/res/raw/changelog.md\""
+    echo "git commit -m \"release/${version}\" && git tag ${version} -m \"[changelog](https://github.com/vadret/android/blob/${version}/androidApp/src/main/res/raw/changelog.md)\""
 }
 
 main() {
