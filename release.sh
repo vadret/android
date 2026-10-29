@@ -2,6 +2,7 @@
 set -euo pipefail
 
 readonly SEMANTIC_VERSION_PATTERN='^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)((alpha|beta|rc)[0-9]{2})?$'
+readonly PRE_RELEASE_PATTERN='(alpha|beta|rc)[0-9]{2}$'
 readonly ANDROID_BUILD_FILE="androidApp/build.gradle"
 readonly IOS_CONFIG_FILE="iosApp/Configuration/Config.xcconfig"
 readonly CHANGELOG_FILE="androidApp/src/main/res/raw/changelog.md"
@@ -43,11 +44,15 @@ step() {
 
 require_tools() {
     local tool
-    for tool in git adb cwebp; do
+    for tool in "$@"; do
         if ! command -v "${tool}" > /dev/null; then
             fail "${tool} is not installed"
         fi
     done
+}
+
+is_pre_release() {
+    [[ "$1" =~ ${PRE_RELEASE_PATTERN} ]]
 }
 
 require_semantic_version() {
@@ -244,18 +249,22 @@ replace_in_file() {
     fi
 }
 
-bump_versions() {
+set_version_names() {
     local version="$1"
+    step "Setting version ${version}"
+    replace_in_file "${ANDROID_BUILD_FILE}" "s/versionName = \"[^\"]*\"/versionName = \"${version}\"/" "versionName = \"${version}\""
+    replace_in_file "${IOS_CONFIG_FILE}" "s/^MARKETING_VERSION=.*$/MARKETING_VERSION=${version%%[!0-9.]*}/" "MARKETING_VERSION=${version%%[!0-9.]*}"
+}
+
+increment_version_codes() {
     local version_code
     version_code=$(sed -nE 's/^def appVersionCode = ([0-9]+)$/\1/p' "${ANDROID_BUILD_FILE}")
     if [[ -z "${version_code}" ]]; then
         fail "${ANDROID_BUILD_FILE} has no appVersionCode"
     fi
     local next_version_code=$((version_code + 1))
-    step "Setting version ${version} with version code ${next_version_code}"
+    step "Setting version code ${next_version_code}"
     replace_in_file "${ANDROID_BUILD_FILE}" "s/^def appVersionCode = [0-9]+$/def appVersionCode = ${next_version_code}/" "def appVersionCode = ${next_version_code}"
-    replace_in_file "${ANDROID_BUILD_FILE}" "s/versionName = \"[^\"]*\"/versionName = \"${version}\"/" "versionName = \"${version}\""
-    replace_in_file "${IOS_CONFIG_FILE}" "s/^MARKETING_VERSION=.*$/MARKETING_VERSION=${version%%[!0-9.]*}/" "MARKETING_VERSION=${version%%[!0-9.]*}"
     replace_in_file "${IOS_CONFIG_FILE}" "s/^CURRENT_PROJECT_VERSION=.*$/CURRENT_PROJECT_VERSION=${next_version_code}/" "CURRENT_PROJECT_VERSION=${next_version_code}"
 }
 
@@ -265,7 +274,7 @@ stage_release_files() {
 
 print_commit_and_tag_command() {
     local version="$1"
-    step "Prepared ${version}. Look over git diff --cached and ${SCREENSHOT_DIRECTORY}, then commit and tag with:"
+    step "Prepared ${version}. Look over git diff --cached, then commit and tag with:"
     echo "git commit -m \"release/${version}\" && git tag ${version} -m \"[changelog](https://github.com/vadret/android/blob/${version}/androidApp/src/main/res/raw/changelog.md)\""
 }
 
@@ -275,14 +284,20 @@ main() {
     fi
     local version="$1"
     cd "$(dirname "${BASH_SOURCE[0]}")"
-    require_tools
+    require_tools git
     require_semantic_version "${version}"
     require_new_tag "${version}"
-    require_changelog_entry "${version}"
     require_clean_tree
-    require_phone
-    capture_screenshots
-    bump_versions "${version}"
+    if is_pre_release "${version}"; then
+        set_version_names "${version}"
+    else
+        require_tools adb cwebp
+        require_changelog_entry "${version}"
+        require_phone
+        capture_screenshots
+        set_version_names "${version}"
+        increment_version_codes
+    fi
     stage_release_files
     print_commit_and_tag_command "${version}"
 }
