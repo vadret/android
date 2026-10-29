@@ -161,8 +161,6 @@
     <string name="alert_class">Warning class:</string>
     <string name="alert_subject">Alert headline</string>
     <string name="source_and_time" translatable="false">%1$s, %2$s</string>
-    <string name="wind_speed_minimum" translatable="false">0 m/s</string>
-    <string name="wind_speed_maximum" translatable="false">20+ m/s</string>
     <string name="openstreetmap_copyright_notice" translatable="false">OpenFreeMap © OpenMapTiles | Data © OpenStreetMap contributors</string>
 
     <string name="county">county</string>

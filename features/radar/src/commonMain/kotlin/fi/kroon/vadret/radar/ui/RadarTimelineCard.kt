@@ -36,8 +36,6 @@ import fi.kroon.vadret.core.resources.ic_pause_filled
 import fi.kroon.vadret.core.resources.ic_play_arrow_filled
 import fi.kroon.vadret.core.resources.pause
 import fi.kroon.vadret.core.resources.play
-import fi.kroon.vadret.core.resources.wind_speed_maximum
-import fi.kroon.vadret.core.resources.wind_speed_minimum
 import fi.kroon.vadret.radar.model.RadarLayer
 import fi.kroon.vadret.ui.VadretTheme
 import kotlinx.collections.immutable.ImmutableList
@@ -80,6 +78,14 @@ private val precipitationLegendRainRates: ImmutableList<String> = persistentList
     "1.4 mm/h",
     "6.3 mm/h",
     "29+ mm/h"
+)
+
+private val windLegendSpeeds: ImmutableList<String> = persistentListOf(
+    "0 m/s",
+    "4 m/s",
+    "8 m/s",
+    "14 m/s",
+    "20+ m/s"
 )
 
 private val dayWindLegend: List<Color> = listOf(
@@ -360,64 +366,50 @@ private fun Legend(
     modifier: Modifier = Modifier
 ) {
     when (layer) {
-        RadarLayer.PRECIPITATION -> PrecipitationLegend(modifier = modifier)
-        RadarLayer.WIND -> WindLegend(modifier = modifier)
+        RadarLayer.PRECIPITATION -> ScaleLegend(
+            colors = precipitationLegend,
+            labels = precipitationLegendRainRates,
+            modifier = modifier
+        )
+
+        RadarLayer.WIND -> ScaleLegend(
+            colors = if (VadretTheme.isDark) {
+                nightWindLegend
+            } else {
+                dayWindLegend
+            },
+            labels = windLegendSpeeds,
+            modifier = modifier
+        )
     }
 }
 
 @Composable
-private fun PrecipitationLegend(modifier: Modifier = Modifier) {
+private fun ScaleLegend(
+    colors: List<Color>,
+    labels: ImmutableList<String>,
+    modifier: Modifier = Modifier
+) {
     Column(
         verticalArrangement = Arrangement.spacedBy(space = legendScaleSpacing),
         modifier = modifier.fillMaxWidth()
     ) {
-        LegendBar(
-            colors = precipitationLegend,
-            modifier = Modifier.fillMaxWidth()
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(height = legendHeight)
+                .background(
+                    brush = Brush.horizontalGradient(colors = colors),
+                    shape = CircleShape
+                )
         )
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier.fillMaxWidth()
         ) {
-            precipitationLegendRainRates.forEach { rainRate: String ->
-                TimelineLabel(text = rainRate)
+            labels.forEach { label: String ->
+                TimelineLabel(text = label)
             }
         }
     }
-}
-
-@Composable
-private fun WindLegend(modifier: Modifier = Modifier) {
-    val colors: List<Color> = if (VadretTheme.isDark) {
-        nightWindLegend
-    } else {
-        dayWindLegend
-    }
-    Row(
-        horizontalArrangement = Arrangement.spacedBy(space = VadretTheme.spacing.small),
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier.fillMaxWidth()
-    ) {
-        TimelineLabel(text = stringResource(resource = Res.string.wind_speed_minimum))
-        LegendBar(
-            colors = colors,
-            modifier = Modifier.weight(weight = 1f)
-        )
-        TimelineLabel(text = stringResource(resource = Res.string.wind_speed_maximum))
-    }
-}
-
-@Composable
-private fun LegendBar(
-    colors: List<Color>,
-    modifier: Modifier = Modifier
-) {
-    Box(
-        modifier = modifier
-            .height(height = legendHeight)
-            .background(
-                brush = Brush.horizontalGradient(colors = colors),
-                shape = CircleShape
-            )
-    )
 }
